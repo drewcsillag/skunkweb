@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: ae_component.py,v 1.7 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: ae_component.py,v 1.8 2003/05/25 23:24:08 smulloni Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -65,6 +65,9 @@ def __initConfig():
 def __checkScopes(m):
     from SkunkWeb import Configuration
     #if no compileCacheRoot, don't need to check scoped stuff
+    # BUG ... the absence of compileCacheRoot at the top level
+    # doesn't mean that it isn't defined somewhere else....
+    # FIXME
     if not Configuration.compileCacheRoot:
         return 
     for i in m:
