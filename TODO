@@ -1,5 +1,5 @@
-#   Time-stamp: <03/05/02 13:34:28 smulloni> 
-#   $Id: TODO,v 1.45 2003/05/01 20:45:52 drew_csillag Exp $
+#   Time-stamp: <2003-05-02 15:53:44 drew> 
+#   $Id: TODO,v 1.46 2003/05/02 17:35:24 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -33,16 +33,12 @@ SkunkWeb 3.3
 * make PyDO separate release use distutils also for install
 * reintroduce hot-debugging as an optional configuration dependency;
   write extension module using Pyrex?
-* Xitami adapter for SkunkWeb -- see webpages/xitami/index12.htm under the
-  Xitami distro
-* Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
-  (at least in 4.0.4) under jk/doc
 X rewrite enhancements
 X another hard look at scoping -- how are overlapping scopes handled?  Can
   the default scope directives be made more powerful?  Can the code be made
   more efficient?
 ? Quixote support - is it feasable given how it works?
-* PSP support
+X PSP support
 * get standard directory configuration options to actually work; distributions
   for gentoo, debian, redhat.
 X test userdir (I suspect scoping bug)
@@ -54,10 +50,10 @@ X tweak makefiles (for RPM_BUILD_ROOT) and documentation
 
 DOCS
 * a doc on the website that tells of the protocol frontends we support --
-  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami and what databases 
-  are supported.
+  HTTP, FastCGI, SCGI, aecgi and what databases are supported.
 * probably expand the above doc to the marketing bullet-points -- perhaps
   a whitepaper too?
+? PSP documentation?
 
 Future stuff
 ------------------------------
@@ -68,11 +64,7 @@ Future stuff
 * ways to get expired and rendered flags via the component tags
 * fix devel doc -- remove config stuff, api only -- services and 
   what API's (hooks) they export.  How to write a service.
-* separate pargen release
-* separate DT release
 * Patch to pydoc to allow it to handle STML
-* a PSP (python server pages implementation) (I've got a really cheesy one,
-  but I've got to imagine there's more to it than that).
 * tags which make javascript easier to live with
 * other uses for swpython
 L support for BETWEEN in PYDO.operators
@@ -100,6 +92,12 @@ Unknowns
 
 Nopes
 ------------------------------
+N separate pargen release
+N separate DT release
+N Xitami adapter for SkunkWeb -- see webpages/xitami/index12.htm under the
+  Xitami distro 
+N Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
+  (at least in 4.0.4) under jk/doc
 N precompiled .par files
 N real static doc -- Python in a short-future will have static stuff
 N CookieEncoding stuff
