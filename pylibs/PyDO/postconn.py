@@ -42,6 +42,11 @@ def isDateTime(x):
 class PyDOPostgreSQL:
     def __init__(self, connectArgs):
         connectArgs = string.split(connectArgs,':')
+        host = None
+        if connectArgs and connectArgs[0]: #if host is there
+            if '|' in connectArgs[0]: #if specified port
+                host = connectArgs[0].replace('|', ':')
+                
         if connectArgs and connectArgs[-1] == 'verbose':
             self.verbose = 1
             connectArgs = connectArgs[:-1]
@@ -61,7 +66,10 @@ class PyDOPostgreSQL:
             import PostgreSql
             PostgreSql.getConnection(connectArgs)
         else:
-            self.conn = pgdb.connect(connectArgs)
+            if host is not None:
+                self.conn = pgdb.connect(connectArgs, host = host)
+            else:
+                self.conn = pgdb.connect(connectArgs)
         self.bindVariables = 0
 
     def getConnection(self):
@@ -113,7 +121,9 @@ class PyDOPostgreSQL:
         return newresult
 
     def typeCheckAndConvert(self, val, aname, attr):
-        if _isDateKind(attr):
+        if val == None:
+            val = "NULL"
+        elif _isDateKind(attr):
             if (not isDateTime(val)) and not val == PyDBI.SYSDATE:
                 raise TypeError,'trying to assign %s to %s and is not a date, being of type %s ' %  (val,
                                                                                                      aname,
