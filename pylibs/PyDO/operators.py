@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/01/26 17:44:57 smulloni>
+# Time-stamp: <02/06/04 10:34:41 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -81,13 +81,20 @@ class SET:
     IN(FIELD('foo'), SET('spam', 'eggs', 'nougat'))
     """
     def __init__(self, *values):
+        if not len(values):
+            raise ValueError, "you must supply some values"
         self.values=tuple(values)
         
     def __str__(self):
-        return str(self.values)
+        l=len(self.values)
+        if l>1:
+            return str(self.values)
+        else:
+            return "(%s)" % repr(self.values[0])
+
     
     def __repr__(self):
-        return "SET(%s)" % str(self.values)
+        return "SET(%s)" % self.__str__()
 
 """
 mapping of symbols to operator classes
