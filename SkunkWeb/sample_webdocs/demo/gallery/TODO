@@ -58,6 +58,12 @@ way of obtaining the properties data component corresponding to a
 particular object label.  Of course, using AE as an object database
 may be a pretty dumb idea.
 
+Thu Feb  7 01:05:23 2002
+
+I ended up implementing something like the previous idea -- a
+vfs.PathPropertyStore which uses python data components to store its
+data.  Now to start using it.
+
 
 
 

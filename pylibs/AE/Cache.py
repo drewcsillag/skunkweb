@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.5 2001/12/02 20:57:50 smulloni Exp $
+#$Id: Cache.py,v 1.6 2002/01/27 03:10:44 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -51,7 +51,7 @@ Configuration._mergeDefaultsKw(
     documentRoot = '/usr/local/skunk/docroot',
     compileCacheRoot = '/usr/local/skunk/compileCache',
     componentCacheRoot = '/usr/local/skunk/compCache',
-    documentRootFS=[vfs.LocalFS()],
+    documentRootFS=vfs.LocalFS(),
     numServers = 0,
     failoverComponentCacheRoot = '/usr/local/skunk/failoverCache',
     maxDeferStale = 3600, # 1 hour
@@ -325,15 +325,27 @@ def _readCompileCacheRoot( name ):
     path = _fixPath( Configuration.compileCacheRoot, name + "c")
     return open( path ).read()
 
-def _getPathFSAndMinistat(name):
+def _getPathAndMinistat(name):
     path=_fixPath(Configuration.documentRoot, name)
-    for fs in Configuration.documentRootFS:
-        try:
-            st=fs.ministat(path)
-            return (path, fs, st)
-        except:
-            continue
-    raise vfs.VFSException, "file %s not found" % path
+    st=fs.ministat(path)
+    return (path, st)
+
+def _getPathFSAndMinistat(name):
+    """
+    deprecated; use _getPathAndMinistat() instead
+    """
+    path, st=_getPathAndMinistat(name)
+    return path, Configuration.documentRootFS, st
+##    path=_fixPath(Configuration.documentRoot, name)
+##    st=fs.ministat(path)
+##    return (path, fs, st)
+##    for fs in Configuration.documentRootFS:
+##        try:
+##            st=fs.ministat(path)
+##            return (path, fs, st)
+##        except:
+##            continue
+##    raise vfs.VFSException, "file %s not found" % path
     
 
 ## doc root access
@@ -507,6 +519,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.6  2002/01/27 03:10:44  smulloni
+# moving in the direction of getting rid of Configuration.DocumentRoot!
+#
 # Revision 1.5  2001/12/02 20:57:50  smulloni
 # First fold of work done in September (!) on dev3_2 branch into trunk:
 # vfs and PyDO enhancements (webdav still to come).  Also, small enhancement

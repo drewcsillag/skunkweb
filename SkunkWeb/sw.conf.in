@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.9 2002/01/13 20:12:20 smulloni Exp $
-# Time-stamp: <02/01/21 01:29:33 smulloni>
+# $Id: sw.conf.in,v 1.10 2002/01/21 07:05:48 smulloni Exp $
+# Time-stamp: <02/02/07 01:44:31 smulloni>
 
 ########################################################################
 #
@@ -67,9 +67,6 @@
 # basicauth               -- service that provides basic authentication to
 #                            locations configured to use it.  Requires
 #                            web.
-#
-# pars                    -- allows you to serve your docroot out of
-#                            par files instead or in addition to the docroot
 #
 # oracle                  -- preloads the Oracle pylib and allows for
 #                            connection and stored procedure signature
@@ -192,12 +189,14 @@ userModuleCleanup = 1
 # The directory that is used to hold templates, images, msgcats, comps,
 # etc.
 #
-# documentRoot = '<SKUNKROOT>/docroot'
+# documentRoot = '@prefix@/docroot'
 
 ########################################################################
 # What filesystem implementations to use to search for resources.
+# If you want to use archive files or other esoterica, use a MultiFS;
+# this may become the default in future
 #
-# documentRootFS = [vfs.LocalFS()]
+# documentRootFS = vfs.LocalFS()
 
 ########################################################################
 # for the sendmail tag, how to actually send it.
@@ -225,7 +224,7 @@ userModuleCleanup = 1
 #
 # numServers = 0
 # failoverRetry = 30
-# failoverComponentCacheRoot = '/usr/local/skunk/failoverCache'
+# failoverComponentCacheRoot = '@prefix@/failoverCache'
 
 
 ########################################################################
@@ -234,16 +233,16 @@ userModuleCleanup = 1
 # the accessLog logs access information, and the errorLog logs erroneous
 # conditions (mostly tracebacks)
 #
-# regularLog = '/usr/local/skunk/var/log/sw.log'
-# debugLog = '/usr/local/skunk/var/log/debug.log'
-# accessLog = '/usr/local/skunk/var/log/access.log'
-# errorLog = '/usr/local/skunk/var/log/error.log'
+# regularLog = '@prefix@/var/log/sw.log'
+# debugLog = '@prefix@/var/log/debug.log'
+# accessLog = '@prefix@/var/log/access.log'
+# errorLog = '@prefix@/var/log/error.log'
 
 ########################################################################
 # Location of where to put the pidFile that tells swmgr how to find the
 # running SkunkWeb server process
 #
-# pidFile = '/usr/local/skunk/var/run/sw.pid
+# pidFile = '@prefix@/var/run/sw.pid
 
 
 
@@ -294,7 +293,7 @@ userModuleCleanup = 1
 # The location on disk of where the compile cache should reside.  This
 # should be a local filesystem
 #
-# compileCacheRoot = '/usr/local/skunk/cache'
+# compileCacheRoot = '@prefix@/cache'
 
 ########################################################################
 # How stale the cached version is when we render it anyway when called
@@ -306,7 +305,7 @@ userModuleCleanup = 1
 # The location of the component cache on disk.  Can be the same as the
 # compileCacheRoot.
 #
-# componentCacheRoot = '/usr/local/skunk/cache
+# componentCacheRoot = '@prefix@/cache
 
 ########################################################################
 # how long to extend the life of a deferred component cache when we go
@@ -335,7 +334,7 @@ userModuleCleanup = 1
 ########################################################################
 # The location of your mimetypes file
 #
-# mimeTypesFile = '/usr/local/skunk/etc/mime.types'
+# mimeTypesFile = '@prefix@/etc/mime.types'
 
 ########################################################################
 # If we cannot determine the mime type by examining the extension of the
@@ -406,7 +405,7 @@ userModuleCleanup = 1
 # mimeHandlers = {}
 
 ########################################################################
-# path to a template in the docroot (or parfile), dependent on scope
+# path to a template in the docroot, dependent on scope,
 # that should be shown if the we send back an error (500) page
 # The exception text will show up in an additional template variable
 # ERROR_TEXT
@@ -414,24 +413,10 @@ userModuleCleanup = 1
 # errorTemplate = None
 
 ########################################################################
-# path to a template in the docroot (or parfile), dependent on scope
+# path to a template in the docroot, dependent on scope,
 # that should be shown if the we send back a 404 Not Found response
 #
 # notFoundTemplate = None
-
-########################################################################
-# If using the pars service, a list of par files that should be used to
-# serve. DEPRECATED in SkunkWeb 3.2; use DocumentRootFS instead.
-#
-# parFiles = []
-
-########################################################################
-# If using the pars service and the document we're looking for is not
-# in the par files we loaded, should we fall through to the filesystem
-# to look for it?  (probably) DEPRECATED in SkunkWeb 3.2.
-#
-# parFallthrough = 1
-
 
 ########################################################################
 # FOR THE  sessionHandler SERVICE:
@@ -539,6 +524,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.10  2002/01/21 07:05:48  smulloni
+# added hook for mime-type-specific request handlers.
+#
 # Revision 1.9  2002/01/13 20:12:20  smulloni
 # fixes for MySQL.
 #

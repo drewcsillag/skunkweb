@@ -1,13 +1,28 @@
+2002-02-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in: removed references to pars, which no longer
+	works; used @prefix@ instead of hard-coded /usr/local/skunk in a
+	number of places; revised documentation of documentRootFS
+
+	* SkunkWeb/Makefile.in (DEMO_FILES): removed a directory name that
+	was producing a warning during make install
+
+	* pylibs/AE/Cache.py (Configuration.documentRootFS, 
+	_getPathFSAndMinistat): changed documentRootFS from a list
+	to a single instance.  Add _getPathAndMinistat, since now
+	it is pointless to return the fs, but left a working version
+	of _getPathFSAndMinistat, now deprecated.
+
 2002-02-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/vfs.py (PathPropertyStore.acquireWithAncestor): 
-	snazzed up acquisition facility by delegating to this method, which
-	permits one to search just a segment of a treepath, and specify a default
-	or not.
+	snazzed up acquisition facility by delegating to this method,
+	which permits one to search just a segment of a treepath, and
+	specify a default or not.
 
 2002-02-05  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/vfs/pickleProps.py: path property store that uses pickle 
+	* pylibs/vfs/pickleProps.py: path property store that uses pickle
 	files.
 
 	* pylibs/vfs/shelfProps.py (ShelfPathPropertyStore.properties):
@@ -29,12 +44,12 @@
 	you want that.  I should add it to the C module, to be in the
 	spirit of things, eventually.
 
-	* pylibs/vfs/aeProps.py: Added a read-only PathPropertyStore that uses
-	python data components to store the properties.  You want a management 
-	interface? Take this!
+	* pylibs/vfs/aeProps.py: Added a read-only PathPropertyStore that
+	uses python data components to store the properties.  You want a
+	management interface? Take this!
 
-	* pylibs/AE/Executables.py (PythonExecutable.run): indentation problem
-	led to error if a data component didn't return anything
+	* pylibs/AE/Executables.py (PythonExecutable.run): indentation
+	problem led to error if a data component didn't return anything
 
 2002-02-04  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -63,7 +78,7 @@
 
 2002-02-03  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/remote_client.py (getRemoteException, etc): 
+	* SkunkWeb/Services/remote_client.py (getRemoteException, etc):
 	revamped the remote exception generation code, taking into account
 	the possibility of string exceptions
 
@@ -227,8 +242,8 @@
 
 	* pylibs/vfs/zipfs.py, parfs.py: VFS tweaks.
 
-	* SkunkWeb/sample_webdocs/demo/gallery/index.html: added image gallery demo
-	(requires Python Imaging Library).
+	* SkunkWeb/sample_webdocs/demo/gallery/index.html: added image
+	gallery demo (requires Python Imaging Library).
 
 2002-01-09  Andrew Csillag  <drew@localhost.localdomain>
 
@@ -269,7 +284,8 @@
 
 2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/vfs/__init__.py: import vfs.vfs.MultiFS into vfs package namespace	
+	* pylibs/vfs/__init__.py: import vfs.vfs.MultiFS into vfs package
+	namespace
 
 2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -288,36 +304,41 @@
 2001-12-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (getSession): Added
-	optional cookieParam keyword arguments, constrained to 'path', 'domain',
-	and 'secure', for setting session cookie parameters at session
-	creation time. They are otherwise ignored.
+	optional cookieParam keyword arguments, constrained to 'path',
+	'domain', and 'secure', for setting session cookie parameters at
+	session creation time. They are otherwise ignored.
 	
 2001-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/sw.conf.in: added documentation of documentRootFS configuration
-	variable, and comments on now (probably) deprecated pars service variables.
+	* SkunkWeb/sw.conf.in: added documentation of documentRootFS
+	configuration variable, and comments on now (probably) deprecated
+	pars service variables.
 
 	* SkunkWeb/Services/templating/UrlBuilder.py (image): the <:img:>
-	tag will now determine the width and height of the image if the url
-	is local and PIL (Python Imaging Library) is installed, and neither
-	height and width attributes have been specified in the tag.
+	tag will now determine the width and height of the image if the
+	url is local and PIL (Python Imaging Library) is installed, and
+	neither height and width attributes have been specified in the
+	tag.
 
 	* pylibs/AE/Cache.py (_openDocRoot): added method that returns 
 	an open file object.
 
 2001-11-18  Jacob Smullyan  <smulloni@skunk.org>
 
-	* skunkweb.spec: added spec for RPM.  probably doesn't work yet (I won't know
-	until I make changes to the Makefiles to make the rpm use RPM_BUILD_ROOT, as
-	don't feel like clobbering my installation!).
+	* skunkweb.spec: added spec for RPM.  probably doesn't work yet (I
+	won't know until I make changes to the Makefiles to make the rpm
+	use RPM_BUILD_ROOT, as don't feel like clobbering my
+	installation!).
 
 2001-11-17  Jacob Smullyan  <smulloni@skunk.org>
 
-	* pylibs/AE/Executables.py (executableByTypes): added new mime types.
+	* pylibs/AE/Executables.py (executableByTypes): added new mime
+	types.
 
-	* pylibs/AE/mime.types: created new mime types, text/x-stml-include
-	and text/x-stml-python-include, for the file extensions inc and pyinc,
-	rather than clumping.them together with comp and pycomp.
+	* pylibs/AE/mime.types: created new mime types,
+	text/x-stml-include and text/x-stml-python-include, for the file
+	extensions inc and pyinc, rather than clumping.them together with
+	comp and pycomp.
 
 2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -325,7 +346,7 @@
 
 2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Makefile.in: fix for nasty bug: improper conditional 
+	* SkunkWeb/Makefile.in: fix for nasty bug: improper conditional
 	tests (ifeq(@THING@, ' ') rather than ifeq(@THING@,) )
 
 2001-11-11  Jacob Smullyan  <smulloni@smullyan.org>
@@ -337,7 +358,8 @@
 	libdir, bindir, and friends, to assist packagers who prefer
 	different application layouts.
 
-	* pylibs/Makefile.in (pylibs_dir): use libdir configuration option.
+	* pylibs/Makefile.in (pylibs_dir): use libdir configuration
+	option.
 
 	* configure.in: added --with-docroot, --with-cache, and 
 	--with-docsdir options.
@@ -345,7 +367,7 @@
 
 2001-11-08  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/mod_skunkweb/modskunkweb_error.html: Removed references 
+	* SkunkWeb/mod_skunkweb/modskunkweb_error.html: Removed references
 	to AED.
 
 	* SkunkWeb/.cvsignore: now even more ignorant.
@@ -416,7 +438,8 @@
 	
 2001-10-22  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* docs/devel/devel.tex (subsection{The \texttt{SkunkWeb.Configuration} ``Module''}): 
+	* docs/devel/devel.tex
+	(subsection{The \texttt{SkunkWeb.Configuration} ``Module''}):
 	minor updates.
 
 2001-10-19  Drew Csillag  <drew@naxos.starmedia.net>
@@ -448,41 +471,47 @@
 
 2001-10-01  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/SkunkWeb/KickStart.py (CONFIG_STRING): added new imports into sw.conf
-	environment.
+	* SkunkWeb/SkunkWeb/KickStart.py (CONFIG_STRING): added new
+	imports into sw.conf environment.
 
-	* SkunkWeb/Services/web/protocol.py (_cleanupConfig): cleanup hijinxs necessary for 
-	dealing with UNIXPath.
+	* SkunkWeb/Services/web/protocol.py (_cleanupConfig): cleanup
+	hijinxs necessary for dealing with UNIXPath.
 
-	* pylibs/scopeable/_scope.c: Bizarrely dumb error in trim() repaired.
+	* pylibs/scopeable/_scope.c: Bizarrely dumb error in trim()
+	repaired.
 
-	* SkunkWeb/SkunkWeb/ConfigAdditives.py (UNIXPath): added scope directive for sw.conf
-	for unix sockets, rather maladroitly called UNIXPath.
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py (UNIXPath): added scope
+	directive for sw.conf for unix sockets, rather maladroitly called
+	UNIXPath.
 
-	* SkunkWeb/Services/requestHandler/requestHandler.py (RequestHandler.__initPorts): 
-	fixed bug that would appear if you left out the permissions of the unix socket from 
-	sw.conf.
+	* SkunkWeb/Services/requestHandler/requestHandler.py 
+	(RequestHandler.__initPorts): fixed bug that would appear if you
+	left out the permissions of the unix socket from sw.conf.
 
-	* pylibs/SocketMan/SocketMan.py (SocketMan._run): added a more useful error trace.
+	* pylibs/SocketMan/SocketMan.py (SocketMan._run): added a more
+	useful error trace.
 
-	* SkunkWeb/SkunkWeb/constants.py (UNIXPATH): added constant for sessionDict key
+	* SkunkWeb/SkunkWeb/constants.py (UNIXPATH): added constant for
+	sessionDict key
 
-	* SkunkWeb/Services/requestHandler/requestHandler.py (_beginSession): fix
-	for unix sockets.
+	* SkunkWeb/Services/requestHandler/requestHandler.py
+	(_beginSession): fix for unix sockets.
 
 2001-10-01  Drew Csillag  <drew@starmedia.net>
 
 	* SkunkWeb/sw.conf.in: added userdir config and defaultIndexHtml
 	stuff
 
-	* SkunkWeb/Services/templating/Handler.py: added functionality
-	for defaultIndexHtml
+	* SkunkWeb/Services/templating/Handler.py: added functionality for
+	defaultIndexHtml
 
 	* docs/opman/opman.tex: added bit about defaultIndexHtml
 
-	* pylibs/PyDO/doc, pylibs/PyDO/example: Added docs re: scatterFetch*
+	* pylibs/PyDO/doc, pylibs/PyDO/example: Added docs re:
+	scatterFetch*
 
-	* pylibs/PyDO/PyDO.py: moved scatterFetch* methods to static_ section
+	* pylibs/PyDO/PyDO.py: moved scatterFetch* methods to static_
+	section
 
 2001-09-26  Drew Csillag  <drew@starmedia.net>
 
@@ -509,9 +538,9 @@
 
 2001-09-21  Drew Csillag  <drew@starmedia.net>
 
-	* pylibs/DT/DTTags.py, pylibs/DT/DTCompilerUtil: now made
-	it so that if you have a multi-line <:call:> tag, you don't have
-	to have the ':> on it's own line for it to work.
+	* pylibs/DT/DTTags.py, pylibs/DT/DTCompilerUtil: now made it so
+	that if you have a multi-line <:call:> tag, you don't have to have
+	the ':> on it's own line for it to work.
 
 	* pylibs/DT/DTCompilerUtil.py, pylibs/AE/Executables.py: made
 	so print statements in templates now work.
@@ -531,8 +560,9 @@
 
 	* SkunkWeb/Services/userdir.py: added new userdir service
 
-	* pylibs/DT/DTTags.py (CallTag.genCode): now uses new writemultiline
-	method so user doesn't need to now reall current indentation level
+	* pylibs/DT/DTTags.py (CallTag.genCode): now uses new
+	writemultiline method so user doesn't need to now reall current
+	indentation level
 
 	* pylibs/DT/DTCompilerUtil.py (Output.writemultiline): added to
 	write multiple lines at current indentation.
@@ -544,7 +574,7 @@
 2001-09-18  Drew Csillag  <drew@starmedia.net>
 
 	* pylibs/scopable/_scope.c (Scopeable_saveMash): fixed refcounting
-	bug 
+	bug
 
 	* pylibs/scopable/_scope.c (Scopeable_init): Added a number of
 	Py_DECREF calls that were needed to not leak memory.
@@ -558,20 +588,21 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 2001-09-08  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/SkunkWeb/ConfigAdditives.py: now refer to scopeable, not scope, 
-	for imported ScopeMatchers.
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py: now refer to scopeable,
+	not scope, for imported ScopeMatchers.
 
-	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): removed the nasty
-	debugging statements and import hacks from this often used function.
+	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): removed the
+	nasty debugging statements and import hacks from this often used
+	function.
 
-	* pylibs/scopeable/_scope.c: various modifications, one would hope 
+	* pylibs/scopeable/_scope.c: various modifications, one would hope
 	improvements, to reference counting.
 
 2001-09-07  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/sw.conf.in, SkunkWeb/Services/httpd/__init__.py, 
-	SkunkWeb/Services/httpd/protocol.py: improved handling of SERVER_NAME; 
-	added ServerName configuration variable
+	* SkunkWeb/sw.conf.in, SkunkWeb/Services/httpd/__init__.py,
+	SkunkWeb/Services/httpd/protocol.py: improved handling of
+	SERVER_NAME; added ServerName configuration variable
 
 2001-09-06  Drew Csillag  <drew@starmedia.net>
 
@@ -579,14 +610,14 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 	
 	* docs/PyDO/PyDO.tex: documentation of |port thing
 
-	* pylibs/PyDO/pgenscript.py: enhancements by Greg Brauer and
-	now supports |port feature
+	* pylibs/PyDO/pgenscript.py: enhancements by Greg Brauer and now
+	supports |port feature
 
-	* pylibs/PostgreSql/__init__.py:  added |port feature to connect
+	* pylibs/PostgreSql/__init__.py: added |port feature to connect
 	string
 
-	* configure, configure.in, SkunkWeb/configure, SkunkWeb/configure.in:
-	added stuff for fcgiprot
+	* configure, configure.in, SkunkWeb/configure,
+	SkunkWeb/configure.in: added stuff for fcgiprot
 
 	* docs/opman/opman.tex: added stuff for FastCGI
 
@@ -596,13 +627,14 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 	
 2001-09-05  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/skunklib/Setup.in: cause Drew's C extensions to actually be built.
+	* pylibs/skunklib/Setup.in: cause Drew's C extensions to actually
+	be built.
 	
 2001-09-04  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/web/protocol.py (_processRequest): no actual change, 
-	but marked where one might call Configuration.saveMash().  I'm not sure
-	I like the saveMash() feature.
+	* SkunkWeb/Services/web/protocol.py (_processRequest): no actual
+	change, but marked where one might call Configuration.saveMash().
+	I'm not sure I like the saveMash() feature.
 
 	* pylibs/scope.py: added deprecation comment.
 
@@ -611,14 +643,14 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 	* pylibs/ConfigLoader.py: altered to use new scopeable package;
 	removed code that has been commented out for months.
 
-	* pylibs/scopeable/__init__.py: added "scopeable" package, 
-	with hopefully faster C code, to replace the excruciatingly 
-	slow scope.py.
+	* pylibs/scopeable/__init__.py: added "scopeable" package, with
+	hopefully faster C code, to replace the excruciatingly slow
+	scope.py.
 
 2001-09-03  Drew Csillag  <drew@naxos.starmedia.net>
 
-	* pylibs/PyDO/postconn.py: integrated patch from Gregory Brauer
-	to support setting values to None to put NULLs in the database
+	* pylibs/PyDO/postconn.py: integrated patch from Gregory Brauer to
+	support setting values to None to put NULLs in the database
 	
 2001-08-28  Drew Csillag  <drew@naxos.starmedia.net>
 
@@ -707,24 +739,26 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 2001-08-15  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): made "default" argument 
-	default to None.
+	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): made
+	"default" argument default to None.
 	(Session.setDirty): added mutator for the dirty property
 
 2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): added check for None value 
 
-	* SkunkWeb/Services/templating/SendmailTag.py (SendmailTag.genCode): attempting to use
-	the sendmail tag previously produced a NameError, as MailServices was not being accessed
-	through __h in the generated code.
+	* SkunkWeb/Services/templating/SendmailTag.py
+	(SendmailTag.genCode): attempting to use the sendmail tag
+	previously produced a NameError, as MailServices was not being
+	accessed through __h in the generated code.
 
 2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/PyDO/postconn.py (_dateConvertToDB): added type check to prevent a TypeError from 
-	being raised for just about everything
+	* pylibs/PyDO/postconn.py (_dateConvertToDB): added type check to
+	prevent a TypeError from being raised for just about everything
 
-	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): added get() to Session object.
+	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): added
+	get() to Session object.
 
 
 2001-08-13  Drew Csillag  <drew@naxos.starmedia.net>
@@ -738,8 +772,9 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/sessionHandler/Session.py (untouch): altered session handler
-	so if a session is manually saved, it will not be subsequently touched in the same request.
+	* SkunkWeb/Services/sessionHandler/Session.py (untouch): altered
+	session handler so if a session is manually saved, it will not be
+	subsequently touched in the same request.
 
 	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): better fix
 	to DEBUG import problem.
@@ -753,7 +788,7 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/sessionHandler/PostgreSQLSessionStore.py, 
+	* SkunkWeb/Services/sessionHandler/PostgreSQLSessionStore.py,
 	SkunkWeb/Services/sessionHandler/__init__.py: added a PostgreSQL-
 	based session store, this time using PyDO.
 	
@@ -801,20 +836,21 @@ i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 	* pylibs/PyDO/oracleconn.py: now correctly uses the Oracle module
 	instead of the now-defunct SQL module
 
-	* SkunkWeb/sample_webdocs/index.html, SkunkWeb/sample_webdocs/demo/index.html: 
-	put a link to the demo page and made a demo page.  Hopefully will
-	have more demos soon... hint... hint...
+	* SkunkWeb/sample_webdocs/index.html,
+	SkunkWeb/sample_webdocs/demo/index.html: put a link to the demo
+	page and made a demo page.  Hopefully will have more demos
+	soon... hint... hint...
 
-	* pylibs/AE/Component.py: made so you can tell whether the component
-	call a) was rendered or fetched from cache, or b) was expired by
-	adding fullCallComponent.  callComponent now just calls 
+	* pylibs/AE/Component.py: made so you can tell whether the
+	component call a) was rendered or fetched from cache, or b) was
+	expired by adding fullCallComponent.  callComponent now just calls
 	fullCallComponent and returns the text, not the flags.
 	
 
 2001-08-09  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB): fixed date 
-	parsing bug and several import problems
+	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB):
+	fixed date parsing bug and several import problems
 
 2001-08-08  Drew Csillag  <drew@naxos.starmedia.net>
 	
