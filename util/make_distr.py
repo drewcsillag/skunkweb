@@ -19,7 +19,7 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.3 2002/02/13 17:38:48 drew_csillag Exp $
+#$Id: make_distr.py,v 1.4 2002/07/28 01:59:26 drew_csillag Exp $
 
 import commands
 import re
@@ -129,11 +129,12 @@ d_file = os.path.join ( _dir, 'skunkweb-%s.tgz' % vers)
 
 doc_cmds=[]
 for i in ['stmlrefer', 'PyDO', 'devel', 'opman']:
-    doc_cmds.append('cd skunkweb-%s/docs/html; make %s/%s.html' % (vers, i, i))
-    doc_cmds.append('cd skunkweb-%s/docs/paper-letter; make %s.ps %s.pdf %s.dvi' % (vers, i,i,i))
+    doc_cmds.append('cd skunkweb/docs/html; make %s/%s.html' % (i, i))
+    doc_cmds.append('cd skunkweb/docs/paper-letter; make %s.ps %s.pdf %s.dvi' % (i,i,i))
 
-cmds = (('cvs export -r %s -d skunkweb-%s skunkweb' % (tag, vers),)
+cmds = (('cvs export -r %s -d skunkweb skunkweb' % (tag,),)
         + tuple(doc_cmds) +
+        ('mv skunkweb skunkweb-%s' % (vers,)),
         ('tar czf %s skunkweb-%s' % (d_file, vers),
          'rm -rf skunkweb-%s' % vers )
         )
