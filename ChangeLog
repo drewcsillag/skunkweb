@@ -1,3 +1,8 @@
+2003-03-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/validates.py: made the error messages of the validating
+	fields (except the address field) customizable.
+
 2003-03-04 Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/validates.py (ISBNField): added a field

@@ -36,19 +36,49 @@ __all__=['IntegerField',
 # Validating fields
 ########################################################################
 
-class IntegerField(TextField):
+class ValidatingMixin:
+    def __init__(self, error_format):
+        self.error_format=error_format
+
+    def formatError(self, **kw):
+        if callable(self.error_format):
+            return FormErrorMessage(self, self.error_format(**kw))
+        return FormErrorMessage(self, self.error_format % kw)
+
+class ValidatingTextField(TextField, ValidatingMixin):
+    def __init__(self,
+                 name,
+                 description=None,
+                 default=None,
+                 required=0,
+                 setable=1,
+                 error_format="%(error)s",
+                 **view_attrs):
+        ValidatingMixin.__init__(self, error_format)
+        TextField.__init__(self,
+                           name,
+                           description,
+                           default,
+                           required,
+                           setable,
+                           **view_attrs)
+    
+    
+
+class IntegerField(ValidatingTextField):
     "Restricts validated input to integer values"
+                           
     def validate(self, form=None):
         errorlist= TextField.validate(self) or []
         if self.value:
             try:
                 int(self.value)
             except ValueError, ve:
-                errorlist.append(FormErrorMessage(self, str(ve)))
+                errorlist.append(self.formatError(error=ve))
         return errorlist
         
 
-class DoubleField(TextField):
+class DoubleField(ValidatingTextField):
     "Restricts validated input to double values"
     
     def validate(self, form=None):
@@ -57,11 +87,11 @@ class DoubleField(TextField):
             try:
                 float(self.value)
             except ValueError, ve:
-                errorlist.append(FormErrorMessage(self, str(ve)))
+                errorlist.append(self.formatError(error=ve))
         return errorlist
 
 
-class DateField(TextField):
+class DateField(ValidatingTextField):
     "Restricts validated input to a string which parseable according to"\
     "a specified format."
     def __init__(self,
@@ -69,6 +99,8 @@ class DateField(TextField):
                  description=None,
                  default=None,
                  required=0,
+                 setable=1,
+                 error_format="%(error)s: Expected format: %(format)s",
                  formatString='%m/%d/%Y',
                  **view_attrs):
         """\
@@ -76,15 +108,16 @@ class DateField(TextField):
         which the instance will validate against,
         defaults to mm/dd/yyyy format ['%m/%d/%Y']
         """
-        TextField.__init__(self,
-                           name,
-                           description,
-                           default,
-                           required,
-                           **view_attrs)
-        self.format = formatString
+        ValidatingTextField.__init__(self,
+                                     name,
+                                     description,
+                                     default,
+                                     required,
+                                     setable,
+                                     error_format,
+                                     **view_attrs)
+        self.format=formatString
 
-    
     def validate(self, form=None):
         errorlist=TextField.validate(self) or []
 
@@ -92,8 +125,7 @@ class DateField(TextField):
             try:
                 time.strptime(self.value, self.format)
             except ValueError, ve:
-                msg="%s: Expected format: %s" % (str(ve), self.format)
-                errorlist.append(FormErrorMessage(self, msg))
+                errorlist.append(self.formatError(error=ve, format=self.format))
         return errorlist
 
 
@@ -460,11 +492,11 @@ def check_isbn(isbn):
 	return checkdigit==isbn[-1]
 
 
-class ISBNField(TextField):
+class ISBNField(ValidatingTextField):
     "Restricts validated input to legal ISBNs"
     def validate(self, form=None):
         errorlist= TextField.validate(self) or []
         if self.value:
             if not check_isbn(self.value):
-                errorlist.append(FormErrorMessage(self, "invalid ISBN"))
+                errorlist.append(self.formatError(error="invalid ISBN"))
         return errorlist    
