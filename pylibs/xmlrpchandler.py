@@ -1,5 +1,5 @@
-# Time-stamp: <03/02/08 09:21:28 smulloni>
-# $Id: xmlrpchandler.py,v 1.6 2002/10/08 20:02:08 smulloni Exp $
+# Time-stamp: <03/02/08 09:37:03 smulloni>
+# $Id: xmlrpchandler.py,v 1.7 2003/02/08 14:24:51 smulloni Exp $
 
 """
 a module for serving XMLRPC from SkunkWeb.
@@ -111,7 +111,7 @@ class XMLRPCServer:
 
     def _methodSignature(self, method):
         fspec=self.funcs.get(method)
-        if not fspec or if fspec[-1] is None:
+        if not fspec or fspec[-1] is None:
             raise xmlrpclib.Fault(NO_SUCH_METHOD_ERROR, method)
         return fspec[-1]
             
