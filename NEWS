@@ -1,22 +1,33 @@
-Changes since 3.1
+Changes in 3.2 beta 0
 ========================================
 * remote component fixes
 * doc updates
 * caching fixes
 * misc output fixes
 * Now have a CGI adaptor -- swcgi.  See docs for details
-* new image gallery demo
+* new image gallery demo, with auto-generated (and cached) thumbnails;
+  requires PIL
 * new suffixes for includes (.inc and .pyinc)
 * optional enhancement to <:img:> tag if PIL is installed 
   (auto-generates height and width)
 * many PyDO improvements, including a SAP driver and *three* 
-  new ways of specifying custom WHERE clauses
+  new ways of specifying custom WHERE clauses; pydoObj.get(column,
+  default) will now return default where the value for column is
+  NULL. 
 * services can now easily provide mime-type-specific request 
   handlers
 * upgraded MySQL support to use MySQLdb
 * works with Python 2.2 as well as 2.1.x
 * now accesses resources via a vfs layer; resources can be stored in 
-  zip and par archives as well as the local filesystem.
+  zip and tar archives as well as the local filesystem.  The pars
+  service, which used a python-specific archive format, is no longer
+  supported. 
+* Because of the vfs, Configuration.documentRoot is being gradually
+  phased out, and will probably not be present in 3.2 final.
+  The new mechanism for controlling where resources come from is 
+  Configuration.documentRootFS, which in this release, is a list of
+  possible filesystems (for various reasons this will probably change
+  quite soon to a single fs rather than a list).
 
 Changes from 3.0 to 3.1
 ========================================
