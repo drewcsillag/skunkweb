@@ -1,3 +1,11 @@
+2003-04-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/scope.py (Scopeable.updateDefaults): renamed the old
+	update() method, since it wasn't named very accurately.
+
+	* pylibs/ConfigLoader.py (loadConfig): some scope fixes,
+	and comments thereon.
+
 2003-04-19  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/MsgCatalog.py,

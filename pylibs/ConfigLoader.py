@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigLoader.py,v 1.6 2003/04/18 04:08:22 smulloni Exp $
+# $Id: ConfigLoader.py,v 1.7 2003/04/19 14:19:52 smulloni Exp $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
@@ -38,13 +38,22 @@ def loadConfigString(s, filename, cfgModuleName):
                                          
 def loadConfig(codeObj, cfgModuleName):
     cfMod = sys.modules.get(cfgModuleName)
-    ns = cfMod and cfMod.defaults() or {}
+    # this is a "friend" module of scope, so I'm
+    # using its private api. The defaults below are the
+    # real defaults, not a copy, which I felt should no
+    # longer be exposed by the public api.
+    ns = cfMod and cfMod._get_fridge()['defaults'] or {}
 
     # we used to exec in ns, ns; anyone see a problem with this?
     exec codeObj in {}, ns  #let caller catch exc's
 
     if cfMod:
-        cfMod.update(ns)
+        # this used to call a scopeable method called "update",
+        # but what it actually did was very different from a
+        # a regular update -- it updated the defaults, not necessarily
+        # the live scoped values.  However, at this point in the config loading
+        # process, there is no scoping.
+        cfMod.updateDefaults(ns)
     else:
         m = sys.modules[cfgModuleName] = scope.Scopeable(ns)
         l = cfgModuleName.split('.')

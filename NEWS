@@ -16,6 +16,42 @@ Changes in 3.4 final
 * new AE.Cache options, runOutOfCache and dontCacheSource.
 * can be run in the foreground (for use with daemontools).
 * ported to HP/UX 11
+* the Configuration object has been reimplemented, in Python, 
+  with an order of magnitude  speed improvement for attribute 
+  lookup.  Some backwards incompatibilities, which while numerous 
+  are not likely to be a problem for most users:
+
+  1. there is no longer an "__all__" attribute that gives you all keys.
+  This is easily available by other means -- self.__dict__ is always
+  a set of all the current scoped data.
+  2. scope() now takes only one kind of argument, a dictionary.  (It
+  used to take three different kinds of arguments, and behave in three
+  entirely different ways).
+  3. the old method names, _trim, _mergeDefaultsKw, etc., which had been
+  maintained for backwards compatibility with an old version, are gone 
+  and are no longer used in the codebase.
+  4. there is no longer a "mashSelf" method.
+  5. Before, if you wanted to set a configuration value temporarily, you
+  had to use a combination of push() and pop().  That would probably
+  still work, but you can also directly set the attribute, and then
+  unset it later.
+  6. pop() used to requir a index, but the only index it ever made sense
+  to use was 0; the index parameter is now dropped (and in fact the
+  underlying array of dictionaries is kept in the opposite order).
+  7. the scope matchers are no longer accessible as the "matchers"
+  attribute, but through a method call: cfg.scopeMatchers().  This is
+  to avoid mixing configuration variables, which are stored as instance 
+  attributes, with anything else. 
+  8. defaults() now returns a copy of the defaults, not the original.
+  9. currentScopes, which used to be a "private" instance attribute, is
+  now available through a method call: self.currentScopes().
+  10. update() has been renamed to updateDefaults(), which more accurately
+  describes what it does. 
+
+  The speed increase may not make a huge difference for existing skunkweb
+  applications, but it does mean that skunkweb developers can be less 
+  concerned about the cost of new Configuration variable lookups in the 
+  core.
 
 Changes in 3.4b2
 ========================================

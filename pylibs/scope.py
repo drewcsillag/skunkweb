@@ -62,9 +62,6 @@ class Scopeable:
         fridge['defaults']=kw
         self.__dict__.update(kw)
 
-    def update(self, d):
-        self._get_fridge()['defaults'].update(d)
-
     def _lookup(self, attr):
         # not really intended to be used,
         # the old gettattr hook
@@ -82,6 +79,10 @@ class Scopeable:
             pass
         # need a better exception for this
         raise AttributeError, attr        
+
+    def updateDefaults(self, d):
+        self._get_fridge()['defaults'].update(d)
+        self.__dict__=self.mash()
         
     def defaults(self):
         return self._get_fridge()['defaults'].copy()
