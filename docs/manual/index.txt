@@ -1,0 +1,35 @@
+.. -*-rst-*-
+
+===================
+The SkunkWeb Manual
+===================
+
+:Author: Brian Olsen, et al.
+:Version: 0.1
+:Status: Draft
+
+.. contents:: Table Of Contents
+.. section-numbering::
+
+.. include:: preface.txt
+
+.. include:: instConfig.txt
+
+.. include:: fundamentals.txt
+
+
+
+.. include:: http.txt
+
+.. .. include:: services.txt
+
+.. .. include:: database.txt
+
+.. .. include:: formlib.txt
+
+.. .. include:: params.txt
+
+.. .. include:: tutorial.txt
+
+
+
