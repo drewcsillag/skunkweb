@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.12 2002/11/08 21:18:07 smulloni Exp $
+#$Id: Cache.py,v 1.13 2003/01/13 17:56:22 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -61,7 +61,10 @@ Configuration._mergeDefaultsKw(
     findCommand = '/usr/bin/find',
     sedCommand = '/bin/sed',
     xargsCommand = '/usr/bin/xargs',
-    fgrepCommand = '/bin/fgrep' 
+    fgrepCommand = '/bin/fgrep',
+    runOutOfCache = 0,
+    dontCacheSource = 0,
+    
 )
 #/config
 
@@ -135,7 +138,10 @@ def extendDeferredCachedComponent( name, argDict ):
 
 #stuff to get python code from cache
 def _pyCompileFunc( name, data ):
-    return compile( '\n'.join(data.split('\r\n')), name, 'exec'), data
+    if Configuration.dontCacheSource:
+            return compile( '\n'.join(data.split('\r\n')), name, 'exec'), ''
+    else:
+        return compile( '\n'.join(data.split('\r\n')), name, 'exec'), data
 
 def getPythonCode( name, srcModTime ):
     return _getCompiledThing( name, srcModTime, 'pycode', _pyCompileFunc,
@@ -149,7 +155,10 @@ def _dtReconstituteFunc( data ):
     return apply( DT.DT, data )
 
 def _dtUnconstituteFunc( data ):
-    return (data.path, data._text, data._compiled, data._meta )
+    if Configuration.dontCacheSource:
+        return (data.path, '', data._compiled, data._meta )
+    else:
+        return (data.path, data._text, data._compiled, data._meta )
 
 def getDT( name, srcModTime ):
     return _getCompiledThing( name, srcModTime, 'template',
@@ -238,11 +247,11 @@ def _getCompiledThing( name, srcModTime, legend, compileFunc, version,
             DEBUG(MEM_COMPILE_CACHE, "writing to memory cache (compiled)")
             compileMemoryCache[Configuration.compileCacheRoot + name] = (
                 srcModTime, obj)
-        
-        _writeCompileCache( name,
-                            (unconstituteFunc and unconstituteFunc(obj) or obj,
-                             version),
-                            marshal.dumps )
+        if not Configuration.runOutOfCache:
+            _writeCompileCache( name,
+                                (unconstituteFunc and unconstituteFunc(obj) or obj,
+                                 version),
+                                marshal.dumps )
         return obj
 
 #check for a valid cached version (it's newer than the source) and return
@@ -251,7 +260,7 @@ def _getCompileCache( name, srcModTime, version ):
     if srcModTime is None:
         srcModTime = _getDocRootModTime( name )
     cacheModTime = _getCompileCacheModTime( name )
-    if cacheModTime > srcModTime:
+    if cacheModTime > srcModTime or Configuration.runOutOfCache:
         try:
             ret, vsn = marshal.loads( _readCompileCacheRoot( name ) )
         except ValueError: #marshal got bad shit
@@ -522,6 +531,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.13  2003/01/13 17:56:22  smulloni
+# fixed typo in writeCompileCache.
+#
 # Revision 1.12  2002/11/08 21:18:07  smulloni
 # damn, left out an import.
 #
