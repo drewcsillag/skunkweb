@@ -1,5 +1,10 @@
 2002-11-27  James Richards  <jrichards@satie.wnyc.org>
 
+	* pylibs/formlib/views.py (_requirable.validate): changed default validation error message for _requirable to return field description [displayed to user] instead of field name [hidden from user]
+	(ViewableForm.handleList): fixed error in tracking number of errors and added check for fields with no error preceding fields with errors
+
+	* test/formlib/htdocs/testNestedList.pyinc (checkboxGrpFld): Adding test for clearing of defaults, updated to new fields dynamic hidden property, validated error display bug fix
+
 	* pylibs/formlib/form.py (Form._get_fields): Adding fields as a hidden property to control update of form fields dynamically
 
 	* pylibs/formlib/views.py (ViewableForm._get_fields): Adding fields as a hidden property to make updateable fields simpler
