@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.5 2002/06/06 13:53:58 drew_csillag Exp $
-# Time-stamp: <2002-06-27 16:04:51 acsillag>
+# $Id: __init__.py,v 1.6 2002/06/27 21:18:46 drew_csillag Exp $
+# Time-stamp: <2002-06-30 13:27:43 drew>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -316,36 +316,13 @@ class PlainSessionAuth(SessionAuthBase, AuthFileBase, RespAuthBase):
         AuthFileBase.__init__(self, authFile)
         RespAuthBase.__init__(self, loginPage)
 
-class PseudoDict:
-    def __init__(self):
-        self.items = []
-
-    def _find(self, item):
-        for i, (k,v) in zip(range(len(self.items)), self.items):
-            if k == item:
-                return i
-        return -1
-    
-    def __setitem__(self, item, value):
-        i = self._find(item)
-        if i == -1:
-            self.items.append([item, value])
-        else:
-            self.items[i][1] = value
-
-    def get(self, item):
-        i = self._find(item)
-        if i != -1:
-            return self.items[i][1]
-        return None
-    
-_AuthObjCache=PseudoDict()
+_AuthObjCache={}
 
 def getAuthorizer():
-    key = (Configuration.authAuthorizer, Configuration.authAuthorizerCtorArgs)
+    key = (Configuration.authAuthorizer, id(Configuration.authAuthorizerCtorArgs))
     authorizer = _AuthObjCache.get(key)
     if authorizer is None:
-        authorizer = _AuthObjCache[key] = _getClass(key[0])(*key[1])
+        authorizer = _AuthObjCache[key] = _getClass(key[0])(*Configuration.authAuthorizerCtorArgs)
     return authorizer
 
 def checkAuthorization(conn, sessionDict):
@@ -393,6 +370,10 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.6  2002/06/27 21:18:46  drew_csillag
+# fixed so that you can have two different auth schemes going at the same time
+# in different dirs and still have it all work.
+#
 # Revision 1.5  2002/06/06 13:53:58  drew_csillag
 # now cookieauth will set conn.remoteUser and conn.remotePassword when logging in
 #
