@@ -1,15 +1,24 @@
 import sre
 
+
+def dosub(match):
+    return '<A HREF="%s">%s</A>' % (match.group(0), match.group(0))
+
 numre = sre.compile('[0-9]+\)')
 firstchar = sre.compile('^[a-zA-Z]')
 faqtext = open('FAQ').read()
-
+linktext = sre.compile(r'http:[^ \n]+')
 questions = []
 output = []
 counter = 1
 for i in  numre.split(faqtext):
     if not i:
         continue
+
+    
+    i = linktext.sub(dosub, i)
+
+
 
     x = i.replace('*','<li>')
     firstli = x.find('<li>')
@@ -23,12 +32,8 @@ for i in  numre.split(faqtext):
             break
         z = z[:b]
 
-    #print '----', x[b:]
-    #print '----', x[b:].find('<li>')
     if x[b:].find('<li>') == -1:
         x = x[:b] + '</ul>' + x[b:]
-        #print '======', x[b:]
-        #raise SystemExit
     else:
         x += '</ul>'
     

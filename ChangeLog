@@ -1,3 +1,17 @@
+2001-08-27  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* SkunkWeb/Services/ae_component: performance tweaks
+
+	* SkunkWeb/SkunkWeb/Hooks.py(KeyedHook.__call__): Only
+	put out DEBUG msg if DEBUGIT.
+
+	* pylibs/AE/Component.py(_realRenderComponent): only tracks
+	time if debug flag is set
+
+	* pylibs/Logger.py(DEBUGIT): removed spurious import of sys
+
+	* pylibs/AE/Cache.py: performance tweaks
+
 2001-08-25  Drew Csillag  <drew@starmedia.net>
 
 	* faq2html.py: added.  Converts FAQ to a form usable by the

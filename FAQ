@@ -19,25 +19,7 @@ as to the approach:
    it may run under Windows with the Cygwin toolkit.  Besides, windows
    has enough problems.
 
- * Caching.  WebWare does cache some stuff in memory (I believe it can
-   cache output in memory, SkunkWeb caches compiled things in memory),
-   but last I knew, didn't cache anything to disk.  So if you have a
-   lot of "components", the output can easily consume all available
-   memory.  Not only that, but if you have a bunch of machines running
-   the site, with SkunkWeb, they can share the cache.  Also, with
-   component caching, you have much better control as to when the
-   cache for a component expires.
-
- * Templating language.  WebWare uses PSP as it's sole templating language.
-   While PSP is good for the experienced web developer, it's a killer if
-   you have to work in an environment with less experienced people.  STML
-   on the other hand, is easy for novices to learn, can almost
-   entirely be ignored by the people who just do markup, and doesn't
-   constrain the power users too much.  On my future feature list, PSP
-   support is on there, so that people who want PSP with SkunkWeb can
-   have it also.  As far as runtime overhead on STML, well, STML is
-   compiled to python source, and subsequently to bytecode, so the
-   overhead is minimal.
+ * Caching.  WebWare doesn't have any built in output cache mechanism.
 
  * Internationalization.  I don't believe that WebWare has any builtin
    support for message catalogs and the like.
@@ -71,24 +53,18 @@ directory, that goes into a bit more detail.
    people that are more than just newbies, this can be quite a royal
    pain.  
 
- * FIXME -- Extending Zope is complicated to say the least.  SkunkWeb (like
-   WebWare) was designed to be easily extendible and customizable.
-
  * To call arbitrary code from Zope templates, you have to create
    Python Method objects, which let's be honest, is a pain.  STML has
    an import tag which allows you to just get to work.
 
- * FIXME -- I may be wrong on this one, but I don't think that Zope allows you
-   to cache the output of a template.
-
  * Internationalization.  I don't believe that Zope has any builtin
    support for message catalogs and the like.
 
+ * http://zope-is-evil-666.idyll.org/
 
- * FIXME -- Modularity.  It's pretty difficult to pull the cool bits out of
-   Zope to use outside of it.  With SkunkWeb, most of the code is in
-   the pylibs directory (6500 lines SkunkWeb specific, versus 20000
-   lines common code) that you can use outside the skunk framework.
+ * http://www.amk.ca/python/writing/why-not-zope.html
+
+ * http://pywx.idyll.org/advocacy/why-not-zope.html
 
 Again, the SkunkWebIPC10.tex file in the docs directory goes into this
 stuff in greater detail.
