@@ -1,5 +1,8 @@
 2001-09-21  Drew Csillag  <drew@starmedia.net>
 
+	* pylibs/DT/DTCompilerUtil.py, pylibs/AE/Executables.py: made
+	so print statements in templates now work.
+
 	* configure.in, SkunkWeb/configure.in: added userdir to help and
 	default list of services
 
