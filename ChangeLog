@@ -1,3 +1,8 @@
+2004-07-25  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* pylibs/DT/DTLexer.py: pcre has finally been removed from Python
+	in 2.4a1; I rewrote this to use the re module.  
+
 2004-05-26  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/psyco_accel.py: simplest possible service that

@@ -7,22 +7,21 @@
 #   
 import string
 import sys
-import pcre
+import re
 import ErrorHandler
 import SkunkExcept
 from DTExcept import DTLexicalError
 import StringIO
 
-#regex for a quoted string (no backslach escaping)
+#regex for a quoted string (no backslash escaping)
 quotedStr="('(.*?)' | \"(.*?)\" | `(.*?)`)"
 
 #plain thing
 plain='[^\s="\'`]+'
 
-plainre=pcre.pcre_compile(plain,0,{})
+plainre=re.compile(plain)
 
 #regex for parsing contents of a tag
-idxdict={}
 tagContents='''(
      (?P<plain> %(plain)s ) (?=($|\s)) | 
      (?P<plaineq> %(plain)s ) \s*
@@ -34,17 +33,16 @@ tagContents='''(
          )''' % {'plain': plain,
                  'quotedStr': quotedStr
                  }
-tagContentsRe=pcre.pcre_compile(
-    tagContents, pcre.VERBOSE | pcre.DOTALL, idxdict)
-PLAIN=idxdict['plain']
-PLAINEQ=idxdict['plaineq']
-PLAINEQVAL=idxdict['plaineqval']
-PLAINEQQ=idxdict['plaineqq']
-PLAINEQQVAL=idxdict['plaineqqval']
-QUOTONLY=idxdict['quotonly']
-WHITESPACE=idxdict['whitespace']
+tagContentsRe=re.compile(tagContents, re.VERBOSE | re.DOTALL)
+PLAIN='plain'
+PLAINEQ='plaineq'
+PLAINEQVAL='plaineqval'
+PLAINEQQ='plaineqq'
+PLAINEQQVAL='plaineqqval'
+QUOTONLY='quotonly'
+WHITESPACE='whitespace'
 
-wsre = pcre.pcre_compile(r'\s+', 0, {})
+wsre = re.compile(r'\s+')
 def dequote(s):
     if s[0]==s[-1]=='"':
         return s[1:-1]
@@ -143,7 +141,6 @@ def findTags(text):
     tagoffset = 0
     while offset < lentext:
         c = text[offset]
-        #print 'c=%s  state=%s' % (c, _statenumtostr[state])
         if state == INIT:
             if c == '<':
                 tagoffset = offset
@@ -192,8 +189,6 @@ def findTags(text):
                                       msg = "found < in tag" )
         elif state == GOTCCOL:
             if c != ">":
-                #raise DTLexicalError ( lineno = getLineno(text, offset),
-                #                 msg = "got : in tag but not followed by >" )
                 state=PLAINTAGTEXT
             else:    
                 textoffset = offset + 1
@@ -205,7 +200,6 @@ def findTags(text):
             
         elif state in (SQUOT, DQUOT, BQUOT):
             if c == '\\':
-                #print 'entering backslash save_state=', _statenumtostr[state]
                 backslash_save_state = state
                 state = BACKSLASH
 
@@ -213,8 +207,6 @@ def findTags(text):
                 state = PLAINTAGTEXT
 
         elif state == BACKSLASH:
-            #print 'inbackslash'
-            #print 
             state = backslash_save_state
 
         offset = offset + 1
@@ -238,7 +230,6 @@ def findTags(text):
     return ret
 
 def processTag(tagString, text, st, end):
-    #print 'tag is <%s>' % tagString
     tupargs=[]
     dictargs={}
     tagname=''
@@ -246,60 +237,64 @@ def processTag(tagString, text, st, end):
 
     tnmatch = None
     while not tnmatch:
-        wsmatch = wsre.match(tagString, off, len(tagString), pcre.ANCHORED)
+        wsmatch = wsre.match(tagString, off, len(tagString))
         if not wsmatch:
-            tnmatch = plainre.match(tagString, off, len(tagString),
-                                    pcre.ANCHORED)
+            tnmatch = plainre.match(tagString, off, len(tagString))
             if not tnmatch:
                 raise DTLexicalError( msg = 'invalid tag name', 
                                       tagtext = tagString,
                                       lineno = getLineno ( text, st ) )
             else:
                 break
-        off = wsmatch[0][1]
+        off = wsmatch.end()
                                 
-    tagname=tagString[tnmatch[0][0]:tnmatch[0][1]]
-    #print 'tagname is ', tagname
-
-    off=tnmatch[0][1]
+    tagname=tnmatch.group()
+    off=tnmatch.end()
     lts=len(tagString)
     while off<lts:
-        match=tagContentsRe.match(tagString, off, lts, pcre.ANCHORED)
+        match=tagContentsRe.match(tagString, off, lts)
         if match is None:
             raise DTLexicalError( msg = 'invalid tag text', tagtext = tagString,
                                   lineno = getLineno ( text, st ) )
-        if match[WHITESPACE] != (-1, -1):
-            mb, me=match[WHITESPACE]
-            #print 'Got whitespace <%s>' % tagString[mb:me]
-            off=me
-        elif match[PLAIN] != (-1, -1):
-            mb, me=match[PLAIN]
-            #print 'Got plain <%s>' % tagString[mb:me]
-            tupargs.append(tagString[mb:me])
-            off=me
-        elif match[PLAINEQ] != (-1, -1):
-            mb, me=match[PLAINEQ]
-            #print 'Got plaineq <%s>' % tagString[mb:me]
-            tmb, tme=match[PLAINEQVAL]
-            #print 'Got plaineqval <%s>' % tagString[tmb:tme]
-            dictargs[tagString[mb:me]]=tagString[tmb:tme]
-            off=tme
-        elif match[PLAINEQQ] != (-1, -1):
-            mb, me=match[PLAINEQQ]
-            #print 'Got plaineqq <%s>' % tagString[mb:me]
-            tmb, tme=match[PLAINEQQVAL]
-            #print 'Got plaineqqval <%s>' % tagString[tmb:tme]
-            dictargs[tagString[mb:me]]=dequote(tagString[tmb:tme])
-            off=tme
-        elif match[QUOTONLY] != (-1, -1):
-            mb, me=match[QUOTONLY]
-            #print 'Got quotonly <%s>' % tagString[mb:me]
-            tupargs.append(dequote(tagString[mb:me]))
-            off=me
-        else:
-            raise DTLexicalError( msg = 'unknown text in tag', 
-                                 tagtext = tagString[off:off+10], 
-                                 lineno=getLineno(text, st) )
+        g=match.groupdict()
+        
+        tmp=g[WHITESPACE]
+        if tmp is not None:
+            off=match.end(WHITESPACE)
+            continue
+        
+        tmp=g[PLAIN]
+        if tmp is not None:
+            tupargs.append(tmp)
+            off=match.end(PLAIN)
+            continue
+        
+        tmp=g[PLAINEQ]
+        tmp2=g[PLAINEQVAL]
+        if tmp is not None:
+            assert tmp2 is not None
+            dictargs[tmp]=tmp2
+            off=match.end(PLAINEQVAL)
+            continue
+
+        tmp=g[PLAINEQQ]
+        tmp2=g[PLAINEQQVAL]
+        if tmp is not None:
+            assert tmp2 is not None
+            dictargs[tmp]=dequote(tmp2)
+            off=match.end(PLAINEQQVAL)
+            continue
+
+        tmp=g[QUOTONLY]
+        if tmp is not None:
+            tupargs.append(dequote(tmp))
+            off=match.end(QUOTONLY)
+            continue
+
+
+        raise DTLexicalError( msg = 'unknown text in tag', 
+                              tagtext = tagString[off:off+10], 
+                              lineno=getLineno(text, st) )
 
     return tagname, tupargs, dictargs
 
