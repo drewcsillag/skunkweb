@@ -1,3 +1,13 @@
+2003-07-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:spool:>}}): 
+	documented new feature of spool tag.
+
+	* SkunkWeb/Services/templating/SafeSpoolTag.py,
+	pylibs/DT/DTTags.py (SpoolTag): spool tag in DT 
+	now replaced by subclass in templating that can 
+	turn component comments to various levels.
+
 2003-06-19  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/configure.in: adding firebird to list of services.
