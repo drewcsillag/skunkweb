@@ -34,8 +34,6 @@ Requires: httpd
 %description mod_skunkweb
 A module for including the Skunkweb environment in the Apache web server.
 
-
-
 %changelog
 * Thu May 22 2003 Jacob Smullyan <smulloni@smullyan.org>
 - some revisions to layout
@@ -87,13 +85,13 @@ MODFILELIST=`pwd`/mod_skunkweb.files
 export MODFILELIST
 (
    cd SkunkWeb/mod_skunkweb
-   moddir=`apxs -q LIBEXECDIR`
+   moddir=`/usr/sbin/apxs -q LIBEXECDIR`
    mkdir -p "${RPM_BUILD_ROOT}/${moddir}"
    cp .libs/mod_skunkweb.so "${RPM_BUILD_ROOT}/${moddir}"
    echo "/${moddir}"/mod_skunkweb.so >>"$MODFILELIST"
 
    #  use conf.d?
-   confdir=`apxs -q SYSCONFDIR`
+   confdir=`/usr/sbin/apxs -q SYSCONFDIR`
    if [ -d "${confdir}".d ]
    then
       mkdir -p "${RPM_BUILD_ROOT}/${confdir}.d/"
