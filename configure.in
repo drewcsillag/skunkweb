@@ -35,61 +35,12 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
-dnl if [[ "$INSTALL" = "./install-sh -c" ]]
-dnl then
-dnl 	# Do not allow fallback to install-sh, we use -D option which it 
-dnl 	# doesn't support
-dnl 	AC_MSG_ERROR([GNU compatible install has to be installed on the system!])
-dnl fi
-dnl 
-dnl #
-dnl # Check that install is GNU
-dnl #
-dnl AC_MSG_CHECKING([install GNU compatibility])
-dnl if $INSTALL --version >/dev/null 2>&1
-dnl then
-dnl 	AC_MSG_RESULT([Ok])
-dnl else
-dnl 	# Do not allow fallback to install-sh, we use -D option which it 
-dnl 	# doesn't support
-dnl 	AC_MSG_ERROR([$INSTALL does not appear to be a GNU install!])
-dnl fi
-
 dnl # Make sure xargs is GNU xargs
-dnl AC_PATH_PROG(GMAKE,gmake)
-dnl 
-dnl if test -z $GMAKE
-dnl then
-dnl 	AC_MSG_CHECKING([make GNU compatibility])
-dnl 	if $MAKE --version >/dev/null 2>&1
-dnl 	then
-dnl 	    AC_MSG_RESULT([Ok])
-dnl 	else
-dnl 	    AC_MSG_ERROR([$MAKE does not appear to be a GNU make, and no gmake found!])
-dnl 	fi
-dnl fi
-
-# Make sure xargs is GNU xargs
 AC_PATH_PROG(XARGS,xargs)
 
 if test -z $XARGS
 then
     AC_MSG_ERROR([xargs program not found!])
-fi
-
-# Check xargs version
-AC_MSG_CHECKING([xargs GNU compatibility])
-if $XARGS --version >/dev/null 2>&1
-then
-    AC_MSG_RESULT([OK])
-else
-    if [[ `uname` = "SunOS" ]]
-    then
-        # Exception for the Sun, Sun's xargs is Ok
-        AC_MSG_RESULT([OK])
-    else
-        AC_MSG_ERROR([$XARGS does not appear to be GNU xargs])
-    fi
 fi
 
 AC_SUBST(WITH_SKUNKWEB)
@@ -140,22 +91,6 @@ else
     AC_MSG_ERROR([python interpreter should be version 2.1 or newer])
 fi
 
-dnl # Check syslog module
-dnl AC_MSG_CHECKING([python syslog module])
-dnl if $PYTHON <<\EOF 
-dnl import sys
-dnl try:
-dnl 	import syslog
-dnl except ImportError:
-dnl 	sys.exit ( 1 )
-dnl sys.exit(0)
-dnl EOF
-dnl then
-dnl 	AC_MSG_RESULT([OK])
-dnl else
-dnl 	AC_MSG_RESULT([WARNING: python is not compiled with syslog module support!])
-dnl fi
-
 # Check crypt module
 AC_MSG_CHECKING([python crypt module])
 if $PYTHON <<\EOF 
@@ -194,14 +129,14 @@ Get it at:
 ])
 fi
 
-# Check for location of bash
-AC_SUBST(BASH)
-AC_PATH_PROG(BASH,bash)
-
-if test -z $BASH
-then
-    AC_MSG_ERROR([bash (Bourne Again Shell) is not found!])
-fi
+dnl # Check for location of bash
+dnl AC_SUBST(BASH)
+dnl AC_PATH_PROG(BASH,bash)
+dnl 
+dnl if test -z $BASH
+dnl then
+dnl 	AC_MSG_ERROR([bash (Bourne Again Shell) is not found!])
+dnl fi
 
 AC_SUBST(OWNER)
 AC_ARG_WITH(user, 
@@ -214,57 +149,6 @@ AC_ARG_WITH(group,
 [  --with-group=group      Make Skunk installation owned by group], [
 	GROUP=$withval], [
 	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
-
-dnl ############################################################
-dnl # since the database interface modules are no longe shipped
-dnl # we don't need these tests
-dnl AC_SUBST(DCORACLE)
-dnl AC_ARG_WITH(dcoracle, 
-dnl [  --with-dcoracle         Install and build DCoracle ], [
-dnl 	    case $withval in
-dnl 	    no) DCORACLE=;;
-dnl 	    yes) DCORACLE=true;;
-dnl 	    *) DCORACLE=true;;
-dnl 	    esac], [
-dnl 	    DCORACLE=] )
-dnl 
-dnl AC_SUBST(MYSQL)
-dnl AC_ARG_WITH(mysql,
-dnl [  --with-mysql=DIR        Build MySQL support, and MySQL installed in DIR ], [
-dnl 	    MYSQL=$withval ], [
-dnl 	    MYSQL=] )
-dnl 
-dnl AC_SUBST(PGSQL)
-dnl AC_ARG_WITH(postgresql,
-dnl [  --with-postgresql=DIR   Build PostgreSQL support, PostgreSQL installed in DIR ], [
-dnl 	    PGSQL=$withval ], [
-dnl 	    PGSQL=] )
-
-dnl ----------------------------------------
-dnl no longre require mmlib
-dnl ----------------------------------------
-dnl AC_SUBST(MMLIB)
-dnl AC_SUBST(MMINC)
-dnl AC_ARG_WITH(mm,
-dnl [  --with-mm=DIR           Location of mm library], [MM=$withval], [MM=])
-dnl if test "" = "$MM"
-dnl then 
-dnl    AC_PATH_PROG(MM, mm-config)
-dnl else
-dnl    MM=$MM/bin/mm-config
-dnl fi
-dnl AC_MSG_CHECKING([mm library ok])
-dnl if test ! -x "$MM"
-dnl then
-dnl 	AC_MSG_ERROR([$MM not executable or doesn't exist!
-dnl 	is the mm libarary installed?  Available at:
-dnl 	    http://www.engelschall.com/sw/mm/])
-dnl else
-dnl 	AC_MSG_RESULT([Ok])
-dnl fi
-dnl MMLIB=`$MM --ldflags --libs`
-dnl MMINC=`$MM --cflags`
-dnl AC_MSG_RESULT([using $MMLIB and $MMINC])
 
 dnl Checks for library functions.
 
