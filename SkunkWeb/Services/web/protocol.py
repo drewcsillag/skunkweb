@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.9 2002/02/24 15:50:21 smulloni Exp $
+# $Id: protocol.py,v 1.10 2002/04/02 22:27:47 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -77,11 +77,20 @@ class HTTPConnection:
         self._output.write(s)
         
     def _initArgs(self, requestData):
-        oldstdin=sys.stdin
-        sys.stdin = cStringIO.StringIO(requestData['stdin'])
-        query = cgi.FieldStorage(environ = requestData['environ'])
-        sys.stdin = oldstdin
+        stdin = cStringIO.StringIO(requestData['stdin'])
+        env = requestData['environ']
+        query = cgi.FieldStorage(fp = stdin, environ = env,
+                                 keep_blank_values = 1)
         self.args=self._convertArgs(query)
+
+        #if POST, see if any GET args too
+        if env.get("REQUEST_METHOD") != 'POST':
+            return
+        environ = env.copy()
+        environ["REQUEST_METHOD"] = 'GET'
+        query = cgi.FieldStorage(fp = stdin, environ = environ,
+                                 keep_blank_values = 1)
+        self.args.update(self._convertArgs(query))
        
     def _convertArgs(self, query):
         d = {}
@@ -376,6 +385,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.10  2002/04/02 22:27:47  smulloni
+# fixed HTTPConnection.extract_args() bug.
+#
 # Revision 1.9  2002/02/24 15:50:21  smulloni
 # adding product wizard
 #
