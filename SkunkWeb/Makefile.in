@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.1.1.1 2001/08/05 14:59:30 drew_csillag Exp $
+# $Id: Makefile.in,v 1.2 2001/08/10 16:41:10 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -54,7 +54,7 @@ INSTALL		= @INSTALL@ -o $(owner) -g $(group)
 INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
 DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp index.html
-
+DEMO_DIRS=geeknews geeknews/dcomps
 
 default:	build
 
@@ -64,8 +64,9 @@ install:
 	$(INSTALL) -d $(sw_dir) $(services_dir) $(pid_dir) $(log_dir) \
 	$(docroot) $(cache)
 
+	$(INSTALL) -d $(skunklib)
 	for f in `find SkunkWeb -name "*.py"`; do \
-	    $(INSTALL_DATA) -D $$f $(skunklib)/$$f; \
+	    $(INSTALL_DATA) $$f $(skunklib)/$$f; \
 	done
 
 	$(INSTALL) -m0755 swpython.py $(skunk_bindir)/swpython
@@ -77,10 +78,12 @@ install:
 		echo 'preserving existing sw.conf';\
 		echo '****************************************';\
 	fi
-	$(INSTALL_DATA) -D sw.conf $(conf_dir)/sw.conf
-	$(INSTALL_DATA) -D ../pylibs/AE/mime.types $(conf_dir)/mime.types
+	$(INSTALL) -d $(conf_dir)
+	$(INSTALL_DATA) sw.conf $(conf_dir)/sw.conf
+	$(INSTALL_DATA) ../pylibs/AE/mime.types $(conf_dir)/mime.types
+	$(INSTALL) -d $(util_dir)
 	for f in cache_reaper.py vicache.py; do \
-	    $(INSTALL) -m0755 -D util/$$f $(util_dir)/$$f; \
+	    $(INSTALL) -m0755 util/$$f $(util_dir)/$$f; \
 	done
 
 	@#$(INSTALL_DATA) mod_skunkweb/modskunkweb_error.html --do in mod makefile
@@ -98,14 +101,17 @@ install:
 	then \
 	    $(INSTALL_DATA) sample_webdocs/index.html $(docroot)/index.html;\
 	    $(INSTALL_DATA) sample_webdocs/logo.comp $(docroot)/logo.comp;\
+	    $(INSTALL) -d $(docroot)/img; \
 	    for i in 0 1 2 3 4 5 6 7 8 9;\
 	    do \
-		$(INSTALL_DATA) -D sample_webdocs/img/skunklogo$$i.gif \
+		$(INSTALL_DATA) sample_webdocs/img/skunklogo$$i.gif \
                     $(docroot)/img/skunklogo$$i.gif ;\
 	    done ;\
+            for i in $(DEMO_DIRS); do \
+	        $(INSTALL) -d $(docroot)/demo/$$i; done;\
 	    for i in $(DEMO_FILES);\
 	    do \
-		$(INSTALL_DATA) -D sample_webdocs/demo/$$i $(docroot)/demo/$$i;\
+		$(INSTALL_DATA) sample_webdocs/demo/$$i $(docroot)/demo/$$i;\
 	    done ;\
 	fi
 
@@ -124,6 +130,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.2  2001/08/10 16:41:10  drew_csillag
+# now installs demo/index.html
+#
 # Revision 1.1.1.1  2001/08/05 14:59:30  drew_csillag
 # take 2 of import
 #

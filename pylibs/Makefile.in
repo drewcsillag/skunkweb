@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.35 2001/07/28 15:37:45 drew Exp $
+# $Id: Makefile.in,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -44,7 +44,7 @@ py_comps	= signal_plus skunklib uuid AE/cacheKey
 py_comps_makefiles = $(patsubst %,%/Makefile,$(py_comps))
 
 # Exclude dirs - exclude from wide file search. Use | to separate entries
-exclude_dirs	= "DCOracle/src"
+exclude_dirs	= "CVS"
 
 #
 # Who to install as and what modes to set
@@ -89,9 +89,14 @@ install:
 
 
 	@# Locate all the files that need installing and install them
-	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -name '*\.xml' -o -name '*\.gif' \) -print | egrep -v $(exclude_dirs)`; \
+	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -name '*\.xml' -o -name '*\.gif' -o -type d \) -print | egrep -v $(exclude_dirs) | sort`; \
 	do \
-	    $(INSTALL_DATA) -D $${file} $(pylibs_dir)/$${file}; \
+	    if [ -d $${file} ]; \
+	    then \
+	        $(INSTALL) -d $(pylibs_dir)/$${file};\
+	    else \
+	    $(INSTALL_DATA) $${file} $(pylibs_dir)/$${file}; \
+            fi; \
 	done
 
 	@#Install skunkdoc and skunkdoc2html in bin without .py extension

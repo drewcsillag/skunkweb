@@ -35,25 +35,25 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
-if [[ "$INSTALL" = "./install-sh -c" ]]
-then
-    # Do not allow fallback to install-sh, we use -D option which it 
-    # doesn't support
-    AC_MSG_ERROR([GNU compatible install has to be installed on the system!])
-fi
-
-#
-# Check that install is GNU
-#
-AC_MSG_CHECKING([install GNU compatibility])
-if $INSTALL --version >/dev/null 2>&1
-then
-    AC_MSG_RESULT([Ok])
-else
-    # Do not allow fallback to install-sh, we use -D option which it 
-    # doesn't support
-    AC_MSG_ERROR([$INSTALL does not appear to be a GNU install!])
-fi
+dnl if [[ "$INSTALL" = "./install-sh -c" ]]
+dnl then
+dnl 	# Do not allow fallback to install-sh, we use -D option which it 
+dnl 	# doesn't support
+dnl 	AC_MSG_ERROR([GNU compatible install has to be installed on the system!])
+dnl fi
+dnl 
+dnl #
+dnl # Check that install is GNU
+dnl #
+dnl AC_MSG_CHECKING([install GNU compatibility])
+dnl if $INSTALL --version >/dev/null 2>&1
+dnl then
+dnl 	AC_MSG_RESULT([Ok])
+dnl else
+dnl 	# Do not allow fallback to install-sh, we use -D option which it 
+dnl 	# doesn't support
+dnl 	AC_MSG_ERROR([$INSTALL does not appear to be a GNU install!])
+dnl fi
 
 dnl # Make sure xargs is GNU xargs
 dnl AC_PATH_PROG(GMAKE,gmake)

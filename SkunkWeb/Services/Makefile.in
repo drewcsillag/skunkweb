@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.7 2001/07/27 16:38:58 drew Exp $
+# $Id: Makefile.in,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
 # Time-stamp: <01/05/07 13:48:20 smulloni>
 ########################################################################
 
@@ -50,8 +50,9 @@ install:
 		if [ -f "$$i.py" ]; then \
 		$(INSTALL) -m0644 $$i.py $(services_dir)/$$i.py; \
 		else \
+		$(INSTALL) -d $(services_dir)/$$i; \
 		for j in `find $$i -name "*.py"`; do \
-		$(INSTALL_DATA) -D $$j $(services_dir)/$$j; \
+		$(INSTALL_DATA) $$j $(services_dir)/$$j; \
 		done \
 		fi \
 	done
@@ -76,6 +77,10 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/27 16:38:58  drew
 # made par.py an .in file
 #
