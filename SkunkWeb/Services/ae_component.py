@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ae_component.py,v 1.3 2002/07/11 22:57:00 smulloni Exp $
+# $Id: ae_component.py,v 1.4 2002/07/15 15:07:10 smulloni Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -50,7 +50,7 @@ def __initConfig():
     from SkunkWeb import Configuration, confvars
     # set our defaults from AE defaults
     Configuration.mergeDefaults(
-        documentRoot = "%s/docroot" % confvars.DEFAULT_DOCROOT,
+        documentRoot = confvars.DEFAULT_DOCROOT,
         compileCacheRoot = "%s/cache" % Configuration.SkunkRoot,
         componentCacheRoot = "%s/cache" % Configuration.SkunkRoot,
         failoverComponentCacheRoot = "%s/failoverCache" % Configuration.SkunkRoot,
@@ -177,6 +177,11 @@ __initHooks()
 
 ########################################################################
 # $Log: ae_component.py,v $
+# Revision 1.4  2002/07/15 15:07:10  smulloni
+# various changes: configuration (DOCROOT); new sw.conf directive (File);
+# less spurious debug messages from rewrite; more forgiving interface to
+# MsgCatalog.
+#
 # Revision 1.3  2002/07/11 22:57:00  smulloni
 # configure changes to support other layouts
 #
