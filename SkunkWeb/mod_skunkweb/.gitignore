@@ -1,1 +1,5 @@
 Makefile httpd_conf.stub
+.libs
+mod_skunkweb.la
+mod_skunkweb.slo
+
