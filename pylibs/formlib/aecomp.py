@@ -123,7 +123,8 @@ class ComponentValidator:
 class ComponentSubmitProcessor:
     def __init__(self, comp_path):
         self.comp_path=rectifyRelativeName(comp_path)
-    def __call__(self, **kwargs):
+    def __call__(self, form, **kwargs):
+        kwargs['form']=form
         res=callComponent(self.comp_path,
                           argDict=kwargs,
                           compType=DT_DATA,
