@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-12 12:47:36 drew> 
-#   $Id: TODO,v 1.6 2001/08/10 17:15:37 drew_csillag Exp $
+#   Time-stamp: <2001-08-13 14:44:37 drew> 
+#   $Id: TODO,v 1.7 2001/08/12 16:45:35 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -29,8 +29,6 @@ SkunkWeb 3.0
 
 Future stuff
 ------------------------------
-? build docs and include in dist as opposed to building during build
-  or distribute docs separately (as Python does)
 ? fix so templating will fully work properly (other svcs too (e.g. oracle)) 
   if web isn't there and remcompsvr is
 * fix devel doc -- remove config stuff, api only
@@ -38,9 +36,6 @@ Future stuff
 * separate pargen release
 * separate DT release
 * Patch to pydoc to allow it to handle STML
-* skunk manifesto
-* real PyDO doc
-* real static doc
 * profile, profile and profile some more.
 * a PSP (python server pages implementation) (I've got a really cheesy one,
   but I've got to imagine there's more to it than that).
@@ -73,7 +68,6 @@ Unknowns
 ------------------------------
 ? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
 ? add request data recording/playback extension
-? test Server framework by trying to implement remote debugging extension
 ? single submit library (use uuid lib probably)
 ? make precompiled .pars - or option to compile on server start? 
   - would be a good application of swpython
@@ -83,6 +77,7 @@ Unknowns
 
 Nopes
 ------------------------------
+N real static doc -- Python in a short-future will have static stuff
 N CookieEncoding stuff
     * Get the _Nonce for CookieEncoding into config, error if not in config
     * change _Nonce in CookieEncoding
@@ -99,9 +94,15 @@ N add a superteam service
 @ SkunkWeb operations and setup and hints (e.g. don't use clearCache unless
   the # of cached versions is small)
 @ update/convert to latex skunk_arch
+@ skunk manifesto -- that's the IPC 10 paper
 
 DONE
 ------------------------------
+X build docs and include in dist as opposed to building during build
+  or distribute docs separately (as Python does) - distribute separately
+X clean up configure.in
+X real PyDO doc
+X removed GNU xargs/find dependancy
 X Remove GNU Install dependancy
 X security audit on rcc code -- ok, I was paranoid.  It was way to easy to
   audit since there is beautifully not much there.
