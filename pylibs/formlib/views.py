@@ -42,7 +42,7 @@ class _requirable(object):
             try:
                 msg=self.required % d
             except TypeError:
-                msg="%(name)s is required but has no value" % d
+                msg="%(description)s is required but has no value" % d
             return [FormError(self, msg)]
 
 class ViewableField(_requirable, Field, Viewable):
@@ -605,6 +605,40 @@ class ViewableForm(Viewable, Form):
         elem.addElement('\n')
         return elem
 
+    def handleList(self, list, tr, table):
+        errTr = ecs.Tr()
+        ttlErr = 0
+        for fnm in list:
+            fld = self.fields[fnm]
+            # handle the errors display...these will always span two columns
+            numErrs = self.handleError(errTr, fld)
+            if not numErrs:
+                # if there were no errors, we need to add an empty TD for this field's error
+                errTr.addElement(ecs.Td().setAttribute('colspan', '2').addElement("&nbsp;"))
+            else:
+                # increment the total number of errors
+                ttlErr = ttlErr + numErrs
+                                 
+        if ttlErr:
+            table.addElement(errTr)
+        
+        # some rows may have less items than the max depth, in which case we should
+        # not span the remaining columns or a very ugly GUI is created
+        colspan = 0
+        lstLen = len(list)
+        if lstLen < self.maxDepth:
+            # note that there are 2 <td> cells for each item in any row
+            colspan = 2 * (self.maxDepth - lstLen)
+        
+        for idx in range(0, lstLen):
+            fnm = list[idx]
+            fld = self.fields[fnm]
+            if idx == lstLen - 1:
+                # if we are on the last column, add the colspan, else add no colspan
+                self.handleField(fld, tr, table, colspan, fromList=1)
+            else:
+                self.handleField(fld, tr, table, 0, fromList=1)
+                
 
     def handleField(self, f, tr, table, colspan=0, fromList=0):
         if not fromList:
@@ -647,30 +681,5 @@ class ViewableForm(Viewable, Form):
             tr.addElement(td)
         return numErrs    
 
-    def handleList(self, list, tr, table):
-        errTr = ecs.Tr()
-        for fnm in list:
-            fld = self.fields[fnm]
-            # handle the errors display...these will always span two columns
-            numErrs = self.handleError(errTr, fld)
 
-        if numErrs:
-            table.addElement(errTr)
-        
-        # some rows may have less items than the max depth, in which case we should
-        # not span the remaining columns or a very ugly GUI is created
-        colspan = 0
-        lstLen = len(list)
-        if lstLen < self.maxDepth:
-            # note that there are 2 <td> cells for each item in any row
-            colspan = 2 * (self.maxDepth - lstLen)
-        
-        for idx in range(0, lstLen):
-            fnm = list[idx]
-            fld = self.fields[fnm]
-            if idx == lstLen - 1:
-                # if we are on the last column, add the colspan, else add no colspan
-                self.handleField(fld, tr, table, colspan, fromList=1)
-            else:
-                self.handleField(fld, tr, table, 0, fromList=1)
             
