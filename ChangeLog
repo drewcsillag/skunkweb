@@ -1,3 +1,8 @@
+2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/scope.py: added "freeze" and "unfreeze" methods
+	that store the scoped values in self.__dict__ and clean them
+	out, respectively.
 
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 

@@ -1,5 +1,6 @@
 #  
-#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  Copyright (C) 2001-2003, Andrew T. Csillag <drew_csillag@geocities.com>,
+#                   Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -15,24 +16,50 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# an object that transforms itself depending on its environment.
-# $Id: scope.py,v 1.2 2001/09/04 19:12:57 smulloni Exp $
-# Time-stamp: <01/05/04 11:01:26 smulloni>
 ########################################################################
 
-"""
-This module used to be deprecated, because we though, incorrectly,
-that it was much slower than the C version (scopeable).  In fact,
-that was a profiling error; the C version was only very slightly faster,
-and after making a small optimization here, the Python version is now
-considerably faster than the C. 
-"""
+## This module used to be deprecated, because we though, incorrectly,
+## that it was much slower than the C version (scopeable).  In fact, that
+## was a profiling error; the C version was only very slightly faster,
+## and after making a small optimization here, the Python version is now
+## considerably faster than the C.
 
 import fnmatch
 import types
 import re
 
 class Scopeable:
+    """
+    a class for storing configuration data that needs to vary
+    according to some set of arbitrary conditions.
+
+    This is how it is used:
+
+    >> s=Scopeable()
+    >> s.mergeDefaults(foo=1, bar=2, spam=3, eggs=4)
+    >> m=SimpleStringMatcher('location',
+                            '/salad',
+                            {'foo' : 999,
+                             'bar' : 1111})
+    >> s.addScopeMatchers(m)
+    >> s.foo
+    1
+    >> s.bar
+    2
+    >> s.spam
+    3
+    >> s.scope({'location' : '/salad/caesar'})
+    >> s.foo
+    999
+    >> s.bar
+    1111
+    >> s.spam
+    3
+    >> s.trim()
+    >> s.foo
+    1
+    """
+    
     def __init__(self, dict={}):
         self.__dictList=[dict]
         self.matchers=[]
@@ -77,6 +104,27 @@ class Scopeable:
         dlCopy.reverse()
         map(nd.update, dlCopy)
         return nd
+
+    def freeze(self):
+        """
+        takes the current state of the object and
+        loads it into self.__dict__, storing
+        a copy of the original dict so it can
+        be unfrozen
+        """
+        # store copy of the original dict in the
+        # fridge
+        olddict=self.__dict__.copy()
+        self.__dict__.update(self.mash())
+        self.__dict__['__olddict__']=olddict
+
+    def unfreeze(self):
+        try:
+            olddict=self.__dict__['__olddict__']
+        except KeyError:
+            pass
+        else:
+            self.__dict__=olddict
     
     def update(self, dict):
         self.__dictList[-1].update(dict)
@@ -88,6 +136,8 @@ class Scopeable:
         return self.__dictList.pop()
 
     def trim(self):
+        # should this be automatic or not?
+        # self.unfreeze()
         del self.__dictList[:-1]    
 
     def mashSelf(self):
@@ -286,41 +336,5 @@ def test2(**kw):
 ##    del hostMatcher
 ##    del hostMatcher2    
 ##    del config
-
-
-########################################################################
-# $Log: scope.py,v $
-# Revision 1.2  2001/09/04 19:12:57  smulloni
-# integrated scopeable package into SkunkWeb.
-#
-# Revision 1.1.1.1  2001/08/05 15:00:26  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.7  2001/07/30 16:07:29  smulloni
-# made scope.Scopeable's "__matchers" field public: "matchers", and
-# fixed two references to it, in ae_component and pars services.
-#
-# Revision 1.6  2001/07/09 20:38:41  drew
-# added licence comments
-#
-# Revision 1.5  2001/05/04 18:38:53  smullyan
-# architectural overhaul, possibly a reductio ad absurdum of the current
-# config overlay technique.
-#
-# Revision 1.4  2001/05/03 16:15:00  smullyan
-# modifications for scoping.
-#
-# Revision 1.3  2001/05/01 23:03:40  smullyan
-# added support for name-based virtual hosts.
-#
-# Revision 1.2  2001/05/01 21:46:29  smullyan
-# introduced the use of scope.Scopeable to replace the the ConfigLoader.Config
-# object.
-#
-# Revision 1.1  2001/05/01 17:34:18  smullyan
-# slightly more general configuration object.
-#
-########################################################################
 
 
