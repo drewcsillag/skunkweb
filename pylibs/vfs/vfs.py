@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/04 21:25:08 smulloni>
+# Time-stamp: <02/02/06 01:58:47 smulloni>
 
 ########################################################################
 #  
@@ -79,7 +79,8 @@ def _movefile(fs, path, newpath, newfs):
                 newfs.remove(newpath)
             except: pass
         raise e
-                        
+
+
 
 class FS:
     """
@@ -154,12 +155,14 @@ class FS:
         st=self.ministat(path)
         return st[MST_SIZE]
 
+class ACQ_RAISE: pass
+
 class PathPropertyStore:
     """
     an interface for storing properties
     associated with paths
     """
-
+    
     def properties(self, path):
         """
         returns dictionary of properties
@@ -195,29 +198,48 @@ class PathPropertyStore:
         """
         raise NotImplementedError
 
-    def acquire(self, path, property, raise_on_failure=1):
+    def acquireWithAncestor(self,
+                            path,
+                            property,
+                            default=ACQ_RAISE,
+                            root='/'):
         """
-        look for a property associated with the
-        current path; if not found, walk the directory
-        tree up towards the the root until a property
-        with that name is found.  If no such property
-        is found, raise a KeyError unless raise_on_failure
-        is false.
+        looks for specified property up the directory tree starting at
+        path and ending at root.  If the property is found, return a
+        tuple consisting ofthe path where it was found and the value
+        of the property; otherwise, if the value of default is
+        ACQ_RAISE, raise a KeyError, and if not,return
+        (None, default)
         """
+        if not path.startswith(root):
+            raise ValueError, "root must be a subpath of path: path: %s, root: %s" % (path, root)
         if self.hasproperty(path, property):
-            return self.getproperty(path, property)
+            return (path, self.getproperty(path, property))
         else:
-            while 1:
-                path=os.path.dirname(os.path.normpath(path))
-                if self.hasproperty(path, property):
-                    return self.getproperty(path, property)
-                if path=='/':
-                    if raise_on_failure:
-                        raise KeyError, "property not found: %s" % property
-                    return None
-                
-    
+            if path==root:
+                if default is ACQ_RAISE:
+                    raise KeyError, "property not found: %s" % property
+                return (None, default)
+            path=os.path.dirname(os.path.normpath(path))
+            return self.acquireWithAncestor(path,
+                                            property,
+                                            default,
+                                            root)
+    def acquire(self,
+                path,
+                property,
+                default=ACQ_RAISE,
+                root='/'):
+        """
+        like acquireWithAncestor, but doesn't
+        return the path where the property was found
+        """
+        return self.acquireWithAncestor(path,
+                                        property,
+                                        default,
+                                        root)[1]
 
+    
 class LocalFS(FS):
 
     def __init__(self, root='/', followSymlinks=0):
@@ -422,6 +444,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.7  2002/02/06 07:04:20  smulloni
+# added PathPropertyStore.acquireWithAncestor().
+#
 # Revision 1.6  2002/02/05 03:18:17  smulloni
 # fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
 #

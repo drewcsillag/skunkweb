@@ -1,6 +1,7 @@
 2002-02-05  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/vfs/pickleProps.py: path property store that uses pickle files.
+	* pylibs/vfs/pickleProps.py: path property store that uses pickle 
+	files.
 
 	* pylibs/vfs/shelfProps.py (ShelfPathPropertyStore.properties):
 	removed haspath(), left in by mistake; switched from gdbm to
