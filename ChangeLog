@@ -1,3 +1,11 @@
+2003-03-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py: removed the CVS Log
+	information at the end of the file.
+
+	* SkunkWeb/Services/usertracking.py: a service for cookie-based
+	user tracking.
+
 2003-03-06  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/hooks.py: fix for Python 2.1 compatibility.
