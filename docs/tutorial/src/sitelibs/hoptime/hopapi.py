@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/02 23:53:22 smulloni> 
-# $Id$
+# Time-stamp: <02/10/06 00:22:57 smulloni> 
+# $Id: hopapi.py,v 1.1 2002/10/06 04:03:44 smulloni Exp $
 
 import PyDO
 import sys
@@ -17,7 +17,7 @@ def DEBUG(message):
 DEFAULT_CONNECTSTRING='pydo:postgresql:localhost:hoptime:postgres'
 
 # what you use within skunkweb itself (w/ the postgresql service)
-SK_CONNECTSTRING='pydo:postgresql:hoptime:cache'
+SW_CONNECTSTRING='pydo:postgresql:hoptime:cache'
 
 def initDB(connectstring=DEFAULT_CONNECTSTRING, verbose=0):
     """

@@ -25,19 +25,18 @@ if username and password:
 else:
   authorized= ""
   title= "Welcome to Hoptime"
-  vals=base64.encodestring(cPickle.dumps(CONNECTION.args), 1)
+  vals=base64.encodestring(cPickle.dumps(CONNECTION.args, 1))
 if authorized:
-    if vals:
-
-        CONNECTION.args =  cPickle.loads(base64.decodestring('\n'.join(vals.split('<BR>'))))
-        CONNECTION.remoteUser=username
-        CONNECTION.remotePassword=password
+  if vals:
+    CONNECTION.args =  cPickle.loads(base64.decodestring('\n'.join(vals.split('<BR>'))))
+    CONNECTION.remoteUser=username
+    CONNECTION.remotePassword=password
   raise "OK"
 else:
-  print AE.Component(login.comp,
-                     argDict={'vals' : vals,
-                              'action' : CONNECTION.uri,
-                              'title' : title},
-                     compType=DT.DT_REGULAR)
+  print AE.Component.callComponent('/comp/login.comp',
+                                   argDict={'vals' : vals,
+                                            'action' : CONNECTION.uri,
+                                            'title' : title},
+                                   compType=DT.DT_REGULAR)
 
 

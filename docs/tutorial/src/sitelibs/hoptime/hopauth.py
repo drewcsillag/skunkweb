@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/02 18:45:50 smulloni>
-# $Id$
+# Time-stamp: <02/10/06 00:35:29 smulloni>
+# $Id: auth.py,v 1.1 2002/10/06 04:03:44 smulloni Exp $
 
 """
 support for authenticating hoptime users
@@ -41,7 +41,7 @@ class CookieHoptimeAuth(A.CookieAuthBase,
     """
     def __init__(self, cookieName, nonce, extras, loginPage):
         A.CookieAuthBase.__init__(self, cookieName, nonce, extras)
-        HoptimeDBAuthBase.__init__(self)
+        #HoptimeDBAuthBase.__init__(self)
         A.RespAuthBase.__init__(self, loginPage)
 
 class SessionHoptimeAuth(HoptimeUserSessionBase,
@@ -52,5 +52,5 @@ class SessionHoptimeAuth(HoptimeUserSessionBase,
     """
     def __init__(self, usernameSlot, loginPage):
         HoptimeUserSessionBase.__init__(self, usernameSlot)
-        HoptimeDBAuthBase.__init__(self)
+        #HoptimeDBAuthBase.__init__(self)
         A.RespAuthBase.__init__(self, loginPage)
