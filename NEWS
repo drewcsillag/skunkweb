@@ -3,6 +3,12 @@ Changes in 3.4b4
 * better support for directory layout configuration options.
 * vfs filesystems have a new method, "find_path", for cascading
   filesystems.
+* new "cascade" component handler.
+* formlib improvements.
+* RPM spec.
+* spool tag has new option, "comments", that controls componentCommentLevel
+  within the spool.
+* firebird connection cache added.
 
 Changes in 3.4b3
 ========================================
