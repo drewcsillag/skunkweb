@@ -14,7 +14,7 @@ import sys
 import getopt
 
 def help():
-    print "Usage: %s [-n] [-h] [-s path] [-c path] " % sys.argv[0]
+    print "Usage: %s [-n] [-h] [-s path] [-c path] [files]" % sys.argv[0]
     print
     print "  -n, --no-debug         do not include *any* debug info in compiled form"
     print "  -h, --help             this screen"
@@ -24,6 +24,10 @@ def help():
     print "     --cache-root=path"
     print "  -d path,               use alternate document root"
     print "     --document-root=path"
+    print
+    print "The [files] argument is a space-delimited list of filenames "
+    print "relative to the docroot, e.g. /usr/l/skunk/docroot/vv/index.html"
+    print "would be passed as vv/index.html"
     sys.exit(1)
     
 try:
@@ -57,22 +61,37 @@ for (mt,ct),v in Executables.executableByTypes.items():
     exemap[mt]=v
 
 ldr=len(Configuration.documentRoot)
+
+def compile_thing(i):
+    mimetype=MimeTypes.getMimeType(i)
+
+    exe=exemap.get(mimetype)
+    if exe:
+        pathname = i# '%s/%s' % (rdn, i)
+        cache_file = Configuration.compileCacheRoot+"/"+pathname+"c"
+        print "deleting cache file", cache_file
+        try:
+            os.unlink(cache_file)
+	except os.error, x:
+	    print "non-fatal: unable to delete cache file:", x 
+
+        print "compiling %s" % pathname
+        try:
+            exe(pathname, Executables.DT_DATA, 0)
+        except:
+            print "compilation of %s failed" % pathname
+        if ndr:
+            try: os.makedirs('%s/%s' % (ndr, rdn))
+            except OSError: pass
+            open('%s/%s/%s' % (ndr, rdn, i), 'w').write('')
+
 def func(arg, dirname, fnames):
     rdn = dirname[ldr:]
     for i in fnames:
-        mimetype=MimeTypes.getMimeType(i)
+        compile_thing(rdn + "/" + i)
 
-        exe=exemap.get(mimetype)
-        if exe:
-            pathname = '%s/%s' % (rdn, i)
-            print "compiling %s" % pathname
-            try:
-                exe(pathname, Executables.DT_DATA, 0)
-            except:
-                print "compilation of %s failed" % pathname
-            if ndr:
-                try: os.makedirs('%s/%s' % (ndr, rdn))
-                except OSError: pass
-                open('%s/%s/%s' % (ndr, rdn, i), 'w').write('')
-
-os.path.walk(Configuration.documentRoot, func, None)
+if args:
+    for i in args:
+        compile_thing(i)
+else:
+    os.path.walk(Configuration.documentRoot, func, None)
