@@ -27,6 +27,7 @@ _driverConfig = {
     'mysql':       ('mysqlconn',  'PyDOMySQL'),
     'oracle':      ('oracleconn', 'PyDOOracle'),
     'postgresql':  ('postconn',   'PyDOPostgreSQL'),
+    'sapdb':       ('sapdbconn',  'PyDOsapdb'),
     }
 _loadedDrivers = {}
 
