@@ -1,4 +1,4 @@
-# -*- coding: <iso-8859-1> -*-
+# -*- coding: iso-8859-1 -*-
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
