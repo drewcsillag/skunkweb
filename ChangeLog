@@ -1,3 +1,8 @@
+2002-05-17  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/PyDO/PyDO.py (PyDO.static_getSQLWhere): fix for 
+	dealing with no results
+
 2002-05-15  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/auth/__init__.py: importing ERROR

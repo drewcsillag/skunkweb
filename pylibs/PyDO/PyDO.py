@@ -365,9 +365,10 @@ class PyDO(PyDOBase):
             sql=base
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
-        if not results:
+        if results and type(results)==types.ListType:
+            return map(self, results)
+        else:
             return []
-        return map(self, results)        
     
     def static_new(self, refetch = None, **kw):
         """create and return a new data class instance using the values in
