@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
 
-from form import Field, DomainField, Form
+from form import Field, DomainField, Form, FormError
 from containers import Set
 import ecs
 
@@ -34,8 +34,18 @@ class Viewable(object):
     def getView(self):
         raise NotImplementedError
 
+class _requirable(object):
+    def validate(self, form=None):
+        if self.required and not self.value:
+            d={'name' : self.name,
+               'description' : self.description}
+            try:
+                msg=self.required % d
+            except TypeError:
+                msg="%(name)s is required but has no value" % d
+            return [FormError(self, msg)]
 
-class ViewableField(Field, Viewable):
+class ViewableField(_requirable, Field, Viewable):
     def __init__(self,
                  name,
                  description=None,
@@ -47,13 +57,7 @@ class ViewableField(Field, Viewable):
         Field.__init__(self, name, description, default, multiple)
         Viewable.__init__(self, **view_attrs)
 
-
-    def validate(self, form=None):
-        if self.required and not self.value:
-            return {self:"%s is required but has no value" % (self.name)}
-        
-
-class ViewableDomainField(DomainField, Viewable):
+class ViewableDomainField(_requirable, DomainField, Viewable):
     def __init__(self,
                  name,
                  domain,
@@ -487,7 +491,8 @@ class ViewableForm(Viewable, Form):
 
     def generateLayout(self, fields):
         """\
-        Iterates over the given list of fields and generates a "layout" which is a listing of the names of fields listed
+        Iterates over the given list of fields and generates a "layout"
+        which is a listing of the names of fields listed
         in the order which they will appear on screen.
 
         Returns (layout, maxDepth, fields)
@@ -496,7 +501,8 @@ class ViewableForm(Viewable, Form):
         
         layout = a possibly nested list of field names
         maxDepth = the length of the longest sublist of fields
-        field = a flat [one-dimensional] list of the fields for the form, necessary for Form construction 
+        field = a flat [one-dimensional] list of the fields for the form,
+        necessary for Form construction 
         """
         maxDepth = 1 # the longest sublist of fields
         flds = []
@@ -528,10 +534,15 @@ class ViewableForm(Viewable, Form):
         elem.attributes.update(self.view_attrs)
         table=ecs.Table()
         table.addElement('\n')
-        top_level_error=self.errors.get(self)
-        if top_level_error:
-            em=ecs.Em(top_level_error).setAttribute('class', 'form_error')
-            tr=ecs.Tr().addElement(ecs.Td(em).setAttribute('colspan', str(2 * self.maxDepth)))
+        top_level_errors=self.errors.get(self)
+        if top_level_errors:
+            top_level_error='<br />'.join([x.errormsg for x \
+                                           in top_level_errors])
+            em=ecs.Em(top_level_error).setAttribute('class',
+                                                    'form_error')
+            tr=ecs.Tr().addElement(ecs.Td(em)\
+                                   .setAttribute('colspan',
+                                                 str(2 * self.maxDepth)))
             table.addElement(tr)
             table.addElement('\n')
         for tstFnm in self.layout:
@@ -552,7 +563,8 @@ class ViewableForm(Viewable, Form):
 
     def handleField(self, f, tr, table, colspan=0, fromList=0):
         if not fromList:
-            # if we are not coming from a list [aka handleList()], then this method must check for errors itself
+            # if we are not coming from a list [aka handleList()],
+            # then this method must check for errors itself
             errTr = ecs.Tr()
             numErr = self.handleError(errTr, f)
             if numErr:
@@ -580,8 +592,9 @@ class ViewableForm(Viewable, Form):
 
     def handleError(self, tr, fld):
         numErrs = 0
-        msg=self.errors.get(fld)
-        if msg:
+        msgs=self.errors.get(fld)
+        if msgs:
+            msg='<br />'.join([x.errormsg for x in msgs])
             numErrs = numErrs + 1
             em=ecs.Em(msg).setAttribute('class', 'form_error')
             td=ecs.Td(em).setAttribute('colspan', '2')
