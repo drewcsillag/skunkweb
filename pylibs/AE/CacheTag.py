@@ -8,7 +8,7 @@
 """
 Tag cache - description???
 """
-# $Id: CacheTag.py,v 1.2 2003/05/01 20:45:58 drew_csillag Exp $
+# $Id: CacheTag.py,v 1.3 2003/12/30 03:30:57 smulloni Exp $
 
 from CommonStuff import *
 from DT import DTExcept
@@ -35,10 +35,10 @@ class CacheTag(DTTag):
 	args=DTCompilerUtil.pyifyArgs(tag, args)
         tempsecs=DTCompilerUtil.getTempName()
         if args['until'] != None:
-            codeout.write(indent, '%s = __h.TimeUtil.convertUntil(%s)'
+            codeout.write(indent, '%s = __h.timeutil.convertUntil(%s)'
                           % (tempsecs, args['until']))
         elif args['duration'] != None:
-            codeout.write(indent, '%s = __h.TimeUtil.convertDuration(%s)' % 
+            codeout.write(indent, '%s = __h.timeutil.convertDuration(%s)' % 
                           (tempsecs, args['duration']))
         codeout.write(indent, '__expiration = %s' % tempsecs)
         ttupv=DTCompilerUtil.getTempName()

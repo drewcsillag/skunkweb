@@ -1,3 +1,8 @@
+2004-02-10  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/CacheTag.py (CacheTag.genCode): remove incorrect
+	generated code that referred to __h.TimeUtil.
+
 2004-02-05  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* SkunkWeb/SkunkWeb/Server.py (_aPrefixIn): typo fix that caused 
