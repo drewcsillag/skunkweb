@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/07/18 19:05:39 smulloni>
+# Time-stamp: <03/07/19 13:10:22 smulloni>
 ########################################################################
 
 import cPickle
@@ -25,3 +25,5 @@ class Store(SessionStore):
     def escapeSQLString(self, s):
         return _quote(s)
 
+
+PostgreSQLSessionStoreImpl=Store

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/07/18 18:57:52 smulloni>
+# Time-stamp: <03/07/19 13:10:05 smulloni>
 
 ########################################################################
 # a MySQL implementation
@@ -28,7 +28,7 @@ class Store(AbstractSQLSessionStore):
     def marshalTimeStamp(self, tstamp):
         return tstamp.ticks()
 
-
+MySQLSessionStoreImpl=Store
 
     
         

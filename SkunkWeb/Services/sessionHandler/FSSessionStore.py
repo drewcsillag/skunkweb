@@ -1,5 +1,5 @@
-# Time-stamp: <03/07/18 14:53:33 smulloni>
-# $Id: FSSessionStore.py,v 1.5 2003/07/18 18:28:26 smulloni Exp $
+# Time-stamp: <03/07/19 13:09:47 smulloni>
+# $Id: FSSessionStore.py,v 1.6 2003/07/18 19:56:18 smulloni Exp $
 #  Copyright (C) 2001, 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General
@@ -95,3 +95,5 @@ class Store(SessionStore):
         curtime=time.time()
         os.utime(self._picklepath, (curtime, curtime))
 
+
+FSSessionStoreImpl=Store
