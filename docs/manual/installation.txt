@@ -326,55 +326,6 @@ can be used within ``<Directory>``, ``<Location>`` and
 		SkunkWebExpose On
 		
 
-Running Apache With Other CGIs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-[TODO]
-
-
-swcgi
------
-
-The ``swcgi`` script (in ``<SKUNKWEB_DIR>/bin/swcgi``) is used to
-allow Apache (or possibly other web servers) to talk with SkunkWeb
-without using mod_skunkweb. This would be used specifically in cases
-where you're not allowed to install Apache modules, or things of that
-nature.
-
-A typical configuration would be to add the following to your httpd.conf::
-
-	ScriptAlias / <SKUNKWEB_DIR>/bin/swcgi/
-
-where ``<SKUNKWEB_DIR>`` is your SkunkWeb path. 
-
-You can place the ``swcgi`` script in another location, but it
-requires one module from the SkunkWeb distribution, namely the
-``SocketScience`` module, which is in the "pylibs" directory of the
-SkunkWeb distribution.
-
-To really use it though, you should check out the top of the script
-and edit it to suit your needs. There are two variables of particular
-note in the ``swcgi`` script:
-
-**connectInfo**
-
-	You specify the location of the the SkunkWeb server by
-	specifying a tuple as its value. For example, you can use one
-	of these::
-
-		connectInfo = ('localhost', 9888)
-		
-		#or
-		
-		connectInfo = ('/tmp/skunksock')
-		
-
-**TIMEOUT**
-	
-	This specifies how long the CGI script should wait to retrieve
-	a connection to the SkunkWeb server. The default is ``0``,
-	which means there is no timeout.
-
 
 Starting and Stopping The SkunkWeb Server
 =========================================
@@ -385,7 +336,7 @@ To start, stop and restart the SkunkWeb Server, you would use the
 The ``swmgr`` utility can take one of four arguments:
 
 **start**
-	
+
 	Starts the SkunkWeb server if it is not already running. If
 	there is a current SkunkWeb server running, you will see a
 	error traceback in the shell that you are using ``swmgr`` in,
