@@ -1,5 +1,5 @@
-# Time-stamp: <02/01/13 14:55:27 smulloni>
-# $Id$
+# Time-stamp: <02/02/20 19:03:59 smulloni>
+# $Id: __init__.py,v 1.4 2002/01/13 20:12:20 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -51,10 +51,10 @@ def initUser(connUser, connParams):
     The function can be called more than once.
     """
 
-    if _users.has_key(connUser):
-        raise SkunkStandardError, 'user %s already initialized!' % (connUser) 
-
-    _users[connUser] = connParams
+    if not _users.has_key(connUser):
+        #raise SkunkStandardError, 'user %s already initialized!' % (connUser) 
+        
+        _users[connUser] = connParams
 
 def cleanUser(connUser):
     """

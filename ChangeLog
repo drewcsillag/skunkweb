@@ -1,5 +1,10 @@
 2002-02-20  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/MySQL/__init__.py (initUser): now tolerate
+	calls to initUser on users who have already been initialized (the
+	call then has no effect).  This fixes a problem pointed out by
+	Spruce Weber with restarting the server.
+
 	* SkunkWeb/Services/product/__init__.py: autocreate
 	product directory.
 
