@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.18 2001/07/29 15:46:16 drew Exp $
+#$Id: Cache.py,v 1.1.1.1 2001/08/05 15:00:43 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -259,30 +259,10 @@ def _getCompileCache( name, srcModTime, version ):
 
 #### basically, some insurance that we don't escape a given root
 
-#stolen from python 2.0 and made python 1.5able
-def _normpath(path):
-    """Normalize path, eliminating double slashes, etc."""
-    if path == '':
-        return '.'
-    initial_slash = (path[0] == '/')
-    comps = string.split(path, '/')
-    new_comps = []
-    for comp in comps:
-        if comp in ('', '.'):
-            continue
-        if (comp != '..' or (not initial_slash and not new_comps) or 
-             (new_comps and new_comps[-1] == '..')):
-            new_comps.append(comp)
-        elif new_comps:
-            new_comps.pop()
-    comps = new_comps
-    path = string.join(comps,'/')
-    if initial_slash:
-        path = '/' + path
-    return path or '.'
+_normpath = os.path.normpath
 
 def _fixPath( root, path ):
-    return root + '/' + _normpath(path)
+    return '%s/%s' % (root, _normpath(path)) 
 
 ### The real disk access routines
 #set so we have a tempfile prefix specific to the pid, host, etc.
@@ -516,6 +496,10 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:43  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.18  2001/07/29 15:46:16  drew
 # altered memory caching so that the compileCacheRoot is part of the memory cache key
 #
