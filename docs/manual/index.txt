@@ -11,7 +11,6 @@ The SkunkWeb Manual
 .. contents:: Table Of Contents
 .. section-numbering::
 
-
 -------
 Preface
 -------

@@ -1,11 +1,13 @@
 RST2HTML=/usr/bin/docutils-html.py
 RST2LATEX=/usr/bin/docutils-rst2latex.py
 PDFLATEX=/usr/bin/pdflatex
+HTMLSTYLESHEET=style.css
+HTMLOPTS=-s --footnote-references=brackets
 
 FILES=ae_tut.txt config.txt extending.txt index.txt installation.txt preface.txt services.txt stmlref.txt
 
 manual.html: ${FILES}
-	${RST2HTML} index.txt manual.html
+	${RST2HTML} ${HTMLOPTS} --stylesheet=${HTMLSTYLESHEET} index.txt manual.html
 
 manual.tex: ${FILES}
 	${RST2LATEX} index.txt manual.tex

@@ -1,1 +1,457 @@
-.. how to install it
+.. -*-rst-*-
+
+
+Prerequisites
+=============
+
+SkunkWeb can be installed and used on any reasonable Unix-based system. SkunkWeb
+has been successfully built and installed on Solaris, Linux, FreeBSD, OpenBSD,
+HPUX 11 and Mac OS X. However, any UNIX system that supports the most recent
+versions of Python can probably support SkunkWeb.
+
+On Windows, SkunkWeb will only work under Cygwin, since Windows cannot fork
+multiple processes.  While it may be adequate for testing, Windows/Cygwin is not
+a supported platform for Skunkweb in production use.
+
+SkunkWeb has no particular hardware requirements per se.  Since it was developed
+specifically to scale well with multiple processors, if you have multiple
+processors available, they will be fully utilized.
+
+The software requirements are:
+
+- Python 2.2 or later.  (2.1 will probably work but is no longer supported.)
+- An ANSI C Compiler such as GNU gcc.
+
+In addition several other third-party Python modules will be used by
+SkunkWeb to enable additional functionality, if they are installed:
+
+- the ``crypt`` module. (Python usually has this built nowadays).
+
+- The Python Imaging Library (PIL), available at http://www.pythonware.com/.
+
+- mx.DateTime - This can be obtained at http://www.egenix.com/ in the
+  mx-basic distribution.  (Note: SkunkWeb versions prior to 3.4 required
+  this module; if you are using an earlier SkunkWeb release, SkunkWeb
+  will neither build nor start without it.)
+
+If you want to start SkunkWeb as a different user than will own the
+SkunkWeb processes, you will need to have ``sudo`` on your system.
+(You probably do, and if you don't, you should anyway.)
+
+In production environments, SkunkWeb is usually used with Apache (both
+the 1.3 and 2.0 branches) using the mod_skunkweb apache module.  If
+you want to do this, your Apache installation must have DSO
+support (configure it with the ``--enable-module=so`` flag). [#apache]_
+
+
+
+Obtaining the SkunkWeb Distribution
+===================================
+
+You can obtain the most recently cut version release of SkunkWeb at::
+
+    http://sourceforge.net/projects/skunkweb/
+
+and follow the "Download" link under "Latest File Releases."  
+
+If you are using an RPM-based Linux distribution, you may wish
+download and install the binary rpm or the source rpm.  If the rpm
+doesn't work for you due to differently packaged dependencies, you can
+try building the source rpm.
+
+It is at least as simple, however, to  install from source, which
+gives you the most flexibility in terms of layout and configuration in
+any case.  To do so, download the source tarball and untar it with
+this command in your shell:: 
+
+    tar -xzvf skunkweb-X.X.tar.gz
+
+where X.X is the version of SkunkWeb you downloaded.
+
+You can also get the latest CVS version by typing these two commands into your shell::
+
+    cvs -d:pserver:anonymous@cvs.skunkweb.sourceforge.net:/cvsroot/skunkweb login
+    cvs -z3 -d:pserver:anonymous@cvs.skunkweb.sourceforge.net:/cvsroot/skunkweb co skunkweb
+
+When prompted for your password to log into the CVS server, just hit
+return.  This will create a directory in your current working
+directory called "skunkweb".
+
+Building It
+===========
+
+SkunkWeb is built with the traditional Unix autoconf/make toolchain, so
+installing it follows the general pattern::
+
+    cd <SKUNKWEB_DIST>/
+    ./configure <options>
+    make
+    make install
+
+where ``<SKUNKWEB_DIST>`` is the name of the folder containing the SkunkWeb
+distribution.  
+
+There are a number of configuration options available when using the
+"configure" script to customize your installation, and you almost
+certainly will need to use some of them:
+
+--with-python=path
+
+	Use this switch if you would like to use your custom
+	installation of Python. The default is whatever it finds in
+	the PYTHONPATH environment variable.
+
+--with-user=username
+
+	You can use this switch to install the SkunkWeb software under
+	a different username, other than the one you are currently
+	logged into.
+
+--with-group=group
+
+	You can specify a specific UNIX group that SkunkWeb can be
+	installed under.
+
+--with-webdoc
+
+	SkunkWeb comes with sample content to demonstrate how to use
+	the SkunkWeb software. The default is "yes".
+
+--with-sudo=path
+
+	Specify the path to a custom installation of sudo.
+
+--without-mod_skunkweb
+
+	mod_skunkweb is built by default, but this switch prevents that.
+
+--with-apxs=path
+
+	This specifies the path to a custom installation of apxs, a
+	tool for building Apache DSO modules.  If not specified, 
+	the first apxs found on your PATH will be used.
+
+--prefix=path
+
+	The default installation path is /usr/local/skunk. Use this
+	switch to specify a different installation path.
+
+Other standard configure parameters (e.g., --bindir, --libdir, and
+--localstatedir) for determining installation directories are also honored.
+
+If you are installing a server for development purposes or for
+testing, the easiest approach is to install it in your home directory,
+without mod_skunkweb::
+
+  ./configure --prefix=$HOME/skunk --without-mod_skunkweb
+
+If you want a system-wide install with skunkweb in /usr/local, with
+mod_skunkweb and skunk configured to run as nobody.nogroup::
+
+  ./configure --with-apxs=/usr/local/apache/bin/apxs \
+              --with-user=nobody \
+              --with-group=nogroup 
+
+And, for a more florid example, if you want to install on Linux in a manner more
+or less consistent with the `Filesystem Hierarchy Standard`_, here's how::
+
+  ./configure --with-user=skunkweb \
+              --with-group=skunkweb \
+	      --localstatedir=/var \
+	      --bindir=/usr/bin \
+	      --libdir=/usr/lib/skunkweb \
+	      --sysconfdir=/etc/skunkweb \
+	      --prefix=/usr/share/skunkweb \
+	      --with-cache=/var/lib/skunkweb/cache \
+	      --with-docdir=/usr/share/doc/skunkweb \
+	      --with-logdir=/var/log/skunkweb \
+	      --with-python=/usr/sbin/python2.3 \
+	      --with-apxs=/usr/sbin/apxs
+
+(This is basically what the RPM spec does.)
+
+.. _Filesystem Hierarchy Standard: http://www.pathname.com/fhs/
+
+For the purposes of this manual, we will assume that skunkweb has been
+installed in its own directory tree.
+
+When the installation is complete, it is suggested (mainly for
+production environments) to use ``cron`` to load up the cache
+reaper. The cache reaper is a script that deletes expired caches
+periodically, as the cache will tend to build up over time. Add this
+to your ``crontab``::
+
+	0 0 * * * <SKUNKWEB_DIR>/util/cache_reaper.py 
+
+Testing Your Installation
+=========================
+
+To ensure things are working smoothly, you need to check if the
+installation was completely successful. By default, SkunkWeb will start
+an http server on port 8080.  If that port isn't otherwise in use [#httpdPort]_,
+start skunkweb as follows::
+
+    <SKUNKWEB_DIR>/bin/swmgr start
+	
+You should see the reassuring message::
+
+    Starting SkunkWeb...
+    SkunkWeb started.
+
+If so, then you can proceed to your web browser to see the SkunkWeb demo::
+
+    http://localhost:8080/
+	
+If you get back an appropriate response with the Skunk logo, then you
+have successfully installed SkunkWeb. 
+
+
+
+Using SkunkWeb and Apache
+=========================
+
+mod_skunkweb
+------------
+
+If you have installed mod_skunkweb along with SkunkWeb, you will need
+to edit your httpd.conf file in order to use it. You can use the
+sample httpd.conf file in the directory
+``<SKUNKWEB_DIST>/mod_skunkweb/httpd_conf.stub``. 
+
+SkunkWeb uses the ``aecgi`` service to communicate using the "aecgi"
+protocol used by mod_skunkweb (and also by the remote service). In
+order to use mod_skunkweb, "aecgi" must be in the list of services
+enabled in ``sw.conf``.  (It is enabled by default.)  By default,
+SkunkWeb listens to requests from mod_skunkweb on port 9888. This can
+be changed by using the ``AecgiListenPorts`` parameter in ``sw.conf``;
+both TCP and UNIX sockets can be used.
+
+Below is a list of directives to place into your httpd.conf file. Each
+can be used within ``<Directory>``, ``<Location>`` and
+``<VirtualHost>`` directives.
+
+**LoadModule skunkweb_module <APACHE_MODULES_DIR>/mod_skunkweb.so**
+	This is a standard Apache directive that loads mod_skunkweb at
+	startup of the server. You would put the path of your modules
+	directory in place of ``<APACHE_MODULES_DIR>`` above.
+
+
+**SetHandler skunkweb-handler**
+	This Apache directive is used to set up a handler for
+	requests. For example, if you want the server to send requests
+	to the SkunkWeb server for every request it receives, you
+	would use something like this in httpd.conf::
+
+		<Location />
+			SetHandler skunkweb-handler
+		</Location>
+		
+
+**SkunkWebSocketAddress**
+	This directive allows you to specify where the SkunkWeb server
+	is accessible. You can either use Unix domain sockets for this
+	or TCP sockets. If you are going to use TCP sockets, something
+	like this would work, where the SkunkWeb server is on the same
+	server as Apache::
+
+		SkunkWebSocketAddress localhost:9888
+		
+	SkunkWeb initially is setup, by default, to bind to port 9888,
+	as specified in the ``AecgiListenPorts`` configuration
+	parameter in ``sw.conf``. More information about this
+	configuration parameter is available in the *Configuration >
+	Server Options > Parameters of the *SkunkWeb Parameters* chapter
+	in this manual.
+
+
+**SkunkWebRetries**
+	This directive specifies how many retries Apache should try if
+	it is having problems connecting to the SkunkWeb server. It
+	will try to connect to another SkunkWeb server if one is
+	specified in ``SkunkWebFailoverHosts``. For example, if you
+	want Apache to retry three times, you would do something like
+	this::
+
+		SkunkWebRetries 3
+		
+
+**SkunkWebFailoverHosts**
+	In the event the main SkunkWeb server (specified in
+	``SkunkWebSocketAddress``) is down, the server should try to
+	connect to one of the randomly picked hosts in the list of
+	hosts specified in this directive. You can specify either UNIX
+	domain sockets or TCP sockets. For example::
+
+		SkunkWebFailoverHosts unixsocketaddr otherhost:port
+		
+		
+**SkunkWebConnectTimeout**
+
+        This directive specifies the number of milliseconds that
+        Apache should wait before trying another server specified in
+        ``SkunkWebFailoverHosts``. The default is 1000 (which equals
+        one second). For example::
+
+		SkunkWebConnectTimeout 1000
+	
+		
+**SkunkWebErrorDoc**
+	
+	If the SkunkWeb server is inaccessible to Apache, then the
+	file specified in this directive will be accessed to be served
+	to the user. The path is an absolute path from the root of the
+	directory tree. For example, you can use something like this::
+
+		SkunkWebErrorDoc /usr/local/apache/htdocs/skunkweb_error.html
+		
+
+**SkunkWebErrorEmails**
+	
+	This directive specifies a list of e-mail addresses that
+	mod_skunkweb should send e-mails to. The e-mails contain
+	information about errors that have occurred in
+	mod_skunkweb. Each e-mail address is space-separated. For
+	example::
+
+		SkunkWebErrorEmails brian@localhost brian@example.com
+		
+		
+**SkunkWebExpose**
+	
+	This directive includes SkunkWeb information in the Server
+	header of Apache. (Great way to plug SkunkWeb when the header
+	is seen, like on Netcraft!!!) The default is ``On``. For
+	example::
+
+		SkunkWebExpose On
+		
+
+Running Apache With Other CGIs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[TODO]
+
+
+swcgi
+-----
+
+The ``swcgi`` script (in ``<SKUNKWEB_DIR>/bin/swcgi``) is used to
+allow Apache (or possibly other web servers) to talk with SkunkWeb
+without using mod_skunkweb. This would be used specifically in cases
+where you're not allowed to install Apache modules, or things of that
+nature.
+
+A typical configuration would be to add the following to your httpd.conf::
+
+	ScriptAlias / <SKUNKWEB_DIR>/bin/swcgi/
+
+where ``<SKUNKWEB_DIR>`` is your SkunkWeb path. 
+
+You can place the ``swcgi`` script in another location, but it
+requires one module from the SkunkWeb distribution, namely the
+``SocketScience`` module, which is in the "pylibs" directory of the
+SkunkWeb distribution.
+
+To really use it though, you should check out the top of the script
+and edit it to suit your needs. There are two variables of particular
+note in the ``swcgi`` script:
+
+**connectInfo**
+
+	You specify the location of the the SkunkWeb server by
+	specifying a tuple as its value. For example, you can use one
+	of these::
+
+		connectInfo = ('localhost', 9888)
+		
+		#or
+		
+		connectInfo = ('/tmp/skunksock')
+		
+
+**TIMEOUT**
+	
+	This specifies how long the CGI script should wait to retrieve
+	a connection to the SkunkWeb server. The default is ``0``,
+	which means there is no timeout.
+
+
+Starting and Stopping The SkunkWeb Server
+=========================================
+
+To start, stop and restart the SkunkWeb Server, you would use the
+``swmgr`` utility, which is in ``<SKUNKWEB_DIR>/bin``.
+
+The ``swmgr`` utility can take one of four arguments:
+
+**start**
+	
+	Starts the SkunkWeb server if it is not already running. If
+	there is a current SkunkWeb server running, you will see a
+	error traceback in the shell that you are using ``swmgr`` in,
+	which will say at the end of the traceback "Address already in
+	use." (Meaning that a SkunkWeb Server instance has already
+	bound to its default port, specifically, ``9888``)
+
+**restart**
+	
+	This restarts a currently running SkunkWeb server. If the
+	server is not running, you will get an error and traceback
+	saying "SkunkWeb pidfile missing. Aborting ..." For those who
+	live on the edge, and want a faster retart, you can use the -f
+	flag with restart. This does not check for the existence of
+	the pidfile. (This is new of version 3.4.)
+
+**stop**
+	
+	This stops a running SkunkWeb server. Same thing happens like
+	in restart if a SkunkWeb server process is not running. The 
+	``-f`` switch can be used with this option, just like in the 
+	``restart`` option.
+	
+**-r**
+
+	This flag allows one to start SkunkWeb up as root so it can
+	bind to a low port.
+
+**configtest**
+
+	This starts up swpython to verify that the configuration is
+	syntactically correct.
+
+
+.. FOOTNOTES
+	
+.. [#apache] If you find that Apache is not serving an index page from
+   SkunkWeb, another Apache module, either ``mod_dir`` or
+   ``mod_autoindex``, may be taking precedence over mod_skunkweb in
+   serving the request. If you don't need them for other purposes, one
+   workaround is to configure Apache with these switches:
+
+		--disable-module=dir
+		--disable-module=autoindex
+		
+   If you need these modules in your Apache installation, you can work
+   around this issue should it arise by adding an dummy index document
+   to the root of the Apache document root in effect where
+   ``mod_skunkweb`` is the handler).
+
+
+.. [#httpdPort] If you are already using port 8080, you'll get a nasty exception when
+   you try to start the server, along the lines of::
+    
+       socket.error: (98, 'Address already in use')
+       SkunkWeb startup failed. Check error log.
+   
+   To get SkunkWeb to use a different port that you know isn't in use
+   you need to edit ``<SKUNKWEB_DIR>/etc/sw.conf``.  Let's say you want it 
+   to run on port 9999, only on the IP 192.168.1.199.  Find the line
+   that reads::
+
+      HTTPListenPorts=['TCP::8080']
+     
+   and change it to::
+
+      HTTPListenPorts=['TCP:192.168.1.199:9999']     
+
+   Then try restarting SkunkWeb, amd point your browser to http://192.168.1.199:9999/.
