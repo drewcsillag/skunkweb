@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.15 2003/04/19 14:19:35 smulloni Exp $
+#$Id: Cache.py,v 1.16 2003/05/01 20:45:58 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -28,6 +28,7 @@ import MsgCatalog
 import cfg
 import vfs
 import Component
+from DT import DTCompilerUtil
 
 PYCODE_CACHEFILE_VERSION = 1
 DT_CACHEFILE_VERSION = 1
@@ -54,7 +55,7 @@ Configuration.mergeDefaults(
     fgrepCommand = '/bin/fgrep',
     runOutOfCache = 0,
     dontCacheSource = 0,
-    
+    noTagDebug = 0,    
 )
 #/config
 
@@ -138,8 +139,20 @@ def getPythonCode( name, srcModTime ):
                               PYCODE_CACHEFILE_VERSION)
 
 #stuff to get DTs from cache
+def dt_no_tag_debug(indent, codeout, tag):
+    """put some code to mark where we are in terms of execution"""
+    codeout.write(indent, '__d.CURRENT_TAG = ""')
+    codeout.write(indent, '__d.CURRENT_LINENO = %s' % repr(tag.filelineno()))
+
 def _dtCompileFunc( name, data ):
-    return DT.compileTemplate( data, name, tagRegistry )
+    if Configuration.noTagDebug:
+        otagdbg = DTCompilerUtil.tagDebug
+        DTCompilerUtil.tagDebug = dt_no_tag_debug
+        obj = DT.compileTemplate( data, name, tagRegistry )
+        DTCompilerUtil.tagDebug = otagdbg
+        return obj
+    else:
+        return DT.compileTemplate( data, name, tagRegistry )
 
 def _dtReconstituteFunc( data ):
     return apply( DT.DT, data )
@@ -521,6 +534,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.16  2003/05/01 20:45:58  drew_csillag
+# Changed license text
+#
 # Revision 1.15  2003/04/19 14:19:35  smulloni
 # changes for scopeable
 #

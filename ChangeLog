@@ -1,9 +1,19 @@
+2003-05-07    <drew@loki.sai-office>
+
+	* pylibs/AE/Cache.py (_dtCompileFunc): added noTagDebug option
+
 2003-05-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/jsutils.py: added simple module for marshalling
 	literal Python data into Javascript.
 
 2003-05-06    <drew@loki.sai-office>
+
+	* configure: regenerated
+
+	* configure.in: configure now stops if eGenix mxBase isn't installed
+
+	* docs/opman.xml, docs/opman.txt: removed, refers to skunk-2.70!
 
 	* docs/opman/opman.tex: added Frank's MailServices update and made
 	a few other changes.

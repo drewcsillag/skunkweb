@@ -13,7 +13,7 @@ Changes in 3.4 final
   have optional connection testing, as mysql has had for
   some time.
 * fixes for sapdb and unicode in PyDO.
-* new AE.Cache options, runOutOfCache and dontCacheSource.
+* new AE.Cache options, runOutOfCache, dontCacheSource and noTagDebug.
 * can be run in the foreground (for use with daemontools).
 * ported to HP/UX 11
 * the Configuration object has been reimplemented, in Python, 
@@ -57,6 +57,7 @@ Changes in 3.4 final
 * generates ETag headers (generateEtagHeader option)
 * optionally compress text/* mime bodies (textCompression option)
 * now supports HTTP byte range requests
+* now has a docroot precompiler
 
 Changes in 3.4b2
 ========================================
