@@ -1,4 +1,4 @@
-#!@BASH@
+#!@SHELL@
 # -*-sh-*-
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -11,7 +11,7 @@
 # This is the manager script for SkunkWeb, used for stopping,
 # starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.5 2003/04/03 17:51:25 smulloni Exp $
+# $Id: swmgr.in,v 1.6 2003/05/01 20:45:53 drew_csillag Exp $
 
 umask 002
 
@@ -146,7 +146,7 @@ case "$1" in
 	;;
   stop)
 	echo "Stopping SkunkWeb..."
-        if ! [ -z $FAST ]
+        if ! [ -z "$FAST" ]
         then
           PIDFILE=@localstatedir@/run/sw.pid
         else
@@ -172,7 +172,7 @@ case "$1" in
   restart)
         # Send the HUP signal
 	echo "Restarting SkunkWeb..."
-        if ! [ -z $FAST ]
+        if ! [ -z "$FAST" ]
         then
           PIDFILE=@localstatedir@/run/sw.pid
         else
