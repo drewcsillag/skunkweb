@@ -2,6 +2,8 @@
 
 	* pylibs/scope.py (Scopeable.pop): pop needs to check defaults 
 	as well as dictlist.
+	(Scopeable.currentScopes, Scopeable.trim): currentScopes() now
+	returns a copy, and trim() now empties out the current scopes.
 
 2003-04-20  Jacob Smullyan  <smulloni@smullyan.org>
 
