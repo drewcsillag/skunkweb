@@ -18,7 +18,10 @@
 import sys
 import MySQL
 from SkunkExcept import *
-import DateTime
+try:
+    from mx import DateTime
+except:
+    import DateTime
 
 # The connect params dictionary 
 _users = {}

@@ -17,7 +17,10 @@
 #   
 """A bunch of operations, based on the mxDateTime Date object"""
 # setup of module namespace
-import DateTime
+try:
+    from mx import DateTime
+except:
+    import DateTime
 import DateTime.ISO
 
 from Date import LocalDate, UTCDate, GMTDate

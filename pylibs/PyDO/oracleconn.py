@@ -17,7 +17,7 @@
 #   
 import types
 import Date
-import DateTime
+from Date import DateTime
 import string
 from PyDO import SYSDATE #circular import ok, since we're loaded after PyDO
 import DCOracle

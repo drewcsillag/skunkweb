@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Timezone.py,v 1.11 2001/07/27 16:17:19 drew Exp $
+# $Id: Timezone.py,v 1.1.1.1 2001/08/05 15:01:01 drew_csillag Exp $
 """
 This module provides "timezone" objects 
 which the Date module can use
@@ -105,8 +105,11 @@ Other Latin American timezones: all dates from Jan 1, 2000
 """
 
 import types
-from DateTime import DateTimeDelta, RelativeDateTime, utc2local, local2utc
-
+try:
+    from mx.DateTime import DateTimeDelta, RelativeDateTime, utc2local, local2utc, oneHour
+except:
+    from DateTime import DateTimeDelta, RelativeDateTime, utc2local, local2utc, oneHour
+    
 # "offset" handling functions
 #
 # offsets are the strings like "-0400" that are used
@@ -118,7 +121,7 @@ from DateTime import DateTimeDelta, RelativeDateTime, utc2local, local2utc
 
 
 import re
-from DateTime import oneHour
+#from DateTime import oneHour
 
 _offset_regex = re.compile(r'([+-]?)([01][0-9]|2[0-3])([0-5][0-9])')
 

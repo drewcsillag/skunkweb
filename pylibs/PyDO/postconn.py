@@ -31,7 +31,10 @@ field names should be in lower case!
 import types
 import string
 import PyDBI
-import DateTime
+try:
+    from mx import DateTime
+except:
+    import DateTime
 import pgdb
 
 

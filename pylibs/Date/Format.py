@@ -21,7 +21,10 @@ import types
 import time
 import string
 import re
-import DateTime
+try:
+    from mx import DateTime
+except:
+    import DateTime
 import Locales
 
 # _DateFormatter is a class whose instances produce

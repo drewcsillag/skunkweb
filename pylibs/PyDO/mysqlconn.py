@@ -17,7 +17,7 @@
 #   
 import types
 import Date
-import DateTime
+from Date import DateTime
 import string
 from MySQL import MySQL
 import PyDBI

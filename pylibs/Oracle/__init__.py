@@ -29,7 +29,7 @@ know the ordering of the columns in the result set -- they are exposed as a
 dictionary where the keys are the column names and the values are the result
 values.
 """
-# $Id: __init__.py,v 1.3 2001/07/27 16:07:40 drew Exp $
+# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:01:28 drew_csillag Exp $
 
 import sys
 import string
@@ -41,7 +41,11 @@ import DCOracle
 import Date.Format
 import Date.Date
 
-import DateTime
+try:
+    from mx import DateTime
+except:
+    import DateTime
+    
 dbiRaw, dbiDate = DCOracle.dbi.dbiRaw, DCOracle.dbi.dbiDate
 from SkunkExcept import *
 

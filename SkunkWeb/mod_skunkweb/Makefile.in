@@ -18,7 +18,7 @@
 #
 # The makefile for the mod_skunkweb module
 #
-# $Id: Makefile.in,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
+# $Id: Makefile.in,v 1.2 2001/08/12 16:44:35 drew_csillag Exp $
 
 # This is a useful script provided by apache to compile shared modules
 APXS=@APXS@
@@ -42,7 +42,7 @@ mod_skunkweb.so: mod_skunkweb.c
 
 install:	mod_skunkweb.so
 	$(APXS) -i mod_skunkweb.so
-	$(INSTALL_DATA) -d $(share_dir)
+	$(INSTALL) -d $(share_dir)
 	$(INSTALL_DATA) modskunkweb_error.html $(share_dir)/modskunkweb_error.html
 clean:
 	-rm -f mod_skunkweb.o mod_skunkweb.so *~ 

@@ -18,10 +18,14 @@
 """
 Tag date - description???
 """
-# $Id: DateTag.py,v 1.2 2001/07/09 20:38:41 drew Exp $
+# $Id: DateTag.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
 
 from CommonStuff import *
-import DateTime
+try: 
+    from mx import DateTime
+except:
+    import DateTime
+    
 from Date import TimeUtil
 import Date
 import types
