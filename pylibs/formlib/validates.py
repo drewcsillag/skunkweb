@@ -202,7 +202,7 @@ class InternationalAddressField(ViewableCompositeField):
         return errorlist    
                                 
 
-STATELIST = [
+STATE_LIST = [
             ('Alabama', 'AL'),
             ('Alaska', 'AK'),
             ('Arizona', 'AZ'),
