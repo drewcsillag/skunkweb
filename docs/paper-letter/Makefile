@@ -13,13 +13,13 @@ MKPDF=		$(MKHOWTO) --pdf
 
 
 # what's what
-MANDVIFILES=	devel.dvi stmlrefer.dvi
+MANDVIFILES=	stmlrefer.dvi opman.dvi PyDO.dvi
 HOWTODVIFILES=	
 
-MANPDFFILES=	devel.pdf stmlrefer.pdf
+MANPDFFILES=	stmlrefer.pdf opman.pdf PyDO.pdf
 HOWTOPDFFILES=	
 
-MANPSFILES=	devel.ps stmlrefer.ps
+MANPSFILES=	stmlrefer.ps opman.ps PyDO.ps
 HOWTOPSFILES=	
 
 DVIFILES=	$(MANDVIFILES) $(HOWTODVIFILES)
@@ -66,6 +66,13 @@ stmlrefer.dvi: ../stmlrefer/stmlrefer.tex
 
 stmlrefer.pdf: ../stmlrefer/stmlrefer.tex
 	$(MKPDF) ../stmlrefer/stmlrefer.tex
+
+PyDO.dvi: ../PyDO/PyDO.tex
+	$(MKDVI) ../PyDO/PyDO.tex
+
+PyDO.pdf: ../PyDO/PyDO.tex
+	$(MKPDF) ../PyDO/PyDO.tex
+
 
 # Python/C API Reference Manual
 #api.dvi: api.tex $(APIFILES)
