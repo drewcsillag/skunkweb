@@ -1,5 +1,5 @@
-# Time-stamp: <2002-07-10 13:49:26 acsillag>
-# $Id: __init__.py,v 1.6 2002/02/21 07:20:16 smulloni Exp $
+# Time-stamp: <03/04/22 22:34:02 smulloni>
+# $Id: __init__.py,v 1.8 2002/07/10 17:55:17 drew_csillag Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -37,12 +37,11 @@ connection_test = None
 # a reasonable test query
 def SimpleQueryTest(conn):
     try:
-        # poor man's assertion
-        not conn._db.closed or 1 / 0
-        conn.cursor().execute("select user();")
-        return 1
-    except:
+        conn.ping()
+    except MySQLdb.DatabaseError:
         return 0
+    else:
+        return 1
 
 def initUser(connUser, connParams):
     """
@@ -50,7 +49,6 @@ def initUser(connUser, connParams):
     to add a user and associate it with a connect string. 
     The function can be called more than once.
     """
-
     if not _users.has_key(connUser):
         _users[connUser] = connParams
 
@@ -60,7 +58,6 @@ def cleanUser(connUser):
     If there is no database connection open for connUser,
     a SkunkStandardError is thrown.
     """
-
     if not _users.has_key(connUser) :
         raise SkunkStandardError, 'user %s is not initialized' % (connUser)
 
@@ -75,11 +72,10 @@ def getConnection(connUser):
     connection for connUser, it returns it; otherwise,
     it creates a new connection, stores it, and returns it.
     """
-
-    if not _users.has_key(connUser):
+    try:
+        connectParams = _users[connUser]
+    except KeyError:
         raise SkunkStandardError, 'user %s is not initialized' % (connUser)
-
-    connectParams = _users[connUser]
     
     if not _connections.has_key(connUser):
         db = _connections[connUser] = _real_connect(connUser, connectParams)
@@ -87,16 +83,24 @@ def getConnection(connUser):
         db=_connections[connUser]
         # hook for testing the connection before returning it from the cache
         if connection_test and not connection_test(db):
+            # there is apparently a bug in some versions of MySQLdb
+            # that causes connections not to be closed properly
+            # when garbage collected.  This attempts to resolve that
+            # problem when possible.
+            try:
+                db.close()
+            except:
+                pass
+            # these next are redundant
             del db
-            db=_connections[connUser]=_real_connect(connUser, connectParams)
+            del _connections[connUser]
+            
+            db=_real_connect(connUser, connectParams)
+            _connections[connUser]=db
     return db
 
 def _real_connect(connUser, connParams):
-    #try:
-        return MySQLdb.connect(**connParams)
-    #except MySQLdb.MySQLError:
-    #    raise SkunkStandardError, ('cannot connect to MySQL: %s' % 
-    #              (sys.exc_info()[1],))
+    return MySQLdb.connect(**connParams)
     
 def _initStuff():
     #here so that these will be imported ahead of time so that

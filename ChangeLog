@@ -1,5 +1,8 @@
 2003-04-22  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/MySQL/__init__.py: cleanup of SimpleQueryTest, thanks to
+	bug reports and debugging by Spruce Weber and Frank Tegtmeyer.
+
 	* SkunkWeb/SkunkWeb/LogObj.py, pylibs/Logger.py: used the config
 	object more, now that accessing it is more affordable.
 
