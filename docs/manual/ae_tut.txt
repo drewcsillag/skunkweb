@@ -1,1 +1,340 @@
-.. main tutorial section goes here
+Introduction
+============
+
+This chapter introduces the SkunkWeb environment and using these tools for development with SkunkWeb.
+
+Basics
+======
+
+Out of the box, SkunkWeb comes with the ability to serve directly different types of source files with the extensions:
+
+- .py
+- .html
+- .stml
+- .txt
+
+If SkunkWeb finds a request in the URL for these types of files, it will execute them, if they set up to be executed, and then served to the user. By default, SkunkWeb is set up to execute two types of languages:
+
+- Python
+- STML
+
+More templating languages can be used within SkunkWeb; read the *Extending SkunkWeb* chapter for more information.
+
+With this knowledge, we can start with a simple Python example. Create a file called ``hello.py`` with this code::
+
+    print "Hello World!"
+
+and save the file in ``/usr/local/skunk/docroot``. Then go to your browser, and go to that page::
+
+    http://www.example.com:8080/hello.py
+
+On the browser screen, it will print, expectedly::
+
+    Hello World!
+
+To do this with an HTML page, you can create a file, calling it, let's say, "hello.html" and typing this::
+
+    Hello World!
+
+and the output to the browser would be the same as before.
+
+SkunkWeb, by default, is very unassuming about what is going to done with SkunkWeb. To those coming from PHP or Mason, for example, will find SkunkWeb to be a very familiar environment, since the same concepts apply.
+
+
+Components
+==========
+
+Components are the "includes" of SkunkWeb. However, there are a few different types of components, which reflect certain needs and features required by a developer. Here is a list of the component types:
+
+- Include components. These are basic components. You would use these, for example, to include common page elements or dynamically add specific parts of a page to the final output. There are two default types of includes, Python includes and STML includes, with the extensions:
+
+    a. .pyinc (For Python includes.)
+    b. .inc (For HTML and STML includes.)
+
+Include components *share* the namespace of the calling component. That means that if you define a variable::
+
+    a = 1
+
+and then try to print it in the include:
+
+    print a
+
+It will print ``1``, from the included page. This feature, though, does not work within Python functions; here, you would use a regular component instead.
+
+- Regular components. These are like include components, but with a few extra features. First, these type of components are *cachable*. This means that whatever output it generates will be cached, and SkunkWeb will continue to rely on the cached version until the cache expires. This is handy for components that take a little time to load but will not change for a long period of time.
+
+Regular components, unlike include components, do not share the calling page's namespace. In this case, you would have to pass variables into it so they will be recognized by the regular component.
+
+File extensions for regular components are:
+
+    a. .pycomp (For Python regular components)
+    b. .comp   (For HTML and STML components)
+
+- Data components. These type of components have similar features to regular components, but the final output is a single value. These can be viewed as "cachable functions", since the return value can be cached. This way, SkunkWeb does not have to execute the component until the cache expires. These can be useful for caching database results that take awhile to process.
+
+Just like regular components, data components do not share the namespace of the calling component.
+
+File extensions for data components are:
+
+    a. .pydcmp (For Python data components)
+    b. .dcmp   (For all other components)
+
+Top-level Documents
+-------------------
+
+Top-level documents are documents that are called from the URL. For example::
+
+    http://www.example.com/index.py
+
+the top-level document here is ``index.py``. The top-level document is just a regular component that is called when the request is made. Obviously, though, the regular component is not cached.
+
+Usage
+-----
+
+To start off, you need to import the ``AE`` library. This library contains all the component tools you will need. You would type on top of a component::
+
+    from AE.Component import *
+
+which will import the whole component library. There is a single function you would use to call components, namely ``callComponent()``.
+
+- Include Components. An include component would be called as such::
+
+       a = callComponent("my.pyinc", compType=DT_INCLUDE)
+
+The ``my.pyinc`` is the path to the file to include, and the ``compType=DT_INCLUDE`` is used to tell callComponent() what type of include it is.
+
+(Note: The "DT" in ``DT_INCLUDE`` stands for "Document Templates", which really comes from the ``DT`` library, which is the library for STML.)
+
+- Regular Components. An example::
+
+       a = callComponent("my.pycomp", argDict={'test': 1}, compType=DT_REGULAR)
+
+The two new things here is ``DT_REGULAR`` for the component type and ``argDict``. ``argDict`` is a dictionary of all the variables that are going to be sent to the component. In the above example, the component can then print ``test`` like so::
+
+    print test
+
+with the output being ``1``.
+
+- Data components. An example::
+
+        a = callComponent("my.pydcmp", argDict={'test': 1}, compType=DT_DATA)
+
+Just like the prior regular component example, but with the component type as ``DT_DATA``. In the actual component, it needs to raise an exception of type ``ReturnValue`` to return the specific value that is intended to be returned. An example::
+
+        raise ReturnValue, 'test'
+
+If that line is in the ``my.pydcmp`` file, the ``a`` variable would get a string ``test``.
+
+Caching
+-------
+
+As mentioned in the prior section, data and regular components are *cacheable*. This means that the data outputted from these will be stored in a cache directory that you specify.
+
+There is an extra parameter that you would use to activate the cache features in ``callComponent()``. The parameter is called ``cache`` and takes certain values that alter the behavior of how caching works.
+
+A sample call to a regular component::
+
+    callComponent("hello.pycomp", argDict={'a': 1}, cache=YES, compType=DT_REGULAR)
+
+
+The values that ``cache`` takes are defined in the ``AE.Component`` library. Below is a list of values and their meanings:
+
+    - ``NO``: do not use the cache; execute the component and return
+      the result, but do not save it. This is used by default.
+
+    - ``YES``: The component will be cached after execution. There
+      can be multiple caches of the same component when the
+      component is called with different dictionary values in the
+      ``argDict`` parameter.
+
+    - ``DEFER``: This is similar in function to ``YES`` caching.
+      However, if it finds a matching cache to the component call
+      that has expired, it will use that cache and then re-execute
+      the component after the calling request is complete.
+
+    - ``FORCE``: This forces a component to be executed and cached
+      regardless of whether an unexpired cache entry is available for
+      the call.
+
+    - ``OLD``: This is the opposite of ``FORCE``. It returns whatever
+      value is in the cache for a component call, regardless of
+      whether it has expired. The only time it will execute the
+      component is when there is no corresponding cache entry at all.
+
+When using the ``cache`` parameter set to anything other than NO
+(which is the default), there are restrictions placed on
+the sorts of arguments you can pass using the ``argDict`` parameter.
+In order to be able to store component output in a disk cache in such
+a way that it can be looked up later by component calls with the same
+signature (that is, the same component path and component arguments),
+the caching tools needs to be able to map component signatures to unique string
+representations, which are used as cache keys.  To do this, the cache tools must be
+able to create a hash value for each object.  Hashable objects (which is a little broader than the usual Python sense),
+are:
+
+    - Numbers, strings, dates and ``None``.
+
+    - Tuples (immutable sequences), provided that if and only if all
+      the items within the tuple are hashable.
+
+    - Lists and dictionaries are not hashable in the usual Python
+      sense. However, there is an exception here, as long as the
+      items within the sequences are either hashable or are lists or dictionaries. However,
+      the component should not change the information in the list or
+      dictionary. If it does change, it will only change *once*, but
+      it will not appear in the cache, which will be used after the
+      component is initially cached.
+
+    - ``mx.DateTime`` objects are not hashable in the usual Python
+      sense either, but you can get away with it here, since AE can
+      make them look like they are hashable.
+
+    - Any Python class you write *cannot* be used, *unless* you
+      implement a __hash__ or __cachekey__ method in the class.
+
+Cache Expiration
+----------------
+
+Along with specifying values for the ``cache`` parameter, an expiration time for the cache can be set in the component. You would place this value in the component itself. Below is a discussion of how you would form an appropriate value that represents when the component's cache should expire.
+
+You can set a default expiration time in the SkunkWeb configuration, using the ``defaultExpiryDuration`` parameter. By default it is set to 30 seconds, but this value can be modified, if necessary.
+
+ You can set the expiration time of a particular data or regular component by setting a variable called ``__expiration`` in the component itself. You need to specify how many seconds passed since the Unix epoch (12:00 AM 1/1/1970 UTC) when the component cache should expire.We can use the ``Date.TimeUtil`` module to produce an appropriate value.
+
+Below is an example of creating a cache expiration of five minutes for a particular component. The ``convertDuration()`` function can be used to specify our expiration::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertDuration("5m")
+
+Note the argument usage in this function. You specify the integer
+value and then a letter-identifier to express the amount the duration
+covers. Here is a list of values that can be used:
+
+*integer* **d**
+    Cache for integer number of days. 
+*integer* **h**
+    Cache for integer number of hours.
+*integer* **m**
+    Cache for integer number of minutes.
+*integer* **s**
+    Cache for integer number of seconds.
+    
+In STML, a component can use the <:cache:> tag to express duration::
+
+    <:cache duration=5m:>
+
+There is another function that can be used to express when the cache
+should expire. This is the ``Date.TimeUtil.convertUntil()``
+function. This can be also used in the STML ``<:cache:>`` tag, using
+the ``until`` parameter.
+
+The ``convertUntil()`` function can take a number of different
+parameter strings depending on the caching requirements of your
+particular component.
+
+- The function can take a string in the form ``"hh:mm"`` or
+  ``"hh:mm:ss"``. This specifies the hours and minutes (and optionally,
+  seconds) on the 24-hour clock. This tells AE to expire the cache until
+  the next occurence of that time. For example::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil("14:00")
+    
+  This component will expire everyday at 2 PM. If the component is first
+  cached at ``13:30``, or 1:30 PM, then the cache will be refreshed at 2
+  PM. If the component is first cached at ``15:00`` or 3 PM, then it
+  will expire 23 hours after the initial creation of the component
+  cache. You can also specify multiple times like such::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(("14:00", "23:00"))
+
+  In STML, the above will look like this::
+
+    <:cache until=`("14:00", "23:00")` :>
+
+  The cache here will expire at 2PM and at 11PM everyday.
+
+- The function can just take a minute string, in the form of
+  ``:mm``. The cache, when specified as such, will expire, every hour,
+  at the minute you specify. For example, if you want to expire at 15
+  past the hour, you can do this::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(":15")
+
+  In STML, it will look like this::
+
+    <:cache until=:15 :>
+
+  Multiple minutes can be expressed, by placing the time in a tuple::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil((":00", ":15", ":30", ":45"))
+
+  Every fifteen minutes, the cache will expire. This can be expressed in STML like this::
+
+    <:cache until=`(":00", ":15", ":30", ":45")`:>
+
+- You can use a ``DateTime`` object to represent the time when it
+  refreshes the cache. The date and time used can come from a database,
+  for example, where and when the data is properly marshaled as a
+  ``DateTime`` instance. [TODO: Example]
+
+- You can refresh the cache at a specific date and time, using the ISO
+  format ``"yyyy-mm-dd"``, ``"yyyy-mm-dd hh:mm"``, ``"yyyy-mm-dd
+  hh:mm:ss"`` or US format, ``"mm/dd/yyyy"``, ``"mm/dd/yyyy hh:mm"``,
+  ``"mm/dd/yyyy hh:mm:ss"``. So, if you have a specific component that
+  should expire once in its lifetime, you would do something like this:
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil("2003-08-01 07:00")
+
+  This will expire on August 1, 2003 at 7 AM. In STML, it would look like this::
+
+    <:cache until="2003-08-01 07:00":>
+
+  Again, you can specify multiple dates by putting the date strings into a tuple::
+
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(("2003-08-01 07:00", "2004-08-01 07:00"))
+
+  And in STML:
+
+    <:cache until=`("2003-08-01 07:00", "2004-08-01 07:00")`:>
+    
+- You can use a ``RelativeDateTime`` object from the ``DateTime``
+  module a a parameter. This allows you to specify a very detailed time,
+  like "expire every Sunday at noon." It is wise to read the
+  ``RelativeDateTime`` documentation fully, or else you might write
+  ``RelativeDateTime`` code that moves backwards in time. If this does
+  happen, an exception will be raised. If you wanted to do the above,
+  you can write this::
+
+    import Date.TimeUtil, DateTime.RelativeDateTime
+    __expiration = Date.TimeUtil.convertUntil(DateTime.RelativeDateTime(weekday=0, hour=12, minute=0, second=0))
+
+  In STML it would be::
+
+    <:cache until=`RelativeDateTime(weekday=0, hour=17, minute=0, second=0)`:>
+
+
+Every item above can be grouped together in tuples; different formats
+can also be that are mentioned above can be grouped together. This can
+allow you to make a complex cache control on your components. Here is
+an example in STML of what is meant by this::
+
+    # expires the cache at 0, 15, 30, and 45 minutes after the hour
+    <:cache until=`(":00", ":15", ":30", ":45")`:>
+
+    # expires the cache at 15 minutes after the hour,
+    # and also at 06:00 every day, and also
+    # at 5pm (17:00) on Sundays.
+    <:import DateTime "RelativeDateTime":>
+    <:cache until=`(":15", "06:00", 
+        RelativeDateTime(
+        weekday=0, hour=17,
+        minute=0, second=0))`:>
+
+Using Components In STML
+------------------------
