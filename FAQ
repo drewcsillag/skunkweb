@@ -154,3 +154,22 @@ Can you add a SkunkWeb-PHP comparison to your FAQ?
    supports two (Python and STML) and could support more (an ASP-style
    templating language comes to mind).
  
+5) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
+server or virtual host? SkunkWebExclude doesn't work!
+
+If you set the skunkweb-handler for the root directory / and want
+/cgi-bin/ to serve cgi's as normal (meaning most likely that you have
+the directive ScriptAlias /cgi-bin/ /usr/local/apache/cgi-bin/ , or
+something like it, in httpd.conf), one might think that using
+mod_skunkweb's SkunkWebExclude directive (thus: SkunkWebExclude
+/cgi-bin/) might work. Unfortunately, this configuration results in
+the cgis being handled by the default handler, which is nasty. This,
+however, does the trick:
+
+<Location />
+SetHandler skunkweb-handler
+</Location>
+<Location /cgi-bin/>
+SetHandler cgi-script
+</Location>
+
