@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/07/23 21:36:45 smulloni>
+# Time-stamp: <03/02/27 21:49:51 smulloni>
 
 ########################################################################
 #  
@@ -300,7 +300,7 @@ class LocalFS(FS):
 
     writeable=1
 
-    def __init__(self, root='/', followSymlinks=0):
+    def __init__(self, root='/', followSymlinks=1):
         self.root=root
         self.followSymlinks=followSymlinks
 
@@ -517,55 +517,3 @@ class MultiFS(FS):
         raise NotWriteableException, "cannot open file: %s with mode: %s" % (path, mode)
 
 
-########################################################################
-# $Log$
-# Revision 1.13  2002/07/24 01:53:26  smulloni
-# added FS method for finding extra path info
-#
-# Revision 1.12  2002/06/19 13:37:43  smulloni
-# some pychecker-inspired fixes.
-#
-# Revision 1.11  2002/02/22 20:56:07  smulloni
-# adding wizard.py, for the product wizard; adding fixes for product mount/documenRoot
-# scoping incompatibility.
-#
-# Revision 1.10  2002/02/21 18:47:16  smulloni
-# bug fix: had forgotten to compile a regex.
-#
-# Revision 1.9  2002/02/21 07:20:17  smulloni
-# numerous changes for product service and vfs, to support importing from the
-# latter.
-#
-# Revision 1.8  2002/02/19 17:17:49  smulloni
-# vfs improvements; documentation typo fix.
-#
-# Revision 1.7  2002/02/06 07:04:20  smulloni
-# added PathPropertyStore.acquireWithAncestor().
-#
-# Revision 1.6  2002/02/05 03:18:17  smulloni
-# fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
-#
-# Revision 1.5  2002/01/27 03:10:44  smulloni
-# moving in the direction of getting rid of Configuration.DocumentRoot!
-#
-# Revision 1.4  2002/01/02 06:39:24  smulloni
-# work on vfs
-#
-# Revision 1.3  2001/12/18 06:31:50  smulloni
-# added preliminary version of vfs.MultiFS.
-#
-# Revision 1.2  2001/12/02 20:57:50  smulloni
-# First fold of work done in September (!) on dev3_2 branch into trunk:
-# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
-# to templating's <:img:> tag.
-#
-# Revision 1.1.2.2  2001/10/16 03:27:15  smulloni
-# merged HEAD (basically 3.1.1) into dev3_2
-#
-# Revision 1.1.2.1  2001/09/27 03:36:07  smulloni
-# new pylibs, work on PyDO, code cleanup.
-#
-# Revision 1.1.2.1  2001/09/19 05:24:58  smulloni
-# adding vfs
-#
-########################################################################

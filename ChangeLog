@@ -1,3 +1,8 @@
+2003-02-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/vfs.py (LocalFS.__init__): make LocalFS follow
+	symlinks by default.
+
 2003-02-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/importer.py (ExtInPkgImporter.getmod): some
