@@ -32,7 +32,8 @@ HPUX 11 and Mac OS X. However, any UNIX system that supports the most recent
 versions of Python can probably support SkunkWeb.
 
 On Windows, SkunkWeb will only work under Cygwin, since Windows cannot fork
-multiple processes.
+multiple processes.  While it may be adequate for testing, Windows/Cygwin is not
+a supported platform for Skunkweb in production use.
 
 Hardware Requirements
 ---------------------
@@ -72,16 +73,24 @@ Optional Software:
 		cd /your/Apache/installation
 		./configure --enable-module=so
 	
-  If you run into some weirdness where Apache is not serving an
-  index page or the such from the SkunkWeb server, (which might
-  not happen really in most situations), it might be a good idea
-  to have these switches in when you configure Apache for
+  If you find that Apache is not serving an index page from SkunkWeb, another
+  Apache module is probably taking precedence over mod_skunkweb (see XXX).  If
+  you don't need them for other purposes, one workaround is to configure Apache 
+  with these switches:
   compilation::
 
 		--disable-module=dir
 		--disable-module=autoindex
 		
-		[TODO: Not clear]
+  Depending on your setup, the above modules might take
+  precedence over mod_skunkweb in the case where the request consists of a 
+  directory path that Apache can map to a real directory in its
+  own document root, and furthermore there is no index document
+  in that directory.  If you need mod_dir or mod_autoindex in your
+  Apache installation, you can work around this issue should it arise
+  by adding an index document (usually to the root of the document root
+  in effect where mod_skunkweb is the handler).  
+.. move this somewhere else
 		
  If you do plan to use Apache, it would be recommended that
  SkunkWeb run under the same user that Apache runs under. This
@@ -194,9 +203,8 @@ mod_skunkweb and skunk configured to run as nobody.nogroup::
               --with-user=nobody \
               --with-group=nogroup 
 
-And, for a more florid example, if you want to install on Linux in a
-manner consistent with the `Filesystem Hierarchy Standard`_, here's
-how::
+And, for a more florid example, if you want to install on Linux in a manner more
+or less consistent with the `Filesystem Hierarchy Standard`_, here's how::
 
   ./configure --with-user=skunkweb \
               --with-group=skunkweb \
@@ -244,8 +252,7 @@ to see the SkunkWeb demo::
 	http://localhost:8080/
 	
 If you get back an appropriate response, with the Skunk logo, then you
-have successfully installed SkunkWeb. You need to then breathe a sigh
-of relief.
+have successfully installed SkunkWeb.
 
 
 SkunkWeb HTTP Server
