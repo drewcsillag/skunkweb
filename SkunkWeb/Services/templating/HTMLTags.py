@@ -18,13 +18,12 @@
 """
 Assortment of HTML tags - description???
 """
-# $Id: HTMLTags.py,v 1.2 2001/08/10 17:35:32 drew_csillag Exp $
+# $Id: HTMLTags.py,v 1.3 2002/01/11 17:00:31 smulloni Exp $
 
 from AE.CommonStuff import *
 import SkunkExcept
 import UrlBuilder
 
-# curl is now url; get used to it
 class UrlTag(DTTag):
     def __init__(self, func = '__h.UrlBuilder.url' ):
         self.func = func
@@ -32,19 +31,26 @@ class UrlTag(DTTag):
 
     def genCode(self, indent, codeout, tagreg, tag):
         DTCompilerUtil.tagDebug(indent, codeout, tag)
-        args=DTUtil.tagCall(tag, [
-            ('path'), ('queryargs', {}),
-            ('text', 'None'), ('noescape', 'None')], kwcol = 'kw'  )
+        args=DTUtil.tagCall(tag,
+                            [('path'), ('queryargs', {}),
+                             ('text', 'None'),
+                             ('noescape', 'None'),
+                             ('abs', 'None')],
+                            kwcol = 'kw')
         args=DTCompilerUtil.pyifyArgs(tag, args)
         kw = DTCompilerUtil.pyifyKWArgs(tag, args['kw'])
 
-        # Ok, just call the templating curl function
-        codeout.write ( indent, '__h.OUTPUT.write ( '
-                '%s ( path = %s, queryargs = %s, text = %s, noescape = %s, '
-                'kwargs = %s ) )' % (self.func, args['path'],
-                args['queryargs'], args['text'], args['noescape'], kw ))
-
-        # Cool, huh?
+        # Ok, just call the templating url function
+        codeout.write(indent,
+                      '__h.OUTPUT.write('
+                      '%s ( path = %s, queryargs = %s, text = %s, noescape = %s, '
+                      'need_full=%s, kwargs = %s ) )' % (self.func,
+                                                         args['path'],
+                                                         args['queryargs'],
+                                                         args['text'],
+                                                         args['noescape'],
+                                                         args['abs'],
+                                                         kw ))
 
 
 class ImageTag(DTTag):

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: UrlBuilder.py,v 1.3 2002/05/09 19:10:46 drew_csillag Exp $
+# $Id: UrlBuilder.py,v 1.4 2002/07/12 14:35:29 drew_csillag Exp $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -61,14 +61,24 @@ def _genUrl ( path, query = {}, need_full = 0, noescape=None ):
     if query:
         path = path + skunklib.urlencode ( query )
 
-    # Ok, get the hostname - from config file 
     if need_full:
         if path[0] != '/':
             raise SkunkRuntimeError, \
                 'full url being generated with relative path: %s' % path
+        conn=AE.Component.componentStack[0].namespace['CONNECTION']
+        if conn.env.get('HTTPS')=='on':
+            scheme='https'
+        else:
+            scheme='http'
+        host=conn.requestHeaders.get('Host')
+        if not host:
+            host=conn.env.get('SERVER_NAME')
+            port=conn.env.get("SERVER_PORT")
+            if port:
+                if (scheme=='http' and not port=='80') or (scheme=='https' and not port=='443'):
+                    host='%s:%s' % (host, port)
+        url='%s://%s%s' % (scheme, host, path)
 
-        url = 'http://' + AE.Component.componentStack[0].namespace[
-            'CONNECTION'].requestHeaders['Host'] + path
     else:
         url = path
 
@@ -84,8 +94,9 @@ def _genKwArgs ( kwargs ):
 
     return ret
 
-def url ( path, queryargs, text = None, kwargs = {}, noescape = None, 
-           url = None ):
+def url (path, queryargs, text = None,
+         kwargs = {}, noescape = None, need_full=None,
+         url = None):
     """
     The url function we expose.
 
@@ -96,7 +107,7 @@ def url ( path, queryargs, text = None, kwargs = {}, noescape = None,
     If 'url' is given, it is used in place of path / query
     """
     if not url:
-         url = _genUrl(path, query = queryargs, noescape=noescape)
+         url = _genUrl(path, query = queryargs, noescape=noescape, need_full=need_full)
 
     # Generate the URL 
     if text is not None:
@@ -180,6 +191,10 @@ def hidden ( dict ):
 
 ########################################################################
 # $Log: UrlBuilder.py,v $
+# Revision 1.4  2002/07/12 14:35:29  drew_csillag
+# fixed so that PIL should no longer get hosed when userModuleCleanup is turned
+# on.
+#
 # Revision 1.3  2002/05/09 19:10:46  drew_csillag
 # now encodes key/value pairs where the value is None as "" instead of not putting in the hidden tag altogether
 #

@@ -1,3 +1,13 @@
+2002-10-25  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/templating/UrlBuilder.py (_genUrl): fixed url
+	generation so it handles "need_full" argument correctly; now
+	handles https and relies less on the presence of the Host request
+	header. 
+
+	* SkunkWeb/Services/templating/HTMLTags.py (UrlTag.genCode): added
+	new argument, "abs", which generates an absolute url when true.
+
 2002-10-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/static.py: made to work with Python 2.2.2.
