@@ -66,14 +66,7 @@ DOCSDIR=$withval], [
 DOCSDIR=])
 
 AC_SUBST(WITH_SKUNKWEB)
-AC_ARG_WITH(skunkweb, 
-[  --with-skunkweb         Install SkunkWeb as part of this installation (default yes)], [
-	case $withval in
-	no) WITH_SKUNKWEB=;;
-	yes) WITH_SKUNKWEB=SkunkWeb;;
-	*) WITH_SKUNKWEB=SkunkWeb;;
-	esac], [
-	WITH_SKUNKWEB=SkunkWeb])
+WITH_SKUNKWEB=SkunkWeb
 
 # look for python
 AC_MSG_CHECKING([--with-python given])
@@ -222,7 +215,7 @@ eval datadir=$datadir
 AC_CONFIG_SUBDIRS(SkunkWeb)
 
 AC_ADD_HELP([
-Additional options if building SkunkWeb:
+Additional options:
   --with-webdoc           Install some sample content
   --with-sudo=PATH        Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb

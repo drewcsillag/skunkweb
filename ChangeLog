@@ -1,5 +1,8 @@
 2003-07-19  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* configure.in, configure: removed silly --with-skunkweb option so
+	we don't need to document it.
+
 	* SkunkWeb/Services/sessionHandler/AECacheSessionStore.py: added
 	session store that uses the AE Cache.
 
