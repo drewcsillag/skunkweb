@@ -1,3 +1,12 @@
+2004-09-02  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* pylibs/AE/Cache.py (_fixPath): this has gone through various
+	incarnations, and the last one appears to be broken again. I think
+	this works.
+
+	* pylibs/DT/DT.py (DT.__call__): don't use locals() mutably for
+	store/unstore, use a dict.
+
 2004-07-28  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
 	* pylibs/AE/Component.py (ComponentStackFrame.__del__):

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.25 2004/01/15 18:20:06 smulloni Exp $
+#$Id: Cache.py,v 1.26 2004/04/05 21:11:08 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -284,16 +284,13 @@ def _getCompileCache(name, srcModTime, version):
         return 0, _readDocRoot(name), srcModTime 
 
 def _fixPath(root, path):
-    ## basically, some insurance that we don't escape a given root
-
-    # N.B.: the above comment used to be separated from the below line of code
-    # by several lines.  Then, in version 1.6 of this file, I moved
-    # normpath so it applied to the whole string rather than just the path.
-    # This resulted in it being possible to escape the document root.
-    # reverting to 1.5 version. -- js
-    # it turns out that 1.5 breaks some things, as there resulting path isn't
-    # normalized (it can have an extra slash)
-    return _normpath('%s/%s' % (root,_normpath(path)))
+    ## some insurance that we don't escape a given root
+    concat='%s/%s' % (root, path)
+    norm=_normpath(concat)
+    if norm < root:
+        # trying to escape root, return un-normpathed thing
+        return concat
+    return norm
 
 
 ### The real disk access routines

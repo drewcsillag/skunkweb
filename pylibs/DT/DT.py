@@ -131,14 +131,14 @@ class DT:
         """
 
         ns = local_ns
-
+        temp_ns={}
         if call_type == DT_INCLUDE:
             # Store somewhere parent's stuff
             # this failed when trying to do an include call
             # from a top-level python document; now be a little
             # more careful
             #__t, __h, __d = ns['__t'], ns['__h'], ns['__d']
-            self.__store_ns(ns, locals())
+            self.__store_ns(ns, temp_ns)
 
         # 
         # Add our stuff to local namespace
@@ -184,22 +184,13 @@ class DT:
             if call_type == DT_INCLUDE:
                 # Restore parent's stuff
                 #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
-                self.__unstore_ns(ns, locals())
+                self.__unstore_ns(ns, temp_ns)
 
         # Check the return value
         if call_type == DT_DATA:
              if not ns['__return_set']:
                  raise SkunkStandardError, \
                        'no <:return:> tag was found in a data component'
-
-        ## Cleanup the local namespace
-        #for k in ( '__t', '__h', '__d' ):
-        #    if ns.has_key(k): del ns[k]
-        #
-        #if call_type == DT_INCLUDE:
-        #    # Restore parent's stuff
-        #    #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
-        #    self.__unstore_ns(ns, locals())
 
         if call_type == DT_DATA:
             return ns['__return']
