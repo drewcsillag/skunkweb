@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <03/05/26 22:21:18 smulloni>
+# Time-stamp: <03/05/26 22:23:49 smulloni>
 
 ########################################################################
 #  
@@ -141,7 +141,26 @@ class FS:
             name = os.path.join(dir, name)
             if self.exists(name) and self.isdir(name):
                 self.walk(name, visitfunc, arg)
-            
+
+    def find_path(self, dname, base, root='/'):
+        """
+        searches upwards from directory dname to directory root for a file called base.
+        If found, the full path of the found file is returned; otherwise returns None.
+        """
+
+        while 1:
+            if not dname.startswith(root):
+                return 
+            try:
+                p=os.path.join(dname, base)
+                self.ministat(p)
+            except FileNotFoundException: 
+                if dname==root:
+                    return
+                dname=os.path.dirname(dname)
+            else: 
+                return p
+
     def rename(self, path, newpath):
         raise NotImplementedError
 
@@ -363,24 +382,6 @@ class LocalFS(FS):
         return os.path.isfile(self._resolvepath(path))
 
 
-    def find_path(self, dname, base, root='/'):
-        """
-        searches upwards from directory dname to directory root for a file called base.
-        If found, the full path of the found file is returned; otherwise returns None.
-        """
-
-        while 1:
-            if not dname.startswith(root):
-                return 
-            try:
-                p=os.path.join(dname, base)
-                self.ministat(p)
-            except FileNotFoundException: 
-                if dname==root:
-                    return
-                dname=os.path.dirname(dname)
-            else: 
-                return p
 
 
 frontslashRE=re.compile(r'^/')
