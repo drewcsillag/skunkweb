@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.4 2002/07/25 17:25:48 drew_csillag Exp $
+# $Id: Logger.py,v 1.5 2003/04/23 02:24:13 smulloni Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -58,7 +58,7 @@ def _fmtDate():
                          time.gmtime(time.time()))
 
 def _stamp(logStamp, msg):
-    if _stampEveryLine:
+    if config._stampEveryLine:
         return ["%s%s\n" % (logStamp, x) for x in msg.split("\n")]
     else:
         return ('%s%s\n' % (logStamp, msg))
