@@ -1,3 +1,14 @@
+2001-09-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py: now refer to scopeable, not scope, 
+	for imported ScopeMatchers.
+
+	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): removed the nasty
+	debugging statements and import hacks from this often used function.
+
+	* pylibs/scopeable/_scope.c: various modifications, one would hope 
+	improvements, to reference counting.
+
 2001-09-07  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in, SkunkWeb/Services/httpd/__init__.py, 
@@ -24,6 +35,10 @@
 	* SkunkWeb/Services/fcgiprot.py: added FastCGI handler
 
 	* pylibs/fcgi.py: added
+	
+2001-09-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/skunklib/Setup.in: cause Drew's C extensions to actually be built.
 	
 2001-09-04  Jacob Smullyan  <smulloni@smullyan.org>
 

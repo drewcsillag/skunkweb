@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.5 2001/09/04 18:26:59 smulloni Exp $ 
- * Time-stamp: <01/09/04 23:54:14 smulloni>
+ * $Id: _scope.c,v 1.6 2001/09/05 03:56:00 smulloni Exp $ 
+ * Time-stamp: <01/09/08 22:12:04 smulloni>
  */
 
 /***********************************************************************
@@ -31,13 +31,21 @@
 
 #include <Python.h>
 
+
 /* #define MYDEBUG  */
+
 
 #define DICTLIST "_Scopeable__dictList"
 #define CURRENT_SCOPES "_Scopeable__currentScopes"
 #define MASH "_Scopeable__mash"
 #define MATCHERS "matchers"
 #define GET_DICTLIST(self) (PyMapping_GetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST))
+#ifdef MYDEBUG
+#define REFCNT(name, thing) printf("%s's refcount: %d\n", name, thing->ob_refcnt);
+#else
+#define REFCNT(name, thing) 
+#endif
+
 
 /* 
  * lifted from Frederik Lundh's exceptions.c;
@@ -67,22 +75,25 @@ static PyObject  *Scopeable_init(PyObject *self, PyObject *args) {
   }
   if (dict == NULL) {
     dict=PyDict_New();
-    Py_INCREF(dict);
   }
   else if (!PyDict_Check(dict)) {
     PyErr_SetString(PyExc_TypeError, "a dictionary was expected");
     return NULL;
   }
-  PyList_Append(dictList, dict);
+/*   else { */
 
-  Py_INCREF(dictList);
-  Py_INCREF(matchers);
-  Py_INCREF(currentScopes);
+/*     Py_INCREF(dict); */
+/*   } */
+  PyList_Append(dictList, dict);
   PyObject_SetAttrString(self, DICTLIST, dictList);
   PyObject_SetAttrString(self, MATCHERS, matchers);
   PyObject_SetAttrString(self, CURRENT_SCOPES, currentScopes);
   Py_INCREF(Py_None);
   PyObject_SetAttrString(self, MASH, Py_None);
+  REFCNT("self", self);
+  REFCNT("dictList", dictList);
+  REFCNT("matchers", matchers);
+  REFCNT("currentScopes", currentScopes);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -102,7 +113,7 @@ static void _mergeDefaults(PyObject *self, PyObject *dict) {
 #endif
   if (!(len=PyList_GET_SIZE(dictList))){
     PyObject *newDict=PyDict_New();
-    Py_INCREF(newDict);
+    REFCNT("new dictionary", newDict);
     PyList_Append(dictList, newDict);
     len++;
   }
@@ -111,11 +122,14 @@ static void _mergeDefaults(PyObject *self, PyObject *dict) {
   assert(PyDict_Check(lastDict));
   assert(PyDict_Check(dict));
   while (PyDict_Next(lastDict, &pos, &key, &value)) {
-    PyDict_SetItem(dict, key, value);
+/*     Py_INCREF(key); */
+/*     Py_INCREF(value); */
+    PyDict_SetItem(dict, key, value);    
   }
-  PyList_SetItem(dictList, lastIndex, dict);
   Py_INCREF(dict);
-  Py_INCREF(dictList);
+  PyList_SetItem(dictList, lastIndex, dict);
+  Py_DECREF(dictList);
+  REFCNT("dictList", dictList);
 }
 
 static PyObject *Scopeable_mergeDefaults(PyObject *self, 
@@ -126,6 +140,7 @@ static PyObject *Scopeable_mergeDefaults(PyObject *self,
   if (!(self=getSelf(args))) {
     return NULL;
   }
+  REFCNT("self", self);
   for (i=1;i<len;i++) {
     
     PyObject *dict=PySequence_GetItem(args, i);
@@ -134,38 +149,36 @@ static PyObject *Scopeable_mergeDefaults(PyObject *self,
 		      "Scopeable.mergeDefaults: expected a dictionary");
       return NULL;
     }
-    Py_INCREF(dict);
+    REFCNT("dict", dict);
     _mergeDefaults(self, dict);
-
+    Py_DECREF(dict);
+    REFCNT("dict", dict);
   }
   if (kwargs && PyObject_IsTrue(kwargs)) {
     _mergeDefaults(self, kwargs);
   }
+  REFCNT("self", self);
   Py_INCREF(Py_None);
   return Py_None;
 }
 
 static void _resetMash(PyObject *self) {
   PyObject *d=PyDict_New();
-  Py_INCREF(d);
   PyObject_SetAttrString(self, MASH, d);
 }
 
 static PyObject *Scopeable_mash(PyObject *self, PyObject *args) {
   PyObject *nd, *dictList, *dlCopy;
   int i,len;
-  if (!(self=getSelf(args))) {
+  if (!PyArg_ParseTuple(args, "O", &self)) {
     return NULL;
   }
-#ifdef MYDEBUG
-  printf("in mash()\n");
-#endif
+  REFCNT("self", self);  
   nd=PyDict_New();
-  Py_INCREF(nd);
   dictList=PyObject_GetAttrString(self, DICTLIST);
+
   len=PyList_Size(dictList);
   dlCopy=PyList_GetSlice(dictList, 0, len);
-  Py_INCREF(dlCopy);
 
   for (i=len-1;i>=0;i--) {
     PyObject *d, *key, *value;
@@ -173,17 +186,21 @@ static PyObject *Scopeable_mash(PyObject *self, PyObject *args) {
     d=PyList_GetItem(dlCopy, i);
     if (!PyDict_Check(d)) {
       PyErr_SetString(PyExc_TypeError, "dictionary expected inside dictList");
+      Py_DECREF(dictList);
+      Py_DECREF(nd);
       return NULL;
     }
-    Py_INCREF(d);
     while (PyDict_Next(d, &pos, &key, &value)) {
+/*       Py_INCREF(key); */
+/*       Py_INCREF(value); */
       PyDict_SetItem(nd, key, value);
-      Py_INCREF(key);
-      Py_INCREF(value);
     }
-    Py_DECREF(d);
   }
+  Py_DECREF(dictList);
   Py_DECREF(dlCopy);
+
+  REFCNT("dictList", dictList);
+  REFCNT("nd", nd);
   return nd;
 }
 
@@ -198,15 +215,12 @@ static PyObject *Scopeable_saveMash(PyObject *self, PyObject *args) {
 
 static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
   char *attrname;
-  PyObject *realSelf, *val=NULL, *inDict, *masher;
-  if (!PyArg_ParseTuple(args, "Os", &realSelf, &attrname)) {
-    printf("oops!\n");
+  PyObject *val=NULL, *inDict, *masher;
+  if (!PyArg_ParseTuple(args, "Os", &self, &attrname)) {
     return NULL;
   }
-#ifdef MYDEBUG
-  printf("in getattr\n");
-#endif
-  inDict=((PyInstanceObject *)realSelf)->in_dict;
+
+  inDict=((PyInstanceObject *)self)->in_dict;
   masher=PyMapping_GetItemString(inDict, MASH);
 
   if (PyObject_IsTrue(masher) 
@@ -227,24 +241,30 @@ static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
 	break;
       }
     }
+    Py_DECREF(dictList);
   }  
+
   if (val==NULL) {
     /* check for special attribute "__all__" */
     char *allattr="__all__";
     if (!strncmp(attrname, allattr, strlen(allattr))) {
       PyObject *mashed, *keys, *newargs;
       newargs=PyTuple_New(1);
-      PyTuple_SetItem(newargs, 0, realSelf);
-      mashed=Scopeable_mash(self, newargs);
+
+      PyTuple_SetItem(newargs, 0, self);
+
+      REFCNT("self", self);
+      mashed=Scopeable_mash(NULL, newargs);
       keys=PyMapping_Keys(mashed);
+      REFCNT("keys", keys);
       Py_DECREF(mashed);
       val=keys;
     } else {
       PyErr_SetString(PyExc_AttributeError, attrname);
     }
   }
-  if (val)
-    Py_INCREF(val);
+
+  Py_DECREF(masher);
   return val;
 }
 
@@ -259,7 +279,7 @@ static PyObject *_defaults(PyObject *self) {
   len=PyList_Size(dictList);
   if (len) {
     defaults=PySequence_GetItem(dictList, len-1);
-    Py_INCREF(defaults);
+    REFCNT("defaults", defaults);
     return defaults;
   }
   Py_INCREF(Py_None);
@@ -271,7 +291,6 @@ static PyObject *Scopeable_defaults(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "O", &self)) {
     return NULL;
   }
-  Py_INCREF(self);
   return _defaults(self);
 }
 
@@ -294,9 +313,8 @@ static PyObject *Scopeable_update(PyObject *self, PyObject *args) {
     _resetMash(self);
   }
   Py_DECREF(defaults);
-  Py_INCREF(self);
   Py_INCREF(Py_None);
-  return Py_None;
+   return Py_None;
 }
 
 static PyObject *Scopeable_push(PyObject *self, PyObject *args) {
@@ -304,7 +322,6 @@ static PyObject *Scopeable_push(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "OO", &self, &newDict)) {
     return NULL;
   }
-  Py_INCREF(self);
   if (!PyDict_Check(newDict)) {
     PyErr_SetString(PyExc_TypeError, "push() requires a dictionary argument");
     return NULL;
@@ -315,8 +332,8 @@ static PyObject *Scopeable_push(PyObject *self, PyObject *args) {
     Py_XDECREF(dictList);
     return NULL;
   }
-  PyList_Insert(dictList, 0, newDict);
-  
+  PyList_Insert(dictList, 0, newDict); 
+  Py_DECREF(dictList);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -327,21 +344,21 @@ static PyObject *Scopeable_pop(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "O", &self)) {
     return NULL;
   }
-  Py_INCREF(self);
   dictList=GET_DICTLIST(self);
   len=PyList_Size(dictList);
   if (len) {
     popped=PyList_GetItem(dictList, len-1);
     Py_INCREF(popped);
     ndl=PyList_GetSlice(dictList, 0, len-1);
-    Py_INCREF(ndl);
+    /*Py_INCREF(ndl);*/
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, ndl);
-    /*    Py_DECREF(dictList); */
+
     _resetMash(self);
     return popped;
   }
   PyErr_SetString(PyExc_IndexError, "pop from empty list");
   Py_DECREF(dictList); 
+  dictList=NULL;
   return NULL;
   
 }  
@@ -352,7 +369,6 @@ static PyObject *Scopeable_trim(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "O", &self)) {
     return NULL;
   }
-  Py_INCREF(self);
   dictList=GET_DICTLIST(self);
   len=PyList_Size(dictList);
   if (len>1) {
@@ -360,8 +376,9 @@ static PyObject *Scopeable_trim(PyObject *self, PyObject *args) {
     Py_INCREF(newList);
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, newList);
     _resetMash(self);
+    Py_DECREF(dictList);
+    dictList=NULL;
   }
-  /*  Py_DECREF(dictList); */
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -371,7 +388,6 @@ static PyObject *Scopeable_mashSelf(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "O", &self)) {
     return NULL;
   }
-  Py_INCREF(self);
   mashed=Scopeable_mash(self, args);
   newList=PyList_New(1);
   PyList_SetItem(newList, 0, mashed);
@@ -388,6 +404,7 @@ static PyObject *Scopeable_addScopeMatchers(PyObject *self, PyObject *args) {
     return NULL;
   }
   matchers=PyObject_GetAttrString(self, MATCHERS);
+  REFCNT("matchers", matchers);
   if (!PyList_Check(matchers)) {
     PyErr_SetString(PyExc_TypeError, "internal type error");
     Py_XDECREF(matchers);
@@ -396,77 +413,16 @@ static PyObject *Scopeable_addScopeMatchers(PyObject *self, PyObject *args) {
   if (len) {
     for (i=0;i<len;i++) {
       PyObject *newMatcher=PySequence_GetItem(args, i+1);
-      Py_INCREF(newMatcher);
       PyList_Append(matchers, newMatcher);
     }
     PyList_Sort(matchers);
   }
+  Py_DECREF(matchers);
+  REFCNT("matchers", matchers);
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-/* static PyObject *Scopeable_processMatcher(PyObject *self,  */
-/* 					  PyObject *args) { */
-/*   PyErr_SetString(PyExc_NotImplementedError, "not implemented"); */
-/*   return NULL; */
-/* } */
-
-/* static PyObject *Scopeable_scope(PyObject *self, PyObject *args) { */
-/*   PyObject *param=NULL; */
-/*   PyObject *curScopes=PyObject_GetAttrString(self, CURRENT_SCOPES); */
-/*   if (!PyArg_ParseTuple(args, "O|O", &self, &param)) { */
-/*     return NULL; */
-/*   } */
-/*   Py_INCREF(self); */
-  /*  treat as an accessor for all the current scopes */ 
-/*   if (param==NULL || param==Py_None) { */
-/*     Py_INCREF(curScopes); */
-/*     return curScopes; */
-/*   } */
-/*   else if (!PyDict_Check(param)) { */
-    /* treat as accessor for the scope with key param */ 
-/*     if (PyDict_HasKey(curScopes, param)) { */
-/*       PyObject *val=PyDict_GetItem(curScopes, param); */
-/*       Py_INCREF(val); */
-/*       return val; */
-/*     } */
-/*     Py_INCREF(Py_None); */
-/*     return Py_None; */
-/*   } */
-/*   else { */
-     /* treat as mutator */
-/*     PyObject *scopedDict, *matchers; */
-/*     PyObject *key, *value; */
-/*     int pos=0, matcherLen, i; */
-/*     while (PyDict_Next(param, &pos, &key, &value)) { */
-/*       PyDict_SetItem(curScopes, key, value); */
-/*     } */
-/*     scopedDict=PyDict_New(); */
-
-/*     matchers=PyObject_GetAttrString(self, MATCHERS); */
-/*     if (!PyList_Check(matchers)) { */
-/*       PyErr_SetString(PyExc_TypeError, "matchers should be a list"); */
-/*       return NULL; */
-/*     } */
-/*     matcherLen=PyList_Size(matchers); */
-/*     for (i=0;i<matcherLen;i++) { */
-/*       PyObject *matcher=PyList_GET_ITEM(matchers, i); */
-/*       PyObject *argTuple=PyTuple_New(4); */
-/*       PyTuple_SET_ITEM(argTuple, 0, self); */
-/*       PyTuple_SET_ITEM(argTuple, 1, matcher); */
-/*       PyTuple_SET_ITEM(argTuple, 2, scopedDict); */
-/*       PyTuple_SET_ITEM(argTuple, 3, param); */
-/*       Scopeable_processMatcher(NULL, argTuple); */
-/*     } */
-/*     if (PyDict_Size(scopedDict)) { */
-/*       Py_INCREF(scopedDict); */
-/*       PyList_Insert(GET_DICTLIST(self), 0, scopedDict); */
-/*     } */
-/*     Py_INCREF(Py_None); */
-/*     return Py_None; */
-/*   } */
-/* } */
-    
 static PyMethodDef ScopeableMethods[] = {
   {"__init__", Scopeable_init, METH_VARARGS, ""},
   {"mergeDefaults", Scopeable_mergeDefaults, METH_KEYWORDS, ""},
@@ -486,7 +442,7 @@ static PyMethodDef ScopeableMethods[] = {
 
 static PyMethodDef ModuleMethods[] = { {NULL} };
 
-void init_scope() {
+void init_scope(void) {
   PyMethodDef *def;
 
   PyObject *module=Py_InitModule("_scope", ModuleMethods);
@@ -517,6 +473,9 @@ void init_scope() {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.6  2001/09/05 03:56:00  smulloni
+ * fix to work with gcc versions other than 3.0
+ *
  * Revision 1.5  2001/09/04 18:26:59  smulloni
  * minor improvement to error handling
  *

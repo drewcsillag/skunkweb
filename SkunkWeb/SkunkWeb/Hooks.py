@@ -1,5 +1,5 @@
-# Time-stamp: <2001-08-27 14:38:57 drew>
-# $Id: Hooks.py,v 1.4 2001/08/12 18:11:23 smulloni Exp $
+# Time-stamp: <01/09/08 22:32:08 smulloni>
+# $Id: Hooks.py,v 1.5 2001/08/27 18:37:05 drew_csillag Exp $
 
 ########################################################################
 #  
@@ -72,32 +72,11 @@ class KeyedHook:
         return funcList
 
     def __call__(self, jobName, *args, **kw):
-        # SkunkWeb will not bootstrap if this is imported at the top level
-        global DEBUG
-        global DEBUGIT
-        try:
-            DEBUG
-        except:
-            import SkunkWeb.LogObj
-            DEBUG=SkunkWeb.LogObj.DEBUG
-            DEBUGIT=SkunkWeb.LogObj.DEBUGIT
-        for f in self._getFuncList(jobName):
-            if DEBUGIT(CORE):
-                DEBUG(CORE, "calling %s with args (%s, %s)" % (str(f),
-                                                               str(args),
-                                                               str(kw)))
-            try:
-                retVal=f(*args, **kw)
-                if retVal is not None:
-                    return retVal
-            except:
-                import sys, traceback, cStringIO
-                x=cStringIO.StringIO()
-                traceback.print_tb(sys.exc_info()[2], file = x)
-                text=x.getvalue()
-                DEBUG(CORE, "exception occurred")
-                DEBUG(CORE, text)
-                raise
+        for f in self_getFuncList(jobName):
+            retVal=f(*args, **kw)
+            if retVal is not None:
+                return retVal
+
 
 class SearchablePairList:
 
@@ -129,6 +108,10 @@ class SearchablePairList:
 
 ########################################################################
 # $Log: Hooks.py,v $
+# Revision 1.5  2001/08/27 18:37:05  drew_csillag
+# Only
+# put out DEBUG msg if DEBUGIT.
+#
 # Revision 1.4  2001/08/12 18:11:23  smulloni
 # better fix to DEBUG import problem
 #

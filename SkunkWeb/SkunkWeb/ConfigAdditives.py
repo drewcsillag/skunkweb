@@ -15,12 +15,12 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigAdditives.py,v 1.11 2001/07/09 20:38:40 drew Exp $
+# $Id: ConfigAdditives.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 # Time-stamp: <01/05/03 16:35:13 smulloni>
 ########################################################################@
 
 from SkunkWeb.Hooks import ServerStart
-import scope
+import scopeable as scope
 
 def _createMatcher(matcherClass, paramName, paramVal, kids, kw):
     m=matcherClass(paramName, paramVal, kw)
@@ -36,7 +36,7 @@ def Location(path, **kw):
                           kw)
 
 def Host(hostname, *kids, **kw):
-    return _createMatcher(scope.StrictMatcher,
+    return _createMatcher(scope.GlobMatcher,
                           'host',
                           hostname,
                           kids,
@@ -73,6 +73,10 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.11  2001/07/09 20:38:40  drew
 # added licence comments
 #
