@@ -1,3 +1,7 @@
+2002-04-27  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/Services/cookieauth/__init__.py: cleaned up so that you can provide arbitrary authenticator info that only somewhat cookie related???
+
 2002-04-27  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/ConfigLoader.py (loadConfig): fix so that multiple config
