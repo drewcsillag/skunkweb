@@ -80,34 +80,34 @@ The current configuration is available via the
 \texttt{SkunkWeb.Configuration} ``module''.  In reality, it is not a
 real Python module, but a class instance that has been set up to be
 importable.  The implementation of the ``module'' is the
-\texttt{Config} class in  \verb!pylibs/ConfigLoader.py!.
+\texttt{ScopeableConfig} class in  \verb!pylibs/ConfigLoader.py!.
+(\texttt{ScopeableConfig} is itself a \texttt{scopeable.Scopeable} subclass
+with a backwards compatibility layer that will probably be removed soon.)
 
-\begin{methoddesc}{\_mergeDefaults}{dict} Function taking a dictionary
-argument. For each key/value in the dictionary, if current
+\begin{methoddesc}{\mergeDefaults}{dict} Function taking any number of dictionary
+arguments, and/or keyword arguments. For each key/value in each dictionary, (with 
+any keyword arguments comprising a final dictionary), if the current
 configuration already has a variable with that name, it is skipped,
-otherwise a the configuration variable named `key' is set to the
+otherwise a the configuration variable with that name is set to the
 corresponding value. 
 \end{methoddesc}
-\begin{methoddesc}{\_mergeDefaultsKw}{**kwargs}  Same as
-\texttt{\_mergeDefaults}, but uses keyword arguments instead of the
-dictionary argument. 
-\end{methoddesc}
-\begin{methoddesc}{\_update}{dict} Updates the root configuration with the
+
+\begin{methoddesc}{\update}{dict} Updates the root configuration with the
 contents of the argument (argument should be a dictionary-like
 object). 
 \end{methoddesc}
-\begin{methoddesc}{\_push}{} Overlay configuration with the contents
+\begin{methoddesc}{\push}{} Overlay configuration with the contents
 of the argument (should be a dictionary-like object). 
 \end{methoddesc}
-\begin{methoddesc}{\_pop}{} Undo the last overlay.
+\begin{methoddesc}{\pop}{} Undo the last overlay.
 \end{methoddesc}
-\begin{methoddesc}{\_trim}{} Undo all overlays, resulting in just the
+\begin{methoddesc}{\trim}{} Undo all overlays, resulting in just the
 root configuration. 
 \end{methoddesc}
-\begin{methoddesc}{\_mash}{} No argument function that returns a
+\begin{methoddesc}{\mash}{} No argument function that returns a
 dictionary whose contents are the current view of the configuration.
 \end{methoddesc}
-\begin{methoddesc}{\_mashSelf}{} Sets the root configuration to
+\begin{methoddesc}{\mashSelf}{} Sets the root configuration to
 \verb![self._mash()]!. 
 \end{methoddesc}
 
