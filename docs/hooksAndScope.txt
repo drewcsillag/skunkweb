@@ -1,0 +1,46 @@
+# Time-stamp: <01/10/05 03:47:06 smulloni>
+# notes about hooks, to be added somewhere in devel docs -- js 
+
+SkunkWeb's requestHandler architecture is hook-based; a simple hook 
+(SkunkWeb.Hooks.Hook) is simply a function that wraps a list of other 
+functions by calling them sequentially until one of them returns a value 
+which passes some test (in this case, return_value != None), and then 
+returning that value.  Hooks have the advantage of flexibility -- their 
+simple structure does not get in path of the nosey or creative developer 
+or impose many roadblocks to future extension, as a more precisely determined 
+architecture often might (e.g., an object-oriented  hierarchical model).
+However, hooks have the disadvantage that the  programmer's control over 
+exactly what happens in a given hook is limited by the purely linear 
+flow control available. Thus an architectural problem arises: if one would 
+like to write many different kinds of servers which may be running 
+simultaneously, making use of many of the same services, how does ensure that 
+precisely the functions appropriate for that job are the ones that are 
+executed? Particular jobs may require that quite different, overlapping 
+combinations of functions be performed, provided perhaps by different services,
+not necessarily authored with awareness of each other or tested in 
+combination.  Rather than leaving individual services with the 
+responsibility to address this problem with their own ad-hoc methodologies,
+the following ruse is employed: every request handling job is tagged with 
+a job name, available globally as SkunkWeb.Configuration.job, and some hooks 
+(instances of SkunkWeb.Hooks.KeyedHook) are able to select appropriate 
+functions on the basis of that variable's value.  (Some hooks appropriately 
+do not use this feature; they are instances of SkunkWeb.Hooks.Hook.) 
+Functions added to keyed hooks are associated with a string which the hook, 
+when called,  glob-matches against the job passing through to test whether 
+the function is applicable and should be executed.  The functions are still 
+listed and executed in one linear order, but any functions whose glob does 
+not match the job name are skipped, thereby achieving a dynamic and 
+unformalized polymorphism.  The job string, by potentially matching many
+function globs, behaves rather like a list of superclasses in an OO framework,
+but with no restrictions on their combination other than those implicit in
+the way the globs have been devised (which permits considerably flexibility).
+
+# continue with discussion about scoping, with reference to how
+# it affects job processing and other configuration issues, and its 
+# applicability to 'acquisition'-like behavior.
+
+
+
+
+
+
