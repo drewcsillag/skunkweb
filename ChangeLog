@@ -1,3 +1,8 @@
+2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/vfs.py (MultiFS): sketch of fs that mounts other fs'es, soon to replace the list of fses
+	used by AE.
+
 2001-12-14  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/PyDO/sapdbconn.py, pylibs/PyDO/sapdbgenscript.py, pylibs/PyDO/PyDBI.py: Added SAP database adaptor from Ulrich Eck

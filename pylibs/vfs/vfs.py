@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/10/07 14:14:31 smulloni>
+# Time-stamp: <01/12/18 01:26:58 smulloni>
 
 ########################################################################
 #  
@@ -224,8 +224,111 @@ class LocalFS(FS):
     def isfile(self, path):
         return os.path.isfile(path)
 
+class MultiFS(FS):
+    """
+    an FS implementation that permits other FS's to be
+    mounted within it
+    """
+    def __init__(self,  mounts={}):
+        """
+        mounts should be a dict of the form:
+        { '/desired/mount/point/' : [FSImplementation(), FSImplementation(), ...], ... }
+        i.e., the keys are mount points, and the values are lists of fs implementations.
+        see MultiFS.mount, below
+        """
+        self.mounts=mounts
+        self.__sortMountPoints()
+
+    def __sortMountPoints(self):
+        """
+        keeps mount points sorted longest first (and otherwise in alphabetical order,
+        which doesn't actually matter)
+        """
+        self.__mountpoints=self.mounts.keys()
+        def lencmp(x, y):
+            return cmp(len(y), len(x)) or cmp(x, y)
+        self.__mountpoints.sort(lencmp)
+        
+    def mount(self, fs, mountPoint='/'):
+        if self.mounts.has_key(mountPoint):
+            self.mounts[mountPoint].append(fs)
+        else:
+            self.mounts[mountPoint]=[fs]
+        self.__sortMountPoints()
+
+    def find_mount(self, path, strict=0):
+        found=None
+        # these are kept sorted longest first
+        for p in self.__mountpoints:
+            if path.startswith(p):
+                found=p
+                break
+        if not found:
+            raise VFSException, "no mount point found for path %s" % path
+        # for each fs mounted at that point, try to locate the file; if
+        # an exception occurs, try the next, and so on.
+        translatedPath="/%s" % path[len(found):]
+        ministatinfo=None
+        fs=None 
+        for tmp in self.mounts[found]:
+            try:
+                ministatinfo=tmp.ministat(translatedPath)
+                fs=tmp
+                break
+            except:
+                continue
+        # file not found; fs and ministatinfo should both be None
+        if None==ministatinfo and strict:
+            raise VFSException, "file or directory not found: %s" % path
+        else:
+            return found, fs, translatedPath, ministatinfo
+    
+    def ministat(self, path):
+        found, fs, translated, ministat=self.find_mount(path, 1)
+        return ministat
+
+    def listdir(self, dir):
+        found, fs, translated, ministat=self.find_mount(dir, 1)
+        return fs.listdir(translated)
+
+    def isdir(self, path):
+        found, fs, translated, ministat=self.find_mount(dir, 1)
+        return fs.isdir(translated)
+
+    def isfile(self, path):
+        found, fs, translated, ministat=self.find_mount(path, 1)
+        return fs.isfile(translated)        
+
+    def remove(self, path):
+        found, fs, translated, ministat=self.find_mount(path, 1)
+        fs.remove(translated)
+
+    def open(self, path, mode='r'):
+        """
+        returns a file object.  
+        """
+        found, fs, translated, ministat=self.find_mount(path, 0)
+        # if file was found
+        if ministat!=None and fs !=None:
+            return fs.open(translated, mode)
+        # file was not found
+        if mode=='r':
+            # file should have existed, raise
+            raise VFSException, "file not found: %s" % path
+        # append or write mode; find a suitable fs
+        for tmp in self.mounts[found]:
+            try:
+                return tmp.open(path, mode)
+            except:
+                continue
+        raise VFSException, "cannot open file: %s with mode: %s" % (path, mode)
+            
+
 ########################################################################
 # $Log$
+# Revision 1.3  2001/12/18 06:31:50  smulloni
+# added preliminary version of vfs.MultiFS.
+#
 # Revision 1.2  2001/12/02 20:57:50  smulloni
 # First fold of work done in September (!) on dev3_2 branch into trunk:
 # vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
