@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.18 2003/06/11 17:47:01 smulloni Exp $
+#$Id: Cache.py,v 1.19 2003/07/22 14:29:17 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -68,13 +68,10 @@ _tempPostfix = 'tmp'
 _tempPrefix = "did_not_call_initTempStuff"
 _serverFailover = {}
 
-#child init funcs == initTempStuff()
+## Cached Component Routines
 
-EXPIRED_MODE = 0740
-NORMAL_MODE = 0640
-##Cached Component Routines
 class CachedComponent:
-    def __init__( self, exp_time, defer_time, output, full_key ):
+    def __init__(self, exp_time, defer_time, output, full_key=None):
         self.full_key = full_key
         self.exp_time = exp_time
         self.out = output 
@@ -84,60 +81,62 @@ class CachedComponent:
         if self.valid and defer_time != -1:
             self.valid = defer_time > time.time()
 
-def getCachedComponent( name, argDict, srcModTime = None ):
+def getCachedComponent(name, argDict, srcModTime=None):
     #DEBUG(WEIRD, 'argdict is %s' % argDict)
     if srcModTime is None:
-        srcModTime = _getDocRootModTime( name )
+        srcModTime = _getDocRootModTime(name)
         
     if Configuration.componentCacheRoot is None:
         DEBUG(WEIRD, 'no component cache root')
         return None, srcModTime
 
-    path, svr, fullKey = _genCachedComponentPath( name, argDict )
-    cachedModTime = _getCCModTime( path, svr )
+    path, svr, fullKey = _genCachedComponentPath(name, argDict)
+    cachedModTime = _getCCModTime(path, svr)
     if cachedModTime < srcModTime:
-        DEBUG(WEIRD, 'source is newer than cached version %d, %d' % (
-            cachedModTime, srcModTime))
+        DEBUG(WEIRD,
+              'source is newer than cached version %d, %d' % \
+              (cachedModTime, srcModTime))
         return None, srcModTime
     
-    dict = _loadCachedComponent( path, svr )
+    dict = _loadCachedComponent(path, svr)
     if not dict:
         DEBUG(WEIRD, '_loadCachedComponent returned None')
         return None, srcModTime
     return CachedComponent(**dict), srcModTime
 
-def putCachedComponent( name, argDict, out, cache_exp_time ):
+def putCachedComponent(name, argDict, out, cache_exp_time):
     if Configuration.componentCacheRoot is None:
         return
-    path, svr, fullKey = _genCachedComponentPath( name, argDict )
-    _storeCachedComponent( path, {
-        'exp_time': cache_exp_time,
-        'defer_time': -1,
-        'output': out,
-        'full_key': fullKey,
-        }, svr )
+    path, svr, fullKey = _genCachedComponentPath(name, argDict)
+    _storeCachedComponent(path,
+                          {'exp_time': cache_exp_time,
+                           'defer_time': -1,
+                           'output': out,
+                           # 'full_key': fullKey,
+                           },
+                          svr)
     # write .key file
     if Configuration.writeKeyFiles:
-        _storeCachedComponentKey( path, fullKey, svr )
+        _storeCachedComponentKey(path, fullKey, svr)
     
-def extendDeferredCachedComponent( name, argDict ):
+def extendDeferredCachedComponent(name, argDict):
     if Configuration.componentCacheRoot is None:
         return
-    path, svr, fullKey = _genCachedComponentPath( name, argDict )
-    dict = _loadCachedComponent( path, svr )
+    path, svr, fullKey = _genCachedComponentPath(name, argDict)
+    dict = _loadCachedComponent(path, svr)
     if dict:
-        dict[ 'defer_time' ]  = time.time() + Configuration.deferAdvance
-        _storeCachedComponent( path, dict, svr )
+        dict['defer_time'] = time.time() + Configuration.deferAdvance
+        _storeCachedComponent(path, dict, svr)
 
 #stuff to get python code from cache
-def _pyCompileFunc( name, data ):
+def _pyCompileFunc(name, data):
     if Configuration.dontCacheSource:
-            return compile( '\n'.join(data.split('\r\n')), name, 'exec'), ''
+            return compile('\n'.join(data.split('\r\n')), name, 'exec'), ''
     else:
-        return compile( '\n'.join(data.split('\r\n')), name, 'exec'), data
+        return compile('\n'.join(data.split('\r\n')), name, 'exec'), data
 
-def getPythonCode( name, srcModTime ):
-    return _getCompiledThing( name, srcModTime, 'pycode', _pyCompileFunc,
+def getPythonCode(name, srcModTime):
+    return _getCompiledThing(name, srcModTime, 'pycode', _pyCompileFunc,
                               PYCODE_CACHEFILE_VERSION)
 
 #stuff to get DTs from cache
@@ -146,51 +145,51 @@ def dt_no_tag_debug(indent, codeout, tag):
     codeout.write(indent, '__d.CURRENT_TAG = ""')
     codeout.write(indent, '__d.CURRENT_LINENO = %s' % repr(tag.filelineno()))
 
-def _dtCompileFunc( name, data ):
+def _dtCompileFunc(name, data):
     if Configuration.noTagDebug:
         otagdbg = DTCompilerUtil.tagDebug
         DTCompilerUtil.tagDebug = dt_no_tag_debug
-        obj = DT.compileTemplate( data, name, tagRegistry )
+        obj = DT.compileTemplate(data, name, tagRegistry)
         DTCompilerUtil.tagDebug = otagdbg
         return obj
     else:
-        return DT.compileTemplate( data, name, tagRegistry )
+        return DT.compileTemplate(data, name, tagRegistry)
 
-def _dtReconstituteFunc( data ):
-    return apply( DT.DT, data )
+def _dtReconstituteFunc(data):
+    return apply(DT.DT, data)
 
-def _dtUnconstituteFunc( data ):
+def _dtUnconstituteFunc(data):
     if Configuration.dontCacheSource:
-        return (data.path, '', data._compiled, data._meta )
+        return (data.path, '', data._compiled, data._meta)
     else:
-        return (data.path, data._text, data._compiled, data._meta )
+        return (data.path, data._text, data._compiled, data._meta)
 
-def getDT( name, srcModTime ):
-    return _getCompiledThing( name, srcModTime, 'template',
+def getDT(name, srcModTime):
+    return _getCompiledThing(name, srcModTime, 'template',
                               _dtCompileFunc, DT_CACHEFILE_VERSION,
                               _dtReconstituteFunc,
-                              _dtUnconstituteFunc, )
+                              _dtUnconstituteFunc,)
 
 #stuff to get MsgCats from Cache
-def _mcMakeCat( data, name ):
+def _mcMakeCat(data, name):
     keyTest = data.keys()[0]
-    if type( data[keyTest] ) == type({}):
-        return MsgCatalog.MultiLingualCatalog( data, name )
+    if type(data[keyTest]) == type({}):
+        return MsgCatalog.MultiLingualCatalog(data, name)
     else:
-        return MsgCatalog.MessageCatalog( data, name )
+        return MsgCatalog.MessageCatalog(data, name)
 
-def _mcCompileFunc( name, data ):
-    data = eval( data,{'__builtin__': {}} , {} )
-    return _mcMakeCat( data, name )
+def _mcCompileFunc(name, data):
+    data = eval(data,{'__builtin__': {}} , {})
+    return _mcMakeCat(data, name)
 
-def _mcReconstituteFunc( data ):
+def _mcReconstituteFunc(data):
     dict, name = data
-    return _mcMakeCat( dict, name )
+    return _mcMakeCat(dict, name)
 
-def _mcUnconstituteFunc( data ):
+def _mcUnconstituteFunc(data):
     return data._dict, data._name
 
-def getMessageCatalog( name, srcModTime = None ):
+def getMessageCatalog(name, srcModTime = None):
     DEBUG(WEIRD, "getting catalog %s" % name)
     return _getCompiledThing(Component._rectifyRelativeName(name),
                              srcModTime,
@@ -201,7 +200,7 @@ def getMessageCatalog( name, srcModTime = None ):
                              _mcUnconstituteFunc)
 
 #generic way to get and cache compiled things from cache/disk/memory
-def _getCompiledThing( name, srcModTime, legend, compileFunc, version,
+def _getCompiledThing(name, srcModTime, legend, compileFunc, version,
                        reconstituteFunc = None, unconstituteFunc = None):
     """
     compileFunc      takes the name and the source and returns compiled form
@@ -217,7 +216,7 @@ def _getCompiledThing( name, srcModTime, legend, compileFunc, version,
     #if not caching compiled things, compile it and go
     if Configuration.compileCacheRoot is None:
         DEBUG(CACHE, "compiling %s" % legend)
-        obj = compileFunc( name, _readDocRoot( name ) )
+        obj = compileFunc(name, _readDocRoot(name))
         return obj
 
     #if using the compile cache, do we have it and if so is it still
@@ -226,19 +225,19 @@ def _getCompiledThing( name, srcModTime, legend, compileFunc, version,
         item = compileMemoryCache.get(Configuration.compileCacheRoot +name)
         if item:
             if srcModTime is None:
-                srcModTime = _getDocRootModTime( name )
+                srcModTime = _getDocRootModTime(name)
             if item[0] >= srcModTime:
                 DEBUG(MEM_COMPILE_CACHE, "memory %s cache hit" % legend)
                 return item[1]
 
     #try to get a cached form from disk, barring that, return source
     status, ret, srcModTime = _getCompileCache(
-        name, srcModTime, version )
+        name, srcModTime, version)
     
     #if a cached form was found and version ok, reconstitute, and write to
     #memory cache if appropriate
     if status:
-        ret = reconstituteFunc and reconstituteFunc( ret ) or ret
+        ret = reconstituteFunc and reconstituteFunc(ret) or ret
         if Configuration.useCompileMemoryCache:
             DEBUG(MEM_COMPILE_CACHE, "writing to memory cache (got from disk)")
             compileMemoryCache[Configuration.compileCacheRoot + name] = (
@@ -247,39 +246,39 @@ def _getCompiledThing( name, srcModTime, legend, compileFunc, version,
     else:
         #we've got source, compile it, write to memory cache if appropriate
         #and write to disk cache
-        obj = compileFunc( name, ret )
+        obj = compileFunc(name, ret)
         if Configuration.useCompileMemoryCache:
             DEBUG(MEM_COMPILE_CACHE, "writing to memory cache (compiled)")
             compileMemoryCache[Configuration.compileCacheRoot + name] = (
                 srcModTime, obj)
         if not Configuration.runOutOfCache:
-            _writeCompileCache( name,
+            _writeCompileCache(name,
                                 (unconstituteFunc and unconstituteFunc(obj) or obj,
                                  version),
-                                marshal.dumps )
+                                marshal.dumps)
         return obj
 
 #check for a valid cached version (it's newer than the source) and return
 #it, if invalid, just return source
-def _getCompileCache( name, srcModTime, version ):
+def _getCompileCache(name, srcModTime, version):
     if srcModTime is None:
-        srcModTime = _getDocRootModTime( name )
-    cacheModTime = _getCompileCacheModTime( name )
+        srcModTime = _getDocRootModTime(name)
+    cacheModTime = _getCompileCacheModTime(name)
     if cacheModTime > srcModTime or Configuration.runOutOfCache:
         try:
-            ret, vsn = marshal.loads( _readCompileCacheRoot( name ) )
+            ret, vsn = marshal.loads(_readCompileCacheRoot(name))
         except ValueError: #marshal got bad shit
             ERROR('marshal.loads got bad stuff from compile cache, ignoring')
-            return 0, _readDocRoot( name ), srcModTime 
+            return 0, _readDocRoot(name), srcModTime 
             
         if vsn == version:
             return 1, ret, srcModTime
         else:
             DEBUG(CACHE, '_gcc() version mismatch, wanted %s, got %s, '
                   'returning source' % (version, vsn))
-            return 0, _readDocRoot( name ), srcModTime 
+            return 0, _readDocRoot(name), srcModTime 
     else:
-        return 0, _readDocRoot( name ), srcModTime 
+        return 0, _readDocRoot(name), srcModTime 
 
 #### basically, some insurance that we don't escape a given root
 
@@ -287,21 +286,21 @@ def _getCompileCache( name, srcModTime, version ):
 import skunklib._normpath
 _normpath = skunklib.normpath
 
-def _fixPath( root, path ):
+def _fixPath(root, path):
     return _normpath('%s/%s' % (root,path)) 
 
 ### The real disk access routines
 #set so we have a tempfile prefix specific to the pid, host, etc.
 def initTempStuff():
     global _tempPrefix
-    _tempPrefix = '%s_%d' % ( socket.gethostname(), os.getpid() )
+    _tempPrefix = '%s_%d' % (socket.gethostname(), os.getpid())
     
-def _writeDisk( path, data ):
+def _writeDisk(path, data):
     DEBUG(CACHE, "writing to disk %s" % path)
     try:
-        dirname = os.path.split( path ) [ 0 ]
+        dirname = os.path.split(path)[0]
         try:
-            os.makedirs( dirname )
+            os.makedirs(dirname)
         except OSError, val:
             if val.errno != errno.EEXIST:
                 raise
@@ -309,38 +308,38 @@ def _writeDisk( path, data ):
         tempfile = "%s/%s.%d.%s" % (
             dirname, _tempPrefix, _tempCounter, _tempPostfix)
         _tempCounter += 1
-        open( tempfile, 'wb' ).write( data )
+        open(tempfile, 'wb').write(data)
     except IOError, val:
         LOG("ERROR writing tempfile")
         return None
     try:
-        os.rename( tempfile, path )
+        os.rename(tempfile, path)
     except OSError, val:
         LOG("ERROR renaming tempfile %s" % str(val))
         return None
     return 1
 
 ## compile cache access
-def _writeCompileCache( name, thing, serializeFunc):
+def _writeCompileCache(name, thing, serializeFunc):
     DEBUG(CACHE, "writing compile cache")
-    path = _fixPath( Configuration.compileCacheRoot, name + "c" )
+    path = _fixPath(Configuration.compileCacheRoot, name + "c")
     try:
-        _writeDisk( path, serializeFunc( thing ) )
+        _writeDisk(path, serializeFunc(thing))
     except:
         ERROR("error writing to compile cache: %s" % sys.exc_info()[1])
 
-def _getCompileCacheModTime( name ):
+def _getCompileCacheModTime(name):
     DEBUG(CACHE, "statting compile cache")
-    path = _fixPath( Configuration.compileCacheRoot, name + "c" )
+    path = _fixPath(Configuration.compileCacheRoot, name + "c")
     try:
         return os.stat(path)[stat.ST_CTIME] 
     except:
         return -1
 
-def _readCompileCacheRoot( name ):
+def _readCompileCacheRoot(name):
     DEBUG(CACHE, "reading compile cache")
-    path = _fixPath( Configuration.compileCacheRoot, name + "c")
-    return open( path ).read()
+    path = _fixPath(Configuration.compileCacheRoot, name + "c")
+    return open(path).read()
 
 def _getPathAndMinistat(name):
     path=_fixPath(Configuration.documentRoot, name)
@@ -389,36 +388,36 @@ def _findPath(name, root='/'):
     return ret
 
 ## component cache access
-def _storeCachedComponent( path, value, svr ):
+def _storeCachedComponent(path, value, svr):
     DEBUG(CACHE, "storing component output")
     try:
         _writeDisk(path,
                    cPickle.dumps((value,
                                   COMPONENT_CACHEFILE_VERSION),
                                  1))
-        #os.chmod( path, NORMAL_MODE )
+        #os.chmod(path, NORMAL_MODE)
     except IOError, val:
         DEBUG(CACHE, "error storing component %s" % val)
         if val != errno.ENOENT:
             _serverFailover[ svr ] = time.time() + Configuration.failoverRetry
 
-def _storeCachedComponentKey( path, value, svr ):
+def _storeCachedComponentKey(path, value, svr):
     DEBUG(CACHE, "storing component key")
     s = []
     for k, v in value.items():
         s.append("%r %r" % (k, v))
     try:
-        _writeDisk( path[:-6] + ".key", "\n".join(s)+"\n" )
+        _writeDisk(path[:-6] + ".key", "\n".join(s)+"\n")
     except IOError, val:
         DEBUG(CACHE, "error storing component key %s" % val)
         if val != errno.ENOENT:
             _serverFailover[ svr ] = time.time() + Configuration.failoverRetry
 
-def _loadCachedComponent( path, svr ):
+def _loadCachedComponent(path, svr):
     DEBUG(CACHE, "loading component output")
     try:
-        f = open( path, 'rb' )
-        item, version = cPickle.load( f )
+        f = open(path, 'rb')
+        item, version = cPickle.load(f)
         if version != COMPONENT_CACHEFILE_VERSION:
             return
         return item
@@ -428,7 +427,7 @@ def _loadCachedComponent( path, svr ):
     except: #some other oddball error
         return None
     
-def _getCCModTime( path, svr ):
+def _getCCModTime(path, svr):
     DEBUG(CACHE, "statting cached component")
     try:
         return os.stat(path)[stat.ST_CTIME]
@@ -442,10 +441,10 @@ def _getCCModTime( path, svr ):
 #given the path and arguments, generate the path to the component's cached
 #representation given the number of shared filesystems (if any) and any
 #recent failure info
-def _genCachedComponentPath( name, argDict ):
+def _genCachedComponentPath(name, argDict):
     d = argDict.copy()
     name = _fixPath('', name)
-    md5, fullkey = cacheKey.cachekey.genCacheKey( d )
+    md5, fullkey = cacheKey.cachekey.genCacheKey(d)
     if Configuration.numServers:
         serverNo = int(md5[-4:], 16) % Configuration.numServers
 
@@ -468,12 +467,12 @@ def _genCachedComponentPath( name, argDict ):
         return "%s/%s/%s/%s/%s.cache" % (
             Configuration.componentCacheRoot, name, md5[:2], md5[2:4], md5), None, fullkey
 
-def _expireCacheFile( path ):
+def _expireCacheFile(path):
     try:
-        dict, vsn = cPickle.load( open( path ) )
+        dict, vsn = cPickle.load(open(path))
         dict ['exp_time'] = -1
-        _writeDisk( path, cPickle.dumps( (dict,vsn), 1 ))
-        #os.chmod( path, EXPIRED_MODE )
+        _writeDisk(path, cPickle.dumps((dict,vsn), 1))
+        #os.chmod(path, EXPIRED_MODE)
     except:
         pass
 
@@ -491,24 +490,24 @@ def _shellQuote(a):
         else: na.append(i)
     return ''.join(na) + "'"
 
-def clearCache( name, arguments, matchExact = None ):
+def clearCache(name, arguments, matchExact = None):
     if matchExact:
-        path, svr, fk = _genCachedComponentPath( name, arguments )
-        _expireCacheFile( path )
+        path, svr, fk = _genCachedComponentPath(name, arguments)
+        _expireCacheFile(path)
     else:
-        name = _normpath( name )
-        md5, fullKey = cacheKey.cachekey.genCacheKey( arguments )
+        name = _normpath(name)
+        md5, fullKey = cacheKey.cachekey.genCacheKey(arguments)
         if Configuration.numServers:
-            names = ' '.join([_shellEscape( "%s/%s/%s" % ( Configuration.componentCacheRoot,
-                                                           i, name ) )
+            names = ' '.join([_shellEscape("%s/%s/%s" % (Configuration.componentCacheRoot,
+                                                           i, name))
                               for i in range(Configuration.numServers) ])
         else:
-            names = "%s/%s" % (Configuration.componentCacheRoot, _shellEscape( name ))
+            names = "%s/%s" % (Configuration.componentCacheRoot, _shellEscape(name))
 
         greps = []
         for k, v in fullKey.items():
             #print "--> %r %r" % (k, v)
-            greps.append( _shellQuote( "%r %r" % (k, v) ) )
+            greps.append(_shellQuote("%r %r" % (k, v)))
                 
 
         cmd = ('%(find)s %(names)s -name "*.cache" | %(sed)s '
@@ -518,15 +517,15 @@ def clearCache( name, arguments, matchExact = None ):
             'sed': Configuration.sedCommand
             }
         cmd += "|" + " | ".join(["%s %s -l %s" % (
-            Configuration.xargsCommand, Configuration.fgrepCommand, i )
+            Configuration.xargsCommand, Configuration.fgrepCommand, i)
                                  for i in greps])
 
         LOG('running command %s' % cmd)
         ret, out = commands.getstatusoutput(cmd)
         #LOG('code %s, out %s' % (ret, out))
         if ret:
-            ERROR ( 'Command "%s" returned %d, output:\n%s' % (
-                cmd, ret, out ))
+            ERROR ('Command "%s" returned %d, output:\n%s' % (
+                cmd, ret, out))
             return
 
         out = [out[:-3]+'cache' for i in out.split('\n')
@@ -534,5 +533,5 @@ def clearCache( name, arguments, matchExact = None ):
 
         LOG('Expiring %s' % out)
         for i in out:
-            _expireCacheFile( i )
+            _expireCacheFile(i)
 
