@@ -1,5 +1,9 @@
 2003-05-09  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/templating/SendmailTag.py
+	(SendmailTag.genCode): modified to support the extended keyword
+	arguments introduced in Frank Tegtmeyer's patch to MailServices.
+
 	* pylibs/ccvalidate.py: a module for verifying the format
 	of credit card numbers.
 
