@@ -54,7 +54,7 @@ fields = [
 def validate(form):
     pass
 
-form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate])
+form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate], layout=NestedListLayout())
 
 print ecs.H2("Original Fields")
 print fields
