@@ -1,5 +1,7 @@
 2002-06-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* 3.2.2 cut
+
 	* SkunkWeb/SkunkWeb/bootloader.py.in: fixed bug that made the server
 	not start with Python 2.1
 
