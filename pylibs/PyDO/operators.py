@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/01/14 01:47:14 smulloni>
+# Time-stamp: <02/01/21 14:22:39 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -67,7 +67,8 @@ class PolyadicOperator(SQLOperator):
 
 class FIELD:
     """
-    a cheesy way of indicating that a string represents the name of a field, not a string literal
+    a cheesy way of indicating that a string represents the
+    name of a field, not a string literal
     """
     def __init__(self, fieldname):
         if type(fieldname)!=type(""):
@@ -79,6 +80,22 @@ class FIELD:
 
     def __repr__(self):
         return "FIELD(%s)" % self.fieldname
+
+class SET:
+    """
+    a cheesy way of passing a set into PyDO where clauses
+    (for IN), e.g.:
+    
+    IN(FIELD('foo'), SET('spam', 'eggs', 'nougat'))
+    """
+    def __init__(self, *values):
+        self.values=tuple(values)
+        
+    def __str__(self):
+        return str(self.values)
+    
+    def __repr__(self):
+        return "SET(%s)" % str(self.values)
 
 """
 mapping of symbols to operator classes
@@ -131,6 +148,7 @@ def __makeOperators():
                    ('GT', '>'),
                    ('GT_EQ', '>='),
                    ('LIKE', 'LIKE'),
+                   ('IN', 'IN'),
                    ),
                 (  PolyadicOperator,
                    ('AND', 'AND'),
