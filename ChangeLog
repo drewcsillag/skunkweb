@@ -1,5 +1,13 @@
 2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* pylibs/AE/ComponentTag.py: use of __args__ would cause an error
+	(used == instead of =)!
+
+	* SkunkWeb/Services/scgi.py: fixed typo that caused problems on POSTs
+	
+	* SkunkWeb/Services/requestHandler/requestHandler.py: SkunkExcept
+	wasn't imported so could cause problems in certain cases, fixed.
+
 	* pylibs/prompt.py: fixed niggly bug
 
 	* pylibs/IOTO.py: removed unused import
