@@ -53,7 +53,7 @@ class PyDOMySQL:
             del d['cacheUser']
         else:
             cacheUser=''
-        return verbose, cacheUser, d
+        return verbose, cacheUser, d 
     
     def getConnection(self): return self.conn
 
@@ -73,8 +73,12 @@ class PyDOMySQL:
         raise NotImplemented, 'No bind variables for mysql driver'
     
     def getAutoIncrement(self, name):
+        if hasattr(self.conn, 'insert_id'):
+            return self.conn.insert_id()
+        # this does not seem to work any more,
+        # if it ever did, but I'll keep it here
+        # in case an early version of the driver needs it.
         return self.conn._db.insert_id()
-
     def execute(self, sql, values, attributes):
         if self.verbose:
             print 'SQL> ', sql

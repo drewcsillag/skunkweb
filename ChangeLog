@@ -2,6 +2,7 @@
 
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.__unpackConnectArgs): 
 	allow verbosity to be specified in a connectstring.
+	(PyDOMySQL.getAutoIncrement): fix for autoincrement.
 
 2003-02-02  Jacob Smullyan  <smulloni@smullyan.org>
 
