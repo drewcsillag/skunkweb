@@ -1,4 +1,15 @@
-2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
+2001-09-18  Drew Csillag  <drew@starmedia.net>
+
+	* pylibs/scopable/_scope.c (Scopeable_saveMash): fixed refcounting
+	bug 
+
+	* pylibs/scopable/_scope.c (Scopeable_init): Added a number of
+	Py_DECREF calls that were needed to not leak memory.
+
+	* pylibs/scopable/_scope.c (_mergeDefaults): Added a Py_DECREF
+	when creating a new dict when dictList is empty.
+	
+i2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/scopeable/.cvsignore: added Setup
 

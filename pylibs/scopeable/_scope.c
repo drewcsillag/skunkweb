@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.6 2001/09/05 03:56:00 smulloni Exp $ 
- * Time-stamp: <01/09/08 22:12:04 smulloni>
+ * $Id: _scope.c,v 1.7 2001/09/09 02:37:41 smulloni Exp $ 
+ * Time-stamp: <2001-09-18 10:02:53 drew>
  */
 
 /***********************************************************************
@@ -70,10 +70,12 @@ static PyObject  *Scopeable_init(PyObject *self, PyObject *args) {
   PyObject *dictList=PyList_New(0);
   PyObject *matchers=PyList_New(0);
   PyObject *currentScopes=PyDict_New();
+  int alloced = 0;
   if (!PyArg_ParseTuple(args, "O|O", &self, &dict)) {
     return NULL;
   }
   if (dict == NULL) {
+    alloced = 1;
     dict=PyDict_New();
   }
   else if (!PyDict_Check(dict)) {
@@ -88,8 +90,13 @@ static PyObject  *Scopeable_init(PyObject *self, PyObject *args) {
   PyObject_SetAttrString(self, DICTLIST, dictList);
   PyObject_SetAttrString(self, MATCHERS, matchers);
   PyObject_SetAttrString(self, CURRENT_SCOPES, currentScopes);
+  /* ATC */ 
+  Py_DECREF(dictList); Py_DECREF(matchers); Py_DECREF(currentScopes);
+  if (alloced) {Py_DECREF(dict);}
+  /* /ATC */
   Py_INCREF(Py_None);
   PyObject_SetAttrString(self, MASH, Py_None);
+
   REFCNT("self", self);
   REFCNT("dictList", dictList);
   REFCNT("matchers", matchers);
@@ -115,6 +122,7 @@ static void _mergeDefaults(PyObject *self, PyObject *dict) {
     PyObject *newDict=PyDict_New();
     REFCNT("new dictionary", newDict);
     PyList_Append(dictList, newDict);
+    Py_DECREF(newDict); /* ATC */
     len++;
   }
   lastIndex=len-1;
@@ -205,10 +213,16 @@ static PyObject *Scopeable_mash(PyObject *self, PyObject *args) {
 }
 
 static PyObject *Scopeable_saveMash(PyObject *self, PyObject *args) {
+  PyObject *m;   /* ATC */
+
   if (!(self=getSelf(args))) {
     return NULL;
   }
-  PyObject_SetAttrString(self, MASH, Scopeable_mash(self, args));
+  /* ATC */
+  m = Scopeable_mash(self, args)
+  PyObject_SetAttrString(self, MASH, m);
+  Py_DECREF(m);
+  /* /ATC */
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -473,6 +487,10 @@ void init_scope(void) {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.7  2001/09/09 02:37:41  smulloni
+ * performance enhancements, removal of sundry nastinesses and erasure of
+ * reeking rot.
+ *
  * Revision 1.6  2001/09/05 03:56:00  smulloni
  * fix to work with gcc versions other than 3.0
  *
