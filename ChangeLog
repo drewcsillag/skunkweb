@@ -1,3 +1,7 @@
+2001-09-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/scopeable/.cvsignore: added Setup
+
 2001-09-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/SkunkWeb/ConfigAdditives.py: now refer to scopeable, not scope, 
