@@ -46,7 +46,7 @@ class ComponentViewableField(ComponentViewableMixin, ViewableField):
     def __init__(self,
                  name,
                  component,
-                 cache=YES,
+                 cache=NO,
                  description=None,
                  default=None,
                  required=0,
