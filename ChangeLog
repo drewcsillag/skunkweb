@@ -1,3 +1,15 @@
+2002-04-26  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/AE/cacheKey/cachekey.c(encodeSingle): now will encode
+	DateTime objects so they can be part of a cache key
+
+2002-04-24  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/mod_skunkweb/Makefile.in: fixes so that it works with both 
+	Apache 1 and Apache 2
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: now handles Apache 2!
+
 2002-04-19  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/postconn.py: A number of changes with regard to how
