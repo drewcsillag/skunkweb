@@ -26,5 +26,16 @@ specifying an item number.
 The gallery's appearance hasn't changed, but the application can now
 be included in other directories without copying over files.
 
+Wed Jan 23 14:51:17 2002
+
+Brainstorming with Ike; a bunch of ideas.
+
+gallery should be embeddable in a table.
+ability to sort and hide images.
+templates.
+
+
+
+
 
 

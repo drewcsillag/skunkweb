@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id$
+#$Id: Cache.py,v 1.5 2001/12/02 20:57:50 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -271,7 +271,7 @@ import skunklib._normpath
 _normpath = skunklib.normpath
 
 def _fixPath( root, path ):
-    return '%s/%s' % (root, _normpath(path)) 
+    return _normpath('%s/%s' % (root,path)) 
 
 ### The real disk access routines
 #set so we have a tempfile prefix specific to the pid, host, etc.
@@ -506,7 +506,12 @@ def clearCache( name, arguments, matchExact = None ):
             _expireCacheFile( i )
 
 ########################################################################
-# $Log$
+# $Log: Cache.py,v $
+# Revision 1.5  2001/12/02 20:57:50  smulloni
+# First fold of work done in September (!) on dev3_2 branch into trunk:
+# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
+# to templating's <:img:> tag.
+#
 # Revision 1.4.2.1  2001/09/19 05:07:15  smulloni
 # first code using vfs
 #

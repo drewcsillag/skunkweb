@@ -1,5 +1,14 @@
 2002-01-26  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/AE/Cache.py (_fixPath): _normpath is now applied to the
+	entire resulting path, which solves a problem with zipfs.
+
+	* SkunkWeb/sample_webdocs/demo/gallery/comp/listing.pydcmp: now
+	uses the vfs.
+
+	* pylibs/vfs/vfs.py (LocalFS.__init__): now take an argument,
+	"root", which specifies the root of the fs tree.
+
 	* pylibs/PyDO/mysqlconn.py (_dateConvertFromDB): fixed dumb goof
 	-- I had thought DateTime.DateTime was a class, not a function
 	that returned an instance of a type, and passed it to isinstance;

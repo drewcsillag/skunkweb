@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/01/21 14:22:39 smulloni>
+# Time-stamp: <02/01/26 17:44:57 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -37,16 +37,8 @@ class SQLOperator:
         or its type is in this context.  However, the use of type-specifier input
         classes, like FIELD, could ameliorate the problem to a degree.
         """
- ##       _escape=(conn and fieldDict and lambda k, v, c=conn, f=fieldDict: \
-##                 conn.sqlStringAndValue(v, k, f[k])[0]) or lambda k, v: str(v)
         _assql=lambda v: (isinstance(v, SQLOperator) and "(%s)" % v.asSQL()) \
                 or (type(v)==type("") and "'%s'" % v) or str(v)
-##        def _assql2(v):
-##            if isinstance(v, SQLOperator):
-##                if isinstance(v, DyadicOperator) or isinstance(v, PolyadicOperator):
-##                    for val in v.values():
-##                        if isinstance(val, FIELD):
-##                            dbtype=fieldDict.get(val.fieldname)
         vallen=len(self.values)
         if vallen==1:            
             return "%s %s" % (self.__class__.symbol, _assql(self.values[0]))

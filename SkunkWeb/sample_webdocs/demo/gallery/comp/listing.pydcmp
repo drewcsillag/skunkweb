@@ -1,15 +1,12 @@
 # -*-python-*-
 
-# data component for listing a directory within a document root.  For SkunkWeb 3.1.3 (pre-vfs)
+# data component for listing a directory
 
-import SkunkWeb.Configuration as C
-import glob
+import AE.Cache
 import os
-import re
 
 # the component argument "path" is required; it should be the url path.
 # "absolute" will return absolute translated paths.
-# "globexpr" can be used to limit the listing.
 
 _REQUIRED_OPTION='asdfgqwerty'
 
@@ -21,19 +18,17 @@ def _opts(**kw):
 			else:
 				globals()[k]=v
 
-_opts(path = _REQUIRED_OPTION, absolute=None, globexpr=None)
-
-translated=re.sub(r'//+', '/', '%s/%s' % (C.documentRoot, path))
+_opts(path = _REQUIRED_OPTION, absolute=None)
 
 # will silently accept a file in the desired directory
-if not os.path.isdir(translated):
+translated, fs, mstat=AE.Cache._getPathFSAndMinistat(path)
+if not fs or not mstat:	
+	raise ReturnValue, []
+if not fs.isdir(translated):
 	dirname=os.path.dirname(translated)
 else:
 	dirname=translated
-if not globexpr:
-	listing=os.listdir(dirname)
-else:
-	listing=glob.glob(globexpr)
+listing=fs.listdir(dirname)
 	
 if absolute:
 	raise ReturnValue, [os.path.join(translated, x) for x in listing]

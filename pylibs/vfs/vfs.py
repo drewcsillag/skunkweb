@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/12/21 00:20:54 smulloni>
+# Time-stamp: <02/01/26 16:37:26 smulloni>
 
 ########################################################################
 #  
@@ -27,6 +27,12 @@ import shutil
 import stat
 
 import pathutil
+try:
+    # optimized version
+    from skunklib import normpath
+except ImportError:
+    # for losers
+    normpath=os.path.normpath
 
 # constants for "ministat"
 MST_SIZE=0
@@ -165,49 +171,57 @@ class PathPropertyStore:
 
 class LocalFS(FS):
 
-    def __init__(self, followSymlinks=0):
+    def __init__(self, root='/', followSymlinks=0):
+        self.root=root
         self.followSymlinks=followSymlinks
 
+    def _resolvepath(self, path):
+        return normpath('%s/%s' % (self.root, path))
+
     def ministat(self, path):
+        realpath=self._resolvepath(path)
         try:
             if self.followSymlinks:
-                return os.stat(path)[6:10]
+                return os.stat(realpath)[6:10]
             else:
-                return os.lstat(path)[6:10]
+                return os.lstat(realpath)[6:10]
         except os.error, oyVeh:
             raise VFSException, "[Errno %d] %s: %s" % (oyVeh.errno,
                                                        oyVeh.strerror,
                                                        oyVeh.filename)
     def mkdir(self, dir):
-        os.mkdir(dir)
+        os.mkdir(self._resolvepath(dir))
 
     def mkdirs(self, dir):
-        os.makedirs(dir)
+        os.makedirs(self._resolvepath(dir))
     
     def remove(self, path):
-        if self.isdir(path):
-            shutil.rmtree(path)
+        realpath=self._resolvepath(path)
+        if self.isdir(realpath):
+            shutil.rmtree(realpath)
         else:
-            os.remove(path)
+            os.remove(realpath)
     
     def open(self, path, mode='r'):
         """
         returns a file object, corresponding to the builtin function open, not to os.open
         """
-        return open(path, mode)
+        return open(self._resolvepath(path), mode)
     
     def listdir(self, dir):
-        return os.listdir(dir)
+        return os.listdir(self._resolvepath(dir))
 
     def copy(self, path, newpath):
         # based on shutil.copytree, but always copies symlinks, and doesn't
         # catch exceptions
-        if self.isdir(path):
-            names = os.listdir(path)
-            os.mkdir(newpath)
+        realpath=self._resolvepath(path)
+        realnew=self._resolvepath(newpath)
+        if self.isdir(realpath):
+            names = os.listdir(realpath)
+            os.mkdir(realnew)
             for name in names:
-                srcname = os.path.join(path, name)
-                dstname = os.path.join(newpath, name)
+                srcname = os.path.join(realpath, name)
+                dstname = os.path.join(realnew, name)
                 if os.path.islink(srcname):
                     linkto = os.readlink(srcname)
                     os.symlink(linkto, dstname)
@@ -216,16 +230,16 @@ class LocalFS(FS):
                 else:
                     shutil.copy2(srcname, dstname)        
         else:
-            shutil.copy(path, newpath)
+            shutil.copy(realpath, realnew)
 
     def rename(self, path, newpath):
-        os.rename(path, newpath)
+        os.rename(self._resolvepath(path), self._resolvepath(newpath))
     
     def isdir(self, path):
-        return os.path.isdir(path)
+        return os.path.isdir(self._resolvepath(path))
 
     def isfile(self, path):
-        return os.path.isfile(path)
+        return os.path.isfile(self._resolvepath(path))
 
 frontslashRE=re.compile(r'^/')
 endslashRE=re.compile(r'/$')
@@ -285,11 +299,11 @@ class MultiFS(FS):
             raise VFSException, "no mount point found for path %s" % path
         # for each fs mounted at that point, try to locate the file; if
         # an exception occurs, try the next, and so on.
-        #print "found: %s" % found
+        # print "found: %s" % found
         translatedPath=os.path.join('/', path[len(found):])
-        #print "translated path: %s" % translatedPath
+        # print "translated path: %s" % translatedPath
         ministatinfo=None
-        fs=None 
+        fs=None
         for tmp in self.mounts[found]:
             try:
                 ministatinfo=tmp.ministat(translatedPath)
@@ -325,8 +339,6 @@ class MultiFS(FS):
         return listing
 
     def isdir(self, path):
-        if not path.endswith('/'):
-            path='%s/' % path
         found, fs, translated, ministat=self.find_mount(path, 1)
         return fs.isdir(translated)
 
@@ -361,6 +373,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.5  2002/01/27 03:10:44  smulloni
+# moving in the direction of getting rid of Configuration.DocumentRoot!
+#
 # Revision 1.4  2002/01/02 06:39:24  smulloni
 # work on vfs
 #
