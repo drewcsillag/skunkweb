@@ -1,0 +1,62 @@
+from formlib import *
+
+psswdFld = PasswordField('password', description="Required Password", size="20", maxlength="39", required=1)
+txtFld = TextField('textfield', description="Required Textfield", size="20", maxlength="39", required=1)
+txtFld2 = TextField('textfield2', description="Textfield2", size="20", maxlength="39", required=0)
+txtFld3 = TextField('textfield3', description="Textfield3", size="20", maxlength="39", required=0)
+btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="20", maxlength="39", default="Click Me")
+fileFld = FileField('file', description="FileField", size="20")
+hdnFld = HiddenField('hidden', description="HiddenField", default="default")
+imgFld = ImageField('image', description="", src="http://skunkweb.sourceforge.net/images/skunkWEB1_04.gif")
+btnFld = ButtonField("content", 'button', 'ButtonField', default='default') 
+txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value")
+
+selFld = SelectField('select', 
+                     ['singlestring', ('Non grouped value', 'non_grouped_value' ), ('Default', 'default'), 
+                      ('Sublist of single strings', ['1', '2' ,'3']),
+                      ('Sublist of tuples', [('One','1'),('Two','2'),('Three','3')])
+                     ],
+                     'Required SelectField', default='default', required=1, multiple=1, size=5)
+
+checkboxGrpFld = ButtonGroupField('checkboxgroup', 
+                                  ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
+                                  'Required Checkboxes', default='default', required=1, multiple=1)  
+# add a clearing of default to ensure that defaults can be empty...test was failing
+# on 11/26/2002
+checkboxGrpFld.clearDefault()
+
+radioGrpFld = ButtonGroupField('radiogroup', 
+                               ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
+                               'Radio', 'default', multiple=0)
+
+chkbox = ButtonGroupField('acheckbox', ['required'], 'Checkbox', '', multiple=1, required=1)
+sbmtFld = SubmitField("submit", description="SubmitField")
+ 
+fields = [ 
+         imgFld,
+         (psswdFld, txtFld), 
+         [fileFld, txtFld2, txtFld3], 
+         [txtAreaFld, selFld], 
+         [checkboxGrpFld, radioGrpFld], 
+         chkbox, 
+         sbmtFld 
+         ]
+
+def validate(form):
+    pass
+
+form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate])
+
+import ecs
+if CONNECTION.method == "POST":
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  Values were:")
+        for fld in form.fields:
+            print "%s -> %s:%s" % (fld.description, fld.name, fld.value)
+            print ecs.Br()
+        print ecs.Hr()
+
+print form.getView()    
