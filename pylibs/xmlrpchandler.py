@@ -1,9 +1,11 @@
-# Time-stamp: <02/10/08 14:04:27 smulloni>
-# $Id: xmlrpchandler.py,v 1.4 2002/10/08 18:02:33 smulloni Exp $
+# Time-stamp: <02/10/08 16:00:02 smulloni>
+# $Id: xmlrpchandler.py,v 1.5 2002/10/08 18:04:59 smulloni Exp $
 
 """
 a module for serving XMLRPC from SkunkWeb.
 """
+# for basic auth support
+from __future__ import nested_scopes
 import pydoc
 import os
 import re
@@ -190,3 +192,25 @@ class XMLRPCServer:
         return xmlrpclib.dumps(res, methodresponse=mres)
 
 
+def munge_transports():
+    """
+    dynamically patches the transport and ServerProxy objects
+    so you can add arbitrary HTTP headers to an xmlrpc request,
+    like so:
+       s=ServerProxy('/whatever/')
+       s.transport.more_headers={'X-Doo-Hickey' : 'Fruit Loops'}
+    Hopefully, Python 2.3 will not require this brutal hack.
+    """
+    _old_send_request=xmlrpclib.Transport.send_request
+    def send_request(self, connection, handler, request_body):
+        _old_send_request(self, connection, handler, request_body)
+        if hasattr(self, 'more_headers'):
+            for k, v in self.more_headers.items():
+                connection.putheader(k, v)
+    xmlrpclib.Transport.send_request=send_request
+    def get_transport(self):
+        return self._ServerProxy__transport
+    xmlrpclib.ServerProxy.get_transport=get_transport
+            
+        
+    

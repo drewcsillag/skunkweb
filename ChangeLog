@@ -2,6 +2,9 @@
 
 	* pylibs/xmlrpchandler.py (XMLRPCServer.handle_cgi): added support
 	for cgis, thereby justifying this module's presence in pylibs.
+	(munge_transports): a foul hack to give me the ability to use
+	basic auth (or add any http headers I want to the request) with
+	xmlrpclib.
 
 2002-10-05  Jacob Smullyan  <smulloni@smullyan.org>
 
