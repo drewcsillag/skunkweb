@@ -2,6 +2,7 @@
 
 	* docs/stmlrefer/stmlrefer.tex (chapter{Internet Services}): added
 	Frank Tegtmeyer's patch for MailServices documentation.
+	(section{\texttt{<:args:>}}): typo (was missing quotes).
 
 2003-05-20  Jacob Smullyan  <smulloni@smullyan.org>
 
