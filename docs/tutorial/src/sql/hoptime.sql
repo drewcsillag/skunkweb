@@ -1,0 +1,42 @@
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+username TEXT NOT NULL UNIQUE,
+email TEXT,
+honorific TEXT,
+firstname TEXT,
+middlename TEXT,
+lastname TEXT
+);
+
+CREATE TABLE games (
+id SERIAL PRIMARY KEY,
+owner INTEGER NOT NULL REFERENCES users,
+created DATETIME DEFAULT CURRENT_TIMESTAMP,
+status VARCHAR(20) DEFAULT 'join' 
+CHECK (status in ('joining', 'playing', 'editing', 'published', 'trashed'))
+);
+
+CREATE TABLE players (
+player INTEGER NOT NULL REFERENCES users,
+game INTEGER NOT NULL REFERENCES games,
+joined DATETIME DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(player, game)
+);
+
+CREATE TABLE moves (
+id SERIAL PRIMARY KEY,
+game INTEGER NOT NULL,
+player INTEGER NOT NULL,
+entered DATETIME DEFAULT CURRENT_TIMESTAMP,
+content_append TEXT NOT NULL,
+FOREIGN KEY(game, player) REFERENCES players);
+
+CREATE TABLE edits (
+id SERIAL PRIMARY KEY,
+game INTEGER NOT NULL REFERENCES games,
+player INTEGER NOT NULL REFERENCES players,
+entered DATETIME DEFAULT CURRENT_TIMESTAMP,
+content_diff TEXT NOT NULL);
+
+
+

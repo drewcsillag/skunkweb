@@ -65,8 +65,8 @@ by creating it, is therefore always the first player.  Each player is
 prompted to append text to a single document; the document may be
 viewed in its entirety by the players at any time, but the only
 modification it is possible to make is to append to it.  A player's
-turn is not over until he or she adds something to the document; an
-empty submission is not allowed.
+turn is not over until he or she adds some non-blank text or punctuation
+to the document; an empty submission is not allowed.
 
 \item At any point, the game admin may decide that the document is
 complete, at which the game is over, and the admin may decide whether
@@ -103,7 +103,7 @@ recent publications, and then link to a page with a fuller listing.
 
 \end{enumerate}
 
-Once a user had logged, he or she would be able to go to his or her
+Once a user had logged in, he or she would be able to go to his or her
 home page, which would contain a summary of the user's current and
 past game-playing activities:
 
@@ -127,6 +127,34 @@ of the last move), and then present the document in its current state
 in read-only form.  At bottom, there would be a form with a textarea
 in which text to be appended could be entered.
 
+\section{A Project Plan}
+
+The following pages have been described above:
+
+\begin{enumerate}
+
+\item{the main page}
+\item{user home page}
+\item{the game page}
+\item{create-a-game page}
+\item{story page}
+\item{story index page}
+
+\end{enumerate}
+
+In order to create these, we will need to meet these technical goals 
+on the back end:
+
+\begin{enumerate}
+
+\item{user authentication}
+\item{persistence of user data, game state, and texts}
+\item{user session management}
+
+Persistence will here be managed in the most straightforward and
+conventional manner, namely, the use of a relational database (I'll be
+using PostgreSQL).  
+\end{enumerate}
 %TO BE DONE:
 %A Project Plan
 %The Back End
