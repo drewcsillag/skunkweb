@@ -1,3 +1,8 @@
+2004-02-05  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* SkunkWeb/SkunkWeb/Server.py (_aPrefixIn): typo fix that caused 
+	errors every request for people using userModuleCleanup
+
 2004-01-20  Brian Olsen  <brian@qinternet.com>
 
 	* pylibs/PyDO/PyDO.py "order" for get...() methods can accept a

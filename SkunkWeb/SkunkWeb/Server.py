@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Server.py,v 1.11 2003/05/01 20:45:55 drew_csillag Exp $
+# $Id: Server.py,v 1.12 2003/05/08 14:14:13 drew_csillag Exp $
 ########################################################################
 
 ########################################################################
@@ -28,7 +28,7 @@ import grp
 def _aPrefixIn(item, l):
     for i in l:
         ll = len(l)
-        if item[:l] == l:
+        if item[:ll] == l:
             return 1
     return None
 
