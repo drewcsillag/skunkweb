@@ -1,3 +1,4 @@
+#-*-python-*-
 import string
 import httplib
 import xmllib
@@ -45,7 +46,8 @@ class Story:
     def __init__(self, xmlNode):
         self.title = string.join(xmlNode.getKind('title')[0].children, '')
         self.link = string.join(xmlNode.getKind('link')[0].children, '')
-        self.desc = string.join(xmlNode.getKind('description')[0].children[0],'')
+        self.desc = ''
+#        self.desc = string.join(xmlNode.getKind('description')[0].children[0],'')
 
 #def getXML(): return open('/home/drew/slashdot.xml').read()
 def getStories():

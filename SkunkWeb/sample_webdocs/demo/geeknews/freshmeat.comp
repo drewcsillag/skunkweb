@@ -6,7 +6,7 @@
     <:datacomp items dcomps/freshhead.pydcmp cache=yes:>
     <ul>
     <:for `items` item:>
-    <li><A HREF="<:val `item.link`:>"><:val `item.title`:></a> <:val `item.desc`:>...</li>
+    <li><A HREF="<:val `item.link`:>"><:val `item.title`:></a> <:val `item.desc`:></li>
     <:/for:>
     </ul>
     </font>

@@ -1,9 +1,10 @@
 import string
 import httplib
 import xmllib
+import urllib
 
 def getXML():
-    h = httplib.HTTP('www.slashdot.org')
+    h = httplib.HTTP('slashdot.org')
     h.putrequest('GET', '/slashdot.xml')
     h.endheaders()
     errc, errm, headers = h.getreply()
@@ -11,6 +12,9 @@ def getXML():
     data = f.read()
     f.close()
     return data
+
+def getXML():
+    return urllib.urlopen('http://slashdot.org/slashdot.xml').read()
 
 class EntCont:
     def __init__(self, tag, atts):
@@ -65,8 +69,9 @@ def getStories():
         l.append(Story(i))
     return l
 
-#if __name__ == '__main__':
-#    for i in getStories():
-#        print '<A HREF="%s">%s</A><BR>' % (
-#            i.url, i.title)
-raise ReturnValue, getStories()
+if __name__ == '__main__':
+    for i in getStories():
+        print '<A HREF="%s">%s</A><BR>' % (
+            i.url, i.title)
+else:
+    raise ReturnValue, getStories()
