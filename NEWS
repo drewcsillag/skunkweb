@@ -1,9 +1,10 @@
 Changes in 3.2.4
 ========================================
+* PyDO documentation updates
 * The userdir service will now function properly when operating with a
   scoped docroot
 * Now converts non-native line-endings in exprs to the native line
-  ending so that when editing templates on non-unix machines,
+  ending so that when editing templates on non-native machines,
   expressions will work properly
 * auth service fix when using multiple auth schemes simultaneously --
   BACKWARD INCOMPATIBLE CHANGE AHEAD---
