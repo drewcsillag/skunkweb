@@ -19,10 +19,9 @@
 from containers import FieldContainer
 from hooks import Hook
 
-__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError', 'CompositeField']
+__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError', 'CompositeField', 'FieldProxy']
 
 UNDEF=object()
-
 
 class Field(object):
     def __init__(self,
@@ -85,20 +84,53 @@ class Field(object):
         """
         pass
 
+ 
+class FieldProxy(object):
+    "A proxy for abstracting a proxied name out from a field which may be known by another"\
+    " name as a means of indirection"
+    def __init__(self, proxyName, proxiedField):
+        self._name = proxyName
+        self.field = proxiedField
+
+    def __getattr__(self, name):
+        if name == 'name':
+            return self._name
+        else:
+            return getattr(self.field, name)
+
+
+def _defaultValueComposer(fieldList):
+    """\
+    Generates a single 'value' by concatentating each field.value into a single
+    newline delimited list
+    """
+    retVal = ''
+    if fieldList:
+        for fld in fieldList:
+            retVal = retVal + str(fld.value) + '\n'
+    return retVal
+
 
 class CompositeField(Field):
     "Represents a composite group of fields which are logically grouped beneath a single name"
-    def __init__(self, 
+    def __init__(self,
                  name,
                  description,
                  default=None,
                  multiple=1,
                  setable=1,
-                 componentFields=[]):
+                 componentFields=[],
+                 componentFieldDelimiter="_",
+                 valueComposer=_defaultValueComposer):
         Field.__init__(self, name, description, default, multiple, setable)
-        self._components = FieldContainer(componentFields, self._getComponentName, storelists=0)
+        tmpComponents = []
+        for fld in componentFields:
+            prxy = FieldProxy(self.getComponentName(fld.name), fld)
+            tmpComponents.append[prxy]
+        self._components = FieldContainer(tmpComponents, _getname, storelists=0)
+        self.composeValue = valueComposer
+        self.delimiter
         
-
     def _get_components(self):
         return self._components
 
@@ -108,16 +140,14 @@ class CompositeField(Field):
         """
         Method for generating the keys by which fields are indexed within the composite field
         """
-        return "%s_%s" % (self.name, x.name)
+        return "%s%s%s" % (self.name, self.delimiter, x.name)
 
     def _get_value(self):
         """
-        The value of a composite field is the ordered concatenation of its field values
+        The value of a composite field is the result of calling the valueComposer on the composite
+        field's component fields.
         """
-        retVal = ''
-        for fld in self.components:
-            retVal = retVal + fld.value
-        return retVal
+        return self.composeValue(self.components)
 
     value=property(_get_value)
     
