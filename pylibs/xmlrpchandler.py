@@ -1,10 +1,11 @@
-# Time-stamp: <02/10/02 13:12:11 smulloni>
-# $Id: xmlrpchandler.py,v 1.1 2002/09/28 14:39:04 smulloni Exp $
+# Time-stamp: <02/10/08 13:29:47 smulloni>
+# $Id: xmlrpchandler.py,v 1.2 2002/10/02 17:15:54 smulloni Exp $
 
 """
 a module for serving XMLRPC from SkunkWeb.
 """
 import pydoc
+import os
 import re
 import sys
 import xmlrpclib
@@ -14,7 +15,8 @@ _tdoc=pydoc.TextDoc()
 # These constants, and the multicall implementation below,
 # are based on code by Eric Kidd.  Python 2.3 should have
 # this constants in xmlrpclib, too.  Other code is derived
-# from the standard library's SimpleXMLRPCServer.py.
+# from the standard library's SimpleXMLRPCServer.py, and
+# from a cgi script by Fredrik Lundh.
 
 INTERNAL_ERROR = -500
 TYPE_ERROR = -501
@@ -39,8 +41,9 @@ based]
 """.strip()
 
 class XMLRPCServer:
-    def __init__(self, add_system_methods=1):
+    def __init__(self, add_system_methods=1, max_request=50000):
         self.funcs={}
+        self.max_request=max_request
         if add_system_methods:
             self.register_function(self.funcs.keys,
                                    'system.listMethods',
@@ -133,21 +136,57 @@ class XMLRPCServer:
             return xmlrpclib.Fault(1,
                                    "%s: %s" % (sys.exc_type,
                                                sys.exc_value))
+
+    def handle_cgi(self, giveup=None):
+        """
+        for use in a cgi script.  If supplied, giveup should be
+        a function with one required argument (message) and one optional
+        (status).
+        """
+        if not giveup:
+            def giveup(message, status=400):
+                print "Status: %d" % status
+                print
+                print message
+                sys.exit(0)
         
+        if os.environ.get('REQUEST_METHOD')!='POST':
+            giveup("precondition violated: not an HTTP POST")
+        if self.max_request > 0:
+            bytelen=int(os.environ.get("CONTENT_LENGTH", 0))
+            if bytelen > self.max_request:
+                # perhaps I should return a LIMIT_EXCEEDED fault instead?
+                giveup("request too large", 413)
+            
+        params, method=xmlrpclib.loads(sys.stdin)
+        result=self.dispatch(method, params)
+        methodresponse=not isinstance(result, xmlrpclib.Fault)
+        response=xmlrpclib.dumps(result, methodresponse)
+        
+        print "Content-Type: text/xml"
+        print "Content-Length: %d" % len(response)
+        print
+        print response
+
 
     def handle(self, connection):
         """
-        connection should be a web.protocol.HttpConnection object.
+        connection should be a web.protocol.HttpConnection object
+        (SkunkWeb only, presumably)
         """
         if connection.method!='POST':
             raise xmlrpclib.Fault(REQUEST_REFUSED_ERROR,
                                   "precondition violated: not an HTTP POST")
+        if self.max_request > 0 and len(connection._stdin) > self.max_request:
+            # see note in handle_cgi about returning a fault
+            connection.setStatus(413)
+            connection.responseHeaders['Content-type']='text/plain'
+            return "request too large"
         params, method=xmlrpclib.loads(connection._stdin)
         res=self.dispatch(method, params)
         connection.setStatus(200)
         connection.responseHeaders['Content-type']='text/xml'
-        return xmlrpclib.dumps(res,
-                               methodresponse=not isinstance(res,
-                                                             xmlrpclib.Fault))
+        mres=not isinstance(res, xmlrpclib.Fault)
+        return xmlrpclib.dumps(res, methodresponse=mres)
 
 
