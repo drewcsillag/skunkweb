@@ -1,3 +1,14 @@
+2001-08-15  Drew Csillag  <drew@starmedia.net>
+
+	* docs/opman/opman.tex: no longer require gnu xargs and gnu find
+
+	* pylibs/static.py: should now work with Python 2.2.  2.2 has a
+	new way of doing metaclasses that temporarily made my head
+	explode.  Abandon hope all ye who enter!
+
+	* docs/history: added stuff from where it left off to the
+	opensourcing
+
 2001-08-15  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): made "default" argument 
