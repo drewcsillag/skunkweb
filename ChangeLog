@@ -1,3 +1,9 @@
+2002-07-10  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/MySQL/__init__.py: finally fixed so that using the mysql
+	service, plus having userModuleCleanup turend on will now actually
+	work.
+
 2002-07-05  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* pylibs/PyDO/mysqlconn.py: now allows you to use cacheUser
