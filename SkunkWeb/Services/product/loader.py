@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.6 2002/02/21 23:35:09 smulloni Exp $
-# Time-stamp: <02/02/22 15:30:34 smulloni>
+# $Id: loader.py,v 1.7 2002/02/22 20:56:07 smulloni Exp $
+# Time-stamp: <03/02/08 19:16:23 smulloni>
 
 ########################################################################
 #  
@@ -49,7 +49,19 @@ _fsmap={'.zip'           : vfs.ZipFS,
         '.tgz'           : vfs.TarFS,
         DIRECTORY_FORMAT : vfs.LocalFS }
 
+def get_product_path(name):
+    """
+    Returns the URL path of the product of the given name.
+    """
+    path=Cfg.productPaths.get(name)
+    if not path:
+        path=os.path.join(Cfg.defaultProductPath, name)
+    return path
+
 def product_directory():
+    """
+    Returns the location of the directory where products are installed.
+    """
     # if Cfg.productDirectory is a relative path,
     # it is taken as relative to Cfg.SkunkRoot
     return os.path.join(Cfg.SkunkRoot,
@@ -139,15 +151,12 @@ class Product:
 
     def __reallyload(self):
         havelocal=self.__fsclass==vfs.LocalFS
-        docmount=Cfg.productPaths.get(self.name)
-        if not docmount:
-            docmount=os.path.join(Cfg.defaultProductPath, self.name)
+        docmount=get_product_path(self.name)
         if havelocal:
             newfs=vfs.LocalFS(os.path.join('%s/' % self.file, self.docroot))
             libdir=normpath2('%s/%s' % (self.file, self.libs))
             if os.path.exists(libdir) and libdir not in sys.path:
                 sys.path.append(libdir)
-                
         else:
             newfs=self.__fsclass(self.file, root=self.docroot)
             libfs=self.__fsclass(self.file, root=self.libs)
@@ -158,12 +167,13 @@ class Product:
                 sys.path.append('vfs://<%s>/' % k)
         self.__targetfs.mount(newfs, ProductMountPoint(docmount))
 
+
         # this will import services even if they are not contained in
         # the product itself; I'm unclear at this point whether that is
         # good or not
         for service in self.services:
             __import__(service)
-
+        
 
 def findProduct(productname, fromFile=0):
     pdir=product_directory()
