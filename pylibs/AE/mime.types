@@ -287,3 +287,5 @@ text/x-stml-python-include      pyinc
 text/x-stml-python-data-component	pydcmp
 application/x-complex-message-catalog	cat
 application/x-simple-message-catalog	msg
+application/x-psp-python-component	psp
+application/x-psp-python-data-component pspdcmp
