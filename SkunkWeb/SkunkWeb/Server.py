@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.16 2001/07/09 20:38:40 drew Exp $
+# $Id: Server.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 # Time-stamp: <01/04/16 14:10:32 smulloni>
 ########################################################################
 
@@ -109,7 +109,7 @@ class SkunkWebServer(SocketMan):
         self.logInterface=LogObj
         bootloader.load()
 
-        global Configuration
+        #global Configuration
         import Configuration
         _setConfigDefaults()
             
@@ -146,6 +146,10 @@ svr.moduleSnapshot()
 
 ########################################################################
 # $Log: Server.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.16  2001/07/09 20:38:40  drew
 # added licence comments
 #
