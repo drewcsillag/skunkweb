@@ -1,4 +1,4 @@
-# $Id: importer.py,v 1.4 2002/02/21 18:10:47 smulloni Exp $
+# $Id: importer.py,v 1.5 2003/02/11 14:08:55 smulloni Exp $
 # Time-stamp: <03/02/11 00:56:19 smulloni>
 
 ######################################################################## 
@@ -140,9 +140,9 @@ class PkgInVFSImporter:
         #print "PkgInVFSImporter.getmod %s -> %s" % (nm, self.name+'.'+nm)
         return self.owner.getmod(self.name+'.'+nm)
     
-class ExtInPkgImporter(iu.Owner):
+class ExtInPkgImporter(VFSOwner):
     def __init__(self, path, prefix):
-        iu.Owner.__init__(self, path)
+        VFSOwner.__init__(self, path)
         self.prefix = prefix
     def getmod(self, nm):
         return VFSOwner.getmod(self, self.prefix+'.'+nm)
