@@ -1,3 +1,12 @@
+2002-11-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/state.py (InPageStateManager.setstate): moved
+	AESEncoder to the aesencode module.
+
+	* pylibs/aesencode.py: adding a simple wrapper around
+	PyCrypto.Cipher.AES that means you don't have to worry about the
+	block-size or the length of what you want to encode. 
+	
 2002-11-19    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/state.py: some cleanup; not ready yet.

@@ -4,43 +4,6 @@ from md5 import md5
 
 class InvalidStateException(Exception): pass
 
-try:
-    import Crypto.Cipher.AES as AES
-except ImportError:
-    AES=None
-
-if AES:
-    class AESEncoder:
-        def __init__(self, key, IV=None):
-            self.key=key
-            self.__key=md5(key).digest()
-            if IV==None:
-                IV=self.key[:16].ljust(16)
-            self.IV=IV
-
-        def _pad(self, thing):
-            s='%dX%s' % (len(thing), thing)
-            ls=len(s)
-            m=ls % AES.block_size
-            return s.ljust(ls-m + AES.block_size)
-
-        def _unpad(self, padded):
-            xind=padded.find('X')
-            num=int(padded[:xind])
-            return padded[xind+1:xind+1+num]
-         
-
-        def encode(self, thing):
-            thing=self._pad(thing)
-            return AES.new(self.__key, AES.MODE_CBC, self.IV).encrypt(thing)
-
-        def decode(self, encoded):
-            thing=AES.new(self.__key, AES.MODE_CBC, self.IV).decrypt(encoded)
-            return self._unpad(thing)
-
-            
-
-
 class InPageStateManager:
     def __init__(self, nonce, stateEncoder=None, stateVariable='_state'):
         self.state = {'stack' : []}
