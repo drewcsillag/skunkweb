@@ -1,3 +1,4 @@
+
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/ConfigLoader.py: switch to using the Python version of
@@ -8,6 +9,11 @@
 	* pylibs/scope.py: The Python version turns out to be, with a
 	couple of small optimizations, 33% faster than the C version. 
 
+2003-04-16  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/confvars.py.in (LOCALSTATEDIR): created a
+	variable for localstatedir.
+	
 2003-04-16  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/Makefile.in (install): rolling back Drew's change for
