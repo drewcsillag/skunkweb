@@ -15,21 +15,24 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: userdir.py,v 1.3 2001/10/10 15:06:27 drew_csillag Exp $
+# $Id: userdir.py,v 1.4 2001/10/11 22:08:55 smulloni Exp $
 ########################################################################
+
 import pwd
 from SkunkWeb import Configuration
 
 Configuration.mergeDefaults(userDir = 1,
                             userDirPath = 'public_html')
 
-def __initFlag():
-    from SkunkWeb import ServiceRegistry
-    ServiceRegistry.registerService('userdir')
+from SkunkWeb import ServiceRegistry
+ServiceRegistry.registerService('userdir')
+from SkunkWeb.LogObj import DEBUG
+from SkunkWeb.ServiceRegistry import USERDIR    
 
 def doUserDirPre(connection, sessionDict):
-    from SkunkWeb.LogObj import DEBUG
-    from SkunkWeb.ServiceRegistry import USERDIR
+    """
+    hook for web.protocol.PreHandleConnection
+    """
     
     if not Configuration.userDir:
         return
@@ -62,7 +65,10 @@ def doUserDirPre(connection, sessionDict):
         return
         
         
-def doUserDirPost(sessionDict): #requestHandler.requestHandler.EndSession
+def doUserDirPost(requestData, sessionDict): 
+    """
+    hook for requestHandler.requestHandler.CleanupRequest
+    """
     if not Configuration.userDir:
         return
     if not sessionDict.has_key('UserDir'):
@@ -74,13 +80,13 @@ def doUserDirPost(sessionDict): #requestHandler.requestHandler.EndSession
     Configuration.compileCacheRoot = sessionDict['UserDirCC']
     del sessionDict['UserDirCC'], sessionDict['UserDirDocRoot']
     del sessionDict['UserDir']
-    return
 
 def __initHooks():
-    from web.protocol import HandleConnection
-    HandleConnection.addFunction(doUserDirPre, '*', 0)
+    import web.protocol as wp
+    import SkunkWeb.constants as sc
     import requestHandler.requestHandler as rh
-    rh.EndSession.addFunction(doUserDirPost)
+    jobGlob="%s*" % sc.WEB_JOB
+    wp.PreHandleConnection.addFunction(doUserDirPre, jobGlob)
+    rh.CleanupRequest.addFunction(doUserDirPost, jobGlob)
 
-__initFlag()
 __initHooks()
