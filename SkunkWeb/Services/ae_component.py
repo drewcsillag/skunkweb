@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: ae_component.py,v 1.6 2003/04/19 14:18:19 smulloni Exp $
+# $Id: ae_component.py,v 1.7 2003/05/01 20:45:53 drew_csillag Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -41,8 +41,8 @@ def __initConfig():
     # set our defaults from AE defaults
     Configuration.mergeDefaults(
         documentRoot = confvars.DEFAULT_DOCROOT,
-        compileCacheRoot = "%s/cache" % Configuration.SkunkRoot,
-        componentCacheRoot = "%s/cache" % Configuration.SkunkRoot,
+        compileCacheRoot = confvars.DEFAULT_CACHE, 
+        componentCacheRoot = confvars.DEFAULT_CACHE,
         failoverComponentCacheRoot = "%s/failoverCache" % Configuration.SkunkRoot,
         mimeTypesFile = confvars.DEFAULT_MIME_TYPES_FILE_NAME,
         componentCommentLevel = 0,

@@ -22,3 +22,5 @@ DEFAULT_DEBUG_LOG =            '@LOGDIR@/debug.log'
 DEFAULT_PID_FILE =             '@localstatedir@/run/sw.pid'
 LOCALSTATEDIR =                '@localstatedir@'
 SKUNKWEB_VERSION =             '@SW_VERSION@'
+DEFAULT_CACHE =                '@CACHE@'
+
