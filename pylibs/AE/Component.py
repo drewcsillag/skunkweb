@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.19 2001/08/02 22:53:23 drew Exp $
+# $Id: Component.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -139,7 +139,7 @@ class DefaultComponentHandler(ComponentHandler):
         if not cache:
             DEBUG(COMPONENT, "call _render")
             ACCESS("rendering %s" % name)
-            return _renderComponent(name, argDict, auxArgs, compType)
+            return _renderComponent(name, argDict, auxArgs, compType), 1, 0
 
         # cache is true
         DEBUG(COMPONENT, "cache is true")
@@ -163,7 +163,7 @@ class DefaultComponentHandler(ComponentHandler):
                                             auxArgs,
                                             compType,
                                             srcModTime,
-                                            cached )
+                                            cached ), 1, 0
 
         # cache is available
         DEBUG(COMPONENT, "cache available")
@@ -190,7 +190,11 @@ class DefaultComponentHandler(ComponentHandler):
             else:
                 DEBUG(COMPONENT_TTL, "ttl %ss" % cached.ttl)
                 ACCESS("using cached form of %s" % name)
-                return cached.out
+                if cached.valid:
+                    expired = 0
+                else:
+                    expired = 1
+                return cached.out, 0, expired
 
         # cache is available but has expired
         DEBUG(COMPONENT, "cache expired")
@@ -208,7 +212,7 @@ class DefaultComponentHandler(ComponentHandler):
                                             auxArgs,
                                             compType,
                                             srcModTime,
-                                            cached)
+                                            cached), 1, 1
 
         # deferred and cache is expired
         DEBUG(COMPONENT, "deferred ttl was %s" % cached.ttl)
@@ -224,7 +228,7 @@ class DefaultComponentHandler(ComponentHandler):
                                        compType,
                                        srcModTime,
                                        cached )
-            return cached.out
+            return cached.out, 0, 1
 
         # deferred, cache expired and stale
         DEBUG(COMPONENT, "deferred and stale, rendering")
@@ -235,7 +239,7 @@ class DefaultComponentHandler(ComponentHandler):
                                         auxArgs,
                                         compType,
                                         srcModTime,
-                                        cached)
+                                        cached), 1, 1
 
 
 defaultHandler=DefaultComponentHandler()
@@ -243,7 +247,16 @@ defaultHandler=DefaultComponentHandler()
 def callComponent (name, argDict, cache = 0,
                    compType = DT_REGULAR,
                    srcModTime = None):
+    return fullCallComponent (name, argDict, cache = 0,
+                              compType = DT_REGULAR,
+                              srcModTime = None)[0]
 
+def fullCallComponent (name, argDict, cache = 0,
+                       compType = DT_REGULAR,
+                       srcModTime = None):
+    """calls component and returns (text, rendered, expired)
+    rendered and expired are booleans
+    """
     DEBUG(COMPONENT, "callComponent %s %s" % (name, compType))
 
     colonIndex=name.find("://")
@@ -371,6 +384,10 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:41  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.19  2001/08/02 22:53:23  drew
 # fixed so include actually works
 #
