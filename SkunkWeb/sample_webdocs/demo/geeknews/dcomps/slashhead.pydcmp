@@ -1,0 +1,72 @@
+import string
+import httplib
+import xmllib
+
+def getXML():
+    h = httplib.HTTP('www.slashdot.org')
+    h.putrequest('GET', '/slashdot.xml')
+    h.endheaders()
+    errc, errm, headers = h.getreply()
+    f = h.getfile()
+    data = f.read()
+    f.close()
+    return data
+
+class EntCont:
+    def __init__(self, tag, atts):
+        self.tag = tag
+        self.atts = atts
+        self.children = []
+        
+    def getKind(self, kind):
+        r = []
+        for i in self.children:
+            if type(i) != type('') and i.tag == kind:
+                r.append(i)
+        return r
+    
+class Parser(xmllib.XMLParser):
+    def __init__(self):
+        xmllib.XMLParser.__init__(self)
+        self.STACK = [ EntCont('', {}) ]
+
+    def unknown_starttag(self, tag, atts):
+        i = EntCont(tag, atts)
+        self.STACK[-1].children.append(i)
+        self.STACK.append(i)
+
+    def unknown_endtag(self, tag):
+        self.STACK.pop()
+
+    def handle_data(self, data):
+        self.STACK[-1].children.append(data)
+        
+def doParse(text):
+    p = Parser()
+    p.feed(text)
+    p.close()
+    return p.STACK[0].children[0]
+
+class Story:
+    def __init__(self, xmlNode):
+        self.title = string.join(xmlNode.getKind('title')[0].children, '')
+        self.url = string.join(xmlNode.getKind('url')[0].children, '')
+        self.comments = string.atoi(xmlNode.getKind('comments')[0].children[0])
+        self.time = string.join(xmlNode.getKind('time')[0].children,'')
+        self.department = string.join(xmlNode.getKind('department')[0].children,'')
+
+#def getXML(): return open('/home/drew/slashdot.xml').read()
+def getStories():
+    xml = getXML()
+    #print xml
+    tree = doParse(xml)
+    l = []
+    for i in tree.getKind('story'):
+        l.append(Story(i))
+    return l
+
+#if __name__ == '__main__':
+#    for i in getStories():
+#        print '<A HREF="%s">%s</A><BR>' % (
+#            i.url, i.title)
+raise ReturnValue, getStories()

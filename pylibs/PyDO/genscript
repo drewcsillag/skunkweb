@@ -1,0 +1,64 @@
+IDEAS FOR GENSCRIPT
+
+- asks for connect account (needs to be dba?)
+
+- gets list of tables
+
+- gets list of pk, fk, unique, not null constraints;
+  maps with tables
+
+- sorts into tables with real primary keys,
+  and "join" tables whose columns are ALL fks,
+  and "auxiliary" tables whose pk columns are
+  all fks
+
+- then gets all sequences, holds for use
+
+- for each primary "entity" table...
+
+    - asks for a class name (suggests one, too)
+
+    - asks for a brief description (can skip)
+
+    - dump sequences and allow
+      numeric selection of one of them for each
+      primary key column (no sequence is allowed)
+
+- for "auxiliary" table
+
+    - asks for a class name
+
+    - asks for a brief description (can skip)
+
+    - determine if a one-to-one to a single table,
+      o2m with single table, or multiple o2m with
+      tables
+
+    - for each side of the relationship, ask for
+      (and suggest) instance methods which traverse
+      the relationship; check for ns conflicts,
+      then store the methods and their code bodies
+      with the appropriate data classes
+
+- for each m2m "join" table
+
+    - ask for a class name (use)
+
+    - asks for a brief description (can skip)
+
+    - ask for (and suggest) method to traverse
+      join table both ways; for each way, ask
+      if a "few" or a "many" will show up, and
+      skip creating this method if a "many";
+      else add the method and its code body
+
+- ask for a module name, add .py if needed
+
+- ask for connection string, use current one as default;
+  make it a module variable used by all PyDO classes
+
+- print the source code for each PyDO class in
+  primary/auxiliary/join | alpha order; brief
+  description is documentation string
+
+

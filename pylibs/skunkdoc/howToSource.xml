@@ -1,0 +1,224 @@
+<title>How to example</title>
+<subtitle>A <i>fucked</i> up example</subtitle>
+<author>Drew Csillag</author>
+<chapter id="foo">
+<title>installation</title>
+<b>ve&nbsp;rses:</b><br/>
+<ul>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+</ul>
+
+<ol>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+<li>This is how we wash our hair, wash our hair</li>
+</ol>
+
+<p/>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<section>
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection>
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+</section>
+
+<section>
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection>
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+</section>
+</chapter>
+
+<chapter>
+<title>installation</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+<p/>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<section>
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection>
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+</section>
+
+<section id="bar">
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection>
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+</section>
+</chapter>
+
+<appendix>
+<title>installation</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+<p/>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<section>
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection>
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+</section>
+<section>
+<title><b>direct</b>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+<subsection>
+<title><i>subdirect</i>ories</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+</subsection>
+
+<subsection id="baz">
+<title><b><code>foo</code>ba</b>r</title>
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+This is how we wash our hair, wash our hair
+
+See <xref id="foo">installation</xref> for more info.
+<ul>
+<li>See <xref id="bar">directories</xref> for more info.
+</li>
+<li>Some other <xref id="baz">link</xref> that points to <b>ME!</b></li></ul>
+
+<table>
+<tr> <th>This is a test</th><th>foobar</th><th>FOOOO!</th></tr>
+<tr> <td> shiiiit!</td><td>A somewhat longer size table entry so that we can see how TeX will do this</td><td>BARRRRRR!</td></tr>
+<tr> <td> shiiiit!</td><td>A somewhat longer size table entry so that we can see how TeX will do this</td><td>BARRRRRR!</td></tr>
+</table>
+
+more shit here
+
+<table>
+<tr><th>This</th><th>that</th></tr>
+<tr><td>foo</td><td>bar aslkdjfs sldkfjs sldkfj ssdlfk sdkfj sdlkj sdlfk sdlfk sdlkjdf</td></tr>
+<tr><td>foo</td><td>bar</td></tr>
+<tr><td>foo</td><td>bar</td></tr>
+<tr><td>foo</td><td>bar</td></tr>
+</table>
+
+<table>
+<tr> <th>This is a test</th><th>foobar</th><th>FOOOO!</th><th>FOOOO!</th></tr>
+</table>
+</subsection>
+</section>
+</appendix>

@@ -1,0 +1,77 @@
+import string
+import httplib
+import xmllib
+
+#def getXML():
+#    h = httplib.HTTP('www.linux.com')
+#    h.putrequest('GET', '/mrn/front_page.rss')
+#    h.endheaders()
+#    errc, errm, headers = h.getreply()
+#    f = h.getfile()
+#    data = f.read()
+#    f.close()
+#    return data
+def getXML():
+    import urllib
+    return urllib.urlopen('http://www.linux.com/mrn/front_page.rss').read()
+
+class EntCont:
+    def __init__(self, tag, atts):
+        self.tag = tag
+        self.atts = atts
+        self.children = []
+        
+    def getKind(self, kind):
+        r = []
+        for i in self.children:
+            if type(i) != type('') and i.tag == kind:
+                r.append(i)
+        return r
+    
+class Parser(xmllib.XMLParser):
+    def __init__(self):
+        xmllib.XMLParser.__init__(self)
+        self.entitydefs['reg']='&#38;reg;'
+        self.STACK = [ EntCont('', {}) ]
+
+    def unknown_starttag(self, tag, atts):
+        i = EntCont(tag, atts)
+        self.STACK[-1].children.append(i)
+        self.STACK.append(i)
+
+    def unknown_endtag(self, tag):
+        self.STACK.pop()
+
+    def handle_data(self, data):
+        self.STACK[-1].children.append(data)
+        
+def doParse(text):
+    p = Parser()
+    p.feed(text)
+    p.close()
+    return p.STACK[0]
+
+class Story:
+    def __init__(self, xmlNode):
+        self.title = string.join(xmlNode.getKind('title')[0].children, '')
+        self.url = string.join(xmlNode.getKind('link')[0].children, '')
+        try:
+            self.description = string.join(xmlNode.getKind('description')[0].children,'')
+        except:
+	    self.description = ''
+
+def getArticles():
+    xml = getXML()
+    try:
+        tree = doParse(xml)
+    except:
+        return []
+    l = []
+    items = tree.getKind('rss')[0].getKind('channel')[0].getKind('item')
+    for i in items:
+        l.append(Story(i))
+    return l
+
+#if __name__=='__main__':
+#    print getArticles()        
+raise ReturnValue, getArticles()

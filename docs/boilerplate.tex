@@ -1,0 +1,50 @@
+\documentclass{manual}
+\usepackage{makeidx}
+\usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
+\title{The SkunkWeb Developers Guide}
+\author{Drew Csillag}
+\release{3.0}
+\setshortversion{3}
+\makeindex
+
+\begin{document}
+%function argument list environment
+\newcommand{\argdescitem}[1]{\hspace\labelsep
+                                \normalfont\ttfamily #1\ }
+\newenvironment{argdesc}{\begin{list}{}{
+        \renewcommand{\makelabel}{\argdescitem}
+}
+}{\end{list}}
+
+%begin titlepage stuff
+\maketitle
+\ 
+\vfill 
+\noindent
+This file documents the SkunkWeb Web Application Framework.
+
+\noindent
+Copyright (C) 2000 StarMedia Network, Inc.
+
+\noindent
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+%%end titilepage stuff
+
+\tableofcontents
+
+
+
+
+
+
+
+
+
+\cleardoublepage
+
+\printindex
+
+\end{document}

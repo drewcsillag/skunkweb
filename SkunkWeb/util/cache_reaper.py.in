@@ -1,0 +1,133 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+import sys
+import os
+import cPickle
+import time
+import stat
+
+import Config
+from SkunkExcept import *
+
+# The mode of expired files - we are using xbit hack to mark expired items
+_CACHE_EXP_MODE = 0740
+
+conf = Config.Config([
+    Config.el('cachedir', 'cache directory', '@prefix@/webcache',
+              'c', 'cachedir', 'pathtocache'),
+    Config.el('deadtime', 'how long after cache entry dies do we delete it',
+              24 * 60 * 60, 'd', 'deadtime', 'seconds', convert_hook = int),
+    Config.el('help', 'show this screen', None, 'h', 'help'),
+    Config.el('preview', "don't actually delete, but show what would be done",
+              None, 'p', 'preview'),
+    ], 'walk the cache directory and reap dead entries')
+    
+def get_expiration(filename):
+
+    # First, stat the file and check mode
+    #
+    # XXX we cannot use it - we still don't have enough meta-data to 
+    # figure out when it was expired
+    #
+    #stat.S_IMODE(os.stat(filename)[stat.ST_MODE]) != _CACHE_EXP_MODE:
+    #    return None
+
+    try:
+        metaDict = cPickle.load(open(filename))[0]
+        return metaDict['exp_time']
+    except:
+        return None
+
+# The number of cache entries reaped
+_reaped, _total = 0, 0
+def walk_func((dodel, deadtime), dirname, filelist):
+    global _reaped, _total
+
+    curtime=time.time()
+
+    # Make a copy, since we mutate filelist
+    full_list = filelist[:]
+
+    for file in filelist:
+	# Check the extension
+	if file[-6:] != '.cache':
+	    continue
+
+        filename = os.path.join(dirname, file)
+
+        _total = _total + 1
+
+        exp_time = get_expiration(filename)
+
+        if (exp_time is not None
+            and exp_time < (curtime - deadtime)
+            and exp_time != -1):
+            #print 'Reaping %s\n    ttd=%d  tl=%d' % (filename, timestamp,
+            #                                         curtime - deadtime)
+            _reaped = _reaped + 1
+            if dodel:
+                keyfile = file[:-6] + '.key'
+
+                for f in ( file, keyfile ):
+                    # Wasteful
+                    _f = os.path.join ( dirname, f )
+                    try:
+                        os.unlink( _f )
+                    except OSError, val:
+                        raise SkunkStandardError, 'cannot unlink %s: %s' % \
+                              ( _f, val )
+
+                    # Get rid of the filename in the list, to prevent os.walk()
+                    # from breaking
+                    del filelist[filelist.index(f)]
+
+try:
+    args = conf.parse(sys.argv[1:])
+except:
+    conf.usage()
+    sys.exit()
+    
+if conf['help'] or args:
+    print conf.usage()
+    sys.exit()
+
+if conf['preview']:
+    print 'running in preview mode'
+    dodel = 0
+else:
+    dodel = 1
+
+cacheDir = conf['cachedir']
+deadtime = conf['deadtime']
+
+print 'About to delete cache entries in %s expired more than %d ' \
+      'seconds ago' % ( cacheDir, deadtime )
+
+# Make a note of the time
+_start_time = time.time()
+
+os.path.walk(cacheDir, walk_func, (dodel, deadtime))
+
+if dodel:
+    sys.stdout.write ( 'Deleted ' )
+else:
+    sys.stdout.write ( 'Would have deleted ' )
+
+print '%d out of %d total cache entries, time taken %.3f seconds' % \
+      ( _reaped, _total, time.time() - _start_time )

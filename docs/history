@@ -1,0 +1,33 @@
+Mid Oct 98  First embryonic AE, -- DocumentTemplates via CGI using PATH_INFO
+Beg Nov 98  DT library in interpreted mode
+
+Feb 08 99 Skunk project really begins
+May 27 99 AED becomes daemon
+Jun 15 99 DT acquires compiled mode
+
+Jul 15 99 AED supports restart
+Mar 04 99 msgcats added
+Feb 15 99 components added
+
+Feb 26 99 parser generator added
+Apr 08 99 SDS started in ernest
+
+Jul 30 99 Peri launches -- confirm this
+
+Jul 13 99 1st hook interfaces added
+~Oct 27 99 move to new repository
+Dec 12 99 DCOracle patches galore
+
+Nov 19 99 data components
+Oct 27 99 new configuration
+Feb 04 00 new process manager
+Sep 20 99 mod_aecgi
+Feb 02 00 document tools
+Oct 08 99 autoconf
+Dec 12 99 remote components
+Feb 23 99 deferred caching
+
+Mar 09 00 SDS 3 begins
+
+Mar 08 00 Superteam launches womens channel
+

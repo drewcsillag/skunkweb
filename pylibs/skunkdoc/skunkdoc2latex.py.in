@@ -1,0 +1,272 @@
+#!/usr/local/bin/python
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+
+
+import sys
+import string
+
+import scanners.SkunkDocXML
+
+class BogusNode(scanners.SkunkDocXML.Node):
+    def __init__(self, child):
+        self.contents = [child]
+        
+def textonly(node):
+    s = []
+    if type(node) == type(''): return node
+    for n in node.contents:
+        if type(n) == type(''): s.append(n)
+        else: s.append(textonly(n))
+    return string.join(s, '')
+
+simplekind = {
+    'ul': ('\\begin{itemize}\n', '\\end{itemize}\n'),
+    'ol': ('\\begin{enumerate}\n', '\\end{enumerate}\n'),
+    'b': ('{\\bfseries{}', '}'),
+    'i': ('{\\itshape{}', '}'),
+    'li': ('\\item ', ''),
+    'code': ('{\\ttfamily{}', '}'),
+    'p': ('\n\n', ''),
+    'br': ('\\linebreak', ''),
+    'tt': ('{\\ttfamily{}', '}'),
+    'dd': ('', ''),
+    'dt': ('\\item[', ']'),
+    'dl': ('\\begin{description}\n', '\\end{description}\n'),
+    'nobr': ('\\hbox{', '}'),
+    'wbr': ('\\-', ''),
+    'hr': ('\\hrule', ''),
+    'a': ('', ''),
+    'h1': ('\\par\n{\\noindent\\bfseries\\Large ', '}'),
+    'h2': ('\\par\n{\\noindent\\bfseries\\Large ', '}'),
+    'h3': ('\\par\n{\\noindent\\bfseries\\large ', '}'),
+    }
+
+def handlepre(node, sectionLevel):
+    preproccontents(node)
+    s = []
+    s.append('\n\n{\\begin{alltt}\n')
+    for i in node.contents:
+        if type(i) == type(''):
+            s.append(escapeit(i, -50))
+        else:
+            #s.append('% processed \n')
+            s.append(process(BogusNode(i), -50))
+    n = string.join(s, '')+ '\n\\end{alltt}}'
+    return n
+            
+def escapeit(n, fullblown=0):
+#    if '>' in n or '<' in n:
+#        sys.stderr.write('escaping fullb = %d -- %s\n'  % (fullblown, n))
+#        foo = 1
+#    else:
+#        foo = 0
+    s = []
+    for i in n:
+        if i not in '#$%&~_^\\{}|<>':
+            s.append(i)
+        elif i in '$&%#_{}':
+            s.append('\\%s' % i)
+        elif i in '<>' and fullblown >= 0:
+            s.append('$%s$' % i)
+        elif i in '<>' and fullblown < 0:
+            s.append(i)
+        elif i == '\\':
+            s.append('{\\ensuremath\\backslash{}}')
+        else:
+            s.append('\\verb1%s1' % i)
+    n = string.join(s, '')
+    n = string.replace(n, '\\&nbsp;', '\\ ')
+    if fullblown < 0:
+        n = string.replace(n, '\\&lt;', '<')
+        n = string.replace(n, '\\&gt;', '>')
+    else:
+        #n = string.replace(n, '\\&lt;', '$<$')
+        #n = string.replace(n, '\\&gt;', '$>$')
+        n = string.replace(n, '\\&lt;', '\\texttt{<}')
+        n = string.replace(n, '\\&gt;', '\\texttt{>}')
+    n = string.replace(n, '\\&amp;', '\\&')
+#    if foo:
+#        sys.stderr.write('escaped to: %s' % n)
+    return n
+            
+        
+def processSimple(n, sectionLevel):
+    beg, end = simplekind[n.tag]
+    return beg + process(n, sectionLevel) + end
+
+sectioning = ('chapter', 'section', 'subsection', 'subsubsection',
+              'subsubsubsection')
+
+
+def processSection(node, sectionLevel):
+    s = []
+
+    s.append('\\%s{%s}\n' % (sectioning[sectionLevel], process(node.title,
+                                                               sectionLevel)))
+    if node.id:
+        s.append('\\label{%s}\n' % node.id)
+    s.append(process(node, sectionLevel+1))
+    return string.join(s, '')
+
+def preproccontents(node):
+    nc = []
+    laststring = 0
+    for i in node.contents:
+        if type(i) == type(''):
+            if laststring:
+                nc[-1] = nc[-1] + i
+            else:
+                nc.append(i)
+                laststring=1
+        else:
+            laststring=0
+            nc.append(i)
+    node.contents=nc
+
+def buildtable(node, sectionLevel, colwidth, rows):
+    s=[]
+    s.append('\\begin{longtable}{%s|}   \\hline\n' % (('|p{%5.3fin}' % colwidth)* rows))
+    for i in node.contents:
+        if type(i) != type(''):
+            for j in i.contents:
+                if type(j) != type(''):
+                    if j.tag in ('td', 'th'):
+                        procd = process(j, sectionLevel)
+                        if j.tag == 'th':
+                            procd = '\\bfseries ' + procd
+                        s.append(procd)
+                    else:
+                        sys.stderr.write('unknown tag in table %s\n' % i.tag)
+                        continue
+                    s.append(' & ')
+            s.pop()
+            s.append( '\\\\ \\hline\n')
+    s.append('\\end{longtable}')
+    return string.join(s, '')
+
+def handletable(node, sectionLevel):
+    rows = -1
+    for i in node.contents:
+        if type(i) != type('') and i.tag == 'tr': #find first row
+            for j in i.contents:
+                if type(j) != type('') and j.tag in ('th', 'td'):
+                    rows = rows + 1
+            break
+    if rows == -1:
+        sys.stderr.write("empty table, didn't find any rows!\n")
+        return ''
+    rows = rows + 1
+    colwidth = 4.5/rows
+    return buildtable(node, sectionLevel, colwidth, rows)
+            
+def handlexref(node, sectionLevel):
+    xref = node.args['id']
+    onode = index[xref]
+    return '%s (%s~\\ref{%s}: %s, page~\\pageref{%s})' %(
+        process(node, sectionLevel), string.capitalize(onode.tag),
+        xref, process(onode.title, 0), xref
+        )
+
+def handlelabel(node, sectionlevel):
+    return '\\label{%s}' % node.args['id']
+
+def process(node, sectionLevel=0, changepagenumbering=0):
+    s = []
+    seenappendix = 0
+    preproccontents(node)
+    for n in node.contents:
+        #if type(n) != type (''):
+        #    sys.stderr.write('tag is %s: contents are %s\n\n' % (
+        #        n.tag, textonly(n)))
+                                                                 
+        if type(n) == type(''): s.append(escapeit(n, sectionLevel))
+
+        elif simplekind.has_key(n.tag):
+            s.append(processSimple(n, sectionLevel))
+        elif n.tag in ('codeblock', 'pre'):
+            s.append(handlepre(n, sectionLevel))
+        elif n.tag == 'xref':
+            s.append(handlexref(n, sectionLevel))
+        elif n.tag == 'table':
+            s.append(handletable(n, sectionLevel))
+        elif n.tag == 'label':
+            s.append(handlelabel(n, sectionLevel))
+        else:
+            sys.stderr.write("No handler for <%s> tag\n" % n.tag)
+                             
+    if hasattr(node, 'sections'):
+        if changepagenumbering:
+            s.append('\\pagenumbering{arabic}\n')
+        for n in node.sections:
+            if n.tag == 'appendix' and not seenappendix:
+                s.append('\\appendix\n')
+                seenappendix = 1
+            s.append(processSection(n, sectionLevel))
+    return string.join(s, '')
+
+def _genSkdocXrefIndex(index, contents, lastsect=None):
+    """look for <label>s"""
+    for i in contents:
+        if type(i) == type(''):
+            continue
+        if i.tag in sectioning:
+            if i.id:
+                index[i.id] = i
+            lastsect = i
+            _genSkdocXrefIndex(index, i.contents + i.sections, lastsect)
+        elif i.tag == 'label':
+            index[i.args['id']] = lastsect
+        else:
+            _genSkdocXrefIndex(index, i.contents, lastsect)
+            
+filename = sys.argv[1]
+howto = scanners.SkunkDocXML.parseFile(filename)
+
+index = {}
+_genSkdocXrefIndex(index, howto.sections)
+print '\\documentclass{book}'
+print '\\usepackage{longtable}'
+print '\\usepackage{alltt}'
+print '\\RequirePackage{times}'
+sys.stderr.write('author is %s\n' % howto.author)
+if string.strip(textonly(howto.author)):
+    print '\\author{%s}' % process(howto.author)
+if string.strip(textonly(howto.title)):
+    print '\\title{%s}' % process(howto.title)
+print '\\begin{document}'
+print '''\\newenvironment{preform}
+       {%
+        \\ttfamily\\parindent0pt\\obeylines\\setlength{\\parskip}{0pt}%
+        \\list{}{}%
+        \\item\\relax%
+        }
+       {\\endlist}'''
+print '\\sloppy\\tolerance10000\\pretolerance10000'
+print '\\maketitle'
+print '\\pagenumbering{roman}'
+print '\\tableofcontents'
+print r"\setlength{\parskip}{10pt}\setlength{\parindent}{0pt}"
+class d: pass
+d = d()
+d.sections = howto.sections
+d.contents=[]
+print process(d, changepagenumbering=1)
+
+print '\\end{document}'
+

@@ -1,0 +1,9 @@
+before try
+<:try:>
+this is a test
+<:raise:>
+stuff after raise
+
+<:else:>
+we blew up
+<:/try:>

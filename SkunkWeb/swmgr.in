@@ -1,0 +1,134 @@
+#!@BASH@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+#
+# This is the manager script for AED. Can be used to automate 
+# startup / shutdown procedures for the Skunk Application Environment 
+# Daemon :-). 
+#
+# $Id: swmgr.in,v 1.4 2001/07/09 20:38:40 drew Exp $
+
+umask 002
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+
+PYTHON=@PYTHON@
+# Extra options to pass to the AED server
+SWOPTIONS=""
+
+SWSTART="${bindir}/skunkweb $SWOPTIONS"
+
+# User SkunkWeb should be running as
+USER=@OWNER@
+
+# Path to sudo executable, if exists
+SUDO=@SUDO@
+
+# Some environment that needs to be set.
+ENV="ORACLE_HOME=$ORACLE_HOME LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib NLS_LANG=$NLS_LANG"
+
+function run_as_user 
+{
+    prog=$*
+
+    if [ `$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"` != "$USER" ]
+    then
+        # Check if sudo exists
+	if [ "$SUDO" = "" ]
+	then
+	    echo "Not running as user '$USER' and no sudo program, aborting..."
+	    exit 1
+        fi
+
+        # Need to sudo
+	if $SUDO -u $USER echo -n > /dev/null
+	then
+	    echo -n
+        else
+	    echo "Cannot sudo to user '$USER', fix and retry!" >&2
+	    exit 1
+        fi
+
+	$SUDO -u $USER env $ENV $prog
+    else
+        env $ENV $prog
+    fi
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	echo "Starting SkunkWeb..."
+	if run_as_user $SWSTART
+	then
+	    echo "SkunkWeb started."
+        else
+	    echo "SkunkWeb startup failed. Check error log."
+	    exit 1
+        fi
+	;;
+  stop)
+	echo "Stopping SkunkWeb..."
+        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
+
+	if [ -z "$PIDFILE" ]
+	then
+	    echo "run of swpython to determine pidfile failed!"
+            exit 1
+        fi
+	if [ ! -f $PIDFILE ] 
+	then
+	    echo "SkunkWeb pidfile missing. Aborting..."
+	    exit 1
+	fi
+	PID=`cat $PIDFILE`
+
+	# Kill it!
+	run_as_user kill -TERM $PID
+
+	echo "SkunkWeb stopped."
+	;;
+  restart)
+        # Send the HUP signal
+	echo "Restarting SkunkWeb..."
+        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
+	if [ -z "$PIDFILE" ]
+	then
+	    echo "run of swpython to determine pidfile failed!"
+            exit 1
+        fi
+	if [ ! -f $PIDFILE ] 
+	then
+	    echo "SkunkWeb pidfile missing. Aborting..."
+	    exit 1
+	fi
+	PID=`cat $PIDFILE`
+
+	# Kill -HUP 
+	run_as_user kill -HUP $PID
+
+	echo "SkunkWeb restarted"
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit 0

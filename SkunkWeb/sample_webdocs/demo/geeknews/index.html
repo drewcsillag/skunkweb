@@ -1,0 +1,48 @@
+
+<tr bgcolor="#F0E68C">
+<td align="center">
+<:#:>
+<:component /comp/sitetip.comp tip=`""" Geeknews intends to be our place for news headlines, open-source community software releases, and fun stuff within interests we all share as a group of, well, geeks.<br>"""`:>
+<:/#:>
+</td>
+</tr>
+</table>
+
+<P><B>Humor</B>
+<ul>
+<li><A HREF="dilbert.html">Dilbert Cartoon of the Day</A></li>
+<li><A HREF="ufriendly.html">User Friendly Cartoon of the Day</A></li>
+<li><A HREF="drfun.html">Dr. Fun Cartoon of the Day</A></li>
+<li><A HREF="http://www.theonion.com">The Onion</A></li>
+</ul>
+
+<P><B>News sources</B>
+<ul>
+<li><A HREF="#slashdot">Slashdot News</A></li>
+<li><A HREF="#linuxtoday">News from linuxtoday.com</A></li>
+<!--<li><A HREF="#32bitsonline">32 Bits Online</A></li>-->
+<li><A HREF="#lwndaily">Linux Weekly News</A></li>
+<li><A HREF="#linuxcom">Linux.com News</A></li>
+<li><A HREF="#newsforge">newsforge.com News</A></li>
+<li><A HREF="#freshmeat">FreshMeat News</A></li>
+</ul><P>
+
+<B>External Sites</B>
+
+<ul>
+<li><A HREF="http://www.osopinion.com">www.osopinion.com</a></li>
+<li><A HREF="http://www.linuxworld.com">Linux World</a></li>
+</ul>
+
+<:datacomp lwnsi dcomps/lwnsi.pydcmp cache=yes:>
+<:val `lwnsi`:>
+
+<:component slashdot.comp   cache=yes:>
+<:component linuxtoday.comp cache=yes:>
+<:component lwndaily.comp   cache=yes:>
+<:component linuxcom.comp   cache=yes:>
+<:component newsforge.comp  cache=yes:>
+<:component freshmeat.comp  cache=yes:>
+
+
+

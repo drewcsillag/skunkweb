@@ -1,0 +1,101 @@
+LICENSE
+------------------------------ 
+ Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
+                    Jacob Smullyan <smulloni@smullyan.org>
+ 
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 2 of the License, or
+     (at your option) any later version.
+ 
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+ 
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+  
+
+README for SkunkWeb
+------------------------------
+The installation instructions are in ``INSTALL''.  
+STML (Skunk Template Markup Language) and developer manuals are under
+docs/.
+
+
+Starting the SkunkWeb Server
+------------------------------
+Edit <prefix>/etc/sw.conf to taste.
+
+Run <prefix>/bin/swmgr start
+
+Hit http://localhost:8080 and check to see that you get the
+congratulations page.
+
+If you built mod_skunkweb (to use with apache), add the contents of
+SkunkWeb/mod_skunkweb/httpd_conf.stub to the end of your httpd.conf
+(editing to taste).  (Re)Start apache and hit it and check that you
+get the congratulations page.
+
+SkunkWeb, Smell the power!
+
+(from docs/Pitch)
+What is it?
+------------------------------
+SkunkWeb is (yet another) web application server.  The things that make it
+different are:
+
+Uses Python
+	* Python is easy to learn for both new programmers and experts alike
+	* senior programmer types like it too (vs. say tcl)
+	* extensible with C/C++ for speed and/or linkage to C/C++ libraries
+          via static *or* dynamic linking
+
+Extensible
+	* Relatively simple extension API
+	* can easily handle authentication, url building/parsing and custom
+	  tags
+
+Encourages component based design
+	* more than just "include"
+	* not just another ASP/JSP like thing
+	* a powerful templating language 
+	* encouraged by caching options (see below)
+	* component output can be either HTML or Python objects
+	* can write components in either STML or Python
+	* can also call components on other skunk servers
+	
+Message Catalogs
+	* makes multi-lingual sites much easier
+	* support variable substitution in messages
+
+Speed
+	* templates are compiled to Python bytecode
+	* extensive caching (to disk and optionally memory) of:
+		o compiled forms of templates
+		o digested message catalogs
+		o output of components
+		o python modules and python components
+	* cache *is* sharable between machines if using a
+	  shared filesystem! (can be more than one shared filesystem
+          for speed, redundancy and flexibility)
+	* caching is flexible and as finite as your disk space
+	* components can be rendered after the response is sent if 
+	  a slightly stale version is available --- resulting in
+	  better response times
+
+Documentation
+	* extensive documentation available in HTML, PostScript, PDF & text
+	* have automatic documentation tools to generate documentation for 
+	  STML templates and python modules as well as tools for writing 
+          manuals (but don't use the manual stuff, it sucks).
+
+Process Model
+        * Uses multi-process, versus multi-threading which makes better
+          use of multiple processors (because of the global interpreter
+          lock in Python), and is safer in that if one process crashes, 
+          it won't kill the entire server.
+
+No magic (zodb <wink>).

@@ -1,0 +1,75 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+#-*-python-*-
+import sys
+import getopt
+import getpass
+
+sys.path.append('@prefix@/lib/pylibs')
+import Authenticator
+
+def help():
+    print >> sys.stderr, """
+Usage: swpasswd [-cb] password_file username [password]
+
+Options:
+    
+-c   Create a new password file
+-b   Specify the password on the command line as opposed to being
+     asked for it interactively.
+"""
+
+    sys.exit()
+    
+try:
+    optlist, extra = getopt.getopt(sys.argv[1:], 'cb')
+except:
+    help()
+
+if not extra:
+    help()
+
+create=None
+batch=None
+
+for oname, oval in optlist:
+    if oname == '-c':
+        create = not create
+    if oname == '-b':
+        batch = not batch
+
+try:
+    if batch:
+        filename, user, password = extra
+    else:
+        filename, user = extra
+        password = getpass.getpass()
+except ValueError:
+    print >> sys.stderr, "wrong number of arguments"
+    help()
+
+if create:
+    auth = Authenticator.FileAuthenticator('/dev/null')
+    auth.file = filename
+else:
+    auth = Authenticator.FileAuthenticator(filename)
+
+auth.setUserPassword(user, password)
+auth.dump()
+    

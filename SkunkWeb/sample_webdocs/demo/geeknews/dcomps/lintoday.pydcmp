@@ -1,0 +1,29 @@
+import string
+import StringIO
+import urllib
+
+def getLT():
+    return urllib.urlopen('http://linuxtoday.com/backend/lthead.txt').read()
+    #return open('/home/drew/lthead.txt').read()
+
+class Article:
+    def __init__(self, headline, link, date):
+        self.headline = headline
+        self.link = link
+        self.bodytext = ''
+        self.date = date
+
+def getArticles():
+    t = getLT()
+    f = StringIO.StringIO(t).readlines()
+    f = map(string.strip, f)
+    start = f.index('&&')
+    arts = []
+    for i in range(start, len(f), 4):
+        head, link, date = f[i+1:i+4]
+        arts.append(Article(head, link, date))
+    return arts
+
+#if __name__ == '__main__':
+#    print map(lambda x: x.headline, getArticles())
+raise ReturnValue, getArticles()

@@ -1,0 +1,60 @@
+X add .key files 
+X Settle on a coding style w.r.t. the heading
+X relative path addressing of components
+   docstring
+   ID line comment
+   system imports
+   pylib imports
+   local imports
+   #config ...
+   configuration stuff
+   #/config
+   globals
+   #init funcs == func1() func2() ...
+X libify templ 
+X locate all "init" functions  (#init funcs == )
+X hooks -- Nope
+X fix the setting of the mimetype to executable mapping in the way that
+  templateMimeTypes is done.
+X disable deferrment when rendering deferred components
+X auto config module generator
+X Logging
+    X component access log and times
+    X debug logging
+    X ability to shut it off
+X make so Cache is pluggable in some way -- or at least don't eliminate that
+  possibility.  Load and go is what I'm thinking here
+  -- just have to implement (just!): CachedComponent like object,
+      getCachedComponent(), putCachedComponent, extendDeferredCachedComponent,
+      getDT, getPythonCode
+X be able to turn off compile and component caching
+X memory caching (compile, not component) -- write through
+X add config functionality
+X merge common parts of getDT and getPythonCode
+X add Message Catalogs
+X add return, cache, compargs, date tags
+X add msgcatalog tags
+X add *comp* tags
+X move TimeUtil into Date package (needs committing)
+X commit DT.py change
+X move <import>, <set>, <doc> to DT
+X add type tag
+N set __name__ to name of component? -- no -- includes?
+X log component TTLs
+X clearCache and inevitable .key file fixes
+X distinguish child init vs. server init funcs
+N have python components reject components that contain functions and classes
+  but allow lambdas
+I HTMLTags, RemoteSvcs, args, Log stay as part of web linkage extension
+X Cache file versioning -- version by type
+X generic caching accessible via API -- (put|get)CachedComponent
+
+? support wildcard mimetypes (e.g. text/*) for templateMimeTypes?
+
+##### other stuff
+? Remove DTTag ctor arg for modules
+
+##### future
+
+F rename DT to STML
+F cache key paranoia mode

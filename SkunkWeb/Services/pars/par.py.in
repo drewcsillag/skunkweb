@@ -1,0 +1,175 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+#$Id: par.py.in,v 1.1 2001/07/27 16:37:40 drew Exp $
+
+import sys
+import stat
+import os
+import marshal
+import time
+import errno
+
+
+
+def dorecur(l, parDir, parDirKeys):
+    ml = l[:]
+    for i in l:
+        if stat.S_ISDIR(parDir[i][1][stat.ST_MODE]):
+            f = [k for k in parDirKeys if k[:len(i)+1] == '%s/' % i ]
+            ml.extend(f)
+    return ml
+
+def extract():
+    parfilename = sys.argv[2]
+    f = open(parfilename, 'r')
+    parDir = marshal.load(f)
+    parDirKeys = parDir.keys()
+
+    try:
+        sys.argv[3]
+    except:
+        ks = parDirKeys
+    else:
+        ks = dorecur(sys.argv[3:], parDir, parDirKeys)
+
+    ks.sort()
+
+    val = f.read()
+
+    for k in ks:
+        off, st = parDir[k]
+        if stat.S_ISDIR(st[stat.ST_MODE]):
+            try:
+                os.makedirs(k[1:])
+            except OSError, val:
+                if val.errno != errno.EEXIST:
+                    raise
+        else:
+            f = open(k[1:],'w')
+            f.write(val[off:off+st[stat.ST_SIZE]])
+            f.close()
+
+        os.chmod(k[1:], st[stat.ST_MODE])
+        os.utime(k[1:], (st[stat.ST_ATIME], st[stat.ST_MTIME]))
+
+
+def addFile(name, statinfo, parDir, parContents, parContsLen):
+    parDir["/%s" % name] = (parContsLen[0], statinfo)
+    text = open(name).read()
+    parContents.append(text)
+    parContsLen[0] += len(text)
+
+def addDir(name, statinfo, parDir, parContents, parContsLen):
+    parDir["/%s" % name] = (-1, statinfo)
+    files = ['%s/%s' % (name, i) for i in os.listdir(name)]
+    for i in files:
+        s = os.stat(i)
+        if stat.S_ISDIR(s[stat.ST_MODE]):
+            addDir(i, s, parDir, parContents, parContsLen)
+        else:
+            addFile(i, s, parDir, parContents, parContsLen)
+
+def create():
+    parfilename = sys.argv[2]
+    files = sys.argv[3:]
+
+    parDir = {}
+    parContents = []
+    parContsLen = [0]
+
+
+    for i in files:
+        s = os.stat(i)
+        if stat.S_ISDIR(s[stat.ST_MODE]):
+            addDir(i, s, parDir, parContents, parContsLen)
+        else:
+            addFile(i, s, parDir, parContents, parContsLen)
+
+    f = open(parfilename, 'w')
+    marshal.dump(parDir, f)
+    f.write(''.join(parContents))
+
+def ftime(t):
+    return time.strftime("%b %02d %02H:%02M", time.localtime(t))
+
+def permdisplay(p):
+    x = list('rwxrwxrwx')
+    x.reverse()
+    
+    d = []
+    for bn, mask in [(i, 2**i) for i in range(8,-1,-1)]:
+        if p & mask:
+            d.append(x[bn])
+        else:
+            d.append('-')
+    if stat.S_ISDIR(p):
+        d.insert(0, 'd')
+    else:
+        d.insert(0, '-')
+    return ''.join(d)
+            
+
+def view():
+    parfilename = sys.argv[2]
+    f = open(parfilename, 'r')
+    parDir = marshal.load(f)
+
+    ks = parDir.keys()
+    ks.sort()
+
+    import time
+    curtime = time.time()
+
+    for k in ks:
+        v = parDir[k]
+        print '%s %10d  %s  %s' % (permdisplay(v[1][stat.ST_MODE]),
+                                   v[1][stat.ST_SIZE],
+                                   ftime(v[1][stat.ST_MTIME]),k)
+
+def help():
+    print >> sys.stderr, "Usage:"
+    print >> sys.stderr, "  Extraction"
+    print >> sys.stderr, "    par x parfile [files_to_extract]"
+    print >> sys.stderr, "  Listing"
+    print >> sys.stderr, "    par t parfile"
+    print >> sys.stderr, "  Creation"
+    print >> sys.stderr, "    par c parfile files_to_add"
+    print >> sys.stderr
+    sys.exit()
+    
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print >> sys.stderr, "not enough arguments"
+        help()
+    if sys.argv[1] not in 'xct':
+        print >> sys.stderr, "invalid option %s" % sys.argv[1]
+        help()
+    if sys.argv[1] == 'c' and len(sys.argv)< 4:
+        print >> sys.stderr, "not enough arguments"
+        help()
+    if sys.argv[1] == 'x':
+        extract()
+    elif sys.argv[1] == 'c':
+        create()
+    elif sys.argv[1] == 't':
+        view()
+    else:
+        print >> sys.stderr, "par's first argument must be either x, c or t"
+        
+    

@@ -1,0 +1,97 @@
+------------------------------------------------------------
+HOW TO USE
+
+*skdoc no longer requires PyXML.  But it will make use of it if you have 
+ it and it REALLY speeds things up.  Put it this way, you don't want to be
+ without it.  Yes the difference is THAT BIG.
+
+ (tested with PyXML version 0.5.3)
+ available from http://www.python.org/sigs/xml-sig/files/PyXML-0.5.3.tar.gz
+
+run
+     python skdocpy.py -p codedir1 codedir2 etc > somefile
+to create xml documentation data for modules, packages and subpackages
+in the directories specified.
+
+run 
+    python skdocpy.py -s stmldir1 stmldir2 etc >> somefile
+to create xml documentation data for all stml documents (.html, .comp,
+.dcmp files) below the directories specified.
+
+
+then run 
+    cat somefile someotherfile | python skunkdoc2html.py
+to create click-monkey style html from the xml.  
+
+then copy the files from skdoc/images into the directory where the html 
+resides.
+
+You can concatenate as many xml output files from the skdoc 
+tool as needed for input into the html/other renderers (ok,
+right now we only have no 'other' renderers...).
+
+------------------------------------------------------------
+MARKUP IN DOCSTRINGS
+
+If you want to do real markup in docstrings, the docstring must start with 
+the string '**' (two asterisks), otherwise, the text will be html-escaped and 
+effectively put into a <codeblock> block.  This applies to module doc
+strings as well as STML <:doc:> blocks.
+
+All tags are spelled in lowercase, and empty tags (i.e. <p/>) must have the 
+slash in them (as per the way xml works).
+
+The <ul>, <ol>, <li>, <i>, <b>, <code>, <table>, <tr>, <td>, <p/>,
+<br/> and <img/> tags work just like their html equivalents, but must
+be spelled in xml format. 
+
+codeblock - equivalent to HTML <pre><code>stuff</code></pre>.
+
+coming soon - <modref>, <tempref>, <compref>, <dcompref>
+
+------------------------------------------------------------
+THINGS THAT JUST AREN'T PROCESSED
+
+Modules (except for __init__.py which is treated as the package name
+like you would expect), classes, functions, and methods (except for
+__init__) whose name begins with an _.
+
+Classes that are defined in functions, since they're not accessible
+outside of the function.
+
+Lambdas -- they don't have docstrings anyway and are 99.999% of the
+time private anyhow.
+
+------------------------------------------------------------
+THINGS THAT WILL PROBABLY WORK, BUT NO GUARANTEES, SKDOC MAY GUESS WRONG
+
+If you subclass from an "inner" class, the link may be wrong.
+
+
+------------------------------------------------------------
+THINGS THAT DON'T WORK AND PROBABLY WON'T UNLESS THERE IS GREAT DEMAND
+
+If there is no definition of a superclass in the XML, it can't be
+hyperlinked to since we're not producing documentation for it...
+
+
+If you subclass from a class whose names starts with an _.
+
+If the namespace of a module depends on the order of the imports (specifically,
+   the class name contents of namespaces), YMMV.
+
+If you assign another name to an imported value and subclass from that (
+   or something it contains), the superclass very likely won't be 
+   hyperlinked.
+
+Funky namespace jostlings may cause the superclass hyperlinks to be wrong.
+   i.e. 
+       from foo import super
+       class super:
+   	     pass
+       class sub(super): pass
+   The hyperlink generated for the "super" class in the documentation of sub
+   is undefined (I don't know what you get, I think it links to foo.super
+   which probably isn't what you want).
+   
+

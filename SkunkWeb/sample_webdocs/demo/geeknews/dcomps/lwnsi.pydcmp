@@ -1,0 +1,13 @@
+import httplib
+
+def getLWNSI():
+    h = httplib.HTTP('lwn.net')
+    h.putrequest('GET', '/stocks/LLSI.table.html')
+    h.endheaders()
+    errc, errm, headers = h.getreply()
+    f = h.getfile()
+    data = f.read()
+    f.close()
+    return data
+
+raise ReturnValue, getLWNSI()

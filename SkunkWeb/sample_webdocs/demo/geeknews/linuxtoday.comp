@@ -1,0 +1,17 @@
+<:cache duration=10m:>
+<P>
+<B><A NAME="linuxtoday">Headlines from <A HREF="http://linuxtoday.com">LinuxToday.com</A></A></B>
+<:try:>
+    <font size=-1>
+    <:datacomp arts dcomps/lintoday.pydcmp cache=yes:>
+    <:if `not arts`:><BR>No articles from linuxtoday<BR><:/if:>
+    <ul>
+    <:for `arts[:10]` article:>
+    <li><A HREF="<:val `article.link`:>"><:val `article.headline`:></A>
+	<br><:val `article.bodytext`:></li> 
+    <:/for:></ul>
+    </font>
+<:except:>
+    no linux today stuff
+<:cache duration=0m:>
+<:/try:>

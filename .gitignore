@@ -1,0 +1,7 @@
+config.cache
+config.log
+config.status
+configure.scan
+Makefile
+.setup.log
+logs

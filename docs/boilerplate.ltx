@@ -1,0 +1,84 @@
+\documentclass[titlepage]{book}
+\usepackage{path}
+\usepackage{makeidx}
+\usepackage[numbib,nottoc]{tocbibind} % make so bib and ind are in toc
+\usepackage{fancyhdr}
+%\usepackage{skunk}
+
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[el,or]{[\rm\thepage]}
+\fancyfoot[c]{}
+\makeindex
+
+\begin{document}
+\bibliographystyle{alpha}
+
+
+%%title page stuff
+\begin{titlepage}
+\hbox{}
+\vspace{1in}
+{\noindent\bfseries\Huge PUT TITLE HERE}
+\\
+\rule{\hsize}{3pt}
+\vskip5pt
+\noindent By Drew Csillag
+\vfill\eject
+
+\pagestyle{empty}
+\hbox{}
+\vfill
+\noindent
+This file documents the SkunkWeb Web Application Framework.
+
+\noindent
+Copyright (C) 2000 StarMedia Network, Inc.
+
+\noindent
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+\end{titlepage}
+%%end titilepage stuff
+
+\frontmatter  %basically, roman numeralled unnumbered  chapters
+\tableofcontents
+
+
+\chapter{Introduction}
+This is the intro
+
+
+\mainmatter  %main body of book including appendicies
+\pagestyle{fancy}
+\chapter{Core Services}
+\label{blah} % a cross reference label
+\section{Configuration}
+\index{configuration} % make an index entry that points here
+\index{configuration!core} % make a index subentry
+
+\subsection{blah}
+\ref{blah} % returns section/chapter # of \label{blah}
+\pageref{blah} % returns page # of \label{blah}
+\path!/usr/local/foo/bar! % to do paths that will be properly line broken
+                          % if needed
+\texttt{foobar} % make something in typewriter font
+\textit{foobar} % make something in italics
+
+\begin{itemize} % analogous to <ul>
+\item foo       % analogous to <li>foo</li>
+\end{itemize}   % analogous to </ul>
+% there is also \begin{enumerate} which is analogous to <ol>
+
+\begin{description}   % analogous to <dl>
+\item[foo] bar is baz % analogous to <dt>foo</dt><dd>bar is baz</dd>
+\end{description}     % analogous to </dl>
+
+
+
+\backmatter %bibliographies, glossaries and indicies and Addenda
+%\bibliography{devel}
+\cleardoublepage %not sure if this will always work
+\printindex
+\end{document}

@@ -1,0 +1,14 @@
+<:tagname 'first.things.first_arg)'
+	  second=`second(things_in.order).boink`
+          arg="with quotes:<> things"
+	  cache="10:20:30"
+:><:*
+<:tagname first.things(first_arg)
+	  second=second(things_in.order).boink
+          arg="with quotes:<> things"
+	  cache="10:20:30"
+:>
+*:
+*:
+
+*:>Right after comment

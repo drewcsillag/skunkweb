@@ -1,0 +1,83 @@
+# -*-python-*-
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+# $Id: bootloader.py.in,v 1.8 2001/07/09 20:38:40 drew Exp $
+# Time-stamp: <01/04/23 15:51:51 smulloni>
+########################################################################
+
+SkunkRoot = "@prefix@"
+DEFAULT_CONFIG_FILE_NAME = '@prefix@/etc/sw.conf'
+
+_servicesRoot = '@prefix@/lib/Services'
+_pylibsRoot = '@prefix@/lib/pylibs'
+
+#handle if we've not been run through configure
+if DEFAULT_CONFIG_FILE_NAME[0] == '@': #not populated by configure
+    DEFAULT_CONFIG_FILE_NAME = 'sw.conf'
+
+if SkunkRoot[0] == '@':
+    SkunkRoot = '/usr/local/skunk'
+
+def init(configFiles, SkunkRoot):
+    import ConfigLoader
+    import KickStart
+    #get the configuration module
+    from SkunkWeb import Configuration
+    #set default for skunkroot
+    Configuration.mergeDefaults(SkunkRoot = SkunkRoot)
+
+    #load config files
+    for c in configFiles:
+        ConfigLoader.loadConfigFile(c, KickStart.CONFIG_MODULE)
+
+    Configuration.mergeDefaults(_config_files_ = configFiles,
+                                SkunkWebVersion = "@SW_VERSION@")
+
+def load():
+    from SkunkWeb import Configuration, LogObj, ServiceRegistry, Hooks 
+    for serviceName in Configuration.services:
+	LogObj.LOG("Loading service %s" % serviceName)
+	__import__(serviceName)
+    ServiceRegistry.debugRegisteredServices(Configuration.initialDebugServices)
+    Hooks.ServerStart()
+
+########################################################################
+# $Log: bootloader.py.in,v $
+# Revision 1.8  2001/07/09 20:38:40  drew
+# added licence comments
+#
+# Revision 1.7  2001/04/23 20:17:17  smullyan
+# removed SKUNKWEB_SERVER_VERSION, which I found was redundant; fixed typo in
+# httpd/protocol; renamed "debugServices" configuration variable to
+# "initialDebugServices".
+#
+# Revision 1.6  2001/04/11 21:25:31  smullyan
+# modified bootloader so it matches the new signature of
+# ServiceRegistry.debugRegisteredServices.
+#
+# Revision 1.5  2001/04/11 20:47:12  smullyan
+# more modifications to the debugging system to facilitate runtime change of
+# debug settings.  Segfault in mmint.c fixed (due to not incrementing a
+# reference count in the coercion method).
+#
+# Revision 1.4  2001/04/10 22:48:31  smullyan
+# some reorganization of the installation, affecting various
+# makefiles/configure targets; modifications to debug system.
+# There were numerous changes, and this is still quite unstable!
+#
+########################################################################

@@ -1,0 +1,40 @@
+select UserRegistry where self.user_name == "drew"
+select UserRegistry where self.user_name > 3
+select Article where self.posted > Date('1999-232')
+select Article where self.dufus != Date('foo')
+select Article where self.headline == 'func'
+select Article where self.headline['esp'] == 'foo'
+select Article where self.headline['esp'] == 4
+select Article where @b in self.categories
+select Article where @s in self.categories
+select Article where @obj in self.categories
+get foo where 1==1
+select Article where self.author in (1,2,3)
+select Article where self.author in ('him', 'her', 'it')
+select foo where 1==1 sort by self.x
+select foo where 1==1 sort by self.x desc
+select foo where 1==1 sort by self.x desc, self.y
+select foo where 1==1 sort by self.x, self.y desc
+select foo where 1==1 sort by self.x, self.y desc, self.z
+select Article where self.headline[@b] == 'foo'
+select Article where self.oid
+select Article where self.headline['esp'] == self.headline['esp']
+select Article where self.headline['esp'] == self.headline['eng']
+select Article where 1
+select Article where self.author > 3
+select Article where not (1==1)
+select Article where not 1
+select Article where "This"
+select Article where 1 > 0
+select Article where 1 and 1
+select Article where 1 and self.categories
+select Article where 0 and self.categories
+select Article where 1 or self.categories
+select Article where 0 or self.categories
+select Article where 1 > 3 and 0
+select Article where 1 > 3 or self.categories
+select Article where self.categories
+select Article where self.categories sort by self.headline
+select Article where self.categories sort by self.headline['esp']
+select CanalCategory where self.parent == @obj
+select CanalCategory where self.parent == 'foo'

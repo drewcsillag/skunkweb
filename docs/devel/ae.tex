@@ -1,0 +1,191 @@
+\chapter{The \texttt{AE} Package}
+\label{aelib}
+Mention configuration if used outside of SkunkWeb, specifically that
+the default paths are different (since there is no SkunkRoot) 
+\section{Components}
+\subsection{\texttt{callComponent}}
+\begin{funcdesc}{callComponent}{name, argDict, cache = 0,
+                    defer = None, compType = DT_REGULAR,
+                    srcModTime = None}
+Return the output of calling a component.
+\begin{argdesc}
+\item[name] The path to the component.
+\item[argDict] A dictionary of arguments to the component.
+\item[cache] A boolean specifying that we should attempt to get the
+output from cache, and failing that, execute it and write the output
+to cache.
+\item[defer] A boolean specifying that 
+\begin{enumerate}
+\item If a recently expired cached version of the component exists
+give me that for now, and
+\item Evaluate the component after the response has been sent and
+write it to cache.
+\end{enumerate}
+Obviously, deferral only applies if the \texttt{cache} argument is
+true.
+\item[compType] \label{dtscore} Either \texttt{DT_REGULAR} meaning a
+regular textual 
+component, \texttt{DT_INCLUDE} meaning a textual component that runs in the
+namespace of the calling component, or \texttt{DT\_DATA} for a data
+component.  The \texttt{DT\_} 
+contants are in the \verb!AE.Component! module.
+\item[srcModTime] Modification time of the component source, if known.
+\end{argdesc}
+\end{funcdesc}
+
+\subsection{The Component Stack}
+
+\begin{datadesc}{componentStack} A list used as the component stack
+(\verb!componentStack[0]! being the bottom of the stack).
+\end{datadesc}
+\begin{datadesc}{topOfComponentStack} The current top of the component
+stack.  You should use \verb!componentStack[topOfComponentStack]! as
+the top of the stack, not \verb!componentStack[-1]!, since if an
+exception has occurred, \verb!componentStack[-1]! will point to the
+stack frame where the exception occurred, and in the case where the
+exception was handled, the stack may not have been cleaned up yet
+\end{datadesc}
+\begin{funcdesc}{resetComponentStack}{} Should be called after the top
+level call to \texttt{callComponent} has returned.  It clears out the
+component stack.
+\end{funcdesc}
+
+
+Attributes of the ComponentStackFrame
+\begin{memberdesc}[string]{name} The name of the component being
+executed.
+\end{memberdesc}
+\begin{memberdesc}[dictionary]{namespace} The namespace dictionary that
+the component is being executed in.
+\end{memberdesc}
+\begin{memberdesc}[Executable]{executable} The execution object of the
+component (from \verb!AE.Executables!).
+\end{memberdesc}
+\begin{memberdesc}[dictionary]{argDict}  The explict arguments passed to
+the component.
+\end{memberdesc}
+\begin{memberdesc}[dictionary]{auxArgs} The auto-arguments passed to the
+component.
+\end{memberdesc}
+\begin{memberdesc}[]{compType} The kind of component this is (data or
+textual).  See Section \ref{dtscore}, page \pageref{dtscore}.
+\end{memberdesc}
+
+\section{Caching}
+\NOTE{Compiled Memory Caching}
+
+\subsection{Filesystem Interface}
+\begin{funcdesc}{\_statDocRoot}{path}
+If talking to a normal filesystem, this would return \verb!os.stat(path)!.
+\end{funcdesc}
+\begin{funcdesc}{\_getDocRootModTime}{path}
+If talking to a normal filesystem, this would return 
+\verb!os.stat(path)[stat.ST_MTIME]!. 
+\end{funcdesc}
+\begin{funcdesc}{\_readDocRoot}{path}
+If talking to a normal filesystem, this would return 
+\verb!open(path).read()!.
+\end{funcdesc}
+
+\subsection{The Compile Cache}
+\begin{funcdesc}{\_getCompiledThing}{name, srcModTime, legend,
+compileFunc, version, reconstituteFunc = None, unconstituteFunc =
+None} 
+A generic way to get and cache compiled things from cache/disk/memory,
+returns the compiled thing.
+\begin{argdesc}
+\item[compileFunc]      takes the name and the source and returns compiled form
+\item[unconstituteFunc] takes the object and produces a marshal-friendly form
+\item[reconstituteFunc] takes the unmarshalled form and reconstitutes into
+                 the object
+\item[name]             is the documentRoot relative path to the thing
+\item[srcModTime]       the modification time of the source, if known,
+if not known, say \None.
+\item[legend]           the label to use in debug messages
+\item[version]          marhallable thing that if the one in the compile cache
+                 doesn't match, we recompile
+\end{argdesc}
+\end{funcdesc}
+
+
+\subsection{The Component Cache}
+\begin{funcdesc}{getCachedComponent}{name, argDict, auxArgs, srcModTime = None}
+returns cached component (or None),  source Mod time
+\begin{argdesc}
+\item[name] Name under which the cached output is stored.
+\item[argDict] Dictionary of explicit component arguments.  
+\item[auxArgs] Dictionary of automatic component arguments.
+\item[srcModTime] Generally, modification time of source.
+\end{argdesc}
+\end{funcdesc}
+
+
+\begin{funcdesc}{putCachedComponent}{name, argDict, auxArgs, out, cache_exp_time}
+Puts the cached form of a component's output to storage.
+\begin{argdesc}
+\item[name]  Name under which the cached output is stored. 
+\item[argDict] Dictionary of component arguments.  
+\item[auxArgs]  Dictionary of automatic component arguments.
+\item[out] The output of the component.
+\item[cache_exp_time] The number of seconds past the epoch when the
+cached version will expire.
+\end{argdesc}
+\end{funcdesc}
+
+
+\begin{funcdesc}{clearCache}{name, arguments, matchExact = None}
+Selectively removes cached components from cache.
+\begin{argdesc}
+\item[name] Name of the component you want to clear.
+\item[arguments] Argument dictionary to match.
+\item[matchExact] If true, will clear \strong{only} if the argument
+dictionary supplied matches the argument dictionary used to store the
+component exactly, otherwise, any cached version whose argument
+dictionary is a superset of \texttt{arguments} will be cleared.
+\end{argdesc}
+
+\end{funcdesc}
+
+
+
+
+\section{File Formats}
+Serialized tuple of (\emph{item}, \emph{version}).  Cached compiled
+objs use the \texttt{marshal} module for serialization and cached
+component outputs use \texttt{cPickle} for serialization.
+
+\subsection{Compiled Templates}
+item is tuple of (\emph{filename}, \emph{python source text},
+\emph{python code object}, \emph{metadata})
+
+\subsection{Compiled Message Catalogs}
+item is tuple of (\emph{message dict}, \emph{source file name})
+
+\subsection{Compiled Python Code}
+item is tuple of (\emph{python code object}, \emph{python source text})
+
+\subsection{Cached components}
+Generation of md5 hash (see cachekey.c). 
+
+describe file layout and MD5 hash stuff
+path\_to\_src/firstbyte/secondbyte/fullhash.(cache|key)
+
+item is dict of 
+\begin{argdesc}
+\item[exp_time] Seconds past the epoch at which this cached
+representation expires.
+\item[defer_time] when using deferred rendering, the expired
+component's lifetime is temporarily extended so that it gives the
+process time to render it and write it back to the cache.  When this
+is the case, this is the time at which it expires again, otherwise -1.
+\item[output] Serialized form of component output.
+\item[full_key] Serialized form of full cache key.
+\end{argdesc}
+
+\subsection{Component Cache Distribution}
+Take last 16 bits of md5 hash and mod numServers.  Insert \# between
+component cache root and normal path to cache.  If access to server
+fails abnormally, don't try it again for failoverRetry seconds, and use
+failoverComponentCacheRoot in meantime for only the section(s) of the
+component cache that failed recently.
+

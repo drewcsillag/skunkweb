@@ -1,0 +1,78 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+import sys
+import getopt
+
+def help():
+    print >> sys.stderr, "Usage: skunkweb [-c configfilelist] [-h]"
+    print >> sys.stderr
+    print >> sys.stderr, ("  -c,--config-files=configfilelist   list of config"
+                          " files to load delimited")
+    print >> sys.stderr, ("                                     by colons")
+    print >> sys.stderr, ("  -h,--help                          show this "
+                          "screen")
+    print >> sys.stderr
+    sys.exit()
+
+configFiles = None
+#read command line
+try:
+    optlist, args = getopt.getopt(sys.argv[1:], 'c:h', [
+        'help', 'config-files='])
+except getopt.GetoptError, val:
+    sys.stderr.write("ERROR: %s\n" % val)
+    help()
+    
+for (opt, optval) in optlist:
+    if opt in ('--help', '-h'):
+        help()
+    else: # opt in ('--config-files', '-c'):
+        configFiles = optval.split(':')
+
+
+SkunkWebPath = '@prefix@/lib'
+if SkunkWebPath[0] != '@':
+    sys.path.append(SkunkWebPath)
+
+from SkunkWeb import bootloader
+sys.path.append(bootloader._servicesRoot)
+sys.path.append(bootloader._pylibsRoot) 
+import ConfigLoader
+import SkunkWeb
+
+if not configFiles:
+    configFiles=[bootloader.DEFAULT_CONFIG_FILE_NAME]
+    
+bootloader.init(configFiles, bootloader.SkunkRoot)
+import SkunkWeb.Server
+bootloader.load()
+
+try:
+    SkunkWeb.Server.start()
+except:
+    if sys.exc_info()[0] != SystemExit:
+        sys.__stderr__.write('SkunkWeb exited abnormally! -- check the error log file\n')
+        sys.__stderr__.write('for details\n')
+        import SkunkWeb.LogObj
+        SkunkWeb.LogObj.logException()
+else:
+    sys.__stderr__.write(
+        'startup failed! (server exited wayyy too soon) -- check the error log file\n')
+    sys.__stderr__.write('for details\n')
+

@@ -1,0 +1,20 @@
+<:cache duration=10m:>
+<P>
+<A NAME="slashdot"><B>Headlines from <A HREF="http://www.slashdot.org">Slashdot</A></b></A>
+
+<:try:>
+<:datacomp headlines dcomps/slashhead.pydcmp:>
+
+<font size=-1>
+<ul>
+<:for `headlines` head:>
+<li>
+<A HREF="<:val `head.url`:>"><:val `head.title` fmt=htmlquote:></a> - <:val `head.comments`:> comments<BR>
+</li>
+<:/for:>
+</ul>
+</font>
+<:except:>
+<ul><li>Slashdot headlines not available. Sorry.</li></ul>
+<:cache duration=0m:>
+<:/try:>

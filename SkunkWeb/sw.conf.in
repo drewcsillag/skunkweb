@@ -1,0 +1,539 @@
+# -*-python-*-
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+# $Id: sw.conf.in,v 1.23 2001/07/29 15:23:35 drew Exp $
+# Time-stamp: <01/05/07 13:57:33 smulloni>
+
+########################################################################
+# not meaningfully modifiable post installation; don't put it here.
+# SkunkRoot = '@prefix@'
+
+########################################################################
+# First, discuss parameters that must be specified at the top level;
+# then, discuss scoping;
+# then discuss variables that can be defined inside a scope.
+# If any variables MUST be defined inside a scope (I don't think there
+# ever will be, but ...) mention that.
+
+
+########################################################################
+# services you want to load.
+# standard services are:
+#
+# requestHandler          -- abstract basic service for handling requests;
+#                            a foundation for others, as noted.
+#
+# aecgi                   -- provides the protocol used to communicate with
+#                            the Apache mod_skunkweb module
+#
+# web                     -- abstract http specific service.
+#                            Requires requestHandler.
+#
+# ae_component            -- abstract service that initializes the AE
+#                            component library.
+#
+# templating              -- concrete service that services web requests with
+#                            AE components.  Requires requestHandler,
+#                            web, and ae_component.
+#
+# remote                  -- server-side implementation of a remote call facility
+#                            for AE components.  Requires requestHandler and
+#                            ae_component.
+#
+# remote_client           -- extension to templating which adds
+#                            the ability to make remote calls.  Requires
+#                            templating and its prerequisites;
+#                            does not require the remote service.
+#
+# sessionHandler          -- adds a session-scoped object to web's
+#                            HTTPConnection class which provides a simple form
+#                            of data persistence between requests, using cookies
+#                            and a pluggable data store (currently only MySQL).
+#                            Requires web.
+#
+# httpd                   -- service which handles http requests directly, as
+#                            opposed to via the mod_skunkweb Apache module.
+#                            Requires requestHandler.
+#
+# basicauth               -- service that provides basic authentication to
+#                            locations configured to use it.  Requires
+#                            web.
+
+services = ['requestHandler',
+            'aecgi',
+            'ae_component',
+            'web',
+            'templating',
+            'remote',
+            'remote_client',
+            'httpd']
+
+# ADD DISCUSSION HERE ***
+useCompileMemoryCache = 1
+
+########################################################################
+# if you don't every line of a multiline log entry to be prefixed
+# with a logstamp (the default behavior), set this to a false value.
+#
+# stampEveryLine=0
+
+# services that are INITIALLY set to be debugged.
+# N.B.: It is possible to modify the actual debug settings
+# of the server at runtime, but this Configuration variable will
+# not be updated to reflect those changes!  To determine the
+# what services are being debugged at runtime, use
+# SkunkWeb.ServiceRegistry.getDebugServices().
+initialDebugServices=['requestHandler',
+                      'aecgi',
+                      'weird',
+                      'templating',
+                      'sessionHandler',
+                      'web',
+                      'core',
+                      'component',
+                      'vhost',
+                      'basicauth',
+                      'user',
+                      'remote',
+                      'remote_client']
+
+
+########################################################################
+# For httpd service ONLY: 
+# if you set this to a true value, the CGI environmental variable
+# HTTP_REMOTE_HOST will always be set, involving a potentially costly DNS
+# lookup.  If you don't want it, you can still use HTTP_REMOTE_ADDR and
+# perform the lookup on demand.  Default is 0 (no lookup and no HTTP_REMOTE_HOST
+# variable in the environment).
+# N.B. This only affects the httpd service, and has no bearing on environmental
+# variables SkunkWeb receives from Apache or elsewhere.
+#
+# lookupHTTPRemoteHost = 1
+
+########################################################################
+# port(s) for the httpd service to listen on
+HTTPListenPorts=['TCP::8080']
+
+########################################################################
+# port(s) for the aecgi service to listen on
+AecgiListenPorts=['TCP:localhost:9888']
+
+########################################################################
+# port(s) for the remote service to listen on
+RemoteListenPorts=['TCP:localhost:9887']
+
+########################################################################
+# make the remote listen port do remote jobs; otherwise define default
+# job of templating
+Scope(Port(9887, job=REMOTE_JOB))
+job=TEMPLATING_JOB
+
+########################################################################
+# if your sitelibs directory is somewhere else, modify the following
+import sys
+sys.path.append('@prefix@/sitelibs')
+
+########################################################################
+# for development, this will cause changes to sitelibs to be reflected
+# on the next request, without a bounce of the server.  Turn it off
+# for production environments.
+userModuleCleanup = 1
+
+########################################################################
+# list of document names that will be recognized as index documents;
+# default is ['index.html']
+# indexDocuments=['index.html', 'index.htm', 'index.py']
+
+########################################################################
+# basicauth service variables can be declared globally,
+# affecting the entire site:
+#
+# basicAuthName="Forsake All Hope"
+# basicAuthFile="/usr/local/skunk/var/HELL_AUTH_DB"
+#
+# or, as is more likely, they can be declared inside a location, e.g.:
+#
+# Scope(Location("/private",
+#                basicAuthName="privileged zone",
+#                basicAuthFile='/usr/local/skunk/var/AUTHDB'))
+
+########################################################################
+# level of commenting to be inserted in html documents when components
+# are entered/exited
+# 0 = no commenting (default)
+# 1 = only show component name in comments
+# 2 = show component name and argument names
+# 3 = show component name, argument names and values
+#
+# componentCommentLevel = 0
+
+########################################################################
+# The directory that is used to hold templates, images, msgcats, comps,
+# etc.
+#
+# documentRoot = '<SKUNKROOT>/docroot'
+
+########################################################################
+# for the sendmail tag, how to actually send it.
+# If MailMethod == 'sendmail', it will call the sendmail program to do
+# it (this is the default).  If you set it to 'relay', it will send the
+# mail via SMTP to the host specified by the MailHost config variable
+# (which defaults to localhost).  If using the 'sendmail' MailMethod,
+# the pragram that is run comes from SendmailCommand.  When no from
+# address is specified in the call to the sendmail tag (or it's
+# corresponding function), the address FromAddress is used.
+#
+# MailMethod = 'sendmail'
+# MailHost = 'localhost'
+# SendmailCommand = 'sendmail -t'
+# FromAddress = 'root@localhost'
+
+########################################################################
+# If using NFS (or other shared filesystem) for the component cache,
+# set numServers to the number of shared filesystems that the component
+# cache will be on, failoverRetry to the number of seconds to wait before
+# trying the shared filesystem again (it should be soft mounted!!!),
+# and failoverComponentCacheRoot to an area on local disk to use as
+# a temporary replacement for the server that failed in the meantime.
+# See the developer and or ops manuals on caching for details
+#
+# numServers = 0
+# failoverRetry = 30
+# failoverComponentCacheRoot = '/usr/local/skunk/failoverCache'
+
+
+########################################################################
+# Locations of logfiles.  The regularLog logs significant, but normal
+# events, the debugLog logs debug info according to initialDebugServices
+# the accessLog logs access information, and the errorLog logs erroneous
+# conditions (mostly tracebacks)
+#
+# regularLog = '/usr/local/skunk/var/log/sw.log'
+# debugLog = '/usr/local/skunk/var/log/debug.log'
+# accessLog = '/usr/local/skunk/var/log/access.log'
+# errorLog = '/usr/local/skunk/var/log/error.log'
+
+########################################################################
+# Location of where to put the pidFile that tells swmgr how to find the
+# running SkunkWeb server process
+#
+# pidFile = '/usr/local/skunk/var/run/sw.pid
+
+
+
+########################################################################
+# The number of child processes to be started.  This is the max number
+# of concurrent page views (although if Apache sits in front, it may
+# look like quite a few more).
+#
+# numProcs = 15
+
+########################################################################
+# The number of seconds that the parent will wait after having sent
+# SIGTERM to the children before killing the children off with SIGKILL
+# during a shutdown or restart
+#
+# maxKillTime = 5
+
+########################################################################
+# You probably don't need to change this, but it's the interval at which
+# the parent looks for corpses that need to be buried and replaced with
+# new, living kids.
+#
+# pollPeriod = 5
+
+########################################################################
+# The number of requests that a child server process will handle before
+# committing suicide and having the parent respawn.  This is mainly to
+# make sure we aren't leaking memory, but you can probably set it to
+# something a bit higher.
+#
+# maxRequests = 256
+
+########################################################################
+# If you want to fallback to the cached version if an exception occurs
+# when rendering a (to be) cached component, set this to a true value
+#
+# fallbackToCache = None
+
+########################################################################
+# The time (in seconds) for a component to be cached if cache is
+# specified in the component call and there was no <:cache:> tag (or
+# __expiration wasn't set)
+#
+# defaultExpiryDuration = 30
+
+
+########################################################################
+# The location on disk of where the compile cache should reside.  This
+# should be a local filesystem
+#
+# compileCacheRoot = '/usr/local/skunk/cache'
+
+########################################################################
+# How stale the cached version is when we render it anyway when called
+# with cache=defer (in seconds)
+#
+# maxDeferStale = 3600  # 1 hour
+
+########################################################################
+# The location of the component cache on disk.  Can be the same as the
+# compileCacheRoot.
+#
+# componentCacheRoot = '/usr/local/skunk/cache
+
+########################################################################
+# how long to extend the life of a deferred component cache when we go
+# to render it (in seconds)
+#
+# deferAdvance = 30
+
+########################################################################
+## clearCache Related Items
+## N.B.  clearCache should be avoided whenever possible unless matchExact
+## is true, or the number of cached versions for a component are small
+## or else clearCache may be exceptionally slow.
+#
+## The location of various commands used by clearCache on your system
+# fgrepCommand = '/bin/fgrep'
+# findCommand = '/usr/bin/find' #must be GNU find
+# sedCommand = '/bin/sed' 
+# xargsCommand = '/usr/bin/xargs' #must be Solaris or GNU find
+
+########################################################################
+# A list of mime types that are considered templates
+#
+# templateMimeTypes = ['text/html', 'text/plain']
+
+
+########################################################################
+# The location of your mimetypes file
+#
+# mimeTypesFile = '/usr/local/skunk/etc/mime.types
+
+########################################################################
+# If we cannot determine the mime type by examining the extension of the
+# file, what mime type we should return
+#
+# defaultMimeType = 'application/octet-stream'
+
+########################################################################
+# if using a multi-lingual message catalog and you don't specify the
+# language, what language we should assume
+#
+# DefaultLanguage = 'eng'
+
+########################################################################
+# If you want to have SkunkWeb return a message saying it's not there
+# as the message, instead of raising an exception if a message you ask
+# for isn't in the catalog, which is the default, set this to a false
+# value.
+#
+# strictMessageCatalogs = 1
+
+########################################################################
+# The time (in seconds) allowed for a request to complete before timing
+# it out (by raising an exception).
+#
+# DocumentTimeout = 30
+
+########################################################################
+# The amount of time (in seconds) allowed for the PostRequest hooks to
+# execute before timing them out.
+#
+# PostResponseTimeout = 20
+
+
+########################################################################
+# How long (in seconds) the http keepalive timeout should be between
+# HTTP requests
+#
+# HTTPKeepaliveTimeout = 15
+
+########################################################################
+# A list of mime types that should not be accessible via web request
+#
+# hideMimeTypes = [
+#        "text/x-stml-component",
+#        "text/x-stml-python-component",
+#        "text/x-stml-data-component",
+#        "text/x-stml-python-data-component",
+#        ]
+
+########################################################################
+# Mime types of things that should be rendered as templates when called
+# via web request.
+#
+# interpretMimeTypes = [
+#        "text/html",
+#        "application/x-python"
+#        ]
+
+########################################################################
+# path to a template in the docroot (or parfile), dependent on scope
+# that should be shown if the we send back an error (500) page
+# The exception text will show up in an additional template variable
+# ERROR_TEXT
+#
+# errorTemplate = None
+
+########################################################################
+# path to a template in the docroot (or parfile), dependent on scope
+# that should be shown if the we send back a 404 Not Found response
+#
+# notFoundTemplate = None
+
+########################################################################
+# If using the pars service, a list of par files that should be used to
+# serve.
+#
+# parFiles = []
+
+########################################################################
+# If using the pars service and the document we're looking for is not
+# in the par files we loaded, should we fall through to the filesystem
+# to look for it?
+#
+# parFallthrough = 1
+
+########################################################################
+# AT LEAST THE BELOW NEED TO BE DOCUMENTED HERE.
+# *** TO BE DONE!!! ***
+# These are in no
+# particular order:
+#
+# 
+
+
+########################################################################
+# FOR THE  sessionHandler SERVICE:
+########################################################################
+
+########################################################################
+# The session store implementation class (full package name). This
+# defaults to None, which, if the sessionHandler service is imported,
+# will cause an error.  To use sessionHandler, you must specify a session
+# store implementation; e.g.:
+# SessionStore='sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
+
+########################################################################
+# the key under which the session is kept (in a cookie or in URL rewriting)
+#
+# SessionIDKey='sessionID'
+
+########################################################################
+# the session timeout, in seconds.  Sessions which have seen no action
+# for this period of time are ripe for reaping.
+#
+# SessionTimeout=30*60
+
+########################################################################
+# session reap interval, in seconds.  When the reap interval has elapsed,
+# the server may reap old sessions in the aftermath of its next
+# request handling cycle.  To turn off reaping (if more than one
+# server is using the same session store, or if another process
+# is performing reaping separately), set this to zero or a negative
+# value.
+#
+# SessionReapInterval=300
+
+########################################################################
+# For the MySQLSessionStoreImpl, the following variables specify names
+# of the session table and its columns and the MySQL host, user and password.
+#
+# SessionHandler_MySQLUser='sessionHandler'
+# SessionHandler_MySQLDB='sessionStore'
+# SessionHandler_MySQLIDColumn='id'
+# SessionHandler_MySQLTable='Sessions'
+# SessionHandler_MySQLPickleColumn='pickle'
+# SessionHandler_MySQLTimestampColumn='accessTime'
+# SessionHandler_MySQLHost='localhost'
+# SessionHandler_MySQLPass='sessionPass'
+
+########################################################################
+# END sessionHandler CONFIG
+########################################################################
+
+### mysql/__init__.py
+#    MySQLConnectParams = {},
+
+### oracle/__init__.py
+#    OracleConnectStrings = {},
+#    OracleProcedurePackageLists = {}
+
+### postgresql/__init__.py
+#    PostgreSQLConnectParams = {},
+
+
+########################################################################
+# $Log: sw.conf.in,v $
+# Revision 1.23  2001/07/29 15:23:35  drew
+# added stuff for errorTemplate, notFoundTemplate, and changed default of parFallthrough to 1
+#
+# Revision 1.22  2001/07/25 13:34:31  smulloni
+# modified sessionHandler so that the SessionStore parameter is a string, not
+# a class; added comments to sw.conf.in for sessionHandler-related goodies.
+#
+# Revision 1.21  2001/07/17 16:07:15  drew
+# added documentation for lotso stuff
+#
+# Revision 1.20  2001/07/11 18:05:10  drew
+# added desc of componentCommentLevel
+#
+# Revision 1.19  2001/07/09 20:38:40  drew
+# added licence comments
+#
+# Revision 1.18  2001/05/07 18:44:42  smullyan
+# adjusted configure.in files and services makefile to cope with new reality
+#
+# Revision 1.17  2001/05/04 21:40:21  smullyan
+# typo fix
+#
+# Revision 1.16  2001/05/04 21:17:35  smullyan
+# typo
+#
+# Revision 1.15  2001/05/04 18:38:46  smullyan
+# architectural overhaul, possibly a reductio ad absurdum of the current
+# config overlay technique.
+#
+# Revision 1.14  2001/05/03 16:14:57  smullyan
+# modifications for scoping.
+#
+# Revision 1.13  2001/04/26 19:07:44  smullyan
+# added mention of DefaultLanguage to sw.conf.in.
+#
+# Revision 1.12  2001/04/25 20:41:00  smullyan
+# modifications for aed_compat; removal of "experimental" services, now renamed
+# without the "_experimental" suffix.
+#
+# Revision 1.11  2001/04/24 21:43:01  smullyan
+# fixed bug in httpd.protocol (was accidentally removing line return after
+# HTTP response line, producing weirdness).  Removed call of deprecated
+# method of config object in remote.__init__.py; added list of configuration
+# variables that need to be documented to sw.conf.in.
+#
+# Revision 1.10  2001/04/23 21:44:29  smullyan
+# support for "headersOnly" methods and response statuses in web_experimental;
+# mod_skunkweb also now respects its headers_only flag.
+#
+# Revision 1.9  2001/04/23 20:17:15  smullyan
+# removed SKUNKWEB_SERVER_VERSION, which I found was redundant; fixed typo in
+# httpd/protocol; renamed "debugServices" configuration variable to
+# "initialDebugServices".
+#
+########################################################################

@@ -1,0 +1,100 @@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+#
+# This is the top level makefile for the skunk platform
+#
+
+# 
+# The location where skunk is going to be installed
+#
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+skunk_data_dir	= @prefix@/share
+skunk_var_dir	= @prefix@/var
+skunk_config_dir	= @sysconfdir@
+skunk_bin_dir	= @bindir@
+
+# List of components to install
+# XXX - it is important that pylibs is listed first, as other components do
+# depend on it
+components  	= pylibs @WITH_SKUNKWEB@ 
+
+# Can be overriden to allow easy package creation
+root		=
+
+# Owner of everything
+owner		= @OWNER@
+group		= @GROUP@
+
+INSTALL		= @INSTALL@ -o $(owner) -g $(group)
+
+default:	build
+
+clean:	
+	for comp in ${components}; do \
+	    if $(MAKE) -C $${comp} clean; \
+	    then :; \
+	    else \
+	        exit 1; \
+            fi \
+	done
+
+distclean: clean
+	-rm -f Makefile config.log config.cache config.status *~
+	-rm -f pylibs/skunkdoc/skunkdoc2html.py
+	for comp in ${components}; do \
+	    if $(MAKE) -C $${comp} distclean; \
+	    then :; \
+	    else \
+	        exit 1; \
+            fi \
+	done
+
+build:
+	for comp in ${components}; do \
+	    if $(MAKE) -C $${comp} ; \
+	    then :; \
+	    else \
+	        exit 1; \
+            fi \
+	done
+
+install: make-tree
+	for comp in ${components}; do \
+	    if $(MAKE) -C $${comp} install; \
+	    then :; \
+	    else \
+	       exit 1; \
+            fi \
+        done 
+
+make-tree:
+	@# Build the core tree
+	$(INSTALL) -d  $(prefix) $(skunk_config_dir) $(skunk_bin_dir) 
+
+
+#
+# Some re-make rules
+#
+Makefile:	Makefile.in config.status
+	./config.status
+
+dist: 
+	PYTHONPATH=pylibs python util/make_distr.py
+
+.PHONY:	clean install build default make-tree

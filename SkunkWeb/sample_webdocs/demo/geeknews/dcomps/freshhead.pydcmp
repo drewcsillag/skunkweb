@@ -1,0 +1,65 @@
+import string
+import httplib
+import xmllib
+import urllib 
+def getXML():
+    return urllib.urlopen('http://freshmeat.net/backend/fm.rdf').read()
+#def getXML(): return open('ttt.txt').read()
+class EntCont:
+    def __init__(self, tag, atts):
+        self.tag = tag
+        self.atts = atts
+        self.children = []
+        
+    def getKind(self, kind):
+        r = []
+        for i in self.children:
+            if type(i) != type('') and i.tag[-len(kind):] == kind:
+                r.append(i)
+        return r
+    
+class Parser(xmllib.XMLParser):
+    def __init__(self):
+        xmllib.XMLParser.__init__(self)
+        self.STACK = [ EntCont('', {}) ]
+
+    def unknown_starttag(self, tag, atts):
+        i = EntCont(tag, atts)
+        self.STACK[-1].children.append(i)
+        self.STACK.append(i)
+
+    def unknown_endtag(self, tag):
+        self.STACK.pop()
+
+    def handle_data(self, data):
+        self.STACK[-1].children.append(data)
+        
+def doParse(text):
+    p = Parser()
+    p.feed(text)
+    p.close()
+    #print dir(p.STACK[0].children[2])
+    return p.STACK[0].children[1]
+
+class Story:
+    def __init__(self, xmlNode):
+        self.title = string.join(xmlNode.getKind('title')[0].children, '')
+        self.link = string.join(xmlNode.getKind('link')[0].children, '')
+        self.desc = string.join(xmlNode.getKind('description')[0].children[0],'')
+
+#def getXML(): return open('/home/drew/slashdot.xml').read()
+def getStories():
+    xml = getXML()
+    #print xml
+    tree = doParse(xml)
+    l = []
+    for i in tree.getKind('item'):
+        l.append(Story(i))
+    return l
+
+if __name__ == '__main__':
+    for i in getStories():
+        print '<A HREF="%s">%s</A>%s<BR>' % (
+            i.link, i.title, i.desc)
+else:        
+    raise ReturnValue, getStories()

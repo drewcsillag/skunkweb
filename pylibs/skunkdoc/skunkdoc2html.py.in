@@ -1,0 +1,391 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+"""**make click-monkey html from skdoc xml
+"""
+from scanners import globals
+import sys
+import os
+import prompt
+import copy
+import string
+import scanners.ModuleScanner
+import scanners.STMLScanner
+import scanners.SkunkDocXML
+import Namespaces
+
+import htmlPython
+from htmlCommon import *
+import htmlSTML
+import htmlIndicies
+import htmlSkunkDoc
+
+import Config
+
+STML_COLORS = {
+    'Template': '#ffdddd',
+    'Component': '#ddffdd',
+    'Data Component': '#ddddff'
+    }
+
+el = Config.el
+splitcol = lambda x:string.split(x, ':')
+config = Config.Config( [
+    el('stml', 'stml directories to scan', '', 's', 'stml', 'dirs', splitcol),
+    el('python', 'python module directories to scan', '', 'p', 'python',
+       'dirs', splitcol),
+    el('xml', 'skunkdoc xml document to process', '', 'x', 'xml', 'doc'),
+    el('outputdir', 'output directory to dump html files', '', 'o',
+       'output-dir', 'dir'),
+    el('verbose', 'verbose flag', '', 'v', 'verbose', None, int),
+    el('interactive', 'interactive flag', '', 'i', 'interactive', None, int),
+    el('help', 'show help screen', '', 'h', 'help', None, int),
+    el('link', 'up link for TOC page', '', 'l', 'top-link', 'url'),
+    el('exclude', 'directories to exclude from STML processing', '', 'e',
+       'exclude', 'dirs', splitcol),
+    ],
+'''scan modules and/or STML and/or an XML document and generate click-monkey 
+HTML''')
+
+class Navigation:
+    def __init__(self, top, up, upText = None, title = None, modules = None,
+                 index = None,
+                 next = None, nextText='',
+                 back = None, backText = ''):
+        self.top = top
+        self.up = up
+        self.upText = upText
+        self.next = next
+        self.nextText = nextText
+        self.back = back
+        self.backText = backText
+        self.modules = modules #mod index
+        self.index = index
+        self.title = title
+                
+    def newPlusAlter(self, **kw):
+        x = copy.copy(self)
+        for k, v in kw.items():
+            if not hasattr(x, k):
+                raise AttributeError, 'no attribute named %s' % k
+            setattr(x, k, v)
+        return x
+        
+    def render(self, topNav):
+        s=[
+            '<table align=center width="100%" cellpadding=0 cellspacing=0'
+            ' BORDER=0>',
+            '<TR>',
+        ]
+
+        if self.back:
+            s.append(('<TD><A HREF="%s"><img width=32 height=32 align=bottom '
+                      'border=0 alt="back" src="previous.gif"></A></TD>') %
+                     self.back)
+        else:
+            s.append('<TD><img width=32 height=32 align=bottom '
+                      'border=0 alt="" src="blank.gif"></TD>')
+        if self.up:
+            s.append(('<TD><A HREF="%s"><img width=32 height=32 align=bottom '
+                      'border=0 alt="up" src="up.gif"></A></TD>') % self.up)
+        else:
+            s.append('<TD><img width=32 height=32 align=bottom '
+                     'border=0 alt="" src="blank.gif"></TD>')
+        if self.next:
+            s.append(('<TD><A HREF="%s"><img width=32 height=32 align=bottom '
+                      'border=0 alt="next" src="next.gif"></A></TD>') %
+                     self.next)
+        else:
+            s.append('<TD><img width=32 height=32 align=bottom '
+                     'border=0 alt="" src="blank.gif"></TD>')
+        s.append(('<TD align=center bgcolor="#99CCFF" width="100%%">'
+                  '<b>%s</b></td>') % self.title)
+
+        s.append('<TD><A HREF="index.html"><img width=32 height=32 '
+                 'align=bottom border=0 alt="contents" '
+                 'src="contents.gif"></A></TD>')
+
+        if self.modules:
+            s.append(('<TD><A HREF="%s"><img width=32 height=32 align=bottom '
+                      'border=0 alt="modules" src="modules.gif"></A></TD>') %
+                     self.modules)
+        else:
+            s.append('<TD><img width=32 height=32 align=bottom '
+                     'border=0 alt="" src="blank.gif"></TD>')
+        if self.index:
+            s.append(('<TD><A HREF="%s"><img width=32 height=32 align=bottom '
+                      'border=0 alt="index" src="index.gif"></A></TD>') %
+                     self.index)
+        else:
+            s.append('<TD><img width=32 height=32 align=bottom '
+                     'border=0 alt="" src="blank.gif"></TD>')
+        s.append('</TR></TABLE>')
+        if topNav:
+            s.append(self.topLinkBar())
+        return string.join(s, '\n')
+
+    def topLinkBar(self):
+        s = []
+
+        if self.back:
+            s.append('<B>Previous:</B> <A HREF="%s">%s</A>&nbsp;' % (
+                self.back, self.backText))
+
+        if self.up:
+            s.append('<B>Up:</B> <A HREF="%s">%s</A>' % (self.up, self.upText))
+
+        if self.next:
+            s.append('<B>Next:</B> <A HREF="%s">%s</A>' % (self.next,
+                                                           self.nextText))
+
+        s.append('<BR>')
+        return string.join(s, '\n')
+
+def _genModuleIndex(index, modules):
+    for module in modules:
+        if not hasattr(module, 'name'):
+            print 'module obj', module, 'is not a module'
+            raise AttributeError
+        else:
+            index[module.name] = module
+        _genModuleIndex(index, module.subModules)
+
+sectioning = ('chapter', 'section', 'subsection', 'subsubsection',
+              'subsubsubsection')
+
+def _genSkdocXrefIndex(index, contents, lastsect=None):
+    """look for <label>s"""
+    for i in contents:
+        if type(i) == type(''):
+            continue
+        if i.tag in sectioning:
+            if i.id:
+                index[i.id] = i
+            lastsect = i
+            _genSkdocXrefIndex(index, i.contents + i.sections, lastsect)
+        elif i.tag == 'label':
+            index[i.args['id']] = (lastsect, i.args['id'])
+        else:
+            _genSkdocXrefIndex(index, i.contents, lastsect)
+
+def _genSkdocContents(index, howto):
+    for i in howto.sections:
+        index['secref'][i.secNo] = i
+        index['toc'].append(i.secNo)
+        _genSkdocContents(index, i)
+    
+def _genSkdocIndex(index, howto):
+    _genSkdocXrefIndex(index['xref'], howto.sections)
+    _genSkdocContents(index, howto)
+    
+def _genIndex(howto, modules, stmlDocuments):
+    index = {'stml': {}, 'code': {}, 'howto': {
+        'xref': {}, 'toc': [], 'secref': {}}}
+    #punt on howto
+    for doc in stmlDocuments:
+        index['stml'][doc.name] = doc
+
+    if howto:
+        _genSkdocIndex(index['howto'], howto)
+    _genModuleIndex(index['code'], modules)
+    return index
+
+
+def generateHTML(destPath, howto, modules, stmlDocuments, indexTop):
+    #hard coded for now, would read from howto though
+    if howto and howto.title:
+        title = htmlSkunkDoc.stripMarkup(howto.title)
+    else:
+        title = 'STML/Code Documentation'
+    
+    index = _genIndex(howto, modules, stmlDocuments)
+    namespaces = Namespaces.getNamespaces(index)
+
+    
+    #if howto, toplink for code/templates is the CT index
+    if howto:
+        topLink = 'code_and_templates_index.html'
+    else: #else, the CT index is index.html
+        topLink = 'index.html'
+
+    if modules:
+        modulesTL = 'code_and_templates_index.html'
+    else:
+        modulesTL = None
+
+    if modules or stmlDocuments:
+        index['howto']['toc'].append(None)
+        
+    nav = Navigation(top = indexTop,
+                     up = None, upText = None,
+                     title = title,
+                     modules = modulesTL)
+    if howto:
+        htmlSkunkDoc.writeSkunkDoc(index, howto, destPath, nav)
+    nav.up = topLink
+    nav.upText = 'STML/Code Index'
+    htmlPython.writeModules(index, modules, destPath, nav, namespaces)
+    htmlSTML.writeSTMLDocuments(index, stmlDocuments, destPath, nav)
+
+    #mutate nav appropriate to howto stuff
+    if not howto:
+        nav = nav.newPlusAlter(up = None, upText = '')
+    else:
+        nav = nav.newPlusAlter(up = 'index.html', upText = 'Table Of Contents')
+
+    htmlIndicies.writeIndicies(nav, modules, stmlDocuments, destPath, topLink)
+
+    #should write an error page or something here!
+    
+def copyImages(destPath):
+    dirname, f = os.path.split(htmlPython.__file__)
+    if dirname == '':
+        dirname = '.'
+    imagedir = dirname + '/images'
+    if globals.VERBOSE:
+        print 'copying images from', imagedir
+    for i in 'blank', 'contents', 'index', 'modules', 'next', 'previous', 'up':
+        conts = open('%s/%s.gif' % (imagedir, i)).read()
+        open(destPath + '/%s.gif' % i, 'w').write(conts)
+
+
+def interact():
+    howto = prompt.StringQuestion('Which file contains XML skunkdoc markup?')
+    pythonmods = prompt.StringQuestion(
+        'Which directories/files contain Python modules?')
+    
+    stml = prompt.StringQuestion(
+        'Which directories/files contain STML templates?')
+
+    destDirq = prompt.StringQuestion(
+        'OK, in which directory would you like the documentation placed?')
+
+    topUpLinkq = prompt.StringQuestion(
+        'If you would like an up link on the TOC page enter url here')
+    
+    howToFile = howto.ask_quest()
+    stmlDirs = string.split(stml.ask_quest())
+    modDirs = string.split(pythonmods.ask_quest())
+    destDir = destDirq.ask_quest()
+    topUpLink = topUpLinkq.ask_quest()
+
+    #add prompt for stml exclude dirs
+    doall(0, destDir, howToFile, modDirs, stmlDirs, topUpLink)
+
+def doall(useCmdLine, destDir, howToFile, modDirs, stmlDirs, topUpLink,
+          stmlExcludeDirs = []):
+    createDestText = '%s does not exist. Would you like to create it?'
+
+    if not os.path.exists(destDir):
+        if not useCmdLine:
+            q = prompt.BoolQuestion(createDestText % destDir, 1)
+            yn = q.ask_quest()
+        else:
+            yn = None
+        if not yn:
+            print 'aborting...'
+            sys.exit()
+        os.mkdir(destDir)
+        if globals.VERBOSE:
+            print '%s created.' % destDir
+        
+    xmlouts = []
+    if globals.VERBOSE:
+        print 'reading skunkdoc file'
+    if howToFile:
+        howTo = scanners.SkunkDocXML.parseFile(howToFile)
+    else:
+        howTo = None
+
+    if globals.VERBOSE:
+        print 'scanning stml templates'
+    stml = []
+    for i in stmlDirs:
+        stml.extend(scanners.STMLScanner.doDir(i, stmlExcludeDirs))
+
+    modules = []
+    if globals.VERBOSE:
+        print 'scanning python modules'
+    for i in modDirs:
+        r = scanners.ModuleScanner.doDir(i)
+        if type(r) != type([]):
+            modules.extend(r.subModules)
+            print 'result is not List!!!!', r
+        else:
+            modules.extend(r)
+
+    if globals.VERBOSE:
+        print 'generating html'
+
+    generateHTML(destDir+'/', howTo, modules, stml, topUpLink)
+
+    copyImages(destDir)
+    if globals.VERBOSE:
+        print 'done'
+
+def showHelp():
+    print config.usage()
+    print 'dirs arguments are colon-delimited'
+    sys.exit()
+
+def readCommandLine():
+    s = []
+    x = None
+    p = []
+    o = ''
+    v = 0
+    i = -1
+    h = 0
+    l = None #top link
+    e = [] # exclude
+    args = config.parse(sys.argv[1:])
+    if args:
+        showHelp()
+
+    s = config['stml'] or []
+    x = config['xml'] or None
+    p = config['python'] or []
+    o = config['outputdir'] or ''
+    v = config['verbose'] or 0
+    i = config['interactive'] or 0
+    h = config['help'] or 0
+    e = config['exclude'] or []
+#
+#    for k, v in config.items():
+#        print '%s = %s' % (k, v), type(v)
+#    sys.exit()
+#    return [], 0, [], '', 0, 1, 0, None, []
+    return s, x, p, o, v, i, h, l, e
+
+def main():
+    s, x, p, o, v, i, h, l, e = readCommandLine()
+    if h:
+        showHelp()
+    if i and (s or x or p or o or l):
+        print 'cannot mix --interactive with --stml, --xml, --python or --link-top'
+        showHelp()
+    if v:
+        globals.VERBOSE = 1
+    if i:
+        interact()
+    else:
+        doall(1, o, x, p, s, l, e)
+        copyImages(o)
+
+if __name__ == '__main__':
+    main()

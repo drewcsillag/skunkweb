@@ -1,0 +1,93 @@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+# $Id: Makefile.in,v 1.7 2001/07/27 16:38:58 drew Exp $
+# Time-stamp: <01/05/07 13:48:20 smulloni>
+########################################################################
+
+prefix    	= @prefix@
+exec_prefix     = @exec_prefix@
+skunk_bindir	= @bindir@
+skunklib 	= @prefix@/lib
+pylibs_dir	= $(skunklib)/pylibs
+sw_dir          = $(skunklib)/SkunkWeb
+services_dir    = $(skunklib)/Services
+util_dir	= $(skunklib)/util
+conf_dir	= $(prefix)/etc
+components 	= @MOD_SKUNKWEB@ Services
+inst_services   = @SERVICES@
+
+#
+# Who to install as and what modes to set
+owner		= @OWNER@
+group		= @GROUP@
+dirmode		= 0755
+confmode	= 0640
+execmode	= 0755
+
+# Install commands 
+INSTALL		= @INSTALL@ -o $(owner) -g $(group)
+INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+
+default:	build
+
+install:
+	for i in $(inst_services); do \
+		if [ -f "$$i.py" ]; then \
+		$(INSTALL) -m0644 $$i.py $(services_dir)/$$i.py; \
+		else \
+		for j in `find $$i -name "*.py"`; do \
+		$(INSTALL_DATA) -D $$j $(services_dir)/$$j; \
+		done \
+		fi \
+	done
+
+	if echo "$(inst_services) | grep basicauth" > /dev/null;\
+	then \
+	    $(INSTALL) -m0755 basicauth/swpasswd.py $(skunk_bindir)/swpasswd ;\
+	fi
+
+	if echo "$(inst_services) | grep pars" > /dev/null;\
+	then \
+	    $(INSTALL) -m0755 pars/par.py $(skunk_bindir)/par ;\
+	fi
+
+build:
+
+distclean: clean
+	-rm -f Makefile
+
+clean:
+	-rm -rf `find . -name "*.pyc" -o -name "*~" -o -name core`
+
+########################################################################
+# $Log: Makefile.in,v $
+# Revision 1.7  2001/07/27 16:38:58  drew
+# made par.py an .in file
+#
+# Revision 1.6  2001/07/11 17:16:57  drew
+# added copyright notice
+#
+# Revision 1.5  2001/05/07 18:44:42  smullyan
+# adjusted configure.in files and services makefile to cope with new reality
+#
+# Revision 1.4  2001/04/10 22:48:28  smullyan
+# some reorganization of the installation, affecting various
+# makefiles/configure targets; modifications to debug system.
+# There were numerous changes, and this is still quite unstable!
+#
+########################################################################

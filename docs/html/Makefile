@@ -1,0 +1,72 @@
+# Convenience Makefile for building HTML documentation.  You probably
+# need to set TEXINPUTS from the command line for this to be useful,
+# unless you actually build the .dvi files in the top level directory.
+
+PAPER=letter
+TOPDIR=..
+TOOLSDIR=..
+PAPERDIR=$(TOPDIR)/paper-$(PAPER)
+
+TEXINPUTS=$(TOPDIR)/paper-$(PAPER):$(TOPDIR)/texinputs:
+
+# Where are the various programs?
+PYTHON=	   python
+#WEBCHECKER=$(PYTHON) $(TOPDIR)/../Tools/webchecker/webchecker.py
+MKHOWTO=   $(TOOLSDIR)/mkhowto --about $(TOPDIR)/html/stdabout.dat \
+		--address $(PYTHONDOCS) --up-link ../index.html \
+		--up-title "Python Documentation Index" \
+		--global-module-index "../modindex.html" --style style.css
+MKHTML=	   $(MKHOWTO) --html
+
+#BUILDINDEX=$(TOOLSDIR)/buildindex.py
+
+PYTHONDOCS='See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.'
+HTMLBASE=  file:`pwd`
+
+
+INDEXFILES=devel/devel.html
+
+COMMONPERL= $(TOPDIR)/l2hinit.perl
+
+#$(TOPDIR)/manual.perl \
+#	$(TOPDIR)/python.perl \
+
+
+all:	$(INDEXFILES) 
+#index.html modindex.html acks.html
+
+.PHONY: devel
+
+devel: devel/devel.html
+
+# The index.html target is at the end since it screws up font-lock.
+
+devel/devel.html:  ../devel/devel.tex ../devel/ae.tex
+	cp ../devel/devel.bib .
+	$(MKHTML) $(TOPDIR)/devel/devel.tex
+
+stmlrefer/stmlrefer.html: ../stmlrefer/stmlrefer.tex
+	$(MKHTML) $(TOPDIR)/stmlrefer/stmlrefer.tex
+
+clean:
+	echo
+
+distclean realclean clobber: clean
+	rm -rf index.html modindex.html acks.html
+	rm -rf devel/  devel* moddevel.ind
+
+
+# This is really ugly, but we're not dependent on $(RELEASE), which isn't
+# defined here.  It also maintains the proper dependency on boilerplate.tex.
+
+# It's at the end of the file since it wedges font-lock in XEmacs.
+
+BOILERPLATE=$(TOPDIR)/texinputs/boilerplate.tex
+index.html: $(TOPDIR)/html/index.html.in $(BOILERPLATE)
+	REL=`grep '\\release{' $(BOILERPLATE) | sed 's/.*\\release{\(.*\)}.*$$/\1/'`; \
+		REL=`echo "$$REL" | sed 's/[$$]//g'`; \
+		sed "s/@RELEASE@/$$REL/g" $< >TEMP
+	DATE=`grep '\\date{' $(BOILERPLATE) | sed 's/.*\\date{\(.*\)}.*$$/\1/'` ; \
+		if [ "$$DATE" = '\today' ] ; then DATE=`date '+%B %e, %Y'`;fi;\
+		sed "s/@DATE@/$$DATE/g" TEMP >$@
+	rm -f TEMP

@@ -1,0 +1,8 @@
+1999-03-29  drew  <drew@naxos.skunk.org>
+
+	* Now uses regex lexer
+
+1999-03-25  drew  <drew@naxos.skunk.org>
+
+	* DTTags.py: multilevel varnames in default tag 
+

@@ -1,0 +1,89 @@
+The DT Library
+----------------------------------------
+The DT library is basically a programming language interpreter that
+runs in two modes 1) interpreter and 2) compiler/interpreter.  
+
+The Lexer
+------------------------------
+Lexical analysis is the first phase of processing in the DT library.
+First we examine the template text looking for tags of the form <:
+blahb alksdjfsldfj:> (in the function findTags).  The output of the
+findTags function is a list of quadruples (starting offset, ending
+offset, is tag?, text) where "is tag?" indicates whether the text is a
+tag or the text between tags.
+
+After that, we then analyze the found tags a bit further (in
+processTag).  There, we look for whether or not it's a close tag
+(begins with '<:/'), what its tag name is and then we look for tag
+arguments.  Tag arguments can be of the form value, "value", 'value', `value`
+arg=value, arg="value", arg=`value` or arg='value'.  The output of
+processTag is the tag name, tuple arguments (the arguments with no
+arg= preceding the value), and dictionary arguments (the arguments WITH
+arg= preceding the value).
+
+The end result of this is that you wind up with a list of items where
+an item is either a text string (indicating plain text), or a DTToken
+object constructed from the tag text, the tag name, the starting
+offset, the ending offset, the tagname (again), the tuple arguments
+and the dictionary arguments.
+
+
+Parsing
+------------------------------
+The parsing phase is a bit interesting.  Since DTML is very regular in
+it's syntax, an extensible parser was created to deal with it so that
+adding a new tag would be easy (or at least as easy as reasonably possible).
+In the parsing phase there is a tag registry (DTTagRegistry) that
+keeps track of the tags, what their name is, and whether they are of
+the block or empty varieties.  The output of the parser is a Node
+object which merely contains a list of child nodes.
+
+The parser works as follows:
+
+parse()
+	get the next tag
+	if it's a string, add it to the current nodes' child list
+	else, it's a tag, pass it to the generic tag handler
+	    (genHandler) to deal with
+
+the generic tag handler does the following
+genHandler()	
+	get the DTTag object from the tag registry for the current tag
+	if it's an empty tag, return the tag
+	else, it's a block tag that needs to parse further (tag.parseBlock)
+	
+parseBlock happens to be in the base class DTTag that is (or if it
+isn't, should be) the base class for all tags.  It is currently used
+for all block tags (with exception to the comment tag for obvious
+reasons).  What it does is the following:
+
+parseBlock()
+	create a new Node
+	get current tag
+		is it a close tag?  close before open error
+	add tag to the node
+	while we haven't gone off the end of the token list
+		get next tag
+		if it's a string, add it to our node
+		if it's a tag
+			if it's our close tag, add it to our node and
+                            return
+			else, pass it to genHandler to process
+	did we go off the end?, raise unexpected EOF
+
+
+Interpreting
+------------------------------
+When we interpret, what we do is walk the parse tree, inorder, and
+basically evaluate each thing by calling the tag classes func()
+method.
+
+Compiling
+------------------------------
+When compiling, we walk the parse tree as we do when interpreting, but
+instead of executing code to run the document, we generate code to do
+the same.  After this, we take the generated code, compile it into a
+code object and run that.  Obviously the idea here is that when you
+construct a DT object, that you can pass it the already-compiled form
+so it can skip the compilation phase (which is about four times slower
+than plain interpreting).

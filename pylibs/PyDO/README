@@ -1,0 +1,22 @@
+If you are going to use oracle, you need the DCOracle and SQL pacakges
+-- available in the skunk package tarball under skunk/pylibs.
+
+If you are going to use PostgreSQL, build and install the Python
+interface located in it the PostgreSQL build tree under the
+src/interfaces/python directory.
+
+If you are going to use MySQL, get, build and install the Python MySQL
+module.
+
+Files of Note:
+    overview      - An overview of PyDO and why it's cool
+    example       - a walk through example on how to write PyDO objects
+    doc           - a bit more granular detail on PyDO stuff
+    conn.readme   - what the connection interface object looks like
+    ogenscript.py - a cool PyDO class generator that grovels over the
+                    Oracle system catalogs!  Run it with an account
+                    that can see ALL_OBJECTS, ALL_TAB_COLUMNS,
+                    ALL_CONSTRAINTS and SYS.ALL_CONS_COLUMNS and
+                    answer a few questions and BAM!  most of the work
+                    generating PyDO classes is done!
+    pgenscript.py - similar to ogenscript, but works with PostgreSQL!

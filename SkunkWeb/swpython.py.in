@@ -1,0 +1,115 @@
+#!@PYTHON@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+import sys
+import getopt
+
+def help():
+    print >> sys.stderr, ("Usage: swpython [-ih] [-c configfilelist] "
+                          "[scriptname]")
+    print >> sys.stderr
+    print >> sys.stderr, ("  -c,--config-files=configfilelist   list of config"
+                          " files to load delimited")
+    print >> sys.stderr, ("                                     by colons")
+    print >> sys.stderr, ("  -h,--help                          show this "
+                          "screen")
+    print >> sys.stderr, ("  -i                                 if scriptname"
+                          " is provided, run script")
+    print >> sys.stderr, ("                                     and then start"
+                          " interactive interpreter")
+    print >> sys.stderr, ("  -e,--execute=script                Execute script"
+                          " then exit")
+    print >> sys.stderr, ("  -r,--redir-logs                    Redirect logs"
+                          " to stderr")
+    print >> sys.stderr
+    sys.exit()
+
+#read command line, add -i option to go to interactive interpreter afterwards
+interactive = None
+configFiles = None
+command = None
+redirlogs = None
+try:
+    optlist, args = getopt.getopt(sys.argv[1:], 'c:hie:r', [
+        'help', 'config-files=', 'execute=', 'redir-logs'])
+except getopt.GetoptError, val:
+    sys.stderr.write("ERROR: %s\n" % val)
+    help()
+    
+for (opt, optval) in optlist:
+    if opt in ('--help', '-h'):
+        help()
+    elif opt == '-i':
+        interactive = not interactive
+    elif opt == '-e' or opt == '--execute':
+	interactive = 0
+        command = optval
+    elif opt == '-r' or opt == '--redir-logs':
+        redirlogs = not redirlogs
+
+    else: # opt in ('--config-files', '-c'):
+        configFiles = optval.split(':')
+
+SkunkWebPath = '@prefix@/lib'
+if SkunkWebPath[0] != '@':
+    sys.path.append(SkunkWebPath)
+    
+from SkunkWeb import bootloader
+sys.path.append(bootloader._servicesRoot)
+sys.path.append(bootloader._pylibsRoot) 
+import ConfigLoader
+import SkunkWeb
+
+if not args:
+    print >> sys.stderr, "Initializing..."
+if configFiles is None:
+    configFiles = [bootloader.DEFAULT_CONFIG_FILE_NAME]
+bootloader.init(configFiles, bootloader.SkunkRoot)
+import SkunkWeb.Server
+SkunkWeb.Server.addService = lambda *args: None
+if interactive:
+    print >> sys.stderr, "Loading Services..."
+
+if redirlogs:
+    import Logger
+    Logger.config.errorLog=sys.__stderr__
+
+bootloader.load()
+SkunkWeb.Hooks.ChildStart()
+
+if interactive or (not args and not command):
+    import code
+    code.interact('SkunkWeb Python 3.0 -- NO WARRANTY')
+else:
+    if command:
+        exec command in {}, {}
+	sys.exit(0)
+    try:
+        co = compile(open(args[0]).read(), args[0], 'exec')
+    except SyntaxError:
+        v = sys.exc_value
+        v.filename = args[0]
+        raise
+    sys.argv = args[1:]
+    ll = {}
+    exec co in ll, ll
+    
+    if interactive:
+        import code
+        code.interact('', local=ll)
+    

@@ -1,0 +1,7 @@
+CFLAGS=-Wall
+CC=gcc
+testopl: testopl.c md5c.o dav_opaquelock.o
+	gcc -o testopl $^
+
+clean:
+	-rm -f *.o *~ testopl

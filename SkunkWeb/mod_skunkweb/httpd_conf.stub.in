@@ -1,0 +1,45 @@
+#
+# The entries in this file need to be added to apache httpd.conf in order
+# for SkunkWeb module to function properly
+#
+# Please review the entries before adding them!
+
+# This tells Apache to load our module
+LoadModule skunkweb_module @APACHE_MODULES_DIR@/mod_skunkweb.so
+
+# This tells apache to call our module for EVERY request
+<Location /> 
+    SetHandler skunkweb-handler
+</Location>
+
+# Socket address of SkunkWeb.  Either a path to a unix domain socket or
+# a host:port pair for a TCP socket
+SkunkWebSocketAddress @prefix@/var/aedsock
+
+# Number of times to retry accessing the SkunkWeb
+SkunkWebRetries	3	
+
+# The location of the error page which gets displayed when SkunkWeb is
+# not accessible
+SkunkWebErrorDoc	@prefix@/share/skunk/modskunkweb_error.html  
+
+# The list of users to receive critical error emails. Should be a list
+# of space separated entries
+SkunkWebErrorEmails	@OWNER@@localhost
+
+# List of uri prefixes for which should be handled in the normal way by
+# apache and *not* by SkunkWeb.
+#
+# SkunkWebExclude /foo/ /bar/
+
+# In the event that we cannot reach a server running on SkunkWebSocketAddress,
+# randomly pick socketaddresses from the following list and try to connect to
+# them instead until we run out of retries (set by SkunkWebRetries).  
+#
+# SkunkWebFailoverHosts unixsocketaddr otherhost2:port
+
+# The number of milliseconds we should wait attempting to connect before 
+# bailing out retrying, since otherwise, we'd wait the default amount for TCP
+# which is 2 minutes -- BLEAH!  (default is 1 second = 1000 milliseconds)
+#
+# SkunkWebConnectTimeout 1000

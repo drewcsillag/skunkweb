@@ -1,0 +1,50 @@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+#
+# The makefile for the mod_skunkweb module
+#
+# $Id: Makefile.in,v 1.5 2001/07/11 17:17:42 drew Exp $
+
+# This is a useful script provided by apache to compile shared modules
+APXS=@APXS@
+CFLAGS=@CFLAGS@ -Wall -D_GNU_SOURCE @DEFS@
+owner		= @OWNER@
+group		= @GROUP@
+INSTALL		= @INSTALL@ -o $(owner) -g $(group)
+INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+prefix		= @prefix@
+share_dir       = @prefix@/share/skunk
+
+# Can be given on command line
+DEBUG=
+
+ifdef DEBUG
+   CFLAGS += -DDEBUG
+endif
+
+mod_skunkweb.so: mod_skunkweb.c
+	$(APXS) -c -Wc,"$(CFLAGS)" -o mod_skunkweb.so mod_skunkweb.c
+
+install:	mod_skunkweb.so
+	$(APXS) -i mod_skunkweb.so
+	$(INSTALL_DATA) -D modskunkweb_error.html $(share_dir)/modskunkweb_error.html
+clean:
+	-rm -f mod_skunkweb.o mod_skunkweb.so *~ 
+
+distclean: clean
+	-rm -f Makefile httpd_conf.stub

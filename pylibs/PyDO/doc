@@ -1,0 +1,134 @@
+Inheritance Semantics
+------------------------------
+
+All base class fields (columns) are inherited, subclass can add fields 
+and can only change inherited field types.
+
+the unique and connectionAlias attributes are inherited from left
+most, depth first class which defines them. 
+
+Static methods are inherited as static methods.
+
+Instance methods are inherited as instance methods.
+
+PyDO classes cannot inherit from non-PyDO classes.
+
+unique, _instantiable, sequenced and auto_increment are not inherited
+
+
+DataClass Stuff
+------------------------------
+To be instantiable, class must define (or inherit) the connectionAlias,  
+table and fields attributes, or, can set the _instantiable attribute 
+to 1.  The overridability is there so, in the case where you have your own 
+fetching mechanisms (i.e. stored procs), you can make the object 
+instantiable even though it normally wouldn't be (since no table for 
+instance).
+
+The fields member is tuple of (columnname, dbtype) pairs.
+The unique attribute is a list of strings and/or tuple of strings.  If
+a string, this says that this field is unique in the table, if a
+tuple, this says these fields taken together are unique in the
+table. 
+
+You can make the dataclass instances immutable by defining the mutable 
+attribute as a false value (None, 0, empty string, etc.)
+
+For databases with named sequences, you can populate the value of an 
+field by defining the sequenced member as a dict of 
+{fieldname: sequence_name} pairs, whereby if, on a call to new(), the 
+fields specified in sequenced are not present, the values are fetched from
+the sequence(s) before insert and subsequently inserted.
+
+For databases with auto-increment fields, you can populate the value of an 
+field by defining the auto_increment member with a dict of 
+{fieldname: auto_increment_name} pairs and the values will be populated into 
+the object after the insert is executed.  In the case of MySQL, there can only
+be one auto-increment field per table, so the auto_increment_name is needed, 
+but it's value is irrelevant.
+
+To define a static method (one that applies to the dataclass) define the 
+method as 
+    def static_<realmethodname>
+
+Others are instance methods.
+
+To get an unbound instance method, get <data_class>.<instance_method>, to get a
+static method, unbound from it's original data class (presumably called from 
+a sub-data-classe), use <data_class>.static_<static_method_name>.
+
+Attributes (static methods, data members, etc.) on data classes are accessible 
+from instances.
+
+
+Attributes on DataClasses
+--------------------
+_klass           - name of the data class
+_baseClasses     - tuple of super classes
+_staticMethods   - dict of static methods
+_instanceMethods - dict of instance methods
+_rootClass       - is the _PyDOBase root class metaclass instance
+_instantiable    - is this instantiable
+connectionAlias  - connection alias string
+table            - string naming the table
+mutable          - are instances of this mutable?
+fieldDict        - the dict of columnname: dbtype
+unique           - list of candidate keys
+sequenced        - dict of attrname: seq_name
+auto_increment   - dict of attrname: auto_increment_name
+
+Attributes on DataClass instances
+--------------------
+_dataClass       - the class which I'm an instance of
+_dict            - dict of current row
+
+Static Methods
+--------------------
+getDBI()                      - gets database interface (see conn.readme)
+getColumns(qualified = None)  - get column names (with table name if qualified)
+getTable()                    - get table name
+_baseSelect(qualified = None) - get SELECT fragment to get rows of object
+_matchUnique(kw)              - returns an eligible candidate key based on 
+                                contents of _dict
+_uniqueWhere(conn, kw)        - generate a where clause from output of 
+                                _matchUnique
+getUnique(**kw)               - get a unique obj based on keyword args
+getSome(**kw)                 - get some objs based on keyword args
+new(refetch = None, **kw)     - get new object based on kw args, if refetch
+                                is true, refetch obj after insert
+_validateFields(dict)         - does simple validation of fields on insert
+commit()                      - causes the database connection of this
+                                object to commit.
+rollback()                    - causes the database connection of this
+                                object to roll back.
+                  
+Instance Methods
+--------------------
+
+__init__()                    - can be used to prepopulate data object 
+                                instance attributes.  Can have no arguments 
+                                other than self.
+dict()                        - returns copy of dict representing current row
+updateValues(dict)            - make the values in current dict "stick"
+delete()                      - delete current row
+refresh()                     - reload current object
+joinTable(thisAttrNames, pivotTable, thisSideColumns,
+          thatSideColumns, thatObject, thatAttrNames) 
+                              - do cool m2m join
+joinTableSQL(thisAttrNames, pivotTable, thisSideColumns,
+          thatSideColumns, thatObject, thatAttrNames) 
+                              - returns sql and value list for conn.execute
+                                to do a m2m join but doesn't execute it so
+                                you can do ordering or other shit
+
+Dict-Style Instance Methods
+--------------------
+__getitem__(item)
+__setitem__(item, val)
+items()
+copy()
+has_key(key)
+key()
+values()
+get(item, default = None)
+update(dict)

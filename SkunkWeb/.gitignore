@@ -1,0 +1,7 @@
+cache
+htdocs
+logs
+htdocs.par
+var
+etc
+config.log config.cache config.status Makefile sw.conf skunkweb.py swpython.py swmgr

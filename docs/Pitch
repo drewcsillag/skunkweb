@@ -1,0 +1,45 @@
+Uses Python
+	* Python is easy to learn for both new programmers and experts alike
+	* senior programmer types like it too (vs. say tcl)
+	* extensible with C/C++ for speed and/or linkage to C/C++ libraries
+          via static *or* dynamic linking
+
+Extensible
+	* Relatively simple extension API
+	* can easily handle authentication, url building/parsing and custom
+	  tags
+
+Encourages component based design
+	* more than just "include"
+	* not just another ASP/JSP like thing
+	* a powerful templating language 
+	* encouraged by caching options (see below)
+	* component output can be either HTML or Python objects
+	* can write components in either STML or Python
+	* can also call components on other skunk servers
+	
+Message Catalogs
+	* makes multi-lingual sites much easier
+	* support variable substitution in messages
+
+Speed
+	* templates are compiled to Python bytecode
+	* extensive caching (to disk and optionally memory) of:
+		o compiled forms of templates
+		o digested message catalogs
+		o output of components
+		o python modules and python components
+	* cache *is* sharable between machines if using a
+	  shared filesystem! (can be more than one shared filesystem
+          for speed, redundancy and flexibility)
+	* caching is flexible and as finite as your disk space
+	* components can be rendered after the response is sent if 
+	  a slightly stale version is available --- resulting in
+	  better response times
+
+Documentation
+	* extensive documentation available in HTML, PostScript, PDF & text
+	* have automatic documentation tools to generate documentation for 
+	  STML templates and python modules (python components coming soon)
+	  as well as tools for writing manuals.
+

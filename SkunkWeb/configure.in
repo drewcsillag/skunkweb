@@ -1,0 +1,189 @@
+dnl  
+dnl  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+dnl  
+dnl	 This program is free software; you can redistribute it and/or modify
+dnl	 it under the terms of the GNU General Public License as published by
+dnl	 the Free Software Foundation; either version 2 of the License, or
+dnl	 (at your option) any later version.
+dnl  
+dnl	 This program is distributed in the hope that it will be useful,
+dnl	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl	 GNU General Public License for more details.
+dnl  
+dnl	 You should have received a copy of the GNU General Public License
+dnl	 along with this program; if not, write to the Free Software
+dnl	 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+dnl   
+AC_INIT(mod_skunkweb/mod_skunkweb.c)
+
+AC_SUBST(SW_VERSION)
+SW_VERSION=3.0a0
+
+AC_PREFIX_DEFAULT(/usr/local/skunk)
+
+# Check for location of bash. Don't check the return status, lower level
+# config should have taken care of that
+AC_SUBST(BASH)
+AC_PATH_PROG(BASH,bash)
+
+# Get the python path
+AC_SUBST(PYTHON)
+# look for python
+AC_MSG_CHECKING([--with-python given])
+AC_ARG_WITH(python,
+[  --with-python=/path/python   Specify path to python executable],[
+	AC_MSG_RESULT([yes $withval])
+	PYTHON=$withval],[
+	AC_MSG_RESULT([no, will look in \$PATH])
+	PYTHON=])
+
+if test -z "$PYTHON"
+then
+# Check for python in path
+AC_PATH_PROG(PYTHON,python)
+fi
+
+AC_SUBST(OWNER)
+AC_ARG_WITH(user, 
+[  --with-user=user        Make Skunk installation owned by user], [
+	OWNER=$withval], [
+	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
+
+AC_SUBST(GROUP)
+AC_ARG_WITH(group, 
+[  --with-group=group      Make Skunk installation owned by group], [
+	GROUP=$withval], [
+	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
+
+dnl AC_SUBST(DCORACLE)
+dnl AC_SUBST(SW_PORT)
+dnl AC_ARG_WITH(port, 
+dnl [  --with-port=port    Configure AED daemon to listen on given port], [
+dnl 	    SW_PORT=$withval], [
+dnl 	    SW_PORT=9888;])
+
+AC_SUBST(WEBDOC)
+AC_ARG_WITH(webdoc, 
+[  --with-webdoc           Install some sample content], [
+	case $withval in
+	no) WEBDOC="no";;
+	yes) WEBDOC="yes";;
+	*) WEBDOC="yes";;
+	esac], [
+	WEBDOC="no";])
+
+AC_SUBST(SERVICES)
+AC_ARG_WITH(services, 
+[  --with-services=svcs    Specify the list of personalities to install
+                           space delimited list of personas to install, valid
+                           names are:
+
+                           ae_component aecgi basicauth httpd mysql oracle
+                           pars postgresql remote remote_client requestHandler
+                           sessionHandler templating web], [
+	SERVICES=$withval], [
+	SERVICES="ae_component aecgi basicauth httpd mysql oracle pars postgresql remote remote_client requestHandler sessionHandler templating web";])
+
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+
+AC_MSG_CHECKING([--with-sudo given])
+AC_ARG_WITH(sudo,
+[  --with-sudo=/path/sudo  Specify path to sudo],[
+	AC_MSG_RESULT([yes $withval])
+	SUDO=$withval],[
+	AC_MSG_RESULT([no, will look in \$PATH])
+	SUDO=])
+if test -z "$SUDO"
+then
+# Check if sudo exists
+AC_PATH_PROG(SUDO, sudo, "", "$PATH:/usr/sbin:/sbin")
+fi
+
+
+#check if they want to build/install mod_aecgi
+AC_MSG_CHECKING([build mod_skunkweb])
+AC_SUBST(MOD_SKUNKWEB)
+AC_ARG_WITH(mod_skunkweb,
+[  --without-mod_skunkweb  Don't build mod_skunkweb],[
+	case $withval in
+	no)  MOD_SKUNKWEB="";            MOD_SKUNKWEBRES="no";;
+	yes) MOD_SKUNKWEB="mod_aecgi";   MOD_SKUNKWEBRES="yes";;
+	*)   MOD_SKUNKWEB="mod_aecgi";   MOD_SKUNKWEBRES="yes";;
+	esac], [
+	MOD_SKUNKWEB="mod_skunkweb";        MOD_SKUNKWEBRES="yes";])
+AC_MSG_RESULT([$MOD_SKUNKWEBRES])
+
+if test -n "$MOD_SKUNKWEB"  #if not building mod_skunkweb, don't worry about apache
+then
+
+AC_MSG_CHECKING([--with-apxs given])
+AC_ARG_WITH(apxs, 
+[  --with-apxs=/path/apxs  Specify path to the apxs program],[
+	AC_MSG_RESULT([yes $withval])
+	APXS=$withval],[
+	AC_MSG_RESULT([no, will look in \$PATH])
+	APXS=])
+
+# --with-apxs not supplied, try to find in PATH
+if test -z "$APXS"
+then
+dnl Locate apache axps, needed to compile mod_aecgi
+AC_PATH_PROG(APXS, apxs, "notfound", "$PATH:/usr/local/apache/bin")
+
+if [[ "$APXS" = "notfound" ]]
+then
+    AC_MSG_ERROR([apxs not found! Make sure Apache is installed])
+fi
+fi
+
+# Now, check that apache is compiled with shared modules enabled
+AC_MSG_CHECKING([apache shared module support])
+if $APXS -q CC >/dev/null 2>&1
+then
+    AC_MSG_RESULT(ok)
+else
+    AC_MSG_ERROR([Apache does not appear to be compiled with shared module support])
+    exit 1
+fi
+
+# Check the the apxs contains the absolute library path. Some RPMs for 
+# RedHat / Mandrake have broken apxs
+AC_MSG_CHECKING([apache modules directory])
+if test -d `$APXS -q LIBEXECDIR`
+then
+    AC_MSG_RESULT([OK])
+else
+    AC_MSG_ERROR([Apache appears to be misconfigured - apxs reports module directory as `$APXS -q LIBEXECDIR`. Absolute path expected])
+    exit 1
+fi
+
+# Set the modules dir for substitution
+AC_SUBST(APACHE_MODULES_DIR)
+APACHE_MODULES_DIR=`$APXS -q LIBEXECDIR`
+
+fi #if mod_skunkweb enabled
+
+dnl Check for functions
+dnl memmem() is used by mod_aecgi
+AC_CHECK_FUNCS(memmem)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(limits.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+
+AC_OUTPUT(Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
+Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py 
+util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
+Services/pars/par.py)

@@ -1,0 +1,43 @@
+<:loop `range(9)`:>
+
+    <:val `sequence_item`:>
+
+    <:if `sequence_item==0`:>
+    sequence is 0, nothing to see here
+    <:elif `sequence_item==1`:>
+    seqence is 1, continuing
+    <:continue:>
+    After continue, you shouldn't see this
+    <:elif `sequence_item==2`:>
+    sequence is 2, blowing and catching an exception
+        <:try:>
+      	    before exception
+    	<:raise:>
+    	    after exception
+    	<:else:>
+    	    caught blown exception
+    	<:/try:>
+    <:elif `sequence_item==3`:>
+    sequence is 3, entering a try loop with no exception
+    <:try:>
+    no exception here
+    <:else:>
+    caught blown exception
+    <:/try:>
+    <:elif `sequence_item==4`:>
+    sequence is 4, commented text here-><:comment:>
+    la la la you shouldn't see me la la la<:/comment:><--
+    <:elif `sequence_item==5`:>
+    sequence is 5, setting blah to 5<:call `blah=5`:>
+    value of blah is now <:val `blah`:>
+    <:elif `sequence_item==6`:>
+    sequence is 6, testing defaults
+    <:default blah 20:><:default dufus 5:>blah should be 5 |<:val blah:>|
+    dufus should be 5 |<:val dufus:>|
+    <:elif `sequence_item==7`:>
+    sequence is 7, breaking out of loop<:break:>
+    <:/if:>
+    <:/loop:>
+Some stuff before the halt
+<:halt:>
+Some stuff after the halt

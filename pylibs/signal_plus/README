@@ -1,0 +1,4 @@
+This module allows you to block and unblock SIGTERM, That's all folks
+to build:
+make -f Makefile.pre.in
+make

@@ -1,0 +1,26 @@
+starting
+before conditional
+
+this=='that' -->1
+this should show
+
+
+this should be that -->that|||
+this should be 1 -->1|||
+this should be 1ab -->1ab|||
+
+Loop test
+
+loop var: 1 
+
+after conditional
+
+loop var: 2 
+
+i_==2, continuing
+loop var: shit 
+
+i_==shit, breaking
+
+End Loop
+

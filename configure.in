@@ -1,0 +1,305 @@
+dnl -*- m4-mode -*-
+dnl  
+dnl  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+dnl  
+dnl	 This program is free software; you can redistribute it and/or modify
+dnl	 it under the terms of the GNU General Public License as published by
+dnl	 the Free Software Foundation; either version 2 of the License, or
+dnl	 (at your option) any later version.
+dnl  
+dnl	 This program is distributed in the hope that it will be useful,
+dnl	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl	 GNU General Public License for more details.
+dnl  
+dnl	 You should have received a copy of the GNU General Public License
+dnl	 along with this program; if not, write to the Free Software
+dnl	 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+dnl   
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(SkunkWeb/mod_skunkweb/mod_skunkweb.c)
+
+dnl add add help macro
+AC_DEFUN(AC_ADD_HELP,
+[AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+ac_help="$ac_help
+[$1]"
+AC_DIVERT_POP()])
+
+dnl Set some defaults
+AC_PREFIX_DEFAULT(/usr/local/skunk)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+
+if [[ "$INSTALL" = "./install-sh -c" ]]
+then
+    # Do not allow fallback to install-sh, we use -D option which it 
+    # doesn't support
+    AC_MSG_ERROR([GNU compatible install has to be installed on the system!])
+fi
+
+#
+# Check that install is GNU
+#
+AC_MSG_CHECKING([install GNU compatibility])
+if $INSTALL --version >/dev/null 2>&1
+then
+    AC_MSG_RESULT([Ok])
+else
+    # Do not allow fallback to install-sh, we use -D option which it 
+    # doesn't support
+    AC_MSG_ERROR([$INSTALL does not appear to be a GNU install!])
+fi
+
+# Make sure xargs is GNU xargs
+AC_PATH_PROG(GMAKE,gmake)
+
+if test -z $GMAKE
+then
+    AC_MSG_CHECKING([make GNU compatibility])
+    if $MAKE --version >/dev/null 2>&1
+    then
+        AC_MSG_RESULT([Ok])
+    else
+        AC_MSG_ERROR([$MAKE does not appear to be a GNU make, and no gmake found!])
+    fi
+fi
+
+# Make sure xargs is GNU xargs
+AC_PATH_PROG(XARGS,xargs)
+
+if test -z $XARGS
+then
+    AC_MSG_ERROR([xargs program not found!])
+fi
+
+# Check xargs version
+AC_MSG_CHECKING([xargs GNU compatibility])
+if $XARGS --version >/dev/null 2>&1
+then
+    AC_MSG_RESULT([OK])
+else
+    if [[ `uname` = "SunOS" ]]
+    then
+        # Exception for the Sun, Sun's xargs is Ok
+        AC_MSG_RESULT([OK])
+    else
+        AC_MSG_ERROR([$XARGS does not appear to be GNU xargs])
+    fi
+fi
+
+AC_SUBST(WITH_SKUNKWEB)
+AC_ARG_WITH(skunkweb, 
+[  --with-skunkweb       Install SkunkWeb as part of this installation (default yes)], [
+	case $withval in
+	no) WITH_SKUNKWEB=;;
+	yes) WITH_SKUNKWEB=SkunkWeb;;
+	*) WITH_SKUNKWEB=SkunkWeb;;
+	esac], [
+	WITH_SKUNKWEB=SkunkWeb])
+
+# look for python
+AC_MSG_CHECKING([--with-python given])
+AC_ARG_WITH(python,
+[  --with-python=/path/python   Specify path to python executable],[
+	AC_MSG_RESULT([yes $withval])
+	PYTHON=$withval],[
+	AC_MSG_RESULT([no, will look in \$PATH])
+	PYTHON=])
+
+if test -z "$PYTHON"
+then
+# Check for python in path
+AC_PATH_PROG(PYTHON,python)
+fi
+
+if test -z $PYTHON
+then
+    AC_MSG_ERROR([python interpreter is not found!])
+fi
+
+# Check python version
+AC_MSG_CHECKING([python version])
+if $PYTHON <<\EOF 
+import sys
+import string
+
+vers = string.split ( sys.version, ' ' )[[0]]
+
+sys.stdout.write ( 'version %s ' % vers )
+
+sys.exit ( not (vers >= '2.1') )
+EOF
+then
+    AC_MSG_RESULT([OK])
+else
+    AC_MSG_ERROR([python interpreter should be version 2.1 or newer])
+fi
+
+dnl # Check syslog module
+dnl AC_MSG_CHECKING([python syslog module])
+dnl if $PYTHON <<\EOF 
+dnl import sys
+dnl try:
+dnl 	import syslog
+dnl except ImportError:
+dnl 	sys.exit ( 1 )
+dnl sys.exit(0)
+dnl EOF
+dnl then
+dnl 	AC_MSG_RESULT([OK])
+dnl else
+dnl 	AC_MSG_RESULT([WARNING: python is not compiled with syslog module support!])
+dnl fi
+
+# Check crypt module
+AC_MSG_CHECKING([python crypt module])
+if $PYTHON <<\EOF 
+import sys
+try:
+    import crypt
+except ImportError:
+    sys.exit ( 1 )
+sys.exit(0)
+EOF
+then
+    AC_MSG_RESULT([OK])
+else
+    AC_MSG_RESULT([WARNING: python is not compiled with crypt module support!
+The BasicAuth module will have reduced functionality, but this is probably
+not a problem.
+])
+fi
+
+# check for mx package
+AC_MSG_CHECKING([eGenix mxBase Python package])
+if $PYTHON <<\EOF 
+import sys
+try:
+    import mx.DateTime
+except ImportError:
+    sys.exit ( 1 )
+sys.exit(0)
+EOF
+then
+    AC_MSG_RESULT([OK])
+else
+    AC_MSG_RESULT([ERROR: Skunk requires the eGenix mxBase Python package
+Get it at:
+    http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
+])
+fi
+
+# Check for location of bash
+AC_SUBST(BASH)
+AC_PATH_PROG(BASH,bash)
+
+if test -z $BASH
+then
+    AC_MSG_ERROR([bash (Bourne Again Shell) is not found!])
+fi
+
+AC_SUBST(OWNER)
+AC_ARG_WITH(user, 
+[  --with-user=user        Make Skunk installation owned by user], [
+	OWNER=$withval], [
+	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
+
+AC_SUBST(GROUP)
+AC_ARG_WITH(group, 
+[  --with-group=group      Make Skunk installation owned by group], [
+	GROUP=$withval], [
+	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
+
+dnl ############################################################
+dnl # since the database interface modules are no longe shipped
+dnl # we don't need these tests
+dnl AC_SUBST(DCORACLE)
+dnl AC_ARG_WITH(dcoracle, 
+dnl [  --with-dcoracle         Install and build DCoracle ], [
+dnl 	    case $withval in
+dnl 	    no) DCORACLE=;;
+dnl 	    yes) DCORACLE=true;;
+dnl 	    *) DCORACLE=true;;
+dnl 	    esac], [
+dnl 	    DCORACLE=] )
+dnl 
+dnl AC_SUBST(MYSQL)
+dnl AC_ARG_WITH(mysql,
+dnl [  --with-mysql=DIR        Build MySQL support, and MySQL installed in DIR ], [
+dnl 	    MYSQL=$withval ], [
+dnl 	    MYSQL=] )
+dnl 
+dnl AC_SUBST(PGSQL)
+dnl AC_ARG_WITH(postgresql,
+dnl [  --with-postgresql=DIR   Build PostgreSQL support, PostgreSQL installed in DIR ], [
+dnl 	    PGSQL=$withval ], [
+dnl 	    PGSQL=] )
+
+dnl ----------------------------------------
+dnl no longre require mmlib
+dnl ----------------------------------------
+dnl AC_SUBST(MMLIB)
+dnl AC_SUBST(MMINC)
+dnl AC_ARG_WITH(mm,
+dnl [  --with-mm=DIR           Location of mm library], [MM=$withval], [MM=])
+dnl if test "" = "$MM"
+dnl then 
+dnl    AC_PATH_PROG(MM, mm-config)
+dnl else
+dnl    MM=$MM/bin/mm-config
+dnl fi
+dnl AC_MSG_CHECKING([mm library ok])
+dnl if test ! -x "$MM"
+dnl then
+dnl 	AC_MSG_ERROR([$MM not executable or doesn't exist!
+dnl 	is the mm libarary installed?  Available at:
+dnl 	    http://www.engelschall.com/sw/mm/])
+dnl else
+dnl 	AC_MSG_RESULT([Ok])
+dnl fi
+dnl MMLIB=`$MM --ldflags --libs`
+dnl MMINC=`$MM --cflags`
+dnl AC_MSG_RESULT([using $MMLIB and $MMINC])
+
+dnl Checks for library functions.
+
+# This is for mxDateTime module
+AC_SUBST(MX_DATE_FUNCS)
+
+AC_CHECK_FUNC(strftime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRFTIME"])
+AC_CHECK_FUNC(strptime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRPTIME"])
+AC_CHECK_FUNC(timegm,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_TIMEGM"])
+
+AC_PATH_PROG(LYNX, lynx)
+AC_PATH_PROG(LATEX, latex)
+AC_PATH_PROG(PDFLATEX, pdflatex)
+AC_PATH_PROG(DVIPS, dvips)
+
+dnl AC_CONFIG_SUBDIRS(AED)
+AC_CONFIG_SUBDIRS(SkunkWeb)
+
+dnl  --with-port=port    Configure SkunkWeb daemon to listen on given port
+AC_ADD_HELP([
+Additional options if building SkunkWeb:
+  --with-webdoc           Install some sample content
+  --with-services=svcs    Specify the list of personalities to install
+                           space delimited list of personas to install, valid
+                           names are:
+
+                           sessionHandler, requestHandler, remote, ae_component, 
+                           remote_client, aed_compat, aecgi, httpd,
+                           basicauth, oracle, pars, templating, web
+
+  --with-sudo=/path/sudo  Specify path to sudo
+  --without-mod_skunkweb  Don't build mod_skunkweb
+  --with-apxs=/path/apxs  Specify path to the apxs program
+])
+
+
+AC_OUTPUT(Makefile pylibs/Makefile pylibs/skunkdoc/skunkdoc.py pylibs/skunkdoc/skunkdoc2html.py pylibs/skunkdoc/skunkdoc2latex.py docs/Makefile)
+dnl pylibs/mmlib/Setup)

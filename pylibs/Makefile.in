@@ -1,0 +1,125 @@
+#  
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  
+#      This program is free software; you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation; either version 2 of the License, or
+#      (at your option) any later version.
+#  
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#  
+#      You should have received a copy of the GNU General Public License
+#      along with this program; if not, write to the Free Software
+#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#   
+# $Id: Makefile.in,v 1.35 2001/07/28 15:37:45 drew Exp $
+# Time-stamp: <01/04/10 13:54:42 smulloni>
+# Makefile for pylibs 
+########################################################################
+
+#
+# Location where to install AED
+#
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+pylibs_dir	= $(prefix)/lib/pylibs
+skunk_bindir    = @bindir@
+
+#do_dcoracle 	= @DCORACLE@
+#do_mysql        = @MYSQL@
+#do_postgresql   = @PGSQL@
+#
+# Sub-components
+#
+components 	=
+
+# Python components which require building
+py_comps	= signal_plus skunklib uuid AE/cacheKey 
+#mmlib
+
+# generate makefile names
+py_comps_makefiles = $(patsubst %,%/Makefile,$(py_comps))
+
+# Exclude dirs - exclude from wide file search. Use | to separate entries
+exclude_dirs	= "DCOracle/src"
+
+#
+# Who to install as and what modes to set
+owner		= @OWNER@
+group		= @GROUP@
+dirmode		= 0755
+confmode	= 0640
+execmode	= 0755
+
+# Commands used
+INSTALL		= @INSTALL@ -o $(owner) -g $(group)
+INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+
+default:	build
+
+
+build: $(py_comps_makefiles)
+	@# Now, actually build stuff
+	for comp in $(components) $(py_comps); do \
+	     if $(MAKE) -C $${comp}; \
+	     then :; \
+	     else \
+                 exit 1; \
+             fi \
+	done
+
+#rule to build Makefiles in py_comps from Makefile.pre.in
+%/Makefile: %/Makefile.pre.in
+	(dirname=`echo $< | sed 's@/Makefile.pre.in$$@@'`; \
+         $(MAKE) -C $$dirname -f Makefile.pre.in boot PYTHON=@PYTHON@)
+
+install:	
+	@# First, run make install in all of the component directories
+	COMPONENTS="$(components)" ; \
+	for comp in $${COMPONENTS} $${COMPONENTS}; do \
+	    if $(MAKE) -C $${comp} install; \
+	    then :; \
+	    else \
+	        exit 1; \
+	    fi \
+	done
+
+
+	@# Locate all the files that need installing and install them
+	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -name '*\.xml' -o -name '*\.gif' \) -print | egrep -v $(exclude_dirs)`; \
+	do \
+	    $(INSTALL_DATA) -D $${file} $(pylibs_dir)/$${file}; \
+	done
+
+	@#Install skunkdoc and skunkdoc2html in bin without .py extension
+	for util in skunkdoc skunkdoc2html; do \
+	    if [ -f $(skunk_bindir)/$${util} ]; then \
+	       echo "Removing old link for $(skunk_bindir)/$${util}"; \
+	       rm -f $(skunk_bindir)/$${util}; \
+	    fi; \
+	    ln -sf $(pylibs_dir)/skunkdoc/$${util}.py $(skunk_bindir)/$${util}; \
+	    chown $(owner) $(skunk_bindir)/$${util}; \
+	    chgrp $(group) $(skunk_bindir)/$${util}; \
+	done
+
+	@#give execute permissions to skunkdoc stuff
+	chmod +x $(pylibs_dir)/skunkdoc/skunkdoc.py $(pylibs_dir)/skunkdoc/skunkdoc2html.py
+
+clean:
+	@# Clean up the python components
+	-for pycomp in $(py_comps); do \
+	     $(MAKE) -C $${pycomp} clean; \
+        done
+
+distclean: clean
+	-rm -f Makefile
+	-for pycomp in $(py_comps); do \
+	     $(MAKE) -C $${pycomp} clean clobber; \
+	     rm -f $${pycomp}/Makefile.pre $${pycomp}/Makefile ;\
+        done
+
+.PHONY:	install build clean default
+

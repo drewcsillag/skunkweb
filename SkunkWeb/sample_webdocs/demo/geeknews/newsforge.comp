@@ -1,0 +1,21 @@
+<:cache duration=10m:>
+<P>
+<A NAME="newsforge"><B>Headlines from <A HREF="http://www.newsforge.com">newsforge.com</A></b></A>
+
+<:try:>
+<:datacomp headlines dcomps/newsforge.pydcmp cache=yes:>
+
+<font size=-1>
+<ul>
+<:for `headlines` head:>
+<li>
+<A HREF="<:val `head.url`:>"><:val `head.title` fmt=htmlquote:></a>
+<br> <:val `head.description`:>
+</li>
+<:/for:>
+</ul>
+</font>
+<:except:>
+newsforge.com headlines not available
+<:cache duration=0m:>
+<:/try:>

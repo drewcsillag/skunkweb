@@ -1,0 +1,7 @@
+<:tagname first.things(first_arg)
+	  second=second(things_in.order).boink
+          arg="with quotes:<> things"
+	  cache="10:20:30"
+:>
+
+<:   spaceytag ths=`that` "moron ification" dufus idiots foo=bar :>

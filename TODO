@@ -1,0 +1,269 @@
+#   Time-stamp: <2001-08-03 12:24:44 drew> 
+#   $Id: TODO,v 1.48 2001/08/03 16:24:15 drew Exp $
+
+* - TODO
+- - low priority
+X - done
+! - high priority
+@ - superceeded by other effort
++ - compound task
+? - maybe
+L - Later
+
+Release Recipe
+--------------------
+Make sure CHANGES file is complete for the release
+try a test installtion
+Make the release tarball
+try a test installation
+Push release to support and technet
+Make docs (opman, stmlref, skunkdoc, develop) in (dvi, ps, pdf, html, and
+    html tarball)
+
+SkunkWeb 3.0a
+------------------------------
+* document sw.conf in the .in file
+* clean up docs somewhat
+
+
+SkunkWeb 3.0
+------------------------------
+* fix devel doc -- remove config stuff, api only
+* finish rewrite of the operations manual
+* get release stuff figured out (tag, build doc, build tarball) and working
+* way to determine whether call to callComponent actually rendered the 
+  component or it was just fetched from cache.  (expired and rendered flags)
+* security audit on rcc code
+
+? build docs and include in dist as opposed to building during build
+  or distribute docs separately (as Python does)
+? fix so templating will fully work properly (other svcs too (e.g. oracle)) 
+  if web isn't there and remcompsvr is
+
+L Patch to pydoc to allow it to handle STML
+L skunk manifesto
+L real PyDO doc
+L real static doc
+
+X fix install target so that it installs *all* of the sample web content
+X put in descriptions of errorTemplate and notFoundTemplate into sw.conf.in
+X set default of parFallthrough to 1
+X make so we have an errorTemplate (similar to notFoundTemplate) that
+  will be rendered in the event of an exception.
+X make so if you Scope the documentRoot or parFiles that it makes sure that
+  you change the compileCacheRoot in the Scope also
+X make AE do memory caching properly in face of a docRoot or would that be a
+  cacheRoot switch -- cacheroot is now part of memory cache key
+X make sure that the pars persona does the right thing.  (instead of looping
+  through the list made at server start, keep a dict of parfilename:contents
+  and use Configuration.parFiles to loop
+X fix the services list in SkunkWeb/configure.in
+X kill off vhost -- no longer needed because of Scope decls
+X undepend mmlib and shared memory debug flags
+X fix <:include:>
+X why skunkdoc document -- NO, skunkdoc sucks.  Mayhap some way to patch
+  pydoc to handle stml stuff?
+X can chuck the aed_compat service
+X update/convert to latex skunkdoc -- or kill it -- KILLED
+X make sure that the cacheKey module handles circular structures
+  without barfing
+X install par.py in bin/ (need to make a .in file for it)
+X de-skundocify all python code
+X fix any division that might break when PEP 238 goes into effect
+X remove LoggingPolicy.txt from docs
+X remove portugues.xml from docs
+X remove reader_profiles.xml from docs
+X fixed so makefile.pre.in reference the python in @PYTHON@, not the first
+  python in $PATH
+X update README
+X write INSTALL (reqs -- crypt, mx.., etc.)
+X make so have some form of component commenting ala skunk 2 (AE lib)
+X check for mxDateTime in configure
+X still need crypt module? -- not entirely, but BasicAuth.py is not totally
+  functional without it.
+X still need syslog module? -- NO
+X add copyright notices to Makefile.in's Setup.in's and configure.in's
+X prepend to all appropriate files under skunk
+  #  
+  #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+  #  
+  #      This program is free software; you can redistribute it and/or modify
+  #      it under the terms of the GNU General Public License as published by
+  #      the Free Software Foundation; either version 2 of the License, or
+  #      (at your option) any later version.
+  #  
+  #      This program is distributed in the hope that it will be useful,
+  #      but WITHOUT ANY WARRANTY; without even the implied warranty of
+  #      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  #      GNU General Public License for more details.
+  #  
+  #      You should have received a copy of the GNU General Public License
+  #      along with this program; if not, write to the Free Software
+  #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+  #   
+X make an armoring pylib to stuff things into hidden form fields that
+  cannot be spoofed (similar to old CookieEncoding idea, but better)
+X remove defer argument from components and have cache options be
+	(no,0,false),  (yes,1,true), (defer,2), (force,3), (old,4)
+X remove AED directory from root 
+X check http://www.webdav.org/mod_dav/license-1.html to make sure that
+  we can include the code, otherwise, ditch uuid pylib (it's not actually
+  used by anything currently) -- ALL is fine, it's a BSDL 
+X ditch UrlApi pylib
+X make a way to see what services are loaded so you can decide what to do
+  say if templating isn't (or is) loaded.
+X make a remote client library
+X remote debugging service
+X split servicing rcc's from client
+X adjust stmlref manual as necessary
+    * change retain tag to hidden & update stmlrefer
+    * update refs to REQUEST and RESPONSE in stmlrefer
+    * update refs of AED to skunkweb in stmlrefer
+    * fix code examples in stmlrefer
+    * remove references to the SPI in stmlrefer
+X A debugging flags mechanism, so don't have to have all debug on/off
+X Remove Cookie pylib
+X clean up LogObj so various ERROR, etc. prefixes are removed
+X fix so AE's logging stuff uses SkunkWebs stuff
+X In cases where prefixes stay (ERROR marker in sw.log), make so prefix 
+  is there for every line in a log message
+X add a _statDocRoot function to AE.Cache
+X make so if a handler returns an HTTP response code, processing stops
+X do index.html from dir/ shit (make it configurable too)
+X handle dir to dir/ redirects
+X add src modtime as optional argument to callComponent
+X check the Protocol from --- import * re: Hooks module bullshit
+X See if I can remove Logging pylib
+X check that its a TemplateMimeType before doing callComponent on it
+X Content-Type defaulting by the request handler 
+X make so SIGINT is treated the same as SIGTERM
+X add no-handler RequestHandler
+X plain old non-handler for non-template shit
+X make so request handler does the configuration overlay stuff (aecgiHandler)
+X add more debug logging
+X make server reload work
+X make sure that exceptions are properly logged in the Server framework (i.e.
+  Server.py, SocketMan and ProcMgr)  i.e. exceptions are never silent!
+X print something to stderr/out if server startup fails
+  -- even if not isatty()
+X start enumeration (and documentation) of config vars
+X fix ProcessMgr to log like SocketMan
+X added service to allow par files (Python Archive files) to be used
+  as a docroot
+X add templating tags to templating service -- HTMLTags, RemoteSvcs, args and 
+  Log
+X handle redirect exceptions in template.Handler
+X make so that ctrl-c will bring down the server properly
+X finish of *'s in AE's TODO (basically, cache file versioning)
+X general neatening (like Id tags, import reordering, etc.)
+X do AE's generic caching API stuff mentioned as F in it's TODO file
+  -- not needed since the putCachedComponent and getCachedComponent calls
+     in AE.Cache do it all ready
+X swpython -- make a symlink from bootloader.py to swpython.py and boing!
+  you've got the ever elusive swpython (nee AEDpython)
+X sql extension for oracle
+X fix deferred components so they actually work
+X add browser object to the Connection object
+X make so header dictionaries are always properly cased
+X make sure the component stack in AE is cleared at the end of a request
+X should the configuration changes by path still happen if not a template
+   - path config done before web.PreRequest hook
+X BasicAuth service
+X make so connection to apache is dropped right after response sent
+X make a hook after connection obj created but before path config overlay
+X move and rename mod_aecgi to mod_skunkweb into SkunkWeb directory
+X move/rename/adjust/whatever contents of AED/util
+X do CRLF => LF conversions in python components  
+X add __all__ pseudo attribute to ConfigLoader.Config class so that Python 2.1
+  from Configmodule import * will work!
+X add help screen to skunkweb.py
+X add help screen to swpython.py
+X see if can move bulk of bootloader into SkunkWeb pkg
+X make an skunkweb.py (rename remainder of bootloader to it)
+X make so swpython isn't a symlink but a real program
+X add MaxRequests-like thing to probably the SocketMan
+X add help screen to par.py
+X add help screen to htpasswd.py
+X make sure documentation of DT_* stuff in ae.ltx includes DT_INCLUDE and that
+  docs for callComponent describe include semantics
+X add feature to unload any modules that get loaded during a request (in
+  SkunkWeb.Server)
+X fix so templating handler will do anything that callcomponent can handle
+X fix server reload... again...
+X add docs about userModuleCleanup, hideMimeTypes
+X if mimetype is application/x-python, change default mimetype for execution
+  to text/html
+X fix so that if marshal.load? fails, we don't blow up, we just ignore
+X include cachefile version # in cached component outputs
+X include cachekey in cached component outputs
+X check that cacheKey in pylibs/AE is installed properly on make install
+X fix default log path to var/log/skunk
+X fix default pid path to var/run/skunk
+X check sys.paths in skunkweb and swpython
+X fix skunkdoc to work with python 2.1
+X fix cache reaper for new cache file format
+X get configuration/build/install shit working
+X check compile warnings
+X Move basicauth's authenticator to pylibs
+X add FallbackToCache option
+X add StrictMessageCatalogs option
+X add vhost service
+X remove remoteAed.py module from pylibs
+X add vhost stuff to devel doc
+X get html and other doc building working
+X remove bibliography from devel
+X copy necessary bits to generate HTML docs from latex ones from Python
+X make so we have an html directory in which the html docs will be built, same
+  for pdf, ps, etc.
+X revert component.py and make so it doesn't call Cache.*cachedcomponent
+  with auxArgs
+X add simple remote components
+X enable arbitrary auth by hook
+X add services for mysql and postgresql
+X have a interp mime types style thing so that .html and .py et.al. can be
+  sent w/o interpretation on a per-directory basis
+X write developer docs
+X make so reload tries to fire off swpython to see that the config is ok (
+   bootloader probably needs a configcheck option/mode) before reloading 
+   proper, if configcheck fails, log it and continue with existing config.
+
+   By nature of the fact that swmgr starts swpython, we get this for free
+
+
+Future stuff
+------------------------------
+* profile, profile and profile some more.
+
+
+Unknowns
+------------------------------
+? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
+? write/copy-and-alter operations manual
+? fix so templating can be loaded without web being there
+? add request data recording/playback extension
+? test Server framework by trying to implement remote debugging extension
+? single submit library (use uuid lib probably)
+? make precompiled .pars - or option to compile on server start? 
+  - would be a good application of swpython
+? add an input tag (mimicking HTMLs) which can do client-side checking via
+  javascript
+  - ? a way to have a form redisplay if invalid data in a field
+
+Nopes
+------------------------------
+N CookieEncoding stuff
+    * Get the _Nonce for CookieEncoding into config, error if not in config
+    * change _Nonce in CookieEncoding
+    * separate armoring from encoding so armoring can be done separately
+  module is dead
+N DCOracle merge -- no longer included in dist
+N add indexing to skunkdoc
+N error if numKids == 0
+N make AE use ConfigLoader's Config obj
+N document in templating service that it will handle files where
+  mimetype, DT_REGULAR is in the excutable map
+N add a superteam service
+
+@ SkunkWeb operations and setup and hints (e.g. don't use clearCache unless
+  the # of cached versions is small)
+@ update/convert to latex skunk_arch

@@ -1,0 +1,160 @@
+#!/usr/bin/env python 
+# -*- python -*- 
+
+import sys
+import getopt
+
+import CompileGrammar
+
+def help():
+    print """pargen - an easy to use (but currently broken) parser generator tool
+pargen [-Sslcmhitdr1] [-o file] inputfile
+
+Generator Options
+-s, --simple-lr        Use the SLR (LR(0)) generator - probably broken
+-l, --lalr             Use the LALR(1) generator (starting from SLR)
+-1, --lalr-via-lr1     Use the LALR(1) generator (starting from LR(1))
+-c, --canonical-lr     Use the LR(1) generator
+                       
+Output Options         
+-m, --dump-marshal     Dump tables to a marshalled file instead of a module 
+                       source which is the default.
+-o, --output-file=x    Dump output to x (no output generated if not specified)
+                      
+Debug Options         
+-i, --show-items       Show the items for the grammar
+-I, --stop-after-items Show the items for the grammar and stop
+-t, --show-table       Show the state/goto tables
+-r, --show-rules       Show the rules
+-R, --stop-after-rules Show the rules for the grammar and stop
+-d, --dump-input       Show an input file that should be equivalent to the
+                       supplied one
+-D, --dump-and-stop    Dump a computed input file and stop
+
+Input Option
+-e, --ebnf             Use EBNF for input
+
+Other Options
+-q, --quiet         Don't show status messages
+-h, --help          Show this screen
+"""
+    sys.exit()
+    
+def readConfig():
+    args, extra = getopt.getopt(sys.argv[1:], 'qdDIRslcmhitdr1eo:', [
+        'simple-lr', 'lalr', 'lalr-via-lr1', 'canonical-lr', 'dump-marshal',
+        'help', 'show-items', 'show-table', 'show-rules', 'output-file=',
+        'stop-after-items', 'ebnf', 'quiet', 'stop-after-rules',
+        'dump-input', 'dump-and-stop'])
+
+    inputType = 'BNF'
+    method = 'LALR0'
+    stgMode = 'module'
+    showRules = None
+    showItems = None
+    showTable = None
+    outputFile = None
+    intputFile = None
+    statusMsg = 1
+    dump = None
+    
+    for arg, val in args:
+        if arg in ['-m', '--dump-marshal']:
+            stgMode = 'marshal'
+        elif arg in ['-d', '--dump-input']:
+            dump = 1
+        elif arg in ['-D', '--dump-and-stop']:
+            dump = 2
+        elif arg in ['-q', '--quiet']:
+            statusMsg = 0
+        elif arg in ['-e', '--ebnf']:
+            inputType = 'EBNF'
+        elif arg in ['--simple-lr', '-s']:
+            method = 'LR0'
+        elif arg in ['--lalr', '-l']:
+            method = 'LALR0'
+        elif arg in ['-c', '--canonical-lr']:
+            method = 'LR1'
+        elif arg in ['-i', '--show-items']:
+            showItems = 1
+        elif arg in ['-I', '--stop-after-items']:
+            showItems = 2
+        elif arg in ['-t', '--show-table']:
+            showTable = 1
+        elif arg in ['-r', '--show-rules']:
+            showRules = 1
+        elif arg in ['-R', '--stop-after-rules']:
+            showRules = 2
+        elif arg in ['-o', '--output-file']:
+            outputFile = val
+        elif arg in ['-1', '--lalr-via-lr1']:
+            method = 'LALR1'
+        elif arg in ['-h', '--help']:
+            help()
+
+    if len(extra) > 1:
+        print 'multiple input file arguments not allowed'
+        help()
+        
+    elif len(extra) < 1:
+        print 'no input file specified'
+        help()
+        
+    inputFile = extra[0]
+
+    return method, stgMode, outputFile, showRules, showItems, showTable, \
+           inputFile, inputType, statusMsg, dump
+
+(
+    method, stgMode, outputFile, showRules, showItems, showTable, inputFile,
+    inputType, statusMsg, dump
+) = readConfig()
+
+if statusMsg:
+    print 'pargen starting...'
+    
+text = open(inputFile).read()
+if inputType == 'BNF':
+    import GrammarLoader
+    rules = GrammarLoader.loadGrammar(text, statusMsg)
+elif inputType == 'EBNF':
+    import EBNFParse
+    rules = EBNFParse.loadGrammar(text, statusMsg)
+
+if statusMsg:
+    print 'grammar loaded'
+
+if dump:
+    import string
+    for rule in rules:
+        print ':%s:%s:%s' % (rule.funcName, rule.lhs, string.join(rule.rhs))
+    if dump == 2:
+        sys.exit()
+        
+if showRules:
+    print 'Rules'
+    print '--------------------'
+    for i in rules:
+        print i
+if showRules == 2:
+    sys.exit()
+    
+grammar = CompileGrammar.compileGrammar(method, rules, showTable, showItems,
+                                        statusMsg)
+
+if statusMsg:
+    print 'dumping output'
+
+if outputFile != None:
+    gf = open (outputFile, 'w')
+    if stgMode == 'module':
+        for i in grammar.items():
+            gf.write('%s = %s\n' % i)
+        gf.close()
+    elif stgMode == 'marshal':
+        import marshal
+        marshal.dump(grammar, gf)
+        gf.close()
+
+if statusMsg:
+    print 'dumping complete'

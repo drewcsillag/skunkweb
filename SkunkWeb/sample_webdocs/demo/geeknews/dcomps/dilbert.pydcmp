@@ -1,0 +1,21 @@
+import httplib
+import re
+#http://www.unitedmedia.com/comics/dilbert/
+m = re.compile('<a href="(/comics/dilbert/archive/images/dilbert[0-9]+.gif)">')
+
+def getdilbertHomePage():
+    h = httplib.HTTP('www.unitedmedia.com')
+    h.putrequest('GET', '/comics/dilbert/')
+    h.endheaders()
+    errc, errm, headers = h.getreply()
+    f = h.getfile()
+    data = f.read()
+    f.close()
+    return data
+
+def getDilbertImage():
+    text = getdilbertHomePage()
+    match = m.search(text)
+    return 'http://www.unitedmedia.com' + match.group(1)
+
+raise ReturnValue, getDilbertImage()

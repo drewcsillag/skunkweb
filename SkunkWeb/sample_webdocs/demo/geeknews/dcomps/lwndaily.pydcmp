@@ -1,0 +1,30 @@
+import re
+import string
+import httplib
+
+def getLT():
+    h = httplib.HTTP('lwn.net')
+    h.putrequest('GET', '/headlines/text')
+    h.endheaders()
+    errc, errm, headers = h.getreply()
+    f = h.getfile()
+    data = f.read()
+    f.close()
+    return data
+
+class Article:
+    def __init__(self, headline, link):
+        self.headline = headline
+        self.link = link
+
+
+def getArticles():
+    t = getLT()
+    artfoos = string.split(t, '\n&&\n')[1:]
+    res = []
+    for artfoo in artfoos:
+        bits = string.split(artfoo, '\n')
+        if len(bits) == 3: res.append(Article(bits[0], bits[1]))
+    return res 
+
+raise ReturnValue, getArticles()

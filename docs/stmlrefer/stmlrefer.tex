@@ -1,0 +1,2519 @@
+%fix obeylines things
+\documentclass{manual}
+\usepackage{makeidx}
+\usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
+\title{The SkunkWeb STML Reference}
+\author{Drew Csillag}
+\release{3.0}
+\setshortversion{3}
+\makeindex
+
+\begin{document}
+%function argument list environment
+\newcommand{\argdescitem}[1]{\hspace\labelsep
+                                \normalfont\ttfamily #1\ }
+\newenvironment{argdesc}{\begin{list}{}{
+        \renewcommand{\makelabel}{\argdescitem}
+}
+}{\end{list}}
+
+\newcommand{\doref}[1]{(see section \ref{#1}, page \pageref{#1})}
+%begin titlepage stuff
+\maketitle
+\ 
+\vfill 
+\noindent
+This file documents the SkunkWeb Web Application Framework.
+
+\noindent
+Copyright (C) 2001 Andrew Csillag
+
+\noindent
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+%%end titlepage stuff
+
+\tableofcontents
+
+\chapter{Introduction to STML}
+\label{stmlrefintro}
+The SkunkWeb Enviroment gives you two ways to do programming for your
+web applications: with \emph{code modules} written in the programming
+language Python, and with \emph{templates}, which are text documents
+with embedded programming code. In SkunkWeb, these templates' embedded
+programming code is written in a language called STML, or Skunk
+Template Markup Language. STML is like other markup languages such as
+HTML or XML, in that it uses ``tags'' to express its instructions.
+
+This guide introduces the
+syntax and conventions of STML, and also includes a reference
+for all STML ``tags''.
+
+STML documents are text (usually HTML) documents with 
+embedded ``programming'' tags. These programming tags are 
+written in the special ``tag language'' we call STML 
+(Skunk Template Markup Language).
+
+At first glance, an STML document looks just like 
+a regular text document. Its filename ends in 
+\code{.html} (or \code{.txt} or whatever you want the 
+output to be). Once you look at the document, however, 
+you will notice the STML tags, which look like HTML 
+tags with colons (:) inside them:
+
+\begin{verbatim}
+<:tag_name:>
+\end{verbatim}
+
+
+SkunkWeb can recognize these STML tags, and follow the instructions
+you give in the tags.
+
+STML tags are more complex and powerful than HTML tags. 
+In HTML, a tag has a name (such as \texttt{BR}), 
+and optionally some \emph{attributes}, which are pairs 
+of strings with a ``name'' and a ``value'':
+
+\begin{verbatim}
+<A HREF="index.html">
+\end{verbatim}
+
+
+In the above HTML tag, \texttt{A} is the tag's name, 
+and the tag has one attribute. The attribute's name is 
+\texttt{HREF}, and its value is the string \texttt{"index.html"} 
+(quotes not included). In HTML, attribute values are always 
+\emph{strings}, and the quotation marks around a string
+are required only if there are spaces or tabs in the string.
+
+STML tags are similar. However, STML uses Python! 
+So the values of attributes can be things other than strings. 
+Consider this STML tag:
+
+\begin{verbatim}
+<:happy_tag foo=hi bar="Hello there" 
+     baz=5 dib=`myVar`:>
+\end{verbatim}
+
+The name of the STML tag is \texttt{happy_tag}. 
+(This tag is not a real STML tag, of course.) 
+The tag has four attributes, with keys \texttt{foo}, 
+\texttt{bar}, \texttt{baz}, and \texttt{dib}. 
+Looks like an HTML tag so far, correct? 
+But look at the attribute \emph{values}.
+
+The value of attribute foo is the \texttt{"hi"} 
+(quotes not included). It's a string; if you type something 
+without any quotes, STML assumes the value is a string.
+The value of attribute \texttt{bar} is \texttt{"Hello there"} 
+(quotes not included in the value). It's also a string, 
+of course. When you quote string values in STML, 
+you can use Python's way of quoting strings with single 
+or double quotes.
+
+The value of attribute \texttt{baz} is \texttt{5}. 
+In HTML, this would be the string \texttt{"5"}, and so it 
+is in STML. But STML, which uses Python, is smart enough 
+to know about Python's real ``data types'', such as integers 
+and floating-point numbers.
+
+Therefore, if you want an attribute value to be 
+something other than a string, use STML's best feature: 
+the \emph{backticks}. Any value which you enclose in backticks 
+\texttt{`like this`} will be taken to be a Python expression. 
+Thus when you say \texttt{bar=5}, STML sees the string \texttt{"5"} 
+for \texttt{bar}, but when you say \texttt{bar=`5`}, STML sees 
+the Python expression \texttt{5}, which it knows is an integer.
+
+The attribute \texttt{dib} is an example of more powerful 
+uses of backticked Python expressions: the use of Python variables.
+The \texttt{dib} argument has a value \texttt{`myVar`}, which in Python means
+the Python object in the variable named \texttt{myVar}. Now you have
+a real programming enviroment in your STML document!  You can use certain
+STML tags to assign strings and other Python objects to variable names,
+and then use those variable names in later STML tags:
+
+\begin{verbatim}
+<:set name=myVar expr=`56.7`:>
+<:val expr=`myVar`:>
+\end{verbatim}
+
+
+The STML \texttt{<:set:>} (see section \ref{tagset}, page
+\pageref{tagset}) tag  
+lets you assign the result of a Python expression in the attribute
+named \texttt{expr} to a variable name in the attributed named \texttt{name}.
+In the example, you assign the floating point number 
+\texttt{56.7} to the variable \texttt{myVar}. Then the
+\texttt{<:val:>} (see section \ref{tagval}, page
+\pageref{tagval})
+tag displays
+the result of a Python expression in the attribute named \texttt{expr}
+as HTML output for the user.
+
+You can do a lot inside the backticks. Any Python expression is legal:
+make calls to functions, make instances of Python classes, do arithmetic,
+do boolean logic with \texttt{and} and \texttt{or}. 
+Python has a built-in function \texttt{int()}, for example, which takes 
+an object (like a floating-point number) and turns it into an integer: 
+
+\begin{verbatim}
+<:set name=myVar expr=`56.7`:>
+<:set name=myOtherVar expr=`int(myVar)`:>
+\end{verbatim}
+
+STML sees the Python expression \texttt{int(myVar)} and executes it; 
+then it puts the result to the variable \texttt{myOtherVar}.
+\texttt{myOtherVar} now contains the integer \texttt{56}.
+
+STML has one other feature that is very different from HTML: 
+in most cases, attributes do not have to be specified by name,
+because the order in which the tag expects the attributes is always the
+same. Thus you can specify just values without names, in the order
+expected by the tag. (This reference guide tells you the expected order
+of attributes of each and every STML tag.)
+
+For instance, the \texttt{<:set:>} tag in STML expects
+an attribute named \texttt{name} followed by and attribute named
+\texttt{expr}. Instead of typing 
+
+\begin{verbatim}
+<:set name=myVar expr=`56`:>
+\end{verbatim}
+
+
+all the time, you can just type the values for \texttt{name}
+and \texttt{expr} in that order:
+
+\begin{verbatim}
+<:set myVar `56`:>
+\end{verbatim}
+
+If you do use attribute names in STML tags, the order of attributes
+does not matter, because STML will see them by name and disregard
+the order of the attributes. The following example works, although
+you would probably not do it in practice:
+
+\begin{verbatim}
+<:set expr=`56` name=myVar:>
+\end{verbatim}
+
+A few STML tags do not allow you to drop the attribute names
+in certain cases. Their documentation in this manual will always tell
+you when you cannot.
+
+
+
+
+\chapter{Setting and Showing Things}
+\label{stmlrefstandard}
+
+\section{\texttt{<:val:>}}
+\label{tagval}
+
+\begin{verbatim}
+<:val expr [fmt="plain"]:>
+\end{verbatim}
+
+Causes the Python expression \texttt{expr} to be evaluated, 
+and the resulting Python object is converted to a string and 
+displayed at that place in your document. 
+(All Python objects can be turned into strings.) 
+
+For example, if you would like to display the result of 5 + 2:
+
+\begin{verbatim}
+<:val `5 + 2`:>
+\end{verbatim}
+
+
+The \texttt{<:val:>} tag is just like calling the \texttt{str()} 
+function in Python on the resulting object, with one exception: 
+if the object is the \texttt{None} object, \texttt{<:val:>} 
+prints an empty string \texttt{""} instead of the string 
+\texttt{"None"}. The following two tags show the value of
+the variable named \texttt{myVar} and show nothing, respectively:
+
+\begin{verbatim}
+<:val `myVar`:>
+<:val `None`:>
+\end{verbatim}
+
+\texttt{<:val:>} only accepts Python expressions as its attribute, 
+not full Python statements. That means that you cannot assign 
+objects to variable names with this tag. Use the 
+\texttt{<:set:>} \doref{tagset} tag to assign 
+objects to variable names. You can, however, call functions 
+and classes, and make boolean expressions with \texttt{and}, 
+\texttt{or}, and \texttt{not}. For example, if you want to call
+a function \texttt{myFunction}, which returns some HTML to include
+in your document:
+
+\begin{verbatim}
+<:val `myFunction()`:>
+\end{verbatim}
+
+The string printed by \texttt{<:val:>} is just a plain 
+string by default; no special formatting takes place. 
+Sometimes you want the string to be formatted in a special way: 
+you want HTML special characters escaped, or you want all 
+characters escaped so that the string can be made part of a URL. 
+The \texttt{fmt} argument lets you specify one of many common 
+formatting or escaping operations on the string:
+
+\begin{itemize}
+\item \texttt{"plain"} or \texttt{"plaintext"}: 
+No escaping. This is the default.
+
+\item 
+\texttt{"latin"} or \texttt{"latinquote"}: 
+Escape only extended characters to ISO Latin1 
+entities: \texttt{\'i} become \texttt{\&iacute;}, etc.
+
+
+\item 
+\texttt{"html"} or \texttt{"htmlquote"}: 
+Escape only things that would break HTML 
+formatting: \texttt{< > \& `` '}.
+These characters are escaped to the named HTML entities
+for them: \texttt{\&lt;}, etc.
+
+
+\item 
+\texttt{"uri"}, \texttt{"url"}, \texttt{"uriquote"} 
+or \texttt{"urlquote"}: 
+Escape all URL-unsafe characters to \texttt{\%XX} format.
+
+
+\item \texttt{"fulluri"} or \texttt{"fullurl"}: 
+Escape every character into URL-safe \texttt{\%XX} format.
+
+
+\item \texttt{"base64"}: base64 encodes the string.
+
+\end{itemize}
+
+
+Examples of \texttt{fmt}, with the output shown after each example:
+
+\begin{verbatim}
+<:set myVar "Click here >>>>":>
+
+<:val `myVar`:>
+Click here >>>>
+
+<:val `myVar` fmt="html":>
+Click here &gt;&gt;&gt;&gt;
+
+<:val `myVar` fmt="url":>
+Click%20here%20%3E%3E%3E%3E
+
+<:val `myVar` fmt="fullurl":>
+%43%6C%69%63%6B%20%68%65%72%65%20%3E%3E%3E%3E
+\end{verbatim}
+
+
+The \code{<:val:>} tag is equivalent to the following code executed
+in a Python component:
+
+\begin{obeylines} \ttfamily
+import DT.DTCommon
+print DT.DTCommon.ValFmtRgy[\emph{fmt}](\emph{expr})
+\end{obeylines}
+
+
+
+\section{\texttt{<:set:>}}
+\label{tagset}
+
+\begin{verbatim}
+<:set name value:>
+\end{verbatim}
+
+Allows you to assign the object in \texttt{value} to the
+local variable named in \texttt{name}. Use this tag to do
+all of your assignments to variables.
+
+You can also use the
+\texttt{<:call:>} \doref{tagcall} tag to
+make assignments, by putting a regular Python assignment
+statement in backticks: \code{<:call `foo = 567`:>}.
+STML still lets you do that. Use the \texttt{<:set:>} tag
+to assign objects to simple variable names. Use the 
+\texttt{<:call:>} for assignments that are more complex;
+see its reference page for details.
+
+These two tags assign the integer 567 to the variable name \texttt{myVar},
+and then assign a new object returned by calling \texttt{module.function}
+to the same variable named \texttt{myVar}.
+
+\begin{verbatim}
+<:set myVar `567`:>
+<:set myVar `module.function()`:>
+\end{verbatim}
+
+
+
+
+\section{\texttt{<:call:>}}
+\label{tagcall}
+
+\begin{verbatim}
+<:call expr:>
+\end{verbatim}
+
+
+Allows you to execute the Python expression in 
+\texttt{expr}. Any object returned by the expression is ignored,
+and \emph{no output is included in your template}. Think of this tag
+as being just like the \texttt{<:val:>} tag, except that
+\texttt{<:call:>} produces no output.
+
+Examples:
+
+\begin{verbatim}
+<:call `function()`:>
+<:call `module.function(var1, var2)`:>
+\end{verbatim}
+
+
+You can also use this tag to do complex assignments that the
+\texttt{<:set:>} \doref{tagset} tag cannot handle,
+such as assignments to items in a list or dictionary, or to attributes
+in an object. Here are some examples, with \texttt{<:set:>} used
+for the simple assignments to variable names:
+
+\begin{verbatim}
+<:set myList `[1,2,3,4]`:>
+<:call `myList[0] = function()`:>
+<:set myDict `{}`:>
+<:call `myDict["foo"] = "Hey there"`:>
+<:set myObj `newObject()`:>
+<:call `myObj.someAttribute = 0`:>
+\end{verbatim}
+
+
+
+
+\section{\texttt{<:spool:>}}
+\label{tagspool}
+
+\begin{verbatim}
+<:spool name:><:/spool:>
+\end{verbatim}
+
+Takes the content generated between the open and close
+\code{<:spool:>} tags and  
+assigns it to the local variable named \texttt{name}. 
+The name argument cannot be a Python expression, only
+a string with the variable name.
+
+This tag is deceptively powerful: you can execute
+any STML you wish, collect all the HTML output into a single
+string, and do anything to that string after ending the
+\texttt{<:spool:>}. In this example, the variable
+\texttt{spoolVar} would end up containing the string
+\verb!"\n<A HREF=index.html>Click here</A>\n"!:
+
+\begin{verbatim}
+<:set myUrl "index.html":>
+<:spool spoolVar:>
+<:url path=`myUrl` text="Click here":>
+<:/spool:>
+\end{verbatim}
+
+
+Spooling is equivalent to the following Python code in a Python component:
+\begin{obeylines}
+\ttfamily
+import sys, cStringIO
+\emph{tempname} = sys.stdout
+sys.stdout = cStringIO.StringIO()
+\emph{\# stuff between <:spool:> tags }
+\emph{name} = sys.stdout.getvalue()
+sys.stdout = \emph{tempname}
+\end{obeylines}
+
+
+
+\section{\texttt{<:args:>}}
+\label{tagargs}
+
+\begin{verbatim}
+<:args [argname] [argname1=expr] 
+     [argname2=expr...]:>
+\end{verbatim}
+
+
+This tag makes short and quick work of handling arguments
+submitted by the user of your website through a GET or POST
+request. It allows you to copy CGI arguments into local
+variables of the same name, convert the CGI arguments (which
+are always strings) into Python data types, and assign default 
+values to those variables if the conversion fails or if
+the caller failed to pass them in.
+
+Each argument of this tag specifies a name, and optionally
+a Python expression value. The name of each argument indicates
+the name of the user argument \emph{and also} the name of 
+the local variable to hold the value. If you just specify this
+name, it will copy the user argument of that name
+into a local variable of that name. If the user passed no argument
+by that name, it assigns the \texttt{None} object
+to the variable.
+
+If you do specify a Python expression as a value, it
+will examine the expression, and take the following actions:
+
+\begin{enumerate}
+
+\item If the expression results in a function or other "callable"
+object, it is a "conversion" function. It will take
+the user argument of that name, call the function with it, and
+assign the returned value to the local variable of that name.
+If the function raises an exception, or if the user passed no
+argument of that name, it assigns \texttt{None} to
+the local variable:
+
+\begin{verbatim}
+<:args this=`int`:>
+\end{verbatim}
+
+In the above STML, the user argument named \texttt{this}
+will be converted into an integer with the built-in Python
+function \texttt{int}. Then the result will be assigned to
+a local variable \texttt{this}. If anything goes wrong, 
+or if the user passed no \texttt{this} argument, the local
+variable \texttt{this} will be \texttt{None}.
+
+
+\item If the expression results in a regular, or "non-callable",
+object, the it considers this object the default value.  If the user
+passed no argument of that name, the templating engine assigns this
+object to the local variable of that name.
+
+\item If the expression is a list or tuple of two items, the
+templating engine considers the first item to be the conversion
+function, and the second item to be the default value:
+
+\begin{verbatim}
+<:args this=`(int, 5)`:>
+\end{verbatim}
+
+In this example, SkunkWeb looks for the user argument named \texttt{this}.
+If it's there, SkunkWeb calls the function \texttt{int} with the value,
+and then assigns the rsult to the local variable \texttt{this}. If 
+the user passed no arugment named \texttt{this}, or if the call to
+\texttt{int} fails in some way, SkunkWeb assigns the integer 5 
+to \texttt{this}.
+
+
+\end{enumerate}
+
+
+This tag only needs to be used once, near the beginning of the STML
+document which serves the Web request. However, you may use it as many
+times as you like. Each time this tag executes, it looks in the
+SkunkWeb dictionary object \texttt{CONNECTION.args}, extracts values
+from it, and performs the necessary conversion and variable
+assignments.  You cannot use this tag in an STML component, however;
+STML components do not have access to any part of the
+\texttt{CONNECTION} object (unless of course, the \texttt{CONNECTION}
+object was passed to it explicitly).
+
+Also note that you are not limited to the built-in Python functions
+\texttt{int}, \texttt{float}, \texttt{long}, etc. for your conversion
+functions. Any function, or any callable object for that matter, can
+be used. Here's a large example of an \texttt{<:args:>} tag
+that does a lot of work:
+
+\begin{verbatim}
+<:import Date:>
+<:args foo
+       bar=`0`
+       baz=`(int, 5)`
+       dib=`(float, 0.0)`
+       gad=`(Date.LocalDate, Date.LocalDate())`
+:>
+\end{verbatim}
+
+
+
+\section{\texttt{<:compargs:>}}
+\label{tagcompargs}
+
+\begin{verbatim}
+<:compargs [argname] [argname1=expr] 
+     [argname2=expr...] [**kwargname]:>
+\end{verbatim}
+
+
+%\textbf{Note:} This tag is for advanced use only, for developers
+%who have worked extensively with STML components.
+
+This tag allows you to create a component signature, i.e. 
+specify which arguments the component expects and provide some
+default values for them. When someone calls your component, SkunkWeb
+will make sure that the arguments it is called with match the 
+signature. The arguments specified by the \code{<:compargs:>} 
+tag will appear in the local namespace. The tag is optional, if you do 
+not specify it, all of the arguments passed to the component will
+appear in the local namespace. You can optionally specify default 
+values for the arguments. If an argument is not passed by the 
+caller and it has a default value, the default value will be used for the
+local variable
+
+If your component accepts variable number of arguments, you can
+use the \emph{**kwargs} notation to specify a container for any 
+additional arguments. Any arguments not explicitely listed in the 
+\code{<:compargs:>} tag will be stored in the 
+\emph{kwargs} variable. 
+If you do not specify such a variable, and the component is called
+with arguments not listed in the \code{<:compargs:>} tag, 
+an exception will be raised.
+
+Suppose your component has the following signature:
+
+\begin{verbatim}
+<:compargs x y=`10` z='hello' **kwargs :>
+\end{verbatim}
+
+
+Suppose someone calls the component with following call: 
+
+\begin{verbatim}
+<:component comp x='hi' y=`11` extra=`12`:>
+\end{verbatim}
+
+
+In this case the following variables will appear in local namespace:
+\begin{argdesc}
+\item[x] The value is string 'hi'
+\item[y] The value is integer 11
+\item[z] The value is string 'hello', taken from default 
+\item[kwargs] The value is a dictionary: \code{\{ 'extra' : 12 \}}
+\end{argdesc}
+
+ 
+
+\section{\texttt{<:default:>}}
+\label{tagdefault}
+
+\begin{verbatim}
+<:default name [value]:>
+\end{verbatim}
+
+If in the current STML document, there exists no local variable called
+\texttt{name} (or it's value is \texttt{None}), create it and assign
+it the object in \texttt{value}. The \texttt{value} argument defaults
+to the empty string.
+
+This tag is often used in STML ``components'', which are STML
+documents that can be embedded in other STML documents. Components
+are called with ``argument attributes'', which end up as local
+variables in the component document. If the calling STML document
+does not pass a variable you need, it won't be in your component
+document, and when you try to use it, you will get a Python
+\texttt{NameError}, meaning that there is no variable under that
+name. This tag makes sure that the variable name exists and that
+it has a value.
+
+
+\section{\texttt{<:date:>}}
+\label{tagdate}
+
+\begin{verbatim}
+<:date [fmt] [date] 
+     [lang] [to_zone] [from_zone]:>
+\end{verbatim}
+
+
+Displays a string representation of a date/time object. This is 
+an STML tag equivalent of the \texttt{DateString} function
+in the Skunk pylibs \texttt{Date} module.
+
+Note that all attribute arguments to this tag are optional.
+
+\texttt{\textbf{fmt}} must be a string, and specifies the format in 
+which to display the date/time. If not specified, \texttt{fmt} defaults to
+the \texttt{Date} module's default format, which is the ISO format
+\texttt{yyyy-mm-dd hh:mi:ss}.
+
+    The \texttt{fmt} string may contain any combination of the 
+    following format elements. Anything not recognized 
+    as a format is included in the output as static text:
+
+\begin{argdesc}
+\item[yyyy] four-digit year
+\item[yy] two-digit year
+\item[mm] two-digit month
+\item[dd] two-digit day
+\item[hh24] 24-hour hour
+\item[hh12] 12-hour hour
+\item[hh] equivalent to \texttt{hh24}
+\item[mi] or min minutes
+\item[SS] seconds
+\end{argdesc}
+
+    For all of the above, leading zeroes are included 
+    as necessary: ``01'' instead of 1, etc. However, 
+    if the format element is in UPPERCASE, leading zeroes 
+    are not included: ``MM'' $\rightarrow$ ``1'', ``mm'' $\rightarrow$ ``01''.
+
+\begin{argdesc}
+\item[mon] abbreviated name of month
+\item[month] full name of month
+\item[dy] abbreviated weekday name
+\item[day] full weekday name
+\item[am or pm] whether time is AM or PM
+\end{argdesc}
+
+
+    For all of the above, if the element is in UPPERCASE, 
+    the result will be in ALL CAPS: ``MONTH'' $\rightarrow$ ``JANUARY''. 
+    If the element is Initcap, the result will be initcapped: 
+    ``Month'' $\rightarrow$ ``January''. Any other combination of case will 
+    be considered lowercase: ``month'' or ``moNth'' $\rightarrow$ ``january''.
+    
+\begin{argdesc}
+\item[date] is a Python expression resulting in a
+date/time (strings are \emph{not} allowed). 
+If not specified, it defaults to the current local date/time of the machine.
+
+\item[lang] must be a string specifying the language in which
+to format the date/time, using the Skunk convention of \texttt{'eng'
+'esp' 'por'} for English, Spanish, and Portuguese, respectively.
+If not given, it defaults to \texttt{'eng'}.
+
+\item[to_zone] is a timezone argument, meaning, ``Please convert
+the \texttt{date} argument to this timezone before displaying.'' It defaults
+to the SkunkWeb server machine's local timezone. See the \texttt{Date} module
+for a full discussion of timezone support. (\textbf{Note:} This argument
+formerly had the name \texttt{timezone}. STML still understands the old argument
+name. If you specify both \texttt{to_zone} and a \texttt{timezone} argument,
+STML will use \texttt{to_zone} and ignore \texttt{timezone}.)
+
+\item[from_zone] is a timezone argument, meaning, ``Please convert
+the \texttt{date} argument from this timezone into the SkunkWeb server
+machine's local timezone before doing anything else.'' See the
+\texttt{Date} module for a full explanation. \textbf{Note:} This argument
+used to be named \texttt{srctimezone}. STML still understands the old
+argument name. If you specify both \texttt{from_zone} and a
+\texttt{srctimezone} argument, \texttt{srctimezone} will be ignored.
+\end{argdesc}
+
+Here are some examples, if the current date is 2000-08-01 20:34:56
+(a Tuesday), and your server is running on Eastern Daylight Time, which
+is four hours behind UTC (Greenwich Time). Each tag is followed by
+the output which would be displayed:
+
+\begin{verbatim}
+<:date:> 
+2000-08-01 20:34:56
+
+<:date "dd mon yy":>
+01 aug 00
+
+<:date "hh12:mi am":>  
+08:34 pm
+
+<:date "HH12:mi am":>  
+8:34 pm
+
+<:date "hh12:mi am" to_zone="UTC":>  
+12:34 am
+
+<:date "Month DD, yyyy, hh12:mi am" to_zone="UTC":>  
+August 2, 2000, 12:34 am
+
+<:date "DD month yyyy, hhhmi" lang="esp" to_zone="UTC":>  
+2 agosto 2000 00h34
+\end{verbatim}
+
+
+
+
+To do the equivalent in Python components, if unspecified arguments are \texttt{None}, is:
+\begin{verbatim}
+import Date
+temp_date = Date.Convert ( date, to_zone or 'LOCAL', from_zone or 'LOCAL' )
+print Date.DateString ( temp_date, fmt, lang )
+\end{verbatim}
+
+
+
+
+
+
+\section{\texttt{<:del:>}}
+\label{tagdel}
+
+\begin{verbatim}
+<:del name:>
+\end{verbatim}
+
+This tag deletes the local variable named by \texttt{name}
+from your STML document. It's identical to the Python statement
+\code{del \emph{name}}. You will use this tag very rarely,
+but it's there if you need it.
+
+In this example, the variable named \texttt{myVar} is set to
+the integer \texttt{5}, then deleted from the variable namespace.
+The third tag, which tries to access the variable name, results in
+a \texttt{NameError}, meaning that nothing exists under that name:
+
+\begin{verbatim}
+<:set myVar `5`:>
+<:del myVar:>
+<:val `myVar`:>
+\end{verbatim}
+
+
+
+\chapter{Flow Control and Error Handling}
+\label{stmlrefcontrol}
+
+
+\section{\texttt{<:if:>}, \texttt{<:elif:>}, \texttt{<:else:>}}
+\label{tagif}
+
+\begin{verbatim}<:if expr:>
+   [ <:elif expr:> ]
+   [ <:else:> ]
+<:/if:>
+\end{verbatim}
+
+If the Python expression \texttt{expr} evaluates to true, 
+render until an \texttt{<:/if:>}, \texttt{<:else:>} 
+or \texttt{<:elif:>} tag is encountered.  The
+\texttt{expr}arguments in  
+\texttt{<:if:>} and \texttt{<:elif:>} tags \emph{must} be 
+enclosed in backticks, of course.
+
+If it finds an \texttt{<:elif:>} tag and nothing has yet 
+been rendered within this \texttt{<:if:>} block and 
+\texttt{expr} evaluates to true, renders until it runs into 
+another \texttt{<:elif:>}, \texttt{<:else:>} or 
+\texttt{<:/if:>} tag. If an \texttt{<:else:>} is 
+encountered and nothing has yet been rendered in this 
+\texttt{<:if:>} block, renders until it hits the 
+\texttt{<:/if:>}, \texttt{<:elif:>} or another \texttt{<:else:>} 
+(if you put an \texttt{<:else:>} before an \texttt{<:elif:>} 
+or another \texttt{<:else:>}, which while syntactically valid, 
+is erroneous since the contents following the 
+\texttt{<:elif:>} or \texttt{<:else:>} will never be rendered).
+
+This is just a fancy way of saying that these tags work just
+like \texttt{if}, \texttt{elif}, and \texttt{else} in Python.
+
+Using \texttt{<:elif:>} outside of an \texttt{<:if:>} block will raise
+an error. Using \texttt{<:else:>} outside of an \texttt{<:if:>},
+\texttt{<:try:>} or \texttt{<:for:>} block will also raise an error.
+
+In the following example, the output will be \texttt{Shaft is the Man.}
+
+\begin{verbatim}
+<:set myVar `1`:>
+<:if `myVar > 0`:>
+    Shaft is
+    <:if `myVar == 6`:>
+    the black private dick.
+    <:elif `myVar == 4`:>
+    a sex machine with all the chicks.
+    <:else:>
+    the Man.
+    <:/if:>
+<:else:>
+    Why is myVar not greater than 0?
+<:/if:>
+\end{verbatim}
+
+
+\section{\texttt{<:for:>}}
+\label{tagfor}
+
+\begin{verbatim}<:for expr [name=sequence_item]> 
+    [ <:break:> ]
+    [ <:continue:> ]
+    [ <:else:> ] 
+<:/for:>
+\end{verbatim}
+
+The \texttt{<:for:><:/for:>} tag implements a ``loop'': 
+it expects the expression in \texttt{expr} to return a 
+sequence of items (a tuple or list, for example). 
+For each item in the sequence, \texttt{<:for:>} 
+assigns the item to the variable name given 
+in the name argument, and does whatever is 
+inside the \texttt{<:for:>} tag. The name parameter 
+is optional; if not specified, \texttt{<:for:>} 
+will assign each item to a local variable 
+called \texttt{sequence_item}.
+
+If the sequence in \texttt{expr} is empty or false, 
+\texttt{<:for:>} will do nothing, unless you put 
+an \texttt{<:else:>} tag inside the \texttt{<:for:>} block. 
+The \texttt{<:for:>} tag will execute everything after 
+an \texttt{<:else:>} tag if the sequence in \code{expr}
+is empty.
+
+Examples:
+
+\begin{verbatim}
+<:for `(1,2,3)`:>
+current loop value: <:val `sequence_item`:><BR>
+<:/for:>
+
+<:for `[1,2,3]` foo:> 
+current loop value: <:val `foo`:><BR> 
+<:/for:>
+
+<:for `[]` foo:>
+This wouldn't show
+<:else:>
+Loop is empty
+<:/for:>
+\end{verbatim}
+
+There are two special tags which allow you to force either
+an exit from the loop or an immediate return to the top of the loop:
+\texttt{<:break:>} and \texttt{<:continue:>}. 
+The \texttt{<:break:>} tag will
+cause an immediate exit from the \texttt{<:for:>} tag.
+The \texttt{<:continue:>} tag will cause an immediate return
+to the top of the \texttt{<:for:>} tag, where it will
+assign the next item in the sequence to the variable, or
+if there are no items left in the sequence, it will exit
+the \texttt{<:for:>} tag. For example, this STML block
+will print the numbers \texttt{1 2 3}:
+
+\begin{verbatim}
+<:set myList `[1,2,3,4,3,2,1]`:>
+<:for `myList` item:>
+   <:if `item > 3`:>
+       <:break:>
+   <:/if:>
+   <:val `item`:>
+<:/for:>
+\end{verbatim}
+
+And this STML block will print the numbers 
+\texttt{1 2 3 3 2 1}:
+
+\begin{verbatim}
+<:set myList `[1,2,3,4,3,2,1]`:>
+<:for `myList` item:>
+   <:if `item > 3`:>
+       <:continue:>
+   <:/if:>
+   <:val `item`:>
+<:/for:>
+\end{verbatim}
+
+
+
+\section{\texttt{<:while:>}}
+\label{tagwhile}
+
+\begin{verbatim}<:while expr:>
+   [ <:break:> ]
+   [ <:continue:> ]
+<:/while:>
+\end{verbatim}
+
+This tag evaluates the expression \texttt{expr}. If the expression
+is true, it executes all of the things inside the tag. Then it
+repeats this process until the expression is false. It is functionally
+identical to the Python \texttt{while} statement.
+
+This tag is vulnerable to ``infinite loops'', unless you do something
+inside the tag to change the value of the expression, the tag will
+execute indefinitely, until the SkunkWeb server calls a ``timeout'' and
+raises an error. For example, this STML will cause an infinite loop:
+
+\begin{verbatim}
+<:set myVar `1`:>
+<:while `myVar`:>
+   hello, i'm looping
+<:/while:>
+\end{verbatim}
+
+There are two special tags which work the same way they do inside
+a \texttt{<:for:>} tag: \texttt{<:break:>} and 
+\texttt{<:continue:>}. The \texttt{<:break:>} tag will
+cause an immediate exit from the \texttt{<:while:>} tag.
+The \texttt{<:continue:>} tag will cause an immediate return
+to the top of the \texttt{<:while:>} tag, where it will
+evaluate the expression again and continue executing if the expression
+is true. For example, either of these STML blocks will print 
+``looping'' 100 times:
+
+\begin{verbatim}
+<:set myVar `1`:>
+<:while `myVar <= 100`:>
+   looping
+   <:set myVar `myVar + 1`:>
+<:/while:>
+\end{verbatim}
+
+\begin{verbatim}
+<:set myVar `1`:>
+<:while `1`:>
+   looping
+   <:if `myVar > 100`:>
+       <:break:>
+   <:set myVar `myVar + 1`:>
+   <:/if:>
+<:/while:>
+\end{verbatim}
+
+
+\section{\texttt{<:break:>}}
+\label{tagbreak}
+
+\begin{verbatim}<:break:>\end{verbatim}
+
+When inside a ``looping tag'', tells the templating engine to exit
+the loop immediately. Not allowed outside of a looping tag.
+See the \texttt{<:for:>} \doref{tagfor} tag
+and the \texttt{<:while:>} \doref{tagwhile} tag
+for examples.
+
+
+\section{\texttt{<:continue:>}}
+\label{tagcontinue}
+
+\begin{verbatim}<:continue:>\end{verbatim}
+
+When inside a ``looping tag'', tells the templating engine to return
+immediately to the top of the loop and continue executing.
+Not allowed outside of a looping tag.
+See the \texttt{<:for:>} \doref{tagfor} tag
+and the \texttt{<:while:>} \doref{tagwhile} tag
+for examples.
+
+
+\section{\texttt{<:try:>}, \texttt{<:except:>}, \texttt{<:else:>}, \texttt{<:finally:>}}
+\label{tagtry}
+
+\ 
+
+\begin{verbatim}
+<:try:>
+    <:except:>
+    [ <:else:> ]
+<:/try:>
+\end{verbatim}
+
+or 
+
+\begin{verbatim}
+<:try:>
+    <:except [exc]:>
+    [ <:except [exc]:> ]
+    [ <:except:> ]
+    [ <:else:> ]
+<:/try:>
+\end{verbatim}
+
+or 
+
+\begin{verbatim}
+<:try:>
+    <:finally:>
+<:/try:>
+\end{verbatim}
+
+
+This tag executes everything inside of it up until it first sees an
+\texttt{<:except:>} or \texttt{<:finally:>} tag. If an exception
+(error) occurs during that execution, this tag will then take one of the following
+actions:
+
+\begin{enumerate}
+\item If there is an \texttt{<:except:>} tag which specifies the
+exception in its \texttt{exc} argument, it will execute the stuff occurring
+after that \texttt{<:except:>} tag until it meets another 
+\texttt{<:except:>} tag, an \texttt{<:else:>} tag, or
+the end of the \texttt{<:try:>} tag.
+
+\item Otherwise, if there is an \texttt{<:except:>} tag with
+nothing specified in \texttt{exc}, it executes the stuff after that
+\texttt{<:except:>} tag.
+
+\item Otherwise, there is nothing to catch the exception, so it ``propagates''
+upward to another containing \texttt{<:try:>} block. If there
+is no containing \texttt{<:try:>} tag, SkunkWeb generates
+a page error.
+
+\end{enumerate}
+
+
+If you have an \texttt{<:else:>} tag after all of your 
+\texttt{<:except:>} tags, the stuff after \texttt{<:else:>}
+will be executed if no exception has occurred.
+
+If you wish to specify particular exceptions in an
+\texttt{<:except:>} tag, use a backticked expression
+with the exception object. If you want to specify more than
+one exception for an \texttt{<:except:>} tag, specify them
+as a tuple expression. 
+
+Example:
+
+\begin{verbatim}
+<:try:>
+    <:call `something_which_will_blow_up()`:>
+<:except `KeyError`:>
+    We got a KeyError. 
+<:except `(TypeError, ValueError)`:>
+    We got a TypeError or ValueError.
+<:except:>
+    We got some other error. 
+    But I know it wasn't a KeyError, TypeError, or ValueError!
+<:else:>
+    Hey, no error!!!!
+<:/try:>
+\end{verbatim}
+
+All of this behavior is identical to the way that \texttt{try:},
+\texttt{except:} and \texttt{else:} work in regular Python. 
+Read the Python documentation about exceptions for more info.
+
+Note the last way to use the \texttt{<:try:>} tag: with
+a \texttt{<:finally:>} tag. The tags behave the same
+way as Python's \texttt{try:} and \texttt{finally:} statements.
+
+
+\section{\texttt{<:raise:>}}
+\label{tagraise}
+
+\begin{verbatim}<:raise [exc]:>\end{verbatim}
+
+Raises the exception \texttt{exc}, or if \texttt{exc} isn't
+specified, the current exception if
+one was previously caught. If you specify \texttt{exc} without backticks,
+the tag will raise the exception as the string you indicated:
+
+\begin{verbatim}
+<:raise BadBadError:>
+\end{verbatim}
+
+will raise the \emph{string} \texttt{"BadBadError"} as the exception.
+If you want to raise a ``real exception'', such as one of Python's built-in
+exceptions or an exception class from a module, you must put it in backticks.
+For example, if you want to reject the value of some variable passed to you
+with the Python built-in exception \texttt{ValueError}:
+
+\begin{verbatim}
+<:raise `ValueError`:>
+\end{verbatim}
+
+Please note that if you do not specify \texttt{exc}, and an exception
+has not previously occurred, SkunkWeb will raise a \texttt{TypeError}
+exception with the message ``exceptions must be strings, classes, or
+instances''.
+
+This tag behaves identically to the \texttt{raise} statement in Python.
+
+
+
+
+\section{\texttt{<:halt:>}}
+\label{taghalt}
+\begin{verbatim}<:halt:>\end{verbatim}
+
+Causes execution of the current STML document or component to stop
+entirely. If the templating engine is executing a component or
+include, it stops executing that component or include and returns
+execution to the template which did the include or component call.  If
+there is no calling template (you're at the ``top level'' template),
+then the templating engine stops executing any STML, and then returns
+the response to the user as it currently stands.
+
+
+\chapter{Including or Calling Other Documents}
+\label{stmlrefexecute}
+
+The biggest benefit of STML documents is that you can 
+reuse them inside other STML documents. We call these
+``embeddable'' STML documents components. They have a different
+file extension: while your regular STML documents end with
+the extension of the kind of output they generate (like
+\texttt{.html}), all STML component documents end with the file extension
+\texttt{.comp} (or \texttt{.dcmp} for data components; more about
+those later). 
+
+If you have a block of HTML that must be included on 
+every page of your website, make it an STML component, 
+and then your other STML templates can ``embed'' the template 
+in their own output. This lets you use an efficient, modular 
+design when building your website.
+
+There are two very different ways to ``embed'' an STML document 
+in another one: by ``including'' the embedded template's STML code, 
+or by ``calling'' it as an STML component. Let's examine the 
+differences between ``include'' and ``component'' in the next sections.
+
+
+\section{\texttt{<:include:>}}
+\label{taginclude}
+
+\begin{verbatim}<:include name:>\end{verbatim}
+
+The STML tag \texttt{<:include:>} executes an
+STML component document named \texttt{name}
+in the namespace of the currently executing component.
+
+The format of the string for \texttt{name} is a path, such as
+\texttt{/foo/bar.comp} or \texttt{foo.comp}. If the path is
+\emph{absolute}, starting with a slash, the templating engine will
+look for the component at that path underneath your
+\texttt{documentRoot} of STML documents. If the path is
+\emph{relative}, not starting with a slash, the templating engine
+looks for the component inside the current document's directory. You
+can also use `\texttt{..}' to move up a directory, just as you do on a
+Unix or DOS command line (but you cannot escape the
+\texttt{documentRoot}).
+
+For example, you have these three files in your 
+documentRoot directory:
+
+\begin{verbatim}/header.comp
+/myDir/index.html
+/myDir/foo.comp
+\end{verbatim}
+
+Inside \texttt{/myDir/index.html}, you want to include both
+component files. You can use these tags, the first using an absolute
+path and the second using a relative path:
+
+\begin{verbatim}<:include /header.comp:>
+<:include foo.comp:>
+\end{verbatim}
+
+Unlike the \texttt{<:component:>} \doref{tagcomponent}
+tag, there is no caching, nor can you pass any attributes 
+in the tag. Any variables that the included template creates, 
+deletes, or changes take effect in the including template! 
+For example, you have a template \texttt{/index.html} with 
+the following code:
+
+\begin{verbatim}<:set myVar `5`:>
+<:include foo.comp:>
+<:val `myVar`:><BR>
+<:val `myOtherVar`:>
+\end{verbatim}
+
+and the STML component document \texttt{foo.comp} 
+contains this STML code:
+
+\begin{verbatim}<:set myVar `66`:>
+<:set myOtherVar "hey man":>
+Hey I'm done!
+\end{verbatim}
+
+then the output of \texttt{/index.html} is:
+
+\begin{verbatim}Hey I'm done!
+66
+hey man
+\end{verbatim}
+
+A way to do includes from Python code is as follows:
+\begin{verbatim}
+import AE.Component
+print AE.Component.callComponent(name, argdict, 
+        compType=AE.Component.DT_INCLUDE)
+\end{verbatim}
+
+\strong{NOTE:} The main thing to keep in mind here is that if you do
+the include from a Python component, things work as you would expect,
+but if you call it from Python code that isn't a component (or an
+include), the included component runs in the namespace of the
+currently running component, not the namespace of the Python module
+you call it from.
+
+\subsection{Python component files (\texttt{.pycomp})}
+
+SkunkWeb also allows you to write includable components in pure Python
+code. This is sometimes more convenient when you wish to do a lot of
+programming and generate no (or little) HTML output for the
+user. These files are simple Python scripts and end in the file
+extension \texttt{.pycomp}.  Use them in the \texttt{<:include:>} or
+\texttt{<:component:>} \doref{tagcomponent} tags just as you would
+regular \texttt{.comp} component files.  See Python Components,
+section \ref{pythoncode}, page \pageref{pythoncode})
+
+
+
+
+\section{\texttt{<:component:>}}
+\label{tagcomponent}
+
+\texttt{<:component name [\emph{named_args}] [cache=no|yes|defer|force|old] [__args__]:>}
+
+This tag ``calls'' an STML component much as you would call a function
+in Python, and displays any resulting output of the component. It is
+\emph{not} like ``including'' the STML component in your document. A
+component called with this tag does not get access to your document's
+local variables; you must pass any variables explicitly as named
+attributes in the \texttt{<:component:>} tag.
+
+Since the component being called does not receive access to the
+calling document's local variables, it also does not have any access
+to the \texttt{CONNECTION} object, as included STML documents do. The
+only variables a called STML component has are the ones passed as
+attributes of the \texttt{<:component:>} tag, and any variables which
+the component creates for itself.
+
+\begin{verbatim}<:component foo.comp this=`56.7` that=`[5,6,7]`:>
+\end{verbatim}
+
+executes the component \texttt{foo.comp} in the current directory,
+passing it the variables \texttt{this} and \texttt{that}.  When
+\texttt{foo.comp} executes, it sees \texttt{this} and \texttt{that} as
+local variables, with the integer 56.7 and the list \texttt{[5,6,7]}
+assigned to them.
+
+The \texttt{__args__} argument is a way to be able to pass a
+dictionary of arguments to a component programatically.  For example,
+\begin{verbatim}
+<:component foo.comp __args__=`{'this':56.7, 'that': [5,6,7]}`:>
+\end{verbatim}
+is exactly equivalent to the previous example. 
+
+And as usual for STML tags, the \texttt{__args__} could be any
+expression which results in either a dictionary or \texttt{None}.
+
+Arguments specified via \texttt{__args__} are overridden by values
+explicitly specified in the tag.  For example,
+\begin{verbatim}
+<:component foo.comp a="3" __args__=`{'a':"5", 'b': 5}`:>
+\end{verbatim}
+The \texttt{foo.comp} would get \texttt{"3"} as the value of the
+variable \texttt{a}.
+
+One thing of note, specifying \texttt{'cache'} as keys in the
+dictionary argument to \texttt{__args__} does \textbf{NOT} affect
+either the deferral or caching semantics of the component, they get
+passed through as arguments to the component.
+
+A way to call components from Python code is (see \ref{pythoncode},
+page \pageref{pythoncode} for details):
+\begin{verbatim}
+import AE.Component
+print AE.Component.callComponent(name, argdict, 
+	cache = whatever)
+\end{verbatim}
+The \texttt{whatever} values are from the \texttt{AE.Component} module constants of the following:
+\label{whatevervals}
+\begin{argdesc}
+\item[NO] do use the cache
+\item[YES] analogous to \texttt{cache=yes} in the \texttt{<:component:>} tag
+\item[DEFER] analogous to \texttt{cache=defer} in the
+\texttt{<:component:>} tag
+\item[FORCE] analogous to \texttt{cache=force} in the
+\texttt{<:component:>} tag
+\item[OLD] analogous to \texttt{cache=old} in the
+\texttt{<:component:>} tag
+\end{argdesc}
+
+\subsection{Python component files (\texttt{.pycomp})}
+
+SkunkWeb also allows you to write components in pure Python
+code. This is sometimes more convenient when you wish to do a lot
+of programming and generate no HTML output for the user. These files
+are simple Python scripts and end in the file extension \texttt{.pycomp}.
+Use them in the \texttt{<:component:>} or
+\texttt{<:include:>} \doref{taginclude}
+tags just as you would regular \texttt{.comp} component files.
+
+
+\subsection{Making components ``cacheable''}
+\label{tagcomponentcaching}
+
+There is a special attribute for the \texttt{<:component:>} 
+tag, called \texttt{cache}. If you set cache to the string ``yes''
+or ``true'', the called component will have its output cached 
+to the SkunkWeb server's disk. Setting it to the string ``no'' or
+``false'', or not setting it at all, turns caching off.
+
+The next time you call the same component with the same attribute
+names and values (that is, the same arguments), the SkunkWeb server
+won't bother to execute the component. Instead, it will just read the
+cached output from disk. It's a great speed increase for your
+application.
+
+If you call the component with different attributes names and values,
+the SkunkWeb server creates a \emph{different} cached output file for
+those new attributes. If you say:
+
+\begin{verbatim}<:component foo.comp cache=yes arg="hi":>
+\end{verbatim}
+
+and then later
+
+\begin{verbatim}<:component foo.comp cache=yes arg="blah" arg2=`5`:>
+\end{verbatim}
+
+then SkunkWeb will keep two different cached output files 
+for \texttt{foo.comp}: one file for when it
+is called with \texttt{arg="hi"}, and one file for when 
+it's called with \texttt{arg="blah"} and \texttt{arg2=`5`}. Get it?
+
+As to setting when a cached component will expire, \doref{tagcache}.
+
+\subsection{``Deferred'' component rendering}
+
+The \texttt{<:component:>} and \texttt{<:datacomp:>} also accept as an
+argument value to the \texttt{cache} argument the value
+\texttt{"defer"}.  If this has been specified, then SkunkWeb will
+handle the caching of the component in a graceful, and often more
+efficient, way.
+
+When deferral is activated, SkunkWeb will look in the cache to see if
+there is output cached for the component under the set of arguments
+you passed. If it finds cached output, SkunkWeb uses it and does not
+execute the component, just as if it weren't specified.  If SkunkWeb
+does not find any cached output, it executes the component and caches
+the result, just as if deferral was not requested. However, if
+SkunkWeb finds cached output, but it is \emph{expired}, SkunkWeb will
+use the cached output anyway, and ``defer'' the execution of the
+component until \emph{after} all of the output has been sent back to
+the client in the response.  Then, after sending all of the output
+back to the user, SkunkWeb executes the component and caches its
+output.
+
+This gives you a great performance gain: if any component's cached
+output expires, no individual user will have to wait for the component
+to be executed before receiving her response. The component's cache
+will be updated ``offline'', behind the scenes.
+
+You can make all of your component calls automatically ``deferred'' by
+setting the SkunkWeb templating configuration variable
+\texttt{DeferByDefault} to 1.
+
+\subsection{``Forced'' component rendering}
+Like deferred component rendering, there are times when you want to
+render (ignore any available cached version) and cache a component
+regardless of whether or not it has expired.  In which case, specify
+the value \texttt{"force"} to the \texttt{cache} attribute in the tag.
+
+\subsection{``Old'' Component Rendering}
+Almost the complete opposite of forced component rendering.  In this
+case, you're effectively saying, ``gimme whatever is in the cache, I
+don't care how old it is.''  The only time when component rendering
+will actually occur when \texttt{old} is specified is if there is
+\strong{NO} cached version at all.
+
+\subsection{Restrictions on arguments to cacheable components}
+\label{tagcomponentrestrictions}
+
+If you want to call a component with \texttt{cache=yes} (or
+\texttt{cache=defer} or \texttt{cache=force}), there is one
+restriction you must obey:
+
+\begin{itemize}
+\item \emph{The attributes passed to the cached component must be, 
+as Python says, ``hashable''.}
+\end{itemize}
+
+The reason for this restriction is that the SkunkWeb server 
+needs to take all of the attributes you pass and ``flatten''
+them into a short, unique value. The SkunkWeb server uses 
+this value to look up the cached output it has stored in 
+its disk cache.
+
+So, what does ``hashable'' mean? Well, just consider it 
+to mean ``able to be flattened'' until you learn more Python. 
+Here's a rule of thumb:
+
+\begin{itemize}
+\item Numbers, strings, dates, and the \texttt{None} object are hashable
+\item Tuples (read-only sequences) are hashable if all of its items are hashable
+\item Lists (changeable sequences) are not hashable, but SkunkWeb makes
+an exception and lets you use them as arguments to cacheable 
+components, as long as the list's items are either hashable or
+are lists or dictionaries. However, \emph{you must be very careful} that the called
+component does not try to change the list in any way; if it does,
+you will find that the list changes only the first time the component
+is called, becuase on subequent calls, the output is cached and the 
+component will not be executed.
+
+\item Dictionaries are not hashable, but SkunkWeb makes an exception for them
+just as it does for lists, with the same cautions and restrictions.
+
+\item Any combination of acceptable objects is acceptable: 
+a tuple of lists of dates, etc.
+
+\item Instances of Python classes which you write yourself are not
+acceptable, unless you implement a \texttt{__hash__} or \texttt{__cachekey__}
+method in the class. Consult the Skunk mailing list if you want
+to make instances of your own classes acceptable arguments to 
+cacheable components.
+
+\end{itemize}
+
+
+%\textbf{Technical note:} As of Python 1.5.2, it is not accurate 
+%to say that an object must be hashable to be a proper argument
+%to a cacheable component. Python 1.5.2 makes *all* objects hashable,
+%and that is a little stupid. It's more accurate to say that
+%SkunkWeb accepts all basic data types, plus instances of classes
+%which implement either a \texttt{__cachekey__} or a \texttt{__hash__}
+%method that 
+%returns an integer. (See the Python Library Reference about the \texttt{hash}
+%function under "Built-in Functions", section 2.3.)
+
+
+
+\section{\texttt{<:datacomp:>} and \texttt{<:return:>}}
+\label{tagdatacomp}
+
+\texttt{<:datacomp var name [\emph{named_args}] [cache=no] [defer=no] [__args__]:>}
+
+Data components are like regular STML components, with these differences:
+
+\begin{itemize}
+\item Data component file end with the file extension \texttt{.dcmp}
+instead of \texttt{.comp}.
+
+\item 
+Any ``output'' of a data component is ignored. Instead, the data
+component must return a Python object with the \texttt{<:return:>}
+tag.
+
+\end{itemize}
+
+
+Think of a data component as a Python function. 
+You call it with attributes instead of arguments, you write it 
+in STML instead of straight Python, but it returns a Python 
+object just like a Python function.
+
+The \texttt{<:datacomp:>} tag is used like the 
+\texttt{<:component:>} \doref{tagcomponent}
+tag, except for the first argument, \texttt{var}. 
+\texttt{var} must be a string which names the local 
+variable that will hold the return value of the 
+data component:
+
+\begin{verbatim}<:datacomp returnObj foo.dcmp arg1="foo":>
+\end{verbatim}
+
+In the above tag, the variable named \texttt{returnObj} 
+will hold the object returned by data component \texttt{foo.dcmp}.
+
+The \texttt{<:return:>} tag inside the data component tells
+the component to stop executing and return immediately
+the result of the Python expression in the tag. Examples:
+
+\begin{verbatim}<:return `someVar`:>
+<:return `5`:>
+<:return `{'hey': 'dude', 'i': 'made', 'a': 'dictionary'}`:>
+\end{verbatim}
+
+If you ``forget'' to put a return tag in your data component, 
+the object returned is the \texttt{None} object, just like a Python 
+function that forgets to return something.
+
+The \texttt{__args__} argument works exactly like its
+\texttt{<:component:>} counterpart.
+
+Like calling regular components from Python code, a way to get the
+value of a datacomponent is:
+\begin{verbatim}
+import AE.Component
+val = AE.Component.callComponent(name, argdict, 	
+        cache = whatever, compType=AE.Component.DT_DATA)
+\end{verbatim}
+See section \ref{whatevervals}, page \pageref{whatevervals} for valid
+values of \texttt{whatever}.
+
+\subsection{Cacheable data components}
+\label{tagdatacompcaching}
+
+As with regular components, you may call data components with
+\texttt{cache=yes} (or \texttt{cache=defer} or
+\texttt{cache=force}). Data components use the \texttt{<:cache:>}
+\doref{tagcache} tag to specify how long to cache, just like
+components do.
+
+Arguments to cached data components must obey the same 
+restrictions as arguments 
+to cached regular components \doref{tagcomponentrestrictions}.
+
+Cached data components must also obey another restriction: 
+the object returned by a data component must be \emph{pickleable}. 
+That's Python's way of saying ``serializable''. If you don't 
+know much about Python's \texttt{pickle} module, don't worry. 
+The rule of thumb is: practically any kind of object you work 
+with is pickleable. All Python basic data types can be pickled, 
+as can instances of any classes you design. Therefore there is 
+truly very little restriction on the kinds of objects you can 
+return from a data component.
+
+
+
+
+\section{\texttt{<:type:>}}
+\label{tagtype}
+
+\texttt{<:type \emph{named_args}:>}
+
+\textbf{Note:} This tag is for advanced use by developers
+who understand STML components and the Python type system.
+
+The \texttt{<:type:>} tag allows you to to 
+run-time type checking on variables.
+Only keyword arguments are allowed.  The \texttt{<:type:>} 
+tag may appear anywhere in an STML document. The argument name 
+is the name of the variable that you wish to check.  
+The value is a Python expression that is either a type, 
+a class, or a tuple of types and/or classes.
+
+
+The named variables are then checked (in no particular order) to see
+if they pass an 
+\texttt{isinstance} check with the value, or in the case where the
+value is a tuple, check to see if \texttt{isinstance} succeeds on any
+of the types/classes in the tuple.  If there is no match, a
+\texttt{TypeError} will be raised.
+
+For convenience, the type objects from the \texttt{types} module
+are available in the global document namespace.  See the \emph{Python
+Library Reference} section on the \texttt{types} module for details
+on the type objects contained in the \texttt{types} module.
+
+
+Passing values other than classes or types is erroneous and will raise
+a \texttt{TypeError} at run-time.  If a named variable doesn't exist, a
+\texttt{NameError} will be raised.
+
+Some examples:
+\begin{verbatim}
+<:type x=`IntType` y=`StringType`:>
+\end{verbatim}  
+Check that \texttt{x} is an integer and that \texttt{y} is a string.
+
+\begin{verbatim}
+<:type foo=`(IntType, MyClass)`:>
+\end{verbatim}
+Checks that \texttt{foo} is either an integer, or an instance of
+\texttt{MyClass}.
+
+\begin{verbatim}
+<:type foo=`y.__class__`:>
+\end{verbatim}
+Checks to see that \texttt{foo} is an instance of the same class as
+\texttt{y}.
+
+
+
+\section{\texttt{<:cache:>}}
+\label{tagcache}
+
+\begin{verbatim}<:cache [ until | duration ]:>\end{verbatim}
+
+This tag, located in STML components and data components
+(it's not allowed in non-components), tells SkunkWeb how long,
+or until when, to cache the component's output (or
+data component's return object) if it is called with
+\texttt{cache=yes}.
+
+This tag accepts one argument, either \texttt{until}
+or \texttt{duration}. You must pass this argument by name:
+\texttt{<:cache until=foo:>} or
+\texttt{<:cache duration=foo:>}.
+
+If you do not use either argument, the component will cache for around
+30 seconds by default. The default cache length is configurable in
+your SkunkWeb configuration file using the
+\texttt{defaultExpiryDuration} configuration variable.
+
+\subsection{Using the \texttt{duration} argument}
+
+If you specify \texttt{duration}, the value should be 
+a string specifying the length of time to cache. It's a 
+string with no whitespace, and a sequence of integer-letter
+pairs specifying untis of time:
+
+\begin{argdesc}
+
+\item[\emph{integer} d]
+Cache for \emph{integer} number of days.
+\item[\emph{integer} h]
+Cache for \emph{integer} number of hours.
+\item[\emph{integer} m]
+Cache for \emph{integer} number of minutes.
+\item[\emph{integer} s]
+Cache for \emph{integer} number of seconds.
+\end{argdesc}
+
+You may use any combination of these integer-letter pairs,
+in any order; SkunkWeb will add them all up and cache for the sum
+period of time:
+
+\begin{verbatim}
+# cache for 10 minutes
+<:cache duration=10m:>
+# cache for 10 hours, 10 minutes
+<:cache duration=10h10m:>
+# cache for 2 days, 40 seconds
+<:cache duration=40s2d:>
+# cache for 60 imnutes (silly)
+<:cache duration=40m20m:>
+\end{verbatim}
+
+\subsection{Using the \texttt{until} argument}
+
+If you specify \texttt{until}, the value can be one
+of many things, all intended to indicate a point in time
+until which to cache. The \texttt{until} argument accepts
+any one of the following:
+
+\begin{itemize}
+\item A string of the form \texttt{"hh:mi"} or
+\texttt{"hh:mi:ss"}, specifying a time in hours, minutes,
+and optionally seconds, on a 24-hour clock. This tells SkunkWeb
+to cache until the next occurrence of that time. If you say
+\texttt{until=06:00}, and SkunkWeb executes the component at 
+05:30, it will cache for 30 minutes; but if SkunkWeb executes the 
+component at 07:00, it will cache for 23 hours until the next
+day at 06:00.
+
+\item A string of the form \texttt{":mi"}, meaning 
+``minutes after the hour''. This tells SkunkWeb to cache until
+that many minutes after the current hour, or after the
+next hour if those minutes have already passed.
+
+\item A \texttt{DateTime} object, as produced by functions in the
+\texttt{Date} or \texttt{DateTime} modules, or retrieved
+from a database using skunk.org's \texttt{SQL} module
+or SQL personality of SkunkWeb.
+
+\item A string of the form \texttt{"yyyy-mm-dd"},
+\texttt{"yyyy-mm-dd hh:mi"}, or \texttt{"yyyy-mm-dd hh:mi:ss"}.
+These strings specify dates according to the ISO 
+format supported by the \texttt{Date} module.
+
+\item A string of the form \texttt{"mm/dd/yyyy"},
+\texttt{"mm/dd/yyyy hh:mi"}, or \texttt{"mm/dd/yyyy hh:mi:ss"}.
+These strings specify dates according to a common
+U.S. date format. These string forms are only supported
+for backward compatibility; if you must use a string
+specifying an explicit date, use the ISO format above.
+
+\item A \texttt{RelativeDateTime} object from the \texttt{DateTime}
+module. these objects allow you to specify very complex
+relative dates, such as ``the first Sunday of next month
+at noon''. Be careful with these objects: unless you
+read the documentation fully, you can end up constructing
+a \texttt{RelativeDateTime} that moves you \emph{backwards} in time.
+If you do that, the \texttt{<:cache:>} will raise
+an exception telling you of your mistake.
+
+\item A tuple or list containing ANY combination of the above
+items. In this case, SkunkWeb will evaluate all items, and choose
+the result that is nearest the current date/time for 
+the cache expiration. This means you can do neat complex
+cache control:
+
+\begin{verbatim}# expires the cache at 0, 15, 30, and 45 minutes after the hour
+<:cache until=`(":00", ":15", ":30", ":45")`:>
+
+# expires the cache at 15 minutes after the hour,
+# and also at 06:00 every day, and also
+# at 5pm (17:00) on Sundays.
+<:import DateTime "RelativeDateTime":>
+<:cache until=`(":15", "06:00", 
+   RelativeDateTime(
+        weekday=0, hour=17, 
+        minute=0, second=0))`:>
+
+\end{verbatim}
+\end{itemize}
+
+
+
+
+\section{\texttt{<:import:>}}
+\label{tagimport}
+
+\begin{verbatim}<:import name [items]:>\end{verbatim}
+
+Imports a Python code module into the STML template. This
+is practically identical to the \texttt{import}
+statement in Python.
+
+If the \texttt{items} parameter is specified, it should be 
+either \texttt{'*'} or, a space delimited list of names 
+in the module to copy into the STML template's namespace. 
+If items is '*', all names in the module (that don't begin
+with '_') are copied into the STML template's namespace.
+
+Some examples, with their equivalents in straight Python:
+
+\begin{argdesc}
+
+\item[<:import string:>]
+\texttt{import string}
+\item[<:import string find:>]   \texttt{from string import find}
+\item[<:import string "find replace join":>]   \texttt{from string import find, replace, join}
+\item[<:import string *:>]   \texttt{from string import *}
+\end{argdesc}
+
+\textbf{Note on where modules come from:} When you
+do an \texttt{<:import foo:>} in STML, the SkunkWeb server
+first looks for the module \texttt{foo} in Python's standard
+module directories. If it does not find the module in any
+of those directories, SkunkWeb then looks in your custom SkunkWeb
+module library, which is usually \texttt{/usr/local/skunk/site-libs}
+(but could be changed by changing the \texttt{ImportPath}
+configuration variable)
+for a file \texttt{foo.py}.
+If SkunkWeb still cannot find the module \texttt{foo}, it raises an 
+\texttt{ImportError}.
+
+
+
+\chapter{HTML Helper Tags}
+\label{stmlrefurl}
+
+The STML tags in this section help you construct URLs and common HTML
+tags which use URLs for links, images, forms, and redirects.  These
+tags are only enabled if using the \texttt{AE} library under the
+SkunkWeb server or under \texttt{swpython}.  Chances are exceptionally
+fair that this is the case.
+
+The default behavior of these tags is very simple.  Your SkunkWeb
+administrator or lead developer may customize the behavior of these
+tags to fit the needs of your website.  If these STML tags behave
+differently or strangely in your web application, it's probably
+because they've been customized; ask your local SkunkWeb guru.
+
+\section{\texttt{<:url:>}}
+\label{tagurl}
+
+\begin{verbatim}<:url path [queryargs] [text] [noescape] [extra_args]:>\end{verbatim}
+
+Produces a URL or an HTML \texttt{<A>} tag. 
+All arguments except \texttt{path} are optional.
+
+\begin{itemize}
+\item \texttt{queryargs} can be a dictionary of arguments which you
+would like added to the URL as a query string, for example, the
+dictionary \texttt{\{'foo':5, 'bar':'yes'\}} gets translated to
+appending \texttt{?foo=5\&bar=yes} to the url. Defaults to an empty
+dictionary.
+
+\item \texttt{text} is an optional string. If it is present, the tag
+will not just produce a URL, but a full HTML \texttt{<A>}
+tag with an \texttt{HREF} attribute holding the URL and the text in
+between. 
+
+\item The \texttt{noescape} argument, if present,
+tells SkunkWeb \emph{not} to escape URL-unsafe characters in the \texttt{path}
+argument, such as spaces or extended characters. \emph{By default,
+SkunkWeb will escape all non-safe characters except for the \texttt{/}
+character, which it leaves intact. It will escape the \texttt{:}
+character in your \texttt{path} argument, however.}
+
+
+\item \texttt{extra_args} is not an argument name: it just means 
+that any other arguments you pass by name will be put in the
+\texttt{<A>} tag if \texttt{text} is not empty. Example:
+
+\begin{verbatim}<:url /index.html text="Home Page" target="_blank" :>
+# produces
+<a href="/index.html" target="_blank">Home Page<a>
+\end{verbatim}
+
+
+
+\end{itemize}
+
+The equivalent Python component code would be:
+\begin{obeylines}\ttfamily
+import templating.UrlBuilder
+print templating.UrlBuilder.url(path, queryargs, text,
+     \textit{extra_args_as_dict}, noescape)
+\end{obeylines}
+
+
+
+\section{\texttt{<:img:>}}
+\label{tagimg}
+
+\begin{verbatim}<:img path [noescape] [extra_args]:>\end{verbatim}
+
+creates an appropriate HTML \texttt{<IMG>} tag. 
+Arguments similar to \texttt{<:url:>} \doref{tagurl}. 
+
+The \texttt{noescape} argument, if present,
+tells SkunkWeb \emph{not} to escape URL-unsafe characters in the \texttt{path}
+argument, such as spaces or extended characters. \emph{By default,
+SkunkWeb will escape all non-safe characters except for the \texttt{/}
+character, which it leaves intact. It will escape the \texttt{:}
+character in your \texttt{path} argument, however.}
+
+The \texttt{extra_args} parameter is not actually a real argument name, 
+but is a pass through to let you pass through arguments to 
+the \texttt{<img>} tag.  Keyword arguments only.
+
+Examples:
+
+\begin{verbatim}<:img path=this.gif border=1:>
+# produces <IMG SRC="this.gif" border="1">
+\end{verbatim}
+
+The equivalent Python component code would be:
+\begin{obeylines}\ttfamily
+import templating.UrlBuilder
+print templating.UrlBuilder.image(path, queryargs,
+     \textit{extra_args_as_dict}, noescape)
+\end{obeylines}
+
+
+\section{\texttt{<:form:>}}
+\label{tagform}
+
+\texttt{<:form path [noescape] [\emph{extra_args}]:>}
+
+Creates an appropriate HTML \texttt{<FORM>} ``start'' tag. 
+Arguments are similar to the \texttt{<:url:>} \doref{tagurl}.
+The \texttt{extra_args} parameter is not actually a real argument name, but
+is a pass through to let you pass through arguments to the
+\texttt{<FORM>} 
+tag such as \texttt{METHOD}. These arguments must be passed by name only.
+
+\textbf{IMPORTANT NOTE!} This tag only generates the ``start'' HTML
+form tag, but \emph{not} the closing \texttt{</FORM>} tag.
+Always remember to close your HTML forms with the raw HTML tag
+\texttt{</form>}.
+
+The equivalent Python component code would be:
+\begin{obeylines}\ttfamily
+import templating.UrlBuilder
+print templating.UrlBuilder.form(path,
+     \textit{extra_args_as_dict}, noescape)
+\end{obeylines}
+
+
+\section{\texttt{<:hidden:>}}
+\label{taghidden}
+
+\texttt{<:hidden \emph{named_args}:>}
+
+Creates a series of HTML hidden input fields for each named attribute
+in the tag, escaping html entities as appropriate.
+
+Example:
+
+\begin{verbatim}
+<:set that "Hello//world":>
+<:hidden this=`that` count=`5`:>
+\end{verbatim}
+
+produces
+
+\begin{verbatim}
+<INPUT TYPE=HIDDEN NAME="this" VALUE="Hello%2F%2Fworld">
+<INPUT TYPE=HIDDEN NAME="count" VALUE="5">
+\end{verbatim}
+
+
+The Python component code to mimic this tag is:
+\begin{obeylines}\ttfamily
+import templating.UrlBuilder
+print templating.UrlBuilder( \emph{named_args_as_dict} )
+\end{obeylines}
+
+\section{\texttt{<:redirect:>}}
+\label{tagredirect}
+
+\begin{verbatim}
+<:redirect url:>}
+<:redirect path [queryargs] [noescape]:>
+\end{verbatim}
+
+If called with the named argument \texttt{url}, the argument
+should contain an absolute URL. Example:
+
+\begin{verbatim}<:redirect url="http://www.starmedia.com/":>\end{verbatim}
+
+Alternately, you may call this tag with arguments
+similar to those for 
+\texttt{<:url:>} \doref{tagurl}. 
+\texttt{path} is the path, \texttt{queryargs} an optional
+dictionary of arguments to put in the query string,
+
+
+The \texttt{noescape} argument, if present,
+tells SkunkWeb \emph{not} to escape URL-unsafe characters in the \texttt{path}
+argument, such as spaces or extended characters. \emph{By default,
+SkunkWeb will escape all non-safe characters except for the \texttt{/}
+character, which it leaves intact. It will escape the \texttt{:}
+character in your \texttt{path} argument, however.}
+
+
+\textbf{Please note} that either \texttt{url} or \texttt{path}
+must be passed by name, like \texttt{url=foo} or 
+\texttt{path=foo}.
+
+%Extra note about the using \texttt{path} instead of \texttt{url}:
+%SkunkWeb must find the "server name" and prepend it to \texttt{path},
+%and it finds the server name in the \texttt{REQUEST} object. The
+%\texttt{REQUEST} object is not available in components called 
+%with \texttt{<:component:>}, however. You \textbf{must} use
+%\texttt{url} inside these components, or you will get an error.
+
+
+The equivalent Python component code is: 
+\begin{obeylines}\ttfamily
+import templating.UrlBuilder
+templating.UrlBuilder.redirect(path, url, queryargs, noescape)
+\end{obeylines}
+
+
+
+\chapter{Internet Services}
+\label{stmlrefnet}
+Originally, STML planned to have many tags
+which performed operations on common Internet services.
+The skunk.org team soon realized, however, that
+it was a better approach to use Python's standard
+modules for Internet services. If you need to perform
+some operation, such as fetching a web page from a server,
+or talking to a UseNet newsgroup, or fetching mail
+from a POP mail server, write your own ``wrapper module''
+for use in SkunkWeb, and make use of Python's fantastic
+standard modules, such as \texttt{httplib} and
+\texttt{urllib}.
+
+STML gives you only one tag for Internet services:
+a tag for sending electronic mail, since that is
+a common task performed by web applications.
+
+\section{\texttt{<:sendmail:>}}
+\label{tagsendmail}
+\texttt{<:sendmail to_addrs subject msg [from_addr]:>}
+
+The \texttt{to_addrs} parameter is a list of strings 
+(or a single string) containing the email address(es). The
+\texttt{subject} argument is a 
+string containing the subject line. The \texttt{msg} argument contains
+the entire message body as a single string. The \texttt{from_addr} argument
+is an optional string with the email address of the sender, 
+and it defaults to the address in the SkunkWeb \texttt{templating} personality's
+\texttt{FromAddress} configuration variable.
+
+
+To do the equivalent in Python components:
+\begin{verbatim}
+import templating.MailServices
+templating.MailServices.sendmail ( 
+    to_addrs, subject, msg, from_addr )
+\end{verbatim}
+
+
+\chapter{Text Messages with Message Catalogs}
+\label{stmlrefmsg}
+In many web applications, you will find that you need
+to display text messages to the web user, such as 
+error messages, alert messages, ``success'' messages,
+and so forth. Yet you do not wish to type these messages
+directly into your STML templates; what if you use them
+in many places on your Web site, and then you have to
+change the text of a message? You do not want to have
+to hand-edit each STML document to make the change.
+
+STML provides a nice way to manage text messages
+and avoid ``hard-coding'' them into your STML documents:
+\textbf{message catalogs}. An STML message catalog acts somewhat
+like a Python dictionary: you give it a \emph{key},
+which is a string, and the mesage catalog looks up
+the message for that key. Unlike a dictionary, an STML
+message catalog does not raise an error if it cannot
+find a message under the key you request; instead,
+the message catalog returns an empty string \texttt{""}.
+
+Unlike a dictionary, a message catalog is not an object
+which you work with directly. Instead,
+you use the \texttt{<:msg:>} tag to access messages
+in the catalog.
+
+There are two kinds of message catalogs in STML:
+
+\begin{description}
+\item[Regular, or ``simple'', catalogs] Dictionary-like
+message catalogs. Each message ``name'' is like a dictionary
+key, with a single message stored for each key.
+
+\item[Multi-lingual, or ``complex'', catalogs:] Like a
+simple catalog, except that each message key stores
+multiple messages, one message for each language in the
+catalog. (Currently supported languages are \texttt{'esp'} (Spanish),
+\texttt{'por'} (Portuguese), and \texttt{'eng'} (English). 
+\end{description}
+
+The following sections explain the three tags which
+provide message catalog features.
+
+
+\section{\texttt{<:catalog:>} for message catalogs}
+\label{tagcatalog}
+
+\texttt{<:catalog catname name:>}
+
+Loads a  message catalog 
+named \texttt{catname} into the local variable 
+\texttt{name}. Once the catalog is loaded, you may
+use the \texttt{<:msg:>} \doref{tagmsg}
+tag to access messages in the catalog.
+
+The catalog name in \texttt{catname} is of the path to the message
+catalog (simple message catalogs have the extension \texttt{.msg}, complex, or multi-lingual ones have an \texttt{.cat} extension)
+, just like names for includes,
+components, and data components.
+
+The equivalent Python code is:
+\begin{verbatim}
+import AE.Cache
+name = AE.Cache.getMessageCatalog ( catname )
+\end{verbatim}
+
+
+\section{\texttt{<:msg:>} for retrieving messages}
+\label{tagmsg}
+
+\texttt{
+<:msg \emph{catname.msgname} [fmt] 
+    [substitution_args]:>}
+
+\texttt{
+<:msg \emph{catname.msgname} [lang] 
+    [fmt] [substitution_args]:>
+}
+
+This tag accesses a message in the catalog object
+previously loaded into the local variable \texttt{catname}
+with a \texttt{<:catalog:>}
+tag. If the message does not
+exist, the message is an empty string. The returned message
+is then displayed in the template output, as in a
+\texttt{<:val:>} \doref{tagval} tag.
+
+For example, you load a simple message catalog file
+\texttt{foo/bar/mycatalog.msg} with the following tag:
+
+\begin{verbatim}
+<:catalog foo/bar/mycatalog.msg thisCat:>
+\end{verbatim}
+
+The catalog object is now loaded into the local variable
+\texttt{thisCat}. Then, to access the message under the name
+\texttt{welcome_user}, you use the tag:
+
+\begin{verbatim}
+<:msg thisCat.welcome_user:>
+\end{verbatim}
+
+If the catalog object is a multi-lingual message catalog,
+you may pass the optional argument \texttt{lang}. If passed,
+it should be one of the strings \texttt{"esp"}, 
+\texttt{"por"} or \texttt{"eng"}, for Spanish, Portuguese,
+or English respectively. (For backward compatibility, the
+string \texttt{"spa"} is acceptable for Spanish.)
+If you do not specify \texttt{lang},
+the SkunkWeb server will look for a global variable in your template
+called \texttt{lang}, and use that.  You can configure your SkunkWeb
+server to set this global variable automatically.  If SkunkWeb cannot
+find this global variable, it will raise an error.
+
+For example, you load a multi-lingual message catalog file
+\texttt{foo/bar/mycatalog.cat} with the following tag:
+
+\begin{verbatim}
+<:catalog foo/bar/mycatalog.cat thisCat:>
+\end{verbatim}
+
+
+The catalog object is now loaded into the local variable
+\texttt{thisCat}. Then, to access the message under the name
+\texttt{welcome_user}, for Portuguese, you use the tag:
+
+\begin{verbatim}
+<:msg thisCat.welcome_user lang=por:>
+\end{verbatim}
+
+Alternately, if you know that the global variable \texttt{lang}
+is set properly, you can leave out the \texttt{lang} argument.
+
+\texttt{fmt} is an optional argument, and works just like 
+the \texttt{fmt} argument in the 
+\texttt{<:val:>} \doref{tagval}
+tag.
+
+The \texttt{substitution_args} marker is not an argument, but instead
+means that any named arguments you specify will be used to do
+``variable substitution'' if the message contains placeholders
+for variable substitution. See the 
+variable subtitution \doref{msgcatvarsub}
+section for details.
+
+The equivalent Python code is:
+\begin{obeylines}\ttfamily
+import AE.MsgCatalog
+import DT.DTCommon
+print AE.MsgCatalog.getMessage ( 
+    catalog, msgname, lang, DT.DTCommon.ValFmtRgy[ fmt ], 
+    \emph{substitution_args_as_dict} )
+\end{obeylines}
+
+\section{Variable Subsitution in Messages}
+\label{msgcatvarsub}
+
+You can, if you wish, put ``placeholders'' in
+messages and then, in the 
+\texttt{<:msg:>} \doref{tagmsg}
+tag, subtitute the values of variables for those
+placeholders.
+
+To make a placeholder, choose the name of the variable, 
+and then insert that variable between double brackets in
+the message, for example:
+
+\begin{verbatim}
+"This is a message with a variable substitution [[thisVar]]."
+\end{verbatim}
+
+Then, when using this message with the
+\texttt{<:msg:>} \doref{tagmsg}
+tag, pass a named argument as a tag attribute:
+
+\begin{verbatim}
+<:msg thisCatalog.thisMessage thisVar="here":>
+\end{verbatim}
+
+which will produce the output:
+
+\begin{verbatim}
+This is a message with a variable substitution here.
+\end{verbatim}
+
+
+\section{Editing Message Catalogs}
+\label{msgcatedit}
+
+Creating message catalog files is a snap. You can
+use skunk.org's SkunkDAV software, which has a built-in
+message catalog editor. Or you can create an edit
+these files directly using your favorite text editor.
+
+Message catalogs are just like Python dictionaries.
+And in message catalog files, the message names and
+values are expressed exactly as a big Python dictionary.
+For example, the contents of the simple message catalog
+\texttt{my_messages.msg}:
+
+\begin{verbatim}
+{
+    'welcome': 'Welcome to Skunk.',
+    'unauthorized': 'Go away!'
+}
+\end{verbatim}
+
+
+As you can see, the file's contents are a
+Python dictionary. The keys of the dictionary
+are the message names (always strings), and
+the values are the messages themselves (always
+strings).
+
+Multi-lingual message catalogs are ``two-level''
+Python dictionaries. The language is the top level,
+and each language key has a full dictionary of 
+message names and values. Here's the above simple
+message catalog as a multilingual catalog in
+the file \texttt{my_messages.cat}:
+
+\begin{verbatim}
+{
+    'eng': {
+        'welcome': 'Welcome to Skunk.',
+        'unauthorized': 'Go away!'
+    },
+    'esp': {
+        'welcome': 'Bienvenido a Skunk.',
+        'unauthorized': 'Que se vaya...'
+    }
+}
+\end{verbatim}
+
+
+When you edit message catalog files directly,
+you may type anything that is legal in a Python
+dictionary literal: any whitespace or indenting you wish,
+even comments. Please note, however, that editing
+message catalogs in the SkunkDAV editor results in 
+all of your comments being lost; SkunkDAV
+reformats the dictionary whenever it saves the
+message catalog file.
+
+\chapter{Documenting Your STML Code}
+\label{stmlrefmisc}
+
+
+
+\section{\texttt{<:doc:>}}
+\label{tagdoc}
+
+\begin{verbatim}<:doc:>
+    [ template, component, or datacomp documentation ]
+<:/doc:>
+\end{verbatim}
+
+
+This tag is a great tool for your development projects!
+At the beginning of any STML document,
+place a single \texttt{<:doc:>} tag. Inside the tag,
+write text documentation about the document (any STML tags will
+be ignored). Describe the role of the document in your application.
+Also describe the user arguments it looks for (if it's a template)
+or the arguments it expects (if it's a component or data component).
+If your STML document raises exceptions with the \texttt{<:raise:>}
+tag, describe which exceptions it can raise.
+For data components, also describe what kinds of objects are returned.
+
+The \textbf{skunkdoc} tool, which comes with the SkunkWeb software, can
+then extract all of your STML documents' \texttt{<:doc:>} 
+contents, and construct a surfable, cross-referenced HTML
+documentation set for your website. (It also will include all of
+your custom SkunkWeb Python modules and their documentation.)
+
+\textbf{\emph{Use the \texttt{<:doc:>}
+tag; you will be forever glad you did.}}
+
+Note that this tag considers all of its contents to be text; STML tags
+are not parsed. The resulting documentation will be in ``plaintext'', unless
+you use the magic \textbf{skunkdoc} XML format: make the first two
+non-whitespace characters in the tag \texttt{**} and the skunkdoc tool
+will parse them as XML. See the manual ``Documentation Tools'' on the skunk.org
+website to learn all about the skunkdoc XML format.
+
+
+\section{\texttt{<:comment:>} or \texttt{<:\#:>}}
+\label{tagcomment}
+
+\begin{verbatim}
+<:comment:>
+    [ stuff you want commented out ]
+<:/comment:>
+\end{verbatim}
+
+Similar to the HTML \texttt{<!-- -->} comment. Everything until
+the closing \texttt{</comment>} tag is ignored by the SkunkWeb server,
+and will neither be executed nor show up in the output. 
+Comments do not nest,
+and whatever occurs inside a \texttt{<:comment:>} tag must
+be legal STML. 
+
+As a shortcut, this tag can also be written
+\texttt{<:\#:><:/\#:>}.
+
+   
+
+
+\section{\texttt{<:* ....... *:>}}
+\label{fullcomment}
+\begin{verbatim}
+<:*
+   [ stuff you want commented out ]
+*:>
+\end{verbatim}
+
+This form of comment is different than the previous kind.  The
+previous kind is good when you want to either disable the contained
+code/text, but stinks when the contained tag structure isn't
+syntactically correct.  The contents of this form of comment are
+\emph{totally} ignored and contain anything, except a \texttt{*:>}.
+
+
+\chapter{Python Components}
+\label{pythoncode}
+Python components (we will use the term ``component'' here to mean
+regular components, data components or top-level documents) 
+are a way to write components and/or data components using straight
+Python.  They are useful for when the operation of the component is
+code-heavy and/or not terribly markup-intensive.
+
+To call other components from within Python components, there is a
+function in the \texttt{templating} module called, aptly enough,
+\texttt{callComponent} whose definition looks like this:
+
+\begin{verbatim}
+def callComponent (name, argDict, cache = 0,
+                   defer = None, compType = DT_REGULAR)
+\end{verbatim}
+
+The arguments are:
+\begin{argdesc}
+\item[name] the path to the component (can be relative)
+\item[argDict] dictionary of arguments to the component
+\item[cache] equivalent to the \texttt{cache} parameter in the
+component tags, but see section \ref{whatevervals}, page
+\pageref{whatevervals} for actual values to use.
+\item[compType] either the default (a regular
+component), \texttt{AE.Component.DT_REGULAR},
+\texttt{AE.Component.DT_DATA} for a data component or
+\texttt{AE.Component.DT_INCLUDE}
+\end{argdesc}
+
+
+
+The return value is either the output of the component, in the case of
+a regular component, or the return value of the component, in the case
+of a data component.
+
+
+
+
+
+\section{Top-Level Python Documents}
+\label{pythontl}
+Top-level Python documents \emph{are} url accessible with the file
+extension of \texttt{.py}.  They recieve
+the \texttt{CONNECTION} object in their global
+namespace and standard output goes to the browser (for the body text, if
+you wish to set response headers, they must be set using the
+\texttt{CONNECTION} object).  For example, the following is a valid
+top-level python script: 
+
+\begin{verbatim}
+print "The current URI is: <B>%s</B>" % CONNECTION.uri
+\end{verbatim}
+
+
+
+
+\section{Python Include Components}
+\label{pythonincl}
+The Python include component extension is \texttt{.pycomp}.
+Python include components have similar semantics as their STML
+counterparts.  All of the variable accessible in the calling documents
+namespace will appear in the global namespace of the Python component
+being called, and all changes (additions, changes, deletions) to those
+variables will appear in the calling document.  
+
+Producing output works the same as in top-level python components.
+
+
+
+
+\section{Regular Python Components}
+\label{pythonreg}
+Regular Python components get the default global namespace (as would
+an STML component) and the component arguments in the global
+namespace.  The catch is that there is no \texttt{<:cache:>} tag
+in 
+Python
+unfortunately, but this can be done by setting the global variable
+named \texttt{__expiration} to the number of seconds past the Epoch
+(12:00am 1/1/1970 UTC) at which this component will expire.  Sounds
+nasty, well of course there is a simple way to compute this value!  In
+the \texttt{templating} (which is already in the global namespace,
+no need to import it), there are two functions which mimic STML's
+\texttt{<:cache:>} tag, \texttt{convertDuration} and
+\texttt{convertUntil}. 
+
+The \texttt{convertDuration} function takes the same argument as the
+\texttt{duration} argument to the \texttt{<:cache:>} tag as a string.  So
+to say your component should cache for five minutes, you'd say:
+
+\begin{verbatim}
+import Date.TimeUtil
+__expiration = Date.TimeUtil.convertDuration("5m")
+\end{verbatim}
+
+
+The \texttt{convertUntil} function takes the same argument as the
+\texttt{until} argument to the \texttt{<:cache:>} tag.
+
+Producing output works the same as in top-level python components.
+
+
+
+
+
+\section{Python Data Components}
+\label{pythondata}
+Python data components extension is \texttt{.pydcmp}.  Python data
+components are similar to regular Python components as STML data
+components are similar to regular STML components.  Unfortunately,
+there is no \texttt{<:return:>} tag in Python, nor can the Python
+\texttt{return} statement be used (since it would be at the top
+level, where it is a syntax error).  So, in order to return a value
+from the data component, you 
+raise an exception of the proper type, \texttt{ReturnValue}, with the
+exception value being the return value.  
+
+For example, to return the value of the variable foobar from a data
+component:
+\begin{verbatim}
+raise ReturnValue, foobar
+\end{verbatim}
+
+
+The neat thing about this method of returning the value is that you
+can raise the exception from anywhere in the data component, i.e. from
+within functions, classes, wherever.
+
+Raising other exceptions will, of course, invoke the normal error
+handling routines.  Raising no exception returns the value \texttt{None}
+
+Setting the caching parameters of a data component is identical to that of
+regular Python components.
+
+As with normal STML data components, any generated output is ignored.
+
+
+
+\chapter{Namespaces}
+\strong{ATC--FIXME}
+\label{namespaces}
+
+
+\section{The Global Namespace}
+\label{globalns}
+
+The global namespace contains:
+\begin{itemize}
+\item The contents of the \texttt{types} module that don't start with a
+leading underscore. 
+\item The \texttt{SkunkWeb} module.
+\end{itemize}
+
+\section{The \texttt{CONNECTION} Object}
+\label{connectionobj}
+
+\chapter{User Modules}
+\label{usermodules}
+The \texttt{site-libs} directory contains application-specific modules
+that (depending on the state of the \texttt{UserModuleCleanup}
+\texttt{templating.conf} configuration option) get cleaned out on a
+per-request basis.  The upshot of this is that this way you can do
+development on these modules without having to restart SkunkWeb each time
+you make a change.  Since \texttt{site-libs} is normally already in
+the import path, all you need to do is put stuff there and it is
+importable by the standard rules of Python.
+
+\cleardoublepage
+
+\printindex
+
+\end{document}
+

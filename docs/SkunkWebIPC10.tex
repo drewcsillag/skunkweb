@@ -1,0 +1,347 @@
+% basic architecture section (apache to daemon)?
+% page len 4-12 pages
+
+\documentclass[twocolumn]{article}
+\usepackage{path}
+\author{Drew Csillag\thanks{\texttt{drew_csillag@geocities.com}}}
+\title{The SkunkWeb Web Application Server}
+\bibliographystyle{plain}
+\begin{document}
+\maketitle
+
+
+\section*{Abstract}
+This paper describes SkunkWeb, a web application server tool box
+written in Python\cite{python}.  While in essence, merely a
+multi-process socket server, when all glued together forms a robust,
+scalable, extendible and easy to use application server.  The caching
+abilities make it an ideal application server for high volume websites
+as well as small websites on meager hardware.
+
+\section{Why We Did It}
+Before I started on writing SkunkWeb, of course I examined the
+available open and non-open soure application servers.  I was
+generally dissatisfied at what I found, as the templating languages
+were either constraining for the experts in the shop or too
+complicated for the non-experts, or the overall performance
+characteristics of the server were unacceptable.
+
+%At the time SkunkWeb was originally written, the state of open and
+%non-open source application servers was fairly abysmal.
+%Unfortunately, things haven't changed a whole lot, since the two features
+%we needed most were the ones nobody was really providing.  
+
+Being a large web shop, we needed two major things from a web
+application server: a good templating language, and true enterprise
+abilities (scalability vertically as well as horizontally, reliability
+and robustness).
+
+Since we couldn't find what we needed, we did what everybody else on
+the planet in a web shop does... we did it ourselves.
+
+\section{Philosophy}
+The main Skunk philosophies are:
+\begin{description}
+\item[loose coupling] We should never force anyone (specifically
+ourselves) to take it all, but should allow people to take only the
+pieces they need to get their jobs done.
+\item[simplicity] Unnecessary complexity leads down the road to
+insanity.  Do the simple thing unless you can truly justify it.
+\end{description}
+
+\section{Goals}
+Being in the enterprise class, we needed four main things:
+\begin{enumerate}
+\item speed
+\item speed
+\item speed
+\item usability
+\end{enumerate}
+
+\section{Process Model}
+Unlike the bulk of Python application servers (e.g. \cite{zope} and
+\cite{pywx}), we fork processes, not threads\footnote{though your
+modules can use threads with the caveat of many SkunkWeb API
+functions (notably \texttt{callComponent}) are not reentrant}.
+Application servers normally tend to be I/O bound, but if we can (and
+we can) reduce the I/O constraints (by caching and pushing client I/O
+into Apache), we'll be CPU bound (and we are).  Being CPU bound,
+Python's threading model kills us since unless we write a pile of C
+code (which we wanted to avoid as much as possible) the Python
+interpreter will really only use one processor, not all of them due to
+Python's global interpreter lock\footnote{Using a Python interpreter
+not built with threading support \emph{will} speed up SkunkWeb
+a bit}.  By forking, SkunkWeb will utilize all processors it can get
+it's hands on.
+
+Forking processes instead of threads makes a number of things simpler.
+Reliability is simplified because if a child dies (due to core dump or
+other abnormal exit), the parent will just spawn another.  If it
+leaks resources (memory, file descriptors, etc.) there is a maximum
+request count so that the child will eventually commit suicide and
+release them.  The kids can pretty much do whatever they
+want\footnote{kids have it so easy these days... :)} and the parent is
+the only thing able to crash the whole server.  Since the parent is
+easy to take care of (it's mainloop is simple) the server will rarely
+go down, if ever\footnote{assuming the machine stays up, anyway}.
+
+Fortunately or not, being a forking server means it doesn't run on
+Windoze (AFAIK).  
+
+The main things threading allows is general process resource pooling.
+Specifically cache and database connections, which can be had without
+threading.  SkunkWeb caches many things to disk. In any decent
+read--as--Unix-like operating system, the OS disk cache should keep
+the real I/O to a minimum, effectively caching in
+memory\footnote{although it's not as efficient as shared memory would
+be}.  The OS will also handle any locking issues
+involved\footnote{though SkunkWeb does not use locking of \emph{any}
+kind (this includes file locking)} normally requiring mutexes in a
+threaded environment.
+
+The database connection pooling can be mitigated in a few ways.
+SkunkWeb can cache the database connection on a per process basis
+which is often enough.  In the event you cannot afford one
+connection per process, you can use remote components (I'll get to
+them in a minute) to a dedicated ``database server'' servicing all of
+the database queries via remote component calls.  It's a bit more work
+to do it that way, but it's likely to pay off.  As it turns out, since
+you can cache database results using data components (see section
+\ref{components}) in the ``database server'', the database issue
+becomes less of an issue you may have originally thought it would.
+
+\section{Communication}
+SkunkWeb can use either TCP or UNIX domain sockets for the
+Apache\cite{apache} to SkunkWeb communication.  If you are going to run
+Apache on the same host that SkunkWeb will run, UNIX domain
+sockets have a number of advantages:
+\begin{enumerate}
+\item They're faster than TCP connections.
+\item They're not accessible from outside the box, making security
+simpler.
+\item You don't have to worry about exhausting the ephemeral TCP port
+range on your box.
+\end{enumerate}
+Given that (3) only happens in the largest of installations, (1) and
+(2) are good enough reasons for using UNIX sockets.  If you are going
+to run Apache on other boxes, TCP is really the only choice, but
+\texttt{mod\_skunkweb} can be told to fail over to another host if
+SkunkWeb becomes unavailable for some reason.  This rarely, if ever
+happens. Really.  Except when the whole machine goes away.
+
+We presume Apache is the web server front-ending SkunkWeb, but as the
+Skunk philosophy would indicate, anything speaking the SkunkWeb
+protocol (it's quite easy) can be used as a front end.  In fact,
+SkunkWeb includes an HTTP service (see section \ref{services}) that
+can be used in lieu of Apache when you don't need the speed or
+configurability an Apache installation provides.
+ 
+\section{Caching, Caching, Caching}
+A relatively easy way to speed up an application server is by
+caching  In SkunkWeb, just about everything is
+cached.  We cache the compiled forms of STML templates, python code
+and message catalogs to both memory and disk, and we cache the output
+of components to disk.
+
+The component output cache can get quite large since the size of the
+component output cache is proportional to the cross product of the
+number of cachable components and the number of different argument
+sets passed to them. One would ideally like to share the cache between
+application servers serving the same content.  It is a relatively
+simple matter to put it on one or a number of NFS (or any other shared
+filesystem) and have SkunkWeb take care of it, and do the right thing
+if one of the NFS servers die.
+ 
+\section{Templating Language}
+Any serious web application server needs a templating
+language\footnote{a programmer can't live on servlets alone :)}.
+After shopping around a bit, I found something all of them had in
+common was... they stink.  All of the ones I saw were either some
+variant of ASP\cite{asp} (e.g. JSP\cite{jsp}, PSP\cite{psp}, etc.), or
+an emasculated tag-based language (e.g. DTML\cite{dtml},
+CFML\cite{cfml}, etc.).  The ASP variants have the problem of
+nonprogrammer HTML people doing bad things to the
+code\footnote{it was translated into Spanish on one notable occasion},
+or it gets hard to mentally separate the code from the markup.
+The existing tag based languages have the problem of not 
+letting you do what you want, or having to do a lot of work to get it
+done.
+
+My solution was this: write an extendable tag-based language that let
+you use strings and Python expressions as tag arguments
+\emph{anywhere} (with a few exceptions).  This insulates you from the
+amateurs, and still allows you to have ultimate power.
+
+Since the language, STML, was tag based, all we really needed to do
+was:
+\begin{itemize}
+\item Make regular Python code easy to load from STML, so you didn't
+have to do \emph{everything} in STML.
+\item Write a STML to Python byte-code compiler.
+\end{itemize}
+
+The first item was easy, add an import tag.  This way you put your
+business logic in regular Python modules, and put the rendering logic
+in STML components.  Doing it this way produced many more advantages
+than I expected.
+\begin{itemize}
+\item HTML coders don't necessarily have to know all that much Python.
+STML is easy to learn, especially for people that haven't
+done much programming before.
+\item If a more advanced HTML coder needs something built and doesn't want
+to wait for a Python module to be written by somebody else, they can
+do it themselves in either Python or STML.
+\item If you are doing a lot of tag stuff in an STML, there is a
+``calculated inefficiency'', pushing you to use Python modules to do
+some of the work.
+\end{itemize}
+
+The STML to Python byte-code compiler turned out to be a big win concerning 
+ performance.  Before the compiler, STML was
+interpreted, which had these problems:
+\begin{itemize}
+\item The parser was slow.
+\item The interpreter was slow.
+\item Using \texttt{cPickle} to cache the parse tree was only
+marginally faster than starting from scratch.
+\end{itemize}
+
+While compilation is slower than parsing, loading the compiled code
+from cache is roughly two orders of magnitude faster\footnote{my
+torture test document went from 100ms/load to 4ms/load} since the
+\texttt{marshal} module loads code objects \emph{really} well.  The
+fact we compile to Python byte code meant there was no
+separate STML interpreter anymore (just the regular Python VM) which
+sped things up even more.
+
+Another important thing was to make STML extendable.  I knew I didn't
+know all the tags we'd need and would have to add some.  Creating a
+new tag is not too hard.  It involves writing a class to handle the
+tag and inserting an instance of the class into a tag registry.  Not
+needing to know how all of the compiler works to write a tag
+made it really cool.
+
+
+\section{Internationalization}
+Given that we are a tri-lingual content shop\footnote{we'll try
+anything :)}, having to create a template for each language, or having
+a slew of ``if language is...'' statements was just dumb.  We added
+message catalogs to SkunkWeb for this reason.  This way one can write
+language independent templates.  Message catalogs can also handle
+argument substitution.  This was needed because the grammars of the
+three languages we use don't always put things you'd substitute in a
+message in the same relative locations (so normal string substitution
+was out).
+
+Message catalogs (really just dictionaries of language to message
+name to message mappings) were probably the simplest thing 
+added to SkunkWeb, but save a tremendous amount of work.
+
+\section{Components}
+\label{components}
+Components in SkunkWeb are a distinct unit of work, similar to a
+function call in many regards.  There are three kinds\footnote{well, mainly three, there are remote components also :)} of components:
+\begin{description}
+\item[include] these take no arguments, run in the namespace of the
+calling component, are not cachable, and produce output
+\item[regular] these take arguments, can be cachable, run in their own
+namespace and produce output.
+\item[data] these take arguments, can be cachable, run in their own
+namespace and can return an \emph{arbitrary object}.
+\end{description}
+
+Components can be written in either STML or Python.  If you want a
+component call to be cachable, you call it with \texttt{cache=yes}\footnote{or \texttt{cache=force} or \texttt{cache=old} or \texttt{cache=defer}} and
+inside the component, you specify a cache lifetime by saying one of
+the following:
+\begin{itemize}
+\item cache for some duration (e.g. 10 minutes, 3 hours, etc.)
+\item cache until some time (e.g. quarter past the hour, every other
+Tuesday at 5pm, and anything you can express with one or more
+\texttt{RelativeDateTime} objects)
+\end{itemize}
+
+If you are wondering what you do with data components, try thinking of them
+as memoized function calls.  If you call them with \texttt{cache=yes}
+and the same arguments before the cache expires, they return
+whatever they returned on a prior call.  Thus, you can cache commonly used
+things, such as stock-tickers, database rows, latest news from
+\texttt{slashdot.org}, and anything else that \texttt{cPickle} can
+serialize.
+
+You can also tell SkunkWeb to defer component execution and say,
+``give me whatever is in the cache, even if it's expired (but not too
+old). If it is expired, evaluate the component after the response
+is sent back to the client''.  You can even set up SkunkWeb so if
+component evaluation fails, it falls back to whatever is in the cache,
+even if expired.
+
+SkunkWeb also has the ability to call components on other SkunkWeb
+servers (a.k.a. remote component calls).  In truth, they're just
+remote procedure calls that happen to be cachable.
+
+\section{Extendibility}
+\label{services}
+Extendibility in SkunkWeb is done by what we call ``Services''.
+Services are just plain Python modules which generally assume that the
+SkunkWeb framework is there and hook into it using, well,
+\texttt{Hooks}.  A number of people have asked me why I went with
+hooks over doing some kind of subclassing OOP-y kind of thing.  My
+answers are these:
+\begin{enumerate}
+\item When hook calling order is important, it is much easier to
+manipulate a list than to get the subclass hierarchy correct.  There
+is a reason the Apache people went the same way with Apache~2.
+\item Services may add hooks to the server other services want to
+use, making services compatible only with some set of hooks.
+\item Because I said so.  I'm not big on class hierarchies when
+they'd just be single instances.  Plus, simpler hook mechanisms are so
+much easier to trace (e.g. you can print the hook and see what
+functions it calls).
+\end{enumerate}
+
+
+\section{Database Connectivity}
+Database connectivity in SkunkWeb is really simple.  All you really
+have to do is write a service\footnote{services for
+Oracle\cite{oracle}, PostgreSQL\cite{postgres}, and MySQL\cite{mysql}
+are already available as part of the standard distribution} that makes
+the connection to the database and stows it somewhere convenient for
+template and module authors.  Since SkunkWeb itself doesn't use
+threads, writing these modules is incredibly simple, and they are
+often less than 50 lines (assuming of course that Python bindings for
+the database already exist).
+
+\section{Content Management}
+Content management on large web sites can be exceedingly difficult.
+Especially when you want to push the changes more or less atomically
+to the live servers.  SkunkWeb includes par files to make this
+easier.  Par files are similar in purpose to Java\cite{java} jar
+files.  Pushing is done by packaging  up your components into a par file and
+instructing SkunkWeb to use the par files instead of (or before) the
+normal document root when fetching components.  This way, you push all
+of your par files, restart the servers (there is a soft restart
+available by sending SIGHUP to the parent process)
+and the new content shows up all at once.  No worrying about a ``half
+push''.
+
+Using par files turned out to have an additional benefit I hadn't
+thought of when I first added the feature.  Par files are loaded at
+server start.  When we go searching for templates, we just scan
+dictionaries in memory instead of using \texttt{open} and
+\texttt{os.stat} to retrieve the necessary info about the templates.
+Thus the system call load is significantly reduced.
+
+%should this be a starred section?
+\section{Conclusion}
+SkunkWeb and its predecessors have been in continuous production use
+at StarMedia since 1999 and has proven itself over and over again to
+be a scalable, robust\footnote{and many other buzzwords} application
+server its users have found better than the
+alternatives\footnote{``All app servers suck, SkunkWeb just sucks
+less''}.
+
+
+\bibliography{s}
+
+\end{document}

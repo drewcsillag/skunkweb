@@ -1,0 +1,23 @@
+import string
+import httplib
+import re
+
+def getUF():
+    h = httplib.HTTP('www.userfriendly.org')
+    h.putrequest('GET', '/static/')
+    h.endheaders()
+    errc, errm, headers = h.getreply()
+    f = h.getfile()
+    data = f.read()
+    f.close()
+    return data
+
+m = re.compile('SRC="(http://www.userfriendly.org/cartoons/archives/[^/]+/xuf[^"]+)')
+
+def getComicImageUrl():
+    f = getUF()
+    xx = m.search(f)
+    url = xx.group(1)
+    return string.replace(url, '/x', '/')
+
+raise ReturnValue, getComicImageUrl()

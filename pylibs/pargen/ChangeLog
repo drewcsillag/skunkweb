@@ -1,0 +1,164 @@
+1999-11-09  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* TODO: minor updates
+
+	* ParGenGrammar.py: regenerated
+
+	* Parser.py: now uses CONSTANTS
+
+	* initParGenGrammar.py: changed ruleSet from tuple to list
+
+	* Common.py, LR0.py, LR1.py: now uses CONSTANTS
+
+	* EBNFParse.py: minor debug change
+
+	* EBNFGrammar.py: regenerated
+
+	* CONSTANTS.py: New file.
+
+1999-11-08  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* EBNFParse.py: fiddling with a more efficient dup _temp rule reducer
+	Seems to work so far -- works with oql grammar (but I doubt it
+	removes many dup rules), actually it doesn't remove any since no
+	dups are generated from EBNF->BNF conversion, but the python grammar
+	(which does generate dups) seems ok with the new one since at least 
+	the rule counts match.
+
+	* pargen: added -D and -d options
+
+	* pargen: added -R option
+	renamed -S option to -I
+
+	* RuleItems.py: added some diagnostics for when things go haywire
+
+	* ebnftest2.y, ebnftest3.y, ebnftest4.y: New file.
+
+	* EBNFParse.py: think I got thing working correctly now
+
+	* EBNFGrammar.py, EBNFGrammar.y:
+	think I got the precedence of | correct without screwing
+	up the rest of the language
+
+	* pargen: added ebnf'ability and status messages
+
+	* Parser.py: added status messages
+	added a EBNFcallback baseclass
+	added an error message if things get weird
+
+	* EBNFParse.py: should now totally work!
+
+	* GrammarLoader.py: added status message
+
+	* EBNFGrammar.py: rebuilt
+
+	* EBNFGrammar.y: fixed it so the alternate (|) functionality works
+
+	* CompileGrammar.py: added status messages
+
+1999-11-05  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* ParGenGrammar.py: rerun through pargen
+
+	* EBNFGrammar.py, EBNFGrammar.y, EBNFLex.py, EBNFParse.py, ebnftest.y:
+	New file.
+
+	* CompileGrammar.py:
+	now that I've given up the cool way to do LALR, we do it slightly more
+	efficiently
+
+	* Common.py: made it so it doesn't add $ to the list of terminals
+
+	* LALR.py:
+	got a version that does LALR somewhat via LR1 but doesn't generate the whole
+	set of LR1 items.
+
+	* test4.py: New file.
+
+1999-11-04  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* fnci: now ignores emacs auto-save files
+
+	* LALR.py:
+	still fucking with it... It seems to generate the lookaheads properly
+	though.  Just won't generate the state/goto tables
+
+	* Common.py: finally think I got FIRST and FIRSTS working properly
+
+	* CompileGrammar.py: changed call for LALR0
+
+	* fnci: commented out a debug echo
+
+	* pargen: separated grammar loading into separate module
+
+	* GrammarLoader.py: New file.
+
+1999-11-03  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* ChangeLog:
+	fixed since doing more than one vc-update-changelog can fuck you
+
+	* ChangeLog: New file.
+
+	* TODO: added more shit
+
+	* test2.py: minor mods
+
+	* fnci, __init__.py, TODO, ParGenGrammar.y: New file.
+
+	* LR1.py: minor cleanup
+
+	* LALR.py: still trying to fix this damn thing
+
+	* CompileGrammar.py: now calls LALR.generateStateTable for LALR0
+
+	* Common.py: for FIRST, if None in FIRST, remove None, add $
+	initialized terminals with $
+
+	* pargen: updated help
+
+	* LALR.py:
+	fucking around with it since it still don't work (but LR(1) - > LALR(1)  does)
+
+	* CompileGrammar.py:
+	updated for new interface to LR1.generateStateTable
+
+	* pargen: New file.
+
+	* RuleItems.py: added a __getitem__ method to Set
+
+	utilize the new __getitem__ method in __str__ method of Item
+
+	* LR1.py:
+	since Set has __getitem__ and addSet methods now, cleaned up situations
+	where we had to use .items and .addList
+
+	for some reason I was iterating over range(len(C)) and using the index only
+	to get C[i].  fixed.
+
+	cleaned up conflict detection code
+
+	* LR0.py:
+	a few cleanups, mainly to clean up the conflict detection code
+
+	* LALR.py: fixed canonicalLRToLALR so it:
+		1) works
+		2) is much neater
+		3) is much easier to understand
+
+	* CompileGrammar.py:
+	have the indexFunc for determining the goto state index as a passed in
+	parameter since LALR1 and LR1 need to do it differently
+	specifically LR1 needs to check lookaheads where LALR1 doesn't
+
+	* Common.py: fixed FIRSTS function so it actually works now
+
+1999-11-02  drew@naxos.skunk.org  <drew@naxos.skunk.org>
+
+	* LR1.py, LR0.py, LALR.py: lotso comments
+
+	* RuleItems.py: added comment
+
+	* testgrammar.y, Common.py, CompileGrammar.py, LALR.py, LR0.py, LR1.py, ParGenGrammar.py, ParGenLex.py, Parser.py, RuleItems.py, initParGenGrammar.py, test.py, test2.py:
+	New file.
+

@@ -1,0 +1,153 @@
+Overview or Why PyDO and Why Do I Want It?
+--------------------------------------------------
+In short, PyDO allows you to simplify access to databases in a
+comprehensible way.  Ok, now for a bit more detail.  SDS, PyDO's
+predecessor made data modelling and access considerably easier than
+doing the table design, SQL writing et. al. than doing it yourself.
+The main problem was is that the database people had a hard time
+understanding what it actually did under the hood, because, for them
+(and rightly so) it was really important that it didn't do anything
+stupid and allowed them to optimize it to death.  Since it was
+difficult to explain to them how it did things, and it did constrain
+them in meaningful ways, they didn't buy into it (and rightly so).
+Basically, SDS traded ease of use for understanding, a tradeoff which
+was it's undoing.
+
+PyDO is meant as a way to give ultimate control to the database people
+(if they want it) when it comes to database access and still be
+relatively easy to use, but not as easy as SDS was. 
+
+PyDO is also easy to configure, easy to see what goes on under the
+hood and extremely lightweight (the PyDO.py file comes in currently at
+531 lines of not-very-dense code).  Because the mapping is quite
+thin, it is easy to explain how the mythical python expression:
+    SomeObject.getUnique(FOO=3)
+would yield the SQL query (when using the oracle driver)
+    SELECT COL1, COL2, COL3, FOO from TABLE where FOO = :p1 
+with :p1 being bound to the integer 3 given it's definition.
+
+Not only that, but you can override the way fetches and/or mutations
+are done so that they don't necessarily even yeild SQL queries, in the
+case that you want to do stored procedure access.  In general,
+if you want to go direct to the database connection level to do
+something, you can, and PyDO doesn't care, very much unlike SDS which
+potentially could get very confused.
+
+PyDO has no notion of a relation.  Relations are handled by the PyDO
+data developer by using methods.  For example, if you have a Users
+class and a Groups class, one would likely write a getGroups() method
+on the Users object to fetch the Groups object associated with it.
+PyDO does however provide convience functions to make implementing
+relations simpler, specifically joinTable and joinTableSQL methods
+which make many-to-many relations easier.  One-to-one and one-to-many
+are are typically done making calls to getUnique() and getSome()
+methods on the target class.
+
+Unlike SDS, PyDO can also use more than one connection at a time.
+Each data class defines a connection alias, which maps to a PyDO
+connection string which subsequently maps to a database interface
+instance (specific to the database type).  The connection alias
+feature exists because you don't want to have to change all the
+connect strings in your code to move them from the development
+environment to the production environment, you just have to change the
+connect string that the alias points to.
+
+
+How to define a PyDO data class
+-------------------------------
+To define a PyDO data class, the first thing to do is inherit from the
+PyDO base class.  From there, you define a series of class attributes
+to configure the object.  
+
+The connectionAlias attribute specifies the connection alias mentioned
+above to determine which connection to use.
+
+The table attribute specifies what database table this object maps
+to.  Multiple dataclasses may point at the same database table.
+
+The fields attribute is a tuple of two-tuples of column name(or field
+name)/database type.  The case of the field name *is* significant.
+For all intents and purposes, use upper case unless the documentation
+for your database driver says otherwise (none of them currently do, or
+even have docs either for that matter).  If you have multiple data
+classes pointing at the same database table, they need not specify the
+same field tuples (they can though).
+
+Data class instances are mutable unless you say mutable = 0 in the
+definition of your data class.
+
+If you would like for fields in rows to be populated with values from
+sequences (on databases that have named sequences, i.e. oracle) when
+creating new rows, this can be done by specifying the sequenced
+attribute as a dictionary of fieldname:sequence name pairs. 
+
+If you would like to fetch fields that are populated via
+the auto-increment feature of your database (if it has one, like
+MySQL, oracle doesn't) on insert, this can be done by specifying the
+auto_increment attribute as a dictionary of fieldname:autoincname
+pairs.  In the case that autoincrement field fetches aren't named
+(i.e. MySQL), just specify 1 as the autoincname, and beware then that
+you can have only one item in the dictionary.
+
+For some methods (i.e. getUnique, delete, refresh, etc.) that PyDO
+has, it requires that it be able to obtain a unique row given a set of
+column names/values.  The way to specify this is to set the unique
+attribute on your data class to a list of strings or tuples of strings
+(can mix and match) that identify that either this column (in the case
+of a string) or this set of columns (tuple of strings) uniquely
+identifies a row.  
+
+Other attributes defined in a data class definition are ignored and
+will not be present in the actual class.
+
+If you want to add attributes into a data class instance, define the
+__init__ method (it will have no argument other than self) and it can
+define whatever other instance attributes it likes, although
+redefining data class attributes will have undefined behavior (it
+might work *shrug*).
+
+Methods
+--------------------
+PyDO, like SDS supports methods.  Unlike SDS, though PyDO also has the
+notion of static methods, methods that apply to the data class and not
+an instance of the data class.
+
+Defining a method is the same as defining regular python methods and
+needs no explanation.
+
+Defining a static method is merely a matter of defining the method
+with static_ prepended to the method name.  In which case, the self
+argument points to the data class and not the data class instance.
+
+As you would expect, calling self.method() where method is static is the
+same as calling SelfsClass.method().
+
+If you want to get a hold of the static method to be able to call it
+from, say, a static method in the a subclass and have it be
+executed in the class context of the subclass (not the superclass),
+use the full self.static_method() form (static_ prepended to the
+static method name).
+
+Inheritance
+-----------
+Inheritance is supported, albeit in a somewhat limited way.  Methods
+(instance and static) are inherited as you would expect.  Fields in a
+super class will be inherited into the subclass, where you can 
+augment the fields tuple or change the database type (by specifying
+the field, but with a different database type).  This second form may
+or may not be supported in future releases.  The unique is
+inherited, but setting it will override, not augment, the super
+class' definition.  Inheriting from multiple PyDO classes is undefined as 
+to the real behavior.  It may work, but no guarantees.
+
+
+
+Typical Use of Data Classes
+----------------------------------------
+Actual use may vary but things like the following are not unusual.
+
+user = Users.getUnique(USERNAME='drew', PASSWORD='foo')
+groups = user.getGroups()
+   #which would merely return Groups.getSome(USER_ID, self['OID'])
+print groups['NAME']
+
