@@ -1,3 +1,16 @@
+2001-08-21  Drew Csillag  <drew@starmedia.net>
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/freshmeat.comp,
+	SkunkWeb/sample_webdocs/demo/geeknews/dcomps/freshhead.pydcmp,
+	SkunkWeb/sample_webdocs/demo/geeknews/dcomps/slashhead.pydcmp:
+	Minor fixes so that they now work now that freshmeat no longer
+	provides a description, and since slashdot is now a bit more picky
+	about how you talk to it.
+
+	* docs/devel/devel.tex: finagled a bit in hopes of not having
+	to totally rewrite it.
+	
+
 2001-08-17  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* SkunkWeb/SkunkWeb/Server.py (SkunkWebServer.reload): commented
