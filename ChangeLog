@@ -3,6 +3,10 @@
 	* pylibs/MySQL/__init__.py: finally fixed so that using the mysql
 	service, plus having userModuleCleanup turend on will now actually
 	work.
+	(_real_connect): got rid of the exception handler since it masked
+	the traceback and appears to have no useful function in and of
+	itself.  Assuming it's a Roman-leftover since he was fond of this
+	sort of thing.
 
 2002-07-05  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
