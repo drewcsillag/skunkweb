@@ -8,7 +8,7 @@
 \usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
 \title{The SkunkWeb Developers Guide}
 \author{Drew Csillag and Jacob Smullyan}
-\release{3.0}
+\release{3.3}
 \setshortversion{3}
 \makeindex
 
@@ -120,23 +120,27 @@ provide better performance in the case that you are running a Python
 CGI program.
 
 \section{Linkage Services}
-       * exist mainly to link other stuff into skunkweb 
+Linkage services mainly exist to link other stuff into skunkweb.
 \begin{description}
-\item[mysql] Loads the MySQL pylib library to do connection caching.
-\item[postgresql] Loads the PostgreSql pylib library to do connection
-caching.
-\item[oracle] Loads the Oracle pylib library to do connection caching.
+\item[mysql] Loads the \index{MySQL} MySQL pylib library to do
+connection caching.  See Appendix \ref{Database APIs}.
+\item[postgresql] Loads the \index{PostgreSQL} PostgreSql pylib
+library to do connection caching.  See Appendix \ref{Database APIs}.
+\item[oracle] Loads the Oracle \index{Oracle} pylib library to do
+connection caching.  See Appendix \ref{Database APIs}.
 \item[ae_component] Loads the AE pylib library that is the component
-rendering infrastructure, see the Appendix.
-\item[templating] Hooks up the ae_component service up to the web
-service to make templates web accessible.  
-\item[psptemplate] Hooks up the psp pylib to the AE infrastructure
+rendering infrastructure, see Appendix \ref{aelib}.
+\item[templating] Hooks up the \service{ae_component} service up to
+the \service{web} service to make templates web accessible.
+\item[psptemplate] Hooks up the psp pylib to the AE infrastructure.
 \end{description}
 
 
 \section{API Services}
-       * mainly provide API's to do skunkweb specific stuff some do
-       * provide direct functionality too
+The API services are those that could not (easily) be arranged to
+otherwise be linkage services, as they are more tightly integrated
+because of the tasks they perform, and they provide some direct
+functionality also.
 
        auth
        product 
@@ -296,29 +300,41 @@ Configuration.productPaths mapping.
 This service will also contain a utility for creating products, creating
 the MANIFEST file, byte-compiling the python modules, and creating the
 archive file.
+
 \subsection{The \service{remote\_client} Service}
-adds swrc://host:port/path/to/component.comp 
-syntax to component (and data component) calls
+The \service{remote\_client} service exists to provide access to
+components exposed on other SkunkWeb servers via the
+\texttt{AE.Component.callComponent} function, and by extension the
+\texttt{<:component:>} tag.  What this service does is make it so that if you specify the component name as \texttt{swrc://}\emph{host}\texttt{:}\emph{port/path/to/component.comp}, it will call the component \emph{/path/to/component.comp} by contacting a (presumably) existing SkunkWeb installation that has the \service{remote} service configured to listen on \emph{host}\texttt{:}\emph{port}.
 
 \subsection{The \service{sessionHandler} Service}
-adds 
 
-getSession(create=0, **cookieParams) - if create is true, will create
-new session (in cookie, with extra paraters in cookieParams)
+The \service{sessionHandler} service adds three functions to the
+\texttt{CONNECTION} \index{\texttt{CONNECTION}} object that the
+top-level component sees.
 
-getSessionID(create=1) - get session id from cookie, or create it 
+The three functions are:
+\begin{argdesc}
+\item[getSession(create=0, **cookieParams)] if create is true, will
+create (and return) a new session (in the cookie, with extra paraters
+in \texttt{cookieParams}), otherwise will return an existing session, if it
+exists, otherwise returns \texttt{None}.
+\item[getSessionID(create=1)] get session id from cookie, or create it if \texttt{create} is true, otherwise returns \texttt{None}.
+\item[removeSession()] kills the session cookie.
+\end{argdesc}
 
-removeSession to CONNECTION, kills the session cookie
 
 
 \section{Foundation Services}
-Services which are used to build other services, but in and of
-themselves, provide no directly useable functionality.
+Foundation services are those which are used to build other services,
+but in and of themselves, provide no directly useable functionality.
 
-
-       requestHandler
-       web
 \subsection{The \service{requestHandler} Service}
+The \service{requestHandler} service is used as the basis of all of
+the network request based services (directly, or indirectly) and
+handles the communication to the client (in whatever form that may
+take).
+
 PreemptiveResponse (responseData) -- respdata will be sent via
 protocol.marshalResponse
 
@@ -963,6 +979,36 @@ be shared between the machines as it is disk-based.
 \appendix
 \input ae.tex
 
+\chapter{Database APIs}
+\label{Database APIs}
+
+The \service{mysql}, \service{oracle} and \service{postgresql}
+services exist to merely import their pylib counterparts
+(\texttt{MySQL}, \texttt{Oracle} and \texttt{PostgreSql}
+respectively).  The services themselves provide no api, they just
+provide configuration options to setup the connection caches that the
+pylib modules hold.  
+
+The APIs to the modules are essentially identical.  There is really
+only one function of interest (though some contain other function
+which you should \emph{NOT} rely on to exist in future releases), and
+that is \texttt{getConnection}.  This function takes a connection name
+(as defined in the \texttt{sw.conf} file) and returns the connection
+associated with it.  The connections are lazily made, i.e. they are
+not created when the SkunkWeb child process starts, but when the first
+call of \texttt{getConnection} with the connection name is made in a
+process.
+
+Here's an example of typical usage using PostgreSQL:
+
+\begin{verbatim}
+import PostgreSql
+db = PostgreSql.getConnection('test') # <--- as defined in sw.conf
+cur = db.cursor()
+cur.execute('select * from testTable')
+result=cur.fetchall()
+cur.close()
+\end{verbatim}
 
 \cleardoublepage
 

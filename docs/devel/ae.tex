@@ -146,6 +146,26 @@ dictionary is a superset of \texttt{arguments} will be cleared.
 
 \end{funcdesc}
 
+\section{Misc Functions}
+\begin{funcdesc}{AE.Component.rectifyRelativeName}{path}
+Will return the full path of \verb!path! as taken as relative to the
+directory of the currently executing component.  For example: if the
+currently executing component is \verb!/foo/bar/baz.comp! calling 
+\begin{verbatim}
+AE.Component.rectifyRelativeName('.')
+\end{verbatim}
+will return \verb!/foo/bar/! and
+
+\begin{verbatim}
+AE.Component.rectifyRelativeName('doofus')
+\end{verbatim}
+will return \verb!/foo/bar/doofus! and
+
+\begin{verbatim}
+AE.Component.rectifyRelativeName('/absolute/path')
+\end{verbatim}
+will return \verb!/absolute/path!.
+\end{funcdesc}
 
 
 
