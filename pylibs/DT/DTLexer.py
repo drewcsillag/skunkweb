@@ -202,15 +202,16 @@ def findTags(text):
                                       msg = "found < in tag" )
         elif state == GOTCCOL:
             if c != ">":
-                raise DTLexicalError ( lineno = getLineno(text, offset),
-                                 msg = "got : in tag but not followed by >" )
-            
-            textoffset = offset + 1
-            #put in tag token
-            ret.append(
-                [tagoffset, offset + 1, 1, text[tagoffset + 2: offset - 1]]
-                )
-            state = INIT
+                #raise DTLexicalError ( lineno = getLineno(text, offset),
+                #                 msg = "got : in tag but not followed by >" )
+                state=PLAINTAGTEXT
+            else:    
+                textoffset = offset + 1
+                # put in tag token
+                ret.append(
+                    [tagoffset, offset + 1, 1, text[tagoffset + 2: offset - 1]]
+                    )
+                state = INIT
             
         elif state in (SQUOT, DQUOT, BQUOT):
             if c == '\\':

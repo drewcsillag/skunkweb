@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/03/12 15:26:13 smulloni>
+# Time-stamp: <03/03/13 11:43:20 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -28,16 +28,18 @@ rather than relying on apache to do it.... TBD
 
 If you want to log this cookie inside apache, but don't want to log
 every single cookie the client might send, this apache configuration
-will be helpful.  Assuming that the default cookie name, SKUNKTREK_ID,
-is in use, put this in some appropriate place in your apache conf
-files:
+will be helpful if you are using Apache 1.3.x. (You can already do
+this with Apache 2.0 using the "%{COOKIENAME}C" log format}.  Assuming
+that the default cookie name, SKUNKTREK_ID, is in use, put this in
+some appropriate place in your apache conf files:
 
   RewriteEngine On
   RewriteCond %{HTTP_COOKIE} SKUNKTREK_ID=([^;]+)
   RewriteRule .* [E=SKUNKTREK_ID:%1]
 
 This creates an environmental variable with the same value as the
-usertracking cookie.  Then log using a log format like this:
+usertracking cookie; this will get passed to SkunkWeb, but is perfectly
+harmless.  Then log using a log format like this:
 
   LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{SKUNKTREK_ID}e" cookie-combined
 

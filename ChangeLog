@@ -1,3 +1,15 @@
+2003-03-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/usertracking.py: More comments (this
+	time about Apache 2 and its cookie log format).
+
+	* pylibs/Date/Locales.py: to suppress a DeprecationWarning
+	in Python 2.3a2, added a magic "coding" indicator, as this
+	file contains some non-ASCII characters.
+
+	* pylibs/DT/DTLexer.py (findTags): now permit colons
+	inside tags when not followed by a '>'.
+
 2003-03-12  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/usertracking.py: added some comments about 
