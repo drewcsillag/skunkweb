@@ -4,7 +4,7 @@
   important differences between them?
 
 Yes, they definitely do share objectives, but they differ in many ways
-as to tho approach:
+as to the approach:
 
  * WebWare uses a threaded model.  While in some ways makes things
    simpler, it makes many things more complicated.  Also, because of
@@ -71,20 +71,21 @@ directory, that goes into a bit more detail.
    people that are more than just newbies, this can be quite a royal
    pain.  
 
- * Extending Zope is complicated to say the least.  SkunkWeb (like
+ * FIXME -- Extending Zope is complicated to say the least.  SkunkWeb (like
    WebWare) was designed to be easily extendible and customizable.
 
  * To call arbitrary code from Zope templates, you have to create
    Python Method objects, which let's be honest, is a pain.  STML has
    an import tag which allows you to just get to work.
 
- * I may be wrong on this one, but I don't think that Zope allows you
+ * FIXME -- I may be wrong on this one, but I don't think that Zope allows you
    to cache the output of a template.
 
  * Internationalization.  I don't believe that Zope has any builtin
    support for message catalogs and the like.
 
- * Modularity.  It's pretty difficult to pull the cool bits out of
+
+ * FIXME -- Modularity.  It's pretty difficult to pull the cool bits out of
    Zope to use outside of it.  With SkunkWeb, most of the code is in
    the pylibs directory (6500 lines SkunkWeb specific, versus 20000
    lines common code) that you can use outside the skunk framework.
@@ -151,4 +152,29 @@ to attack the web serving problem in similar ways
    compile cache can also be additionaly stored in memory (as a
    read-through, write-through cache).
 
+4) Paul Rubin <phr-n2001@nightsong.com> asks:
+Can you add a SkunkWeb-PHP comparison to your FAQ?
 
+ * PHP has it's own language, whereby SkunkWeb uses Python
+
+ * PHP runs under mod_php (see the 5th bullet point for Mason).
+
+ * PHP's database connections are not automatically rolled back at the
+   end of a page.
+
+ * PHP doesn't appear to have any builtin caching facilities except via
+   user sessions.
+
+ * It doesn't appear that you can make custom url schemes with PHP
+   without writing an Apache module to do it.  In SkunkWeb, you can
+   write a Service which does it.  As an example, for my current
+   employer, we have a url translation scheme which translates urls to
+   and from Spanish and Portugese.
+
+ * Internationalization.  PHP appears not to have any builtin
+   internationalization features.  SkunkWeb has message catalogs.
+
+ * PHP only supports one kind of page language whereby SkunkWeb currently
+   supports two (Python and STML) and could support more (an ASP-style
+   templating language comes to mind).
+ 
