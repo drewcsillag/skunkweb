@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.15 2002/06/28 21:09:00 smulloni Exp $
+# $Id: Makefile.in,v 1.16 2002/07/11 22:57:00 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -65,41 +65,41 @@ default:	build
 build:
 install:
 
-	$(INSTALL) -d $(sw_dir) $(services_dir) $(pid_dir) $(log_dir) \
-	$(docroot) $(cache)
+	$(INSTALL) -d $$DESTDIR$(sw_dir) $$DESTDIR$(services_dir) $$DESTDIR$(pid_dir) $$DESTDIR$(log_dir) \
+	$$DESTDIR$(docroot) $$DESTDIR$(cache)
 
-	$(INSTALL) -d $(skunklib)
+	$(INSTALL) -d $$DESTDIR$(skunklib)
 	for f in `find SkunkWeb -name "*.py"`; do \
-	    $(INSTALL_DATA) $$f $(skunklib)/$$f; \
+	    $(INSTALL_DATA) $$f $$DESTDIR$(skunklib)/$$f; \
 	done
 
-	$(INSTALL) -m0755 swpython.py $(skunk_bindir)/swpython
-	$(INSTALL) -m0755 swcgi.py $(skunk_bindir)/swcgi
-	$(INSTALL) -m0755 skunkweb.py $(skunk_bindir)/skunkweb
-	$(INSTALL) -m0755 swmgr $(skunk_bindir)/swmgr
-	if [ -x $(conf_dir) ] ;\
+	$(INSTALL) -m0755 swpython.py $$DESTDIR$(skunk_bindir)/swpython
+	$(INSTALL) -m0755 swcgi.py $$DESTDIR$(skunk_bindir)/swcgi
+	$(INSTALL) -m0755 skunkweb.py $$DESTDIR$(skunk_bindir)/skunkweb
+	$(INSTALL) -m0755 swmgr $$DESTDIR$(skunk_bindir)/swmgr
+	if [ -x $$DESTDIR$(conf_dir) ] ;\
 	then \
-		if [ -d $(conf_dir) ] ;\
+		if [ -d $$DESTDIR$(conf_dir) ] ;\
 		then :;\
 		else \
-			echo "$(conf_dir) exists and is not a directory!"; \
+			echo "$$DESTDIR$(conf_dir) exists and is not a directory!"; \
 			exit 1;\
 		fi \
 	else \
-		$(INSTALL) -d $(conf_dir); \
+		$(INSTALL) -d $$DESTDIR$(conf_dir); \
 	fi 
-	if [ -f $(conf_dir)/sw.conf ] ;\
+	if [ -f $$DESTDIR$(conf_dir)/sw.conf ] ;\
 	then \
 		echo '****************************************';\
 		echo 'preserving existing sw.conf';\
 		echo '****************************************';\
 	else \
-		$(INSTALL_DATA) sw.conf $(conf_dir)/sw.conf; \
+		$(INSTALL_DATA) sw.conf $$DESTDIR$(conf_dir)/sw.conf; \
 	fi
-	$(INSTALL_DATA) ../pylibs/AE/mime.types $(conf_dir)/mime.types
-	$(INSTALL) -d $(util_dir)
+	$(INSTALL_DATA) ../pylibs/AE/mime.types $$DESTDIR$(conf_dir)/mime.types
+	$(INSTALL) -d $$DESTDIR$(util_dir)
 	for f in cache_reaper.py vicache.py; do \
-	    $(INSTALL) -m0755 util/$$f $(util_dir)/$$f; \
+	    $(INSTALL) -m0755 util/$$f $$DESTDIR$(util_dir)/$$f; \
 	done
 
 	for comp in ${components}; do \
@@ -113,20 +113,20 @@ install:
 	@#install demo web content
 	if [ -n "$(WEBDOC)" ];\
 	then \
-	    $(INSTALL_DATA) sample_webdocs/index.html $(docroot)/index.html;\
-	    $(INSTALL_DATA) sample_webdocs/logo.comp $(docroot)/logo.comp;\
-	    $(INSTALL_DATA) sample_webdocs/favicon.ico $(docroot)/favicon.ico;\
-	    $(INSTALL) -d $(docroot)/img; \
+	    $(INSTALL_DATA) sample_webdocs/index.html $$DESTDIR$(docroot)/index.html;\
+	    $(INSTALL_DATA) sample_webdocs/logo.comp $$DESTDIR$(docroot)/logo.comp;\
+	    $(INSTALL_DATA) sample_webdocs/favicon.ico $$DESTDIR$(docroot)/favicon.ico;\
+	    $(INSTALL) -d $$DESTDIR$(docroot)/img; \
 	    for i in 0 1 2 3 4 5 6 7 8 9;\
 	    do \
 		$(INSTALL_DATA) sample_webdocs/img/skunklogo$$i.gif \
-                    $(docroot)/img/skunklogo$$i.gif ;\
+                    $$DESTDIR$(docroot)/img/skunklogo$$i.gif ;\
 	    done ;\
             for i in $(DEMO_DIRS); do \
-	        $(INSTALL) -d $(docroot)/demo/$$i; done;\
+	        $(INSTALL) -d $$DESTDIR$(docroot)/demo/$$i; done;\
 	    for i in $(DEMO_FILES);\
 	    do \
-		$(INSTALL_DATA) sample_webdocs/demo/$$i $(docroot)/demo/$$i;\
+		$(INSTALL_DATA) sample_webdocs/demo/$$i $$DESTDIR$(docroot)/demo/$$i;\
 	    done ;\
 	fi
 
@@ -145,6 +145,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.16  2002/07/11 22:57:00  smulloni
+# configure changes to support other layouts
+#
 # Revision 1.15  2002/06/28 21:09:00  smulloni
 # groundwork laid for preventing attribute assignment to Configuration.
 #

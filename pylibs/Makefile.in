@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.5 2002/01/25 16:40:48 drew_csillag Exp $
+# $Id: Makefile.in,v 1.6 2003/02/07 19:55:08 smulloni Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -59,9 +59,9 @@ install:
 	do \
 	    if [ -d $${file} ]; \
 	    then \
-	        $(INSTALL) -d $(pylibs_dir)/$${file};\
+	        $(INSTALL) -d $$DESTDIR$(pylibs_dir)/$${file};\
 	    else \
-	    $(INSTALL_DATA) $${file} $(pylibs_dir)/$${file}; \
+	    $(INSTALL_DATA) $${file} $$DESTDIR$(pylibs_dir)/$${file}; \
             fi; \
 	done
 

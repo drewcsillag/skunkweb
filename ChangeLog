@@ -1,3 +1,10 @@
+2003-04-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* Makefile.in, pylibs/Makefile.in, SkunkWeb/Makefile.in,
+	SkunkWeb/Services/Makefile.in: added DESTDIR in the numerous
+	places it wasn't being used in make install targets (to facilitate
+	making rpms, ebuilds).
+
 2003-04-03  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in: added comments about usertracking.

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.4 2002/04/01 00:06:56 smulloni Exp $
+# $Id: Makefile.in,v 1.5 2002/07/11 22:57:00 smulloni Exp $
 # Time-stamp: <01/05/07 13:48:20 smulloni>
 ########################################################################
 
@@ -48,23 +48,23 @@ default:	build
 install:
 	for i in $(inst_services); do \
 		if [ -f "$$i.py" ]; then \
-		$(INSTALL) -m0644 $$i.py $(services_dir)/$$i.py; \
+		$(INSTALL) -m0644 $$i.py $$DESTDIR$(services_dir)/$$i.py; \
 		else \
-		$(INSTALL) -d $(services_dir)/$$i; \
+		$(INSTALL) -d $$DESTDIR$(services_dir)/$$i; \
 		for j in `find $$i -name "*.py"`; do \
-		$(INSTALL_DATA) $$j $(services_dir)/$$j; \
+		$(INSTALL_DATA) $$j $$DESTDIR$(services_dir)/$$j; \
 		done \
 		fi \
 	done
 
 	if echo "$(inst_services) | grep basicauth" > /dev/null;\
 	then \
-	    $(INSTALL) -m0755 basicauth/swpasswd.py $(skunk_bindir)/swpasswd ;\
+	    $(INSTALL) -m0755 basicauth/swpasswd.py $$DESTDIR$(skunk_bindir)/swpasswd ;\
 	fi
 
 	if echo "$(inst_services) | grep product" > /dev/null;\
 	then \
-	    $(INSTALL) -m0755 product/productwiz $(skunk_bindir)/productwiz ;\
+	    $(INSTALL) -m0755 product/productwiz $$DESTDIR$(skunk_bindir)/productwiz ;\
 	fi
 
 build:
@@ -77,6 +77,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.5  2002/07/11 22:57:00  smulloni
+# configure changes to support other layouts
+#
 # Revision 1.4  2002/04/01 00:06:56  smulloni
 # added script to run the product wizard, removed pars, necessary configure/makefile changes.
 #
