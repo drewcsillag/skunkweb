@@ -738,7 +738,7 @@ fi
 
 
 
-SERVICES="ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir web"
+SERVICES="ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir usertracking web"
 
 # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2

@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/03/11 18:02:16 smulloni>
+# Time-stamp: <03/03/11 22:44:28 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -58,6 +58,8 @@ Configuration.mergeDefaults(
     # function to verify a usertracking cookie;
     # by default, None
     usertrackingVerifyCookieFunc=None,
+    # name of the cookie
+    usertrackingCookieName="SKUNKTREK_ID",
     # values for cookie parameters
     usertrackingCookiePath=None,
     usertrackingCookieExpires=None,
