@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.21 2002/07/11 19:55:31 drew_csillag Exp $
-# Time-stamp: <2002-07-11 15:49:42 acsillag>
+# $Id: sw.conf.in,v 1.22 2002/07/11 22:57:00 smulloni Exp $
+# Time-stamp: <02/07/12 12:19:32 smulloni>
 
 ########################################################################
 #
@@ -280,7 +280,7 @@ sys.path.append('@prefix@/sitelibs')
 # The directory that is used to hold templates, images, msgcats, comps,
 # etc.
 #
-# documentRoot = '@prefix@/docroot'
+# documentRoot = '@DOCROOT@'
 
 ########################################################################
 # What filesystem implementations to use to search for resources.
@@ -638,6 +638,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.22  2002/07/11 22:57:00  smulloni
+# configure changes to support other layouts
+#
 # Revision 1.21  2002/07/11 19:55:31  drew_csillag
 # added bits about extcgi
 #

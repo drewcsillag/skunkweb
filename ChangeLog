@@ -1,3 +1,22 @@
+2002-07-15  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/AE/MsgCatalog.py: MessageCatalogs now have a hasMessage()
+	method, and getMessage can be now be used with a default value, or
+	not. 
+
+	* SkunkWeb/Services/ae_component.py (__initConfig): use
+	DEFAULT_DOCROOT for mergeDefaulting into
+	Configuration.documentRoot. 
+
+	* SkunkWeb/SkunkWeb/confvars.py.in (DEFAULT_DOCROOT): captured 
+	the DOCROOT configure variable.
+
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py (File, __all__): added
+	RegexMatcher for location (File).
+
+	* SkunkWeb/Services/rewrite.py: now test whether sessionDict has
+	the relevant keys before deleting them.
+
 2002-07-15  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/Services/extcgi.py (_dispenv): made it 2.1 compliant,

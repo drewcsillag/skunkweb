@@ -1,5 +1,5 @@
-# $Id: ConfigAdditives.py,v 1.3 2001/10/02 02:35:34 smulloni Exp $
-# Time-stamp: <02/03/30 14:22:41 smulloni>
+# $Id: ConfigAdditives.py,v 1.4 2002/03/30 20:05:27 smulloni Exp $
+# Time-stamp: <02/07/15 11:00:26 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
 #                     Jacob Smullyan <smulloni@smullyan.org>
@@ -22,6 +22,7 @@
 ########################################################################
 
 __all__=['Location',
+         'File',
          'Host',
          'Port',
          'IP',
@@ -42,6 +43,13 @@ def _createMatcher(matcherClass, paramName, paramVal, kids, kw):
 
 def Location(path, **kw):
     return _createMatcher(scope.SimpleStringMatcher,
+                          'location',
+                          path,
+                          None,
+                          kw)
+
+def File(path, **kw):
+    return _createMatcher(scope.RegexMatcher,
                           'location',
                           path,
                           None,
@@ -94,6 +102,9 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.4  2002/03/30 20:05:27  smulloni
+# added Include directive for sw.conf; fixed IP bug (was being clobbered in sw.conf)
+#
 # Revision 1.3  2001/10/02 02:35:34  smulloni
 # support for scoping on unix socket path; very serious scope bug fixed.
 #

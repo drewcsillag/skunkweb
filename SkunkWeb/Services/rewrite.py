@@ -1,5 +1,5 @@
-# Time-stamp: <02/06/21 16:46:14 smulloni>
-# $Id: rewrite.py,v 1.5 2002/05/22 01:35:58 smulloni Exp $
+# Time-stamp: <02/07/15 09:54:01 smulloni>
+# $Id: rewrite.py,v 1.6 2002/06/21 20:48:38 smulloni Exp $
 
 ########################################################################
 #  
@@ -169,7 +169,8 @@ def _rewritePre(connection, sessionDict):
                 DEBUG(REWRITE, 'survived PostRewrite hook')
             except:
                 logException()
-            del sessionDict['rewriteCurrentRule']
+            if sessionDict.has_key('rewriteCurrentRule'):
+                del sessionDict['rewriteCurrentRule']
             if not Configuration.rewriteApplyAll: break
 
 def _rewritePost(requestData, sessionDict):
@@ -180,7 +181,8 @@ def _rewritePost(requestData, sessionDict):
         DEBUG(REWRITE, 'executing PreRewriteCleanup hook')
         PreRewriteCleanup(requestData, sessionDict)
         DEBUG(REWRITE, 'survived PreRewriteCleanup hook')
-        del sessionDict['rewriteRules']
+        if sessionDict.has_key('rewriteRules'):
+            del sessionDict['rewriteRules']
     except:
         logException()
 
@@ -197,6 +199,9 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.6  2002/06/21 20:48:38  smulloni
+# error-handling tweak.
+#
 # Revision 1.5  2002/05/22 01:35:58  smulloni
 # fix for 404 handler for case when templating is loaded after rewrite.
 #

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: MsgCatalog.py,v 1.4 2001/07/09 20:38:41 drew Exp $
+# $Id: MsgCatalog.py,v 1.1.1.1 2001/08/05 15:00:37 drew_csillag Exp $
 # Time-stamp: <01/04/26 14:56:47 smulloni>
 ########################################################################
 
@@ -28,19 +28,28 @@ cfg.Configuration._mergeDefaultsKw(
     DefaultLanguage="eng"
     )
 
+class NO_DEFAULT: pass
+
 def getMessage(catalog,
                message,
                lang = cfg.Configuration.DefaultLanguage,
                fmt = lambda x: x,
-               bindvars = {}):
+               bindvars = {},
+               default=NO_DEFAULT):
     """
     A gentle getMessage function, to extract a message from a catalog
     """
     if isinstance(catalog, MultiLingualCatalog):
-         return fmt(catalog.getMessage(message,
+        if not default is NO_DEFAULT:
+            if not catalog.hasMessage(message, lang):
+                return default
+        return fmt(catalog.getMessage(message,
                                       lang = lang, 
                                       bindvars = bindvars))
     else:
+        if not default is NO_DEFAULT:
+            if not catalog.hasMessage(message):
+                return default
         return fmt(catalog.getMessage(message,
                                       bindvars = bindvars))
 
@@ -57,6 +66,9 @@ class MessageCatalog:
              lang = None):
         return fmt(self.getMessage(message,
                                    bindvars = bindvars))
+
+    def hasMessage(self, name):
+        return self._dict.has_key(name)
     
     def getMessage(self, name, bindvars = {}):
         """
@@ -102,6 +114,10 @@ class MultiLingualCatalog(MessageCatalog):
         return fmt(self.getMessage(message,
                                    lang = lang, 
                                    bindvars = bindvars))
+
+    def hasMessage(self, name, lang):
+        return self._dict.has_key(lang) and \
+               self._dict[lang].has_key(name)
     
     def getMessage(self, name, lang, bindvars = {}):
         """
@@ -131,6 +147,10 @@ class MultiLingualCatalog(MessageCatalog):
 
 ########################################################################
 # $Log: MsgCatalog.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.4  2001/07/09 20:38:41  drew
 # added licence comments
 #
