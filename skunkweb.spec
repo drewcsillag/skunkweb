@@ -35,6 +35,7 @@ A module for including the Skunkweb environment in the Apache web server.
 
 %changelog
 * Sat May 24  2003 Jacob Smullyan <smulloni@smullyan.org>
+- fixed cron job entry; added additional install tweak ("REAL_INSTALL" variable)
 - incorporated SR's latest patch into source.
 
 * Fri May 23 2003 Sean Reifschneider <jafo-rpms@tummy.com> [3.4b3+-1]
@@ -86,7 +87,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
            INSTALL=install INSTALL_DATA=install REAL_INSTALL=install
 
 #  set up cache reaper
-echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/cache/skunkweb' >"$RPM_BUILD_ROOT"/etc/cron.daily
+echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/cache/skunkweb' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb_cache_reaper.cron
 
 #  build file list
 find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
