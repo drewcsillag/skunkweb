@@ -30,7 +30,7 @@ import DTExcept
 import ErrorHandler
 from SkunkExcept import *
 
-def compileTemplate ( text, name = None, tagreg = None, meta = None ):
+def compileTemplate ( text, name, tagreg, meta ):
     try:
         taglist=DTLexer.doTag(text, name)
     except DTExcept.DTLexicalError, val:
