@@ -1,4 +1,17 @@
+2001-09-25  Drew Csillag  <drew@starmedia.net>
+
+	* pylibs/PyDO/postconn.py: never stored connection in itself
+	if using cache
+
+	* pylibs/PyDO/doc: fixed connectstring inaccuracy
+
+	* pylibs/PyDO/PyDO.py: made commit and rollback static methods
+
+	* pylibs/PostgreSql/__init__.py: forgot to import SkunkExcept
+	
 2001-09-24  Drew Csillag  <drew@starmedia.net>
+
+	* 3.1beta2 cut
 
 	* pylibs/AE/Executables.py: fixed idiocy bug introduced when
 	making print statements work in STML templates
