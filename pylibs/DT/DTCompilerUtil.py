@@ -15,10 +15,10 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTCompilerUtil.py,v 1.4 2001/09/21 21:07:14 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.5 2002/06/07 14:46:29 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
-
+import os
 import sys
 import types
 import string
@@ -50,6 +50,25 @@ def tagDebug(indent, codeout, tag):
     codeout.write(indent, '__d.CURRENT_TAG = %s' % repr(repr(tag)))
     codeout.write(indent, '__d.CURRENT_LINENO = %s' % repr(tag.filelineno()))
 
+
+def convertToNativeLineEndings(s):
+    if os.linesep == '\n': # unix style
+        s = s.replace('\r\n','\n')
+        s = s.replace('\r', '\n')
+        return s
+    elif os.linesep == '\r': # mac style
+        s = s.replace('\r\n', '\r')
+        s = s.replace('\n', '\r')
+        return s
+    elif os.linesep == '\r\n': # dos/win style
+        #yes this is fairly convoluted to convert to unix, then cvt to
+        #dos/win style, but there is no other convienient way which does
+        #not require a regex, which seems overkill
+        s = s.replace('\r\n','\n')
+        s = s.replace('\r', '\n')
+        s = s.replace('\n', '\r\n')
+        return s
+    
 def pyifyArgs(tag, args, parenthesize_exprs = 0):
     """convert arguments to an evalable format"""
     nd={}
@@ -57,9 +76,9 @@ def pyifyArgs(tag, args, parenthesize_exprs = 0):
         if type(v)==types.StringType:
             if len(v)>1 and v[0]==v[-1]=="`":
                 if parenthesize_exprs:
-                    nd[k]="(%s)" % v[1:-1]
+                    nd[k]="(%s)" % convertToNativeLineEndings(v[1:-1])
                 else:
-                    nd[k]=v[1:-1]
+                    nd[k]=convertToNativeLineEndings(v[1:-1])
             else:
                 nd[k]=repr(v)
         else:
@@ -195,6 +214,12 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.5  2002/06/07 14:46:29  drew_csillag
+# 	* pylibs/DT/DTCompilerUtil.py(genCodeChild): made all arguments
+# 	mandatory (see comment about DTC.py), as well as calls genCode on
+# 	Tag instances with the meta argument when they are block (as opposed
+# 	to empty) tags.
+#
 # Revision 1.4  2001/09/21 21:07:14  drew_csillag
 # now made
 # it so that if you have a multi-line <:call:> tag, you don't have
