@@ -1,3 +1,11 @@
+2002-07-12  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/Services/templating/pil_preload.py: imports the
+	entirety of the PIL package
+
+	* SkunkWeb/Services/templating/UrlBuilder.py: now imports
+	pil_preload if PIL is enabled
+
 2002-07-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/SkunkWeb/confvars.py.in: adding.  Contains constants
