@@ -1,9 +1,32 @@
+2003-02-07    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.sqlStringAndValue): fix for NULL.
+
+	* pylibs/setup-pylibs.in: distutils setup script used by the
+	Makefile to build extension modules.
+
+	* pylibs/Makefile.in: now uses distutils to build the extension modules;
+	excludes some deprecated or unnecessary material from being built
+	and installed.  Should work with Python 2.3.
+
+	* Makefile.in: SW_VERSION is now defined here.
+
+<<<<<<< ChangeLog
+2003-02-05  Jacob Smullyan <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/rewrite.py: made it possible to pass
+	a callable to RewriteCond for string keyword arguments (this was
+	already permitted for integer kwargs), and added some
+	documentation taken from the Open Source Digest article.
+
+=======
 2003-02-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.__unpackConnectArgs): 
 	allow verbosity to be specified in a connectstring.
 	(PyDOMySQL.getAutoIncrement): fix for autoincrement.
 
+>>>>>>> 1.357
 2003-02-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sample_webdocs/index.html: cleaned up slightly.

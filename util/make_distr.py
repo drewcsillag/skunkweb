@@ -19,12 +19,14 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.5 2002/08/16 15:54:54 drew_csillag Exp $
+#$Id: make_distr.py,v 1.6 2003/02/03 03:34:12 smulloni Exp $
 
 import commands
 import re
 import sys
 import os
+
+EXCLUDE='pylibs/string8859.py pylibs/pargen pylibs/skunkdoc'
 
 try:
     from prompt import *
@@ -58,11 +60,11 @@ conf_q = BoolQuestion('Are you sure you want to tag current code %s (version %s)
 
 if not conf_q.ask():
     sys.exit(0)
-
 #
 # Update the version
 #
-for d, f, var, real_f in(('SkunkWeb', 'SkunkWeb/configure.in', 'SW_VERSION', 'configure'),):
+for d, f, var, real_f in(('.', 'configure.in', 'SW_VERSION', 'configure'),
+                         ('SkunkWeb', 'SkunkWeb/configure.in', 'SW_VERSION', 'configure'),):
    full_f = os.path.join(src_dir, f)
    lines = open(full_f).read()
    pat = re.compile('^%s=.*' % var, re.MULTILINE)
@@ -126,6 +128,13 @@ for d, local in(('.', 1), ('SkunkWeb', 0), ('pylibs', 0), ('docs', 0)):
         print 'Tag failed in %s: returned %d: %s' % (d, ret, out)
         sys.exit(1)
 
+# untag the excluded files
+os.chdir(src_dir)
+cmd="cvs tag -d %s %s" % (tag, EXCLUDE)
+ret, out=commands.getstatusoutput(cmd)
+if ret:
+    print "untagging excludes failed: returned %d: %s" % (ret, out)
+    sys.exit(1)
 #
 # Ok, all tagged - create the distribution 
 #

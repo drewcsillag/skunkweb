@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.4 2001/11/11 22:10:09 smulloni Exp $
+# $Id: Makefile.in,v 1.5 2002/01/25 16:40:48 drew_csillag Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -28,23 +28,11 @@ exec_prefix     = @exec_prefix@
 pylibs_dir	= @libdir@/pylibs
 skunk_bindir    = @bindir@
 
-#do_dcoracle 	= @DCORACLE@
-#do_mysql        = @MYSQL@
-#do_postgresql   = @PGSQL@
-#
-# Sub-components
-#
-components 	=
-
-# Python components which require building
+# Python components which require cleaning 
 py_comps	= signal_plus skunklib uuid AE/cacheKey scopeable
-#mmlib
 
-# generate makefile names
-py_comps_makefiles = $(patsubst %,%/Makefile,$(py_comps))
-
-# Exclude dirs - exclude from wide file search. Use | to separate entries
-exclude_dirs	= "CVS"
+# Exclude from wide file search. Use | to separate entries
+exclude	= "CVS|string8859|pargen|skunkdoc"
 
 #
 # Who to install as and what modes to set
@@ -60,36 +48,14 @@ INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
 default:	build
 
-
-build: $(py_comps_makefiles)
-	@# Now, actually build stuff
-	for comp in $(components) $(py_comps); do \
-	     if (cd $${comp}; $(MAKE)); \
-	     then :; \
-	     else \
-                 exit 1; \
-             fi \
-	done
-
-#rule to build Makefiles in py_comps from Makefile.pre.in
-%/Makefile: %/Makefile.pre.in
-	(dirname=`echo $< | sed 's@/Makefile.pre.in$$@@'`; \
-        (cd $$dirname; $(MAKE) -f Makefile.pre.in boot PYTHON=@PYTHON@))
+build:
+	@PYTHON@ setup-pylibs build_ext --inplace
+	-rm -fR build
 
 install:	
-	@# First, run make install in all of the component directories
-	COMPONENTS="$(components)" ; \
-	for comp in $${COMPONENTS} $${COMPONENTS}; do \
-	    if (cd $${comp}; $(MAKE) install); \
-	    then :; \
-	    else \
-	        exit 1; \
-	    fi \
-	done
-
 
 	@# Locate all the files that need installing and install them
-	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -name '*\.xml' -o -name '*\.gif' -o -type d \) -print | egrep -v $(exclude_dirs) | sort`; \
+	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -iname '*\.dll' -o -type d \) -print | egrep -v $(exclude) | sort`; \
 	do \
 	    if [ -d $${file} ]; \
 	    then \
@@ -99,32 +65,14 @@ install:
             fi; \
 	done
 
-	@#Install skunkdoc and skunkdoc2html in bin without .py extension
-	for util in skunkdoc skunkdoc2html; do \
-	    if [ -f $(skunk_bindir)/$${util} ]; then \
-	       echo "Removing old link for $(skunk_bindir)/$${util}"; \
-	       rm -f $(skunk_bindir)/$${util}; \
-	    fi; \
-	    ln -sf $(pylibs_dir)/skunkdoc/$${util}.py $(skunk_bindir)/$${util}; \
-	    chown $(owner) $(skunk_bindir)/$${util}; \
-	    chgrp $(group) $(skunk_bindir)/$${util}; \
-	done
-
-	@#give execute permissions to skunkdoc stuff
-	chmod +x $(pylibs_dir)/skunkdoc/skunkdoc.py $(pylibs_dir)/skunkdoc/skunkdoc2html.py
-
 clean:
 	@# Clean up the python components
 	-for pycomp in $(py_comps); do \
-	     (cd $${pycomp} ; $(MAKE) clean); \
+	     rm -f $${pycomp}/*.{so,dll,DLL}; \
         done
 
 distclean: clean
-	-rm -f Makefile
-	-for pycomp in $(py_comps); do \
-	     (cd $${pycomp};$(MAKE) clean clobber); \
-	     rm -f $${pycomp}/Makefile.pre $${pycomp}/Makefile ;\
-        done
+	-rm -f Makefile setup-pylibs
 
-.PHONY:	install build clean default
+.PHONY:	install build clean default distclean
 

@@ -19,6 +19,9 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(SkunkWeb/mod_skunkweb/mod_skunkweb.c)
 
+AC_SUBST(SW_VERSION)
+SW_VERSION=3.4b1
+
 dnl add add help macro
 AC_DEFUN(AC_ADD_HELP,
 [AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
@@ -234,6 +237,6 @@ Additional options if building SkunkWeb:
                           configuration variables)
 ])
 
-AC_OUTPUT(Makefile pylibs/Makefile pylibs/skunkdoc/skunkdoc.py pylibs/skunkdoc/skunkdoc2html.py pylibs/skunkdoc/skunkdoc2latex.py docs/Makefile)
-dnl pylibs/mmlib/Setup)
+AC_OUTPUT(Makefile pylibs/Makefile pylibs/setup-pylibs docs/Makefile)
+
 
