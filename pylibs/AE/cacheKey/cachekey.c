@@ -10,11 +10,11 @@
  * This is C implementation of the cache key generation and lookup algorithm 
  * used by SkunkWeb. We have moved this to C due to the fact that it is used 
  * extensively for virtually every request, and speedup here will be noticeable
- * on overall AED performance.
+ * on overall performance.
  *
  * Roman
  *
- * $Id: cachekey.c,v 1.4 2002/08/09 17:33:32 drew_csillag Exp $
+ * $Id: cachekey.c,v 1.5 2003/05/01 20:45:59 drew_csillag Exp $
  */
 
 #include "Python.h"

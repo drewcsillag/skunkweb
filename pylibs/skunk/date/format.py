@@ -2,7 +2,7 @@ import time
 
 def HTTPDate(secs=None):
     """
-    Returns a DateString object with format set to RFC 1123,
+    Returns a date string with format set to RFC 1123,
     for use by code needing to return dates in the format expected
     in email, web, or other net-based formats. This format corresponds
     to the Unix strftime format: 
