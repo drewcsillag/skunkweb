@@ -16,10 +16,6 @@ Python 2.1.1 or later (2.1 works but is not GPL compatible)
 Marc Andre Lemburg's eGenix mx Extensions
     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
 An ANSI C compiler
-GNU install 
-GNU xargs (solaris xargs works ok too)
-GNU find (part of the GNU findutils) -- non-GNU ones may work too, but
-   we've had mixed results
 
 Optionally install apache.  Make sure you configure it with at least:
    --enable-module=so 
@@ -63,4 +59,4 @@ Additional options if building SkunkWeb:
 
 Once ``configure'' has completed, simply type ``make; make install''.
 
-$Id: INSTALL,v 1.3 2001/08/10 06:11:13 smulloni Exp $
+$Id: INSTALL,v 1.4 2001/08/21 11:56:46 smulloni Exp $
