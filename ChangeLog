@@ -48,6 +48,31 @@
 
 	* test/formlib/unittests/formtest.py (suite): minor formatting
 	correction
+	
+2002-12-01  James Richards  <jrichards@satie.wnyc.org>
+
+	* pylibs/formlib/__init__.py: added `from form import *`
+
+	* test/formlib/unittests/formtest.py (CompositeFieldUnitTest.__init__): Added inital series of unittests for CompositeField behavior validation
+
+	* pylibs/formlib/form.py (_defaultValueComposer): added notion of a CompositeField valueComposer to provide a generic mechanism for determining what the "value" of a CompositeField is
+	(CompositeField.__init__): fixed invalid reference to getComponentName rather than _getComponentName
+
+	* test/formlib/unittests/formtest.py (FieldProxyUnitTest.__init__): Adding unittest for simple validation of FieldProxy behavior
+
+	* pylibs/formlib/form.py (FieldProxy.__init__): Adding FieldProxy class to separate composite field component fieldnames from named fields themselves
+
+2002-11-30  James Richards  <jrichards@satie.wnyc.org>
+
+	* test/formlib/htdocs/testCompositeField.pyinc: First iteration of testing code for CompositeField GUI test
+
+	* test/formlib/htdocs/testCompositeField.html: First iteration of test GUI for CompositeField
+
+	* pylibs/formlib/form.py (CompositeField.__init__): Adding first iteration of CompositeField for aggregating related fields under a single name
+
+	* pylibs/formlib/views.py (ViewableForm.handleField): Added check to ensure that only Viewable objects are handled
+	(ViewableForm.handleList): Added Viewable check to handling of lists of fields
+
 
 2002-11-29  Jacob Smullyan  <smulloni@smullyan.org>
 
