@@ -1,5 +1,5 @@
-# Time-stamp: <03/07/21 09:49:32 smulloni>
-# $Id: FSSessionStore.py,v 1.7 2003/07/19 17:10:51 smulloni Exp $
+# Time-stamp: <2004-03-02 15:40:36 drew>
+# $Id: FSSessionStore.py,v 1.8 2003/07/22 14:29:17 smulloni Exp $
 #  Copyright (C) 2001, 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General
@@ -47,7 +47,7 @@ class Store(SessionStore):
         self._picklepath=os.path.join(_sesspath, id)
         
     def load(self):
-        return self.__getPickle() or {}
+        return self._getPickle() or {}
 
     def lastTouched(self):
         try:
@@ -58,7 +58,7 @@ class Store(SessionStore):
         else:
             return int(atime)
 
-    def __getPickle(self):
+    def _getPickle(self):
         if os.path.exists(self._picklepath):
             f=open(self._picklepath)
             fd=f.fileno()
@@ -74,9 +74,9 @@ class Store(SessionStore):
             return data
     
     def save(self, data):
-        self.__setPickle(data)
+        self._setPickle(data)
 
-    def __setPickle(self, data):
+    def _setPickle(self, data):
         f=open(self._picklepath, 'w')
         fd=f.fileno()
         fcntl.flock(fd, fcntl.LOCK_EX)
