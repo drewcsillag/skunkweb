@@ -473,8 +473,10 @@ class PyDO(PyDOBase):
         docstring of scatterFetchSQL"""
         conn = self.getDBI()
         results, fields = conn.execute(sql, vals, None)
+        if not results:
+            return []
         endResults = []
-
+        
         sliceSets = []
         counter = 0 
         for obj in objs:
