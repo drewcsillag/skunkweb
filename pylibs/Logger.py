@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Logger.py,v 1.7 2003/04/23 02:46:29 smulloni Exp $
+# $Id: Logger.py,v 1.8 2003/05/01 20:45:57 drew_csillag Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -20,12 +20,13 @@ class _configStub:
         self.accessLog=None
         self.stampEveryLine=1
         self.logDateFormat='%a, %d %b %Y %H:%M:%S GMT'
-        self.debugFlags=0
+#        self.debugFlags=0
 
 # replace this if you want with any other object
 # that has the fields above
 config=_configStub()
 
+debugFlags=0
 _logStamp="%s"
 
 # a map of logfile paths and their open file objects
@@ -80,10 +81,10 @@ def _doMsg(filename, msg, kind=0, prefix=''):
 
 def DEBUGIT(kind):
     #import sys
-    return not not (config.debugLog and (config.debugFlags & kind))
+    return not not (config.debugLog and (debugFlags & kind))
     
 def DEBUG(kind, msg):
-    if config.debugFlags & kind:
+    if debugFlags & kind:
         _doMsg(config.debugLog,
                msg,
                kind,

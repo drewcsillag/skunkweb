@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: LogObj.py,v 1.3 2003/04/23 02:24:13 smulloni Exp $
+#$Id: LogObj.py,v 1.4 2003/05/01 20:45:55 drew_csillag Exp $
 ########################################################################
 
 """
@@ -54,8 +54,7 @@ Configuration.mergeDefaults(
     debugLog =   confvars.DEFAULT_DEBUG_LOG,
     stampEveryLine = 1,
     logDateFormat = '%a, %d %b %Y %H:%M:%S GMT',
-    initialDebugServices=[],
-    debugFlags=0
+    initialDebugServices=[]
     )
 
 Logger._logStamp = "[%d]initializing... %%s -- " % os.getpid()
