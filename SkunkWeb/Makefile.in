@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.4 2001/10/29 14:46:45 drew_csillag Exp $
+# $Id: Makefile.in,v 1.5 2001/11/11 22:10:09 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -37,13 +37,13 @@ log_dir		= $(localstate_dir)/log
 pid_dir		= $(localstate_dir)/run
 components 	= @MOD_SKUNKWEB@ Services
 
-ifeq (@DOCROOT@, '')
+ifeq (@DOCROOT@,)
 	docroot	= $(prefix)/docroot
 else
 	docroot = @DOCROOT@
 endif
 
-ifeq (@CACHE@, '')
+ifeq (@CACHE@,)
 	cache = $(prefix)/cache
 else
 	cache = @CACHE@
@@ -158,6 +158,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.5  2001/11/11 22:10:09  smulloni
+# changes to configuration to enable more flexible installation.
+#
 # Revision 1.4  2001/10/29 14:46:45  drew_csillag
 # added swcgi stuff
 #
