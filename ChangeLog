@@ -1,3 +1,10 @@
+2002-01-23  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/vfs/__init__.py: now loads tarfs
+
+	* pylibs/vfs/tarfs.py: added support for tarfiles in vfs layer
+	
+
 2002-01-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/doc: updated MySQL documentation.
