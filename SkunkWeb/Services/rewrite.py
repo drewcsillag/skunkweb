@@ -1,9 +1,9 @@
-# Time-stamp: <03/01/28 17:00:54 smulloni>
-# $Id: rewrite.py,v 1.10 2003/01/28 21:40:46 smulloni Exp $
+# Time-stamp: <03/01/29 15:56:41 smulloni>
+# $Id: rewrite.py,v 1.11 2003/01/28 22:01:42 smulloni Exp $
 
 ########################################################################
 #  
-#  Copyright (C) 2002 Andrew T. Csillag <drew_csillag@yahoo.com>,
+#  Copyright (C) 2002, 2003 Andrew T. Csillag <drew_csillag@yahoo.com>,
 #                           Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 # graciously contributed by Spruce Weber <sprucely@hotmail.com>
 
-from SkunkWeb import ServiceRegistry, Configuration
+from SkunkWeb import ServiceRegistry, Configuration, constants
 ServiceRegistry.registerService('rewrite')
 from SkunkWeb.LogObj import DEBUG, logException
 from hooks import Hook
@@ -36,7 +36,8 @@ from requestHandler.protocol import PreemptiveResponse
 Configuration.mergeDefaults(rewriteBeforeScope=1,
                             rewriteRules = [],
                             rewriteApplyAll = 1,
-                            rewriteMatchToArgs=1)
+                            rewriteMatchToArgs=1,
+                            rewriteEnableHooks=0)
 
 PreRewriteMatch=Hook()
 PostRewriteMatch=Hook()
@@ -48,33 +49,22 @@ _sre_pattern_type=type(re.compile('foo'))
 
 _patdict={}
 
-def _getcompiled(regexstring):
-    if not _patdict.has_key(regexstring):
-        pat=re.compile(regexstring)
-        _patdict[regexstring]=pat
+def _getcompiled(regex):
+    if type(regex)==_sre_pattern_type:
+        _patdict.setdefault(regex.pattern, regex)
+        return regex
+    if not _patdict.has_key(regex):
+        pat=re.compile(regex)
+        _patdict[regex]=pat
         return pat
-    return _patdict[regexstring]
+    return _patdict[regex]
 
 ########################################################################
 
 class DynamicRewriter:
-    def refresh(self, connection, sessionDict):
-        self.connection=connection
-        self.sessionDict=sessionDict
-        self.matched=0
+    def rewrite(self, match, connection, sessionDict, key):
+        pass
 
-    def groupdict(self, match):
-        if self.matched:
-            return match.groupdict()
-        return {}
-
-    def __call__(self, match):
-        """
-        by default, does nothing;
-        override this to do something else
-        """
-        self.matched=1
-        return match.group(0)
 
 class Redirect(DynamicRewriter):
     """
@@ -83,10 +73,10 @@ class Redirect(DynamicRewriter):
     def __init__(self, url_template):
         self.url_template=url_template
 
-    def __call__(self, match):
+    def rewrite(self, match, connection, sessionDict, key):
         url=match.expand(self.url_template)
-        self.connection.redirect(url)
-        raise PreemptiveResponse, self.connection.response()
+        connection.redirect(url)
+        raise PreemptiveResponse, connection.response()
 
 # use templating's 404 handler if it is already imported,
 # or is about to be loaded, to the extent possible to determine
@@ -110,10 +100,9 @@ class Status404(DynamicRewriter):
     """
     def __init__(self, handler=fourOhFourHandler):
         self.handler=handler
-    def __call__(self, match):
-        raise PreemptiveResponse, self.handler(
-            self.connection,
-            self.sessionDict)
+    def rewrite(self, match, connection, sessionDict, key):
+        raise PreemptiveResponse, self.handler(connection,
+                                               sessionDict)
 
 class ExtraPathFinder(DynamicRewriter):
     """
@@ -127,170 +116,185 @@ class ExtraPathFinder(DynamicRewriter):
     """
     def __init__(self,
                  notFoundHandler=fourOhFourHandler,
-                 path_info_var_name='path_info'):
+                 add_info_to_args=1,
+                 path_info_var_name='path_info',
+                 ):
         self.notFoundHandler=notFoundHandler
+        self.add_info_to_args=add_info_to_args
         self.path_info_var_name=path_info_var_name
 
-    def __call__(self, match):
+    def rewrite(self, match, connection, sessionDict, key):
         fs=Configuration.documentRootFS
-        (path, info)=fs.split_extra(self.connection.uri)
+        (path, info)=fs.split_extra(connection.uri)
         if not path:
-            raise PreemptiveResponse, self.notFoundHandler(
-                self.connection,
-                self.sessionDict)
+            raise PreemptiveResponse, self.notFoundHandler(connection,
+                                                           sessionDict)
         else:
-            #connection.uri=path
-            connection.args[self.path_info_var_name]=info
+            if self.add_info_to_args:
+                connection.args[self.path_info_var_name]=info
             connection.requestHeaders['PATH_INFO']=info
-            return path
+            connection.uri= path
 
-class _HostMatchBase(DynamicRewriter):
-    """
-    base class for checking the Host header before doing any rewrite.
-    """
+
+##class HostMatch(DynamicRewriter):
+##    """
+##    checks the Host header before doing any rewrite.
+##    Superseded by RewriteCond.
+##    """
+##    def __init__(self,
+##                 hostregex,
+##                 replacement):
+##        self.hostregex=_getcompiled(hostregex)
+##        self.replacement=replacement
+
+##    def rewrite(self, match, connection, sessionDict, key):
+##        if self.hostregex.match(connection.host):
+##            _dorewrite(match,
+##                       connection,
+##                       sessionDict,
+##                       self.replacement,
+##                       key)
+    
+class RewriteCond:
     def __init__(self,
-                 hostregex):
-        if type(hostregex)==_sre_pattern_type:
-            self.hostregex=hostregex
-        else:
-            self.hostregex=re.compile(hostregex)
+                 uri=None,
+                 host=None,
+                 unixPath=None,
+                 port=None,
+                 skunkPort=None,
+                 ip=None,
+                 ):
+        self.uri=uri 
+        self.host=host
+        self.unixPath=unixpath
+        self.port=port
+        self.skunkPort=skunkPort
+        self.ip=ip
 
+    def __call__(connection, sessionDict):
+        for pat, target in zip((self.uri,
+                                self.host,
+                                self.unixPath,
+                                self.ip),
+                               (constants.LOCATION,
+                                constants.HOST,
+                                constants.UNIXPATH,
+                                constants.IP)):
+            if pat is not None:
+                t=sessionDict.get(target)
+                if (not t) or not getcompiled(pat).search(t):
+                    return 0
+        for pat, target in zip((self.port,
+                                self.skunkPort),
+                               (constants.SERVER_PORT,
+                                constants.PORT)):
+            if pat is not None:
+                t=sessionDict.get(target)
+                if not t:
+                    return 0
+                if callable(pat):
+                    if not pat(t):
+                        return 0
+                elif pat!=t:
+                    return 0
 
-    def __call__(self, match):
-        if self.hostregex.match(self.connection.host):
-            return self.real_call(match)
-
-        return match.group(0)
-
-class HostMatchRewrite(_HostMatchBase):
-    """
-    like a normal rewrite rule, but only takes effect
-    if the host header matches as well.
-    """
-    def __init__(self, hostregex, replacement):
-        _HostMatchBase.__init__(self, hostregex)
-        self.replacement=replacement
-
-    def real_call(self, match):
-        return self.replacement
-
-class HostMatchRedirect(_HostMatchBase, Redirect):
-    def __init__(self, hostregex, url_template):
-        _HostMatchBase.__init__(self, hostregex)
-        Redirect.__init__(self, url_template)
-
-    def real_call(self, match):
-        Redirect.__call__(self, match)
-
-    def __call__(self, match):
-        _HostMatchBase.__call__(self, match)
-
-class HostMatchStatus404(_HostMatchBase, Status404):
-    def __init__(self, hostregex, handler=fourOhFourHandler):
-        _HostMatchBase.__init__(self, hostregex)
-        Status404.__init__(self, handler)
-
-    def real_call(self, match):
-        Status404.__call__(self, match)
-
-    def __call__(self, match):
-        _HostMatchBase.__call__(self, match)
-
-class HostMatchExtraPathFinder(_HostMatchBase, ExtraPathFinder):
-    def __init__(self,
-                 hostregex,
-                 notFoundHandler=fourOhFourHandler,
-                 path_info_var_name='path_info'):
-        _HostMatchBase.__init__(self, hostregex)
-        ExtraPathFinder.__init__(self,
-                                 notFoundHandler,
-                                 path_info_var_name)
-
-        def real_call(self, match):
-            ExtraPathFinder.__call__(self, match)
-
-        def __call__(self, match):
-            _HostMatchBase.__call__(self, match)
+        return 1
+        
         
 ########################################################################
 
 def _dorewrite(match, connection, sessionDict, replacement, key):
-    if callable(replacement):
-        if isinstance(replacement, DynamicRewriter):
-            replacement.refresh(connection, sessionDict)
-            groupdict=replacement.groupdict(match)
-        connection.uri = match.re.sub(replacement, connection.uri)
+    if hasattr(replacement, 'rewrite'):
+        replacement.rewrite(match, connection, sessionDict, key)
     else:
-        connection.uri = match.expand(replacement)
+        if callable(replacement):
+            connection.uri=match.re.sub(replacement, connection.uri)
+        else:
+            connection.uri=match.expand(replacement)
         groupdict=match.groupdict()
-    if groupdict:
-        if Configuration.rewriteMatchToArgs:
-            connection.args.update(groupdict)
-        sessionDict['rewriteRules'][key].update(groupdict)
+        if groupdict:
+            if Configuration.rewriteMatchToArgs:
+                connection.args.update(groupdict)
+            if Configuration.rewriteEnableHooks:
+                sessionDict['rewriteRules'][key].update(groupdict)
 
 
+def _dorewriteloop(connection, sessionDict, rules):
+    for p, r in rules:
+        if callable(p):
+            if p(connection, sessionDict):
+                _dorewriteloop(connection, sessionDict, r)
+        else:
+        m = _getcompiled(p).search(connection.uri)
+        if m is not None:
+            if Configuration.rewriteEnableHooks:
+                key=(p, r)
+                sessionDict['rewriteRules'][key] = {}
+                sessionDict['rewriteCurrentRule'] = key
+                try:
+                    DEBUG(REWRITE, 'executing PreRewrite hook')
+                    PreRewrite(connection, sessionDict)
+                    DEBUG(REWRITE, 'survived PreRewrite hook')
+                except:
+                    logException()
+
+            _dorewrite(m, connection, sessionDict, r, key)
+
+            if Configuration.rewriteEnableHooks:
+                try:
+                    DEBUG(REWRITE, 'executing PostRewrite hook')
+                    PostRewrite(connection, sessionDict)
+                    DEBUG(REWRITE, 'survived PostRewrite hook')
+                except:
+                    logException()
+                try:
+                    del sessionDict['rewriteCurrentRule']
+                except KeyError:
+                    pass
+            if not Configuration.rewriteApplyAll:
+                break
+    
+        
 def _rewritePre(connection, sessionDict):
     """
     hook for web.protocol.PreHandleConnection
     """
-    sessionDict['rewriteRules'] = {}
-    try:
-        DEBUG(REWRITE, 'executing PreRewriteMatch hook')
-        PreRewriteMatch(connection, sessionDict)
-        DEBUG(REWRITE, 'survived PreRewriteMatch hook')
-    except:
-        logException()
+    if Configuration.rewriteEnableHooks:
+        sessionDict['rewriteRules'] = {}
+        try:
+            DEBUG(REWRITE, 'executing PreRewriteMatch hook')
+            PreRewriteMatch(connection, sessionDict)
+            DEBUG(REWRITE, 'survived PreRewriteMatch hook')
+        except:
+            logException()
     rules = Configuration.rewriteRules
-    if sessionDict.has_key('rewriteAddRules'):
-        for newRule in sessionDict['rewriteAddRules']:
-            #optional 3rd element in tuple specifies index
-            #for placement in rules
-            if len(newRule) > 2 and newRule[2] <= len(rules):
-                rules.insert(newRule[2], newRule[:2])
-            else:
-                rules.append(newRule)
-    for rule in rules:
-        if type(rule[0])==_sre_pattern_type:
-                pat=rule[0]
-        else:
-            pat=_getcompiled(rule[0])
-        
-        m = pat.search(connection.uri)
-        if m != None:
-            key=(rule[0], rule[1])
-            sessionDict['rewriteRules'][key] = {}
-            sessionDict['rewriteCurrentRule'] = key
-            try:
-                DEBUG(REWRITE, 'executing PreRewrite hook')
-                PreRewrite(connection, sessionDict)
-                DEBUG(REWRITE, 'survived PreRewrite hook')
-            except:
-                logException()
-
-            _dorewrite(m, connection, sessionDict, rule[1], key)
-            
-            try:
-                DEBUG(REWRITE, 'executing PostRewrite hook')
-                PostRewrite(connection, sessionDict)
-                DEBUG(REWRITE, 'survived PostRewrite hook')
-            except:
-                logException()
-            if sessionDict.has_key('rewriteCurrentRule'):
-                del sessionDict['rewriteCurrentRule']
-            if not Configuration.rewriteApplyAll: break
+    if Configuration.rewriteEnableHooks:
+        if sessionDict.has_key('rewriteAddRules'):
+            for newRule in sessionDict['rewriteAddRules']:
+                # optional 3rd element in tuple specifies index
+                # for placement in rules
+                if len(newRule) > 2 and newRule[2] <= len(rules):
+                    rules.insert(newRule[2], newRule[:2])
+                else:
+                    rules.append(newRule)
+    _dorewriteloop(connection, sessionDict, rules)
+    
 
 def _rewritePost(requestData, sessionDict):
     """
     hook for requestHandler.requestHandler.CleanupRequest
     """
-    try:
-        DEBUG(REWRITE, 'executing PreRewriteCleanup hook')
-        PreRewriteCleanup(requestData, sessionDict)
-        DEBUG(REWRITE, 'survived PreRewriteCleanup hook')
-        if sessionDict.has_key('rewriteRules'):
+    if Configuration.rewriteEnableHooks:
+        try:
+            DEBUG(REWRITE, 'executing PreRewriteCleanup hook')
+            PreRewriteCleanup(requestData, sessionDict)
+            DEBUG(REWRITE, 'survived PreRewriteCleanup hook')
+        except:
+            logException()
+        try:
             del sessionDict['rewriteRules']
-    except:
-        logException()
+        except KeyError:
+            pass
 
 
 def __initHooks():
@@ -307,40 +311,4 @@ def __initHooks():
 
 __initHooks()
 
-########################################################################
-# $Log: rewrite.py,v $
-# Revision 1.10  2003/01/28 21:40:46  smulloni
-# added host-based rewriters to the rewrite service.
-#
-# Revision 1.9  2002/11/12 19:53:46  smulloni
-# moved rewrite's rewriting to an earlier hook; progress on tutorial
-# demo app; put the code from CONNECTION.extract_args in a separate module
-# so it can be used by formlib.
-#
-# Revision 1.8  2002/07/28 19:18:19  smulloni
-# changes to PyDO documentation, and added a dynamic rewriter to rewrite.py
-#
-# Revision 1.7  2002/07/15 15:07:10  smulloni
-# various changes: configuration (DOCROOT); new sw.conf directive (File);
-# less spurious debug messages from rewrite; more forgiving interface to
-# MsgCatalog.
-#
-# Revision 1.6  2002/06/21 20:48:38  smulloni
-# error-handling tweak.
-#
-# Revision 1.5  2002/05/22 01:35:58  smulloni
-# fix for 404 handler for case when templating is loaded after rewrite.
-#
-# Revision 1.4  2002/05/10 18:05:12  smulloni
-# added a rewriter that returns a 404.
-#
-# Revision 1.3  2002/05/01 21:32:37  smulloni
-# fixing typos and goofs
-#
-# Revision 1.2  2002/04/27 19:28:48  smulloni
-# implemented dynamic rewriting in rewrite service; fixed Include directive.
-#
-# Revision 1.1  2002/02/15 05:08:39  smulloni
-# added Spruce Weber's rewrite service.
-#
-########################################################################
+

@@ -1,3 +1,18 @@
+2003-01-29  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/rewrite.py: Pretty thorough overhaul:  
+   	  - The hooks are now disabled by default, although they can be turned on 
+	    by setting Configuration.rewriteEnableHooks to a true value.
+	  - Yesterday's HostMatchBase stuff is gone; instead, added a
+	    RewriteCond for doing scope-like things, and altered the rewrite
+	    rule processing loop.  
+	  - DynamicRewriter is no longer callable; it has a rewrite method,
+	    and the rewrite loop doesn't do a type check, but looks for a
+	    method by that name.  The method doesn't return anything; it is
+	    passed the connection and does anything it wants to it.  Also, 
+	    DynamicRewriters no longer get the  behavior of having
+            match.groupdict() merged into CONNECTION.args.
+
 2003-01-28  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/rewrite.py (ExtraPathFinder.__call__): jeez,
