@@ -93,6 +93,7 @@ fi
 if test -z $PYTHON
 then
     AC_MSG_ERROR([python interpreter is not found!])
+    exit 1;
 fi
 
 # Check python version
