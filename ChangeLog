@@ -1,3 +1,9 @@
+2003-05-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* test/formlib/htdocs/testCompositeField.pyinc: fixed broken import.
+
+	* pylibs/formlib/form.py (CompositeField._setData): typo fix
+
 2003-05-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* 3.4b3 release cut.

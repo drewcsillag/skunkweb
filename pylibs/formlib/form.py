@@ -180,7 +180,7 @@ class CompositeField(Field):
         if self.setable:
             for ky in data.keys():
                 if self.fields.has_key(ky):
-                    chgfld = f.fields[ky]
+                    chgfld = self.fields[ky]
                     chgfld.value = data.get(ky)
 
 class DomainField(Field):
