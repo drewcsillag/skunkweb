@@ -1,3 +1,9 @@
+2003-08-16  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (_processRequest): no longer
+	call CONNECTION.response() twice (is returned from
+	HandleConnection).  Caught by Jeroen van Dongen.
+
 2003-08-15  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (getSession):

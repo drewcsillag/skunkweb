@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.23 2003/05/02 20:42:37 drew_csillag Exp $
-# Time-stamp: <03/07/18 09:50:47 smulloni>
+# $Id: protocol.py,v 1.24 2003/07/18 18:25:51 smulloni Exp $
+# Time-stamp: <03/08/16 22:12:21 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -382,8 +382,7 @@ def _processRequest(requestData, sessionDict):
         logException()
     else:
         # DEBUG(WEB, 'handling connection')
-        HandleConnection(Configuration.job, connection, sessionDict)
-        response=connection.response()
+        response=HandleConnection(Configuration.job, connection, sessionDict)
 
     # the connection should be available to postResponse and cleanup hooks.
     sessionDict[constants.CONNECTION]=connection
