@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.13 2002/03/04 01:08:29 smulloni Exp $
-# Time-stamp: <02/03/30 14:17:20 smulloni>
+# $Id: sw.conf.in,v 1.14 2002/03/30 20:05:26 smulloni Exp $
+# Time-stamp: <2002-04-17 15:24:02 drew>
 
 ########################################################################
 #
@@ -67,6 +67,10 @@
 # basicauth               -- service that provides basic authentication to
 #                            locations configured to use it.  Requires
 #                            web.
+#
+# cookieauth              -- service that provides cookie authentication to
+#                            locations configured to use it.  Requires
+#                            web.  
 #
 # oracle                  -- preloads the Oracle pylib and allows for
 #                            connection and stored procedure signature
@@ -178,6 +182,25 @@ sys.path.append('@prefix@/sitelibs')
 # Scope(Location("/private",
 #                basicAuthName="privileged zone",
 #                basicAuthFile='/usr/local/skunk/var/AUTHDB'))
+
+########################################################################
+# cookie auth variables -- can be done globally but most likely will be
+# scoped e.g.
+# Scope(Location("/demo",
+#                #auth file is same as would be with basicauth (same fmt)
+#                cookieAuthFile='/usr/local/skunk/var/AUTHDB',
+#                #the cookie name
+#                cookieAuthName='auth',
+#                #a nonce value -- override this! to some semi-random string
+#                cookieNonce="cookieNonceValuehahahah",
+#                #the path to the login page -- a copy of a working one in
+#                #SkunkWeb/Services/cookieauth, there is a logout.html there
+#                #also
+#                cookieLoginPage="/demo/login.html",
+#                #extra cookie parameters, 
+#                #e.g. path, expires, comment, domain, max-age, secure, version
+#                cookieExtras={'path':'/'}))
+
 
 ########################################################################
 # level of commenting to be inserted in html documents when components
@@ -550,6 +573,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.14  2002/03/30 20:05:26  smulloni
+# added Include directive for sw.conf; fixed IP bug (was being clobbered in sw.conf)
+#
 # Revision 1.13  2002/03/04 01:08:29  smulloni
 # commented out "userModuleCleanup = 1".
 #
