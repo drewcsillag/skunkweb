@@ -16,24 +16,24 @@
       Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
    
 */
-
 /*
  * This is C implementation of the cache key generation and lookup algorithm 
- * used by AED. We have moved this to C due to the fact that it is used 
+ * used by SkunkWeb. We have moved this to C due to the fact that it is used 
  * extensively for virtually every request, and speedup here will be noticeable
  * on overall AED performance.
  *
- * $Id: cachekey.c,v 1.2 2002/04/26 16:50:31 drew_csillag Exp $
+ * Roman
+ *
+ * $Id: cachekey.c,v 1.12 2000/09/06 16:24:32 drew Exp $
  */
 
 #include "Python.h"
 
 #define CVT_BUFSIZE 1024
 
-static PyObject* encodeSingle(PyObject*, int*, PyObject*);
+static PyObject* encodeSingle(PyObject*);
 
-static PyObject *encodeInstance(PyObject *obj, int *counter, 
-				PyObject *circDict)
+static PyObject *encodeInstance(PyObject *obj)
 {
     PyObject *class;
     PyObject *className;
@@ -53,6 +53,11 @@ static PyObject *encodeInstance(PyObject *obj, int *counter,
 		     "must define either a __cachekey__ or __hash__ method. "
 		     "Got %s", PyString_AsString(terrstr));
 	Py_DECREF(terrstr);
+	/*  2.7ish
+	PyErr_SetString(PyExc_ValueError, "each object used in a cache key"
+			"must define either a __cachekey__ or __hash__ method"
+			);
+	*/
 	return NULL;
     }
     class = PyObject_GetAttrString(obj, "__class__");
@@ -79,7 +84,7 @@ static PyObject *encodeInstance(PyObject *obj, int *counter,
 	    Py_DECREF(ret);
 	    return NULL;
 	}
-	methvalstr = encodeSingle(methval, counter, circDict);
+	methvalstr = encodeSingle(methval);
 	Py_DECREF(methval);
     }
     else /* has_hashmethod is 1 */
@@ -90,7 +95,7 @@ static PyObject *encodeInstance(PyObject *obj, int *counter,
 	    Py_DECREF(ret);
 	    return NULL;
 	}
-	methvalstr = encodeSingle(methval, counter, circDict);
+	methvalstr = encodeSingle(methval);
 	Py_DECREF(methval);
     }
     PyString_ConcatAndDel(&ret, methvalstr);
@@ -127,49 +132,7 @@ static PyObject *encodeCObject(PyObject *obj)
 }
 	
 	
-#define CIRCULARITY_CHECK \
-{ \
-    PyObject *key, *value; \
-    key = PyInt_FromLong((long)obj); \
-    value = PyDict_GetItem( circDict, key ); \
-    if (value) \
-    { \
-        PyErr_Clear(); \
-        snprintf(buf, CVT_BUFSIZE, "Circular: %ld", PyInt_AsLong(value)); \
-        Py_DECREF(value); \
-        Py_DECREF(key); \
-        return PyString_FromString(buf); \
-    } \
-    else \
-    { \
-	value = PyInt_FromLong( (*counter)++ ); \
-        PyDict_SetItem( circDict, key, value ); \
-        Py_DECREF(key); \
-    } \
-}      
-/*{ 
-    PyObject *key, *value; 
-    key = PyInt_FromLong((long)obj); 
-    value = PyDict_GetItem( circDict, key ); 
-    if (value) 
-    { 
-        PyErr_Clear(); 
-        snprintf(buf, CVT_BUFSIZE, "Circular: %ld", PyInt_AsLong(value)); 
-        Py_DECREF(value); 
-        return PyString_FromString(buf); 
-    } 
-    else 
-    { 
-	value = PyInt_FromLong( (*counter)++ ); 
-        PyDict_SetItem( circDict, key, value ); 
-    } 
-}      
-*/      
-
-      
-  
-static PyObject *encodeSingle( PyObject *obj, int *counter, 
-			       PyObject *circDict )
+static PyObject *encodeSingle( PyObject *obj )
 {
     PyObject *ret;
     char buf[CVT_BUFSIZE];
@@ -221,8 +184,6 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
     {
 	int i;
 	PyObject *cur;
-
-	CIRCULARITY_CHECK;
 	if (PyList_Check(obj))
 	    ret = PyString_InternFromString("List:[");
 	else
@@ -233,7 +194,7 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
 	    if (i > 0)
                 PyString_ConcatAndDel(&ret, PyString_InternFromString ( "|"));
 	    cur = PySequence_GetItem(obj, i);
-	    PyString_ConcatAndDel(&ret, encodeSingle(cur, counter, circDict));
+	    PyString_ConcatAndDel(&ret, encodeSingle(cur));
 	    Py_DECREF(cur); 
 	}
 	if (PyList_Check(obj))
@@ -246,7 +207,6 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
     if (PyDict_Check(obj) )
     {
 	PyObject* items;
-        CIRCULARITY_CHECK;
         /* Just get the items and sort them */
         items = PyDict_Items(obj);
         if (PyList_Sort(items) == -1)
@@ -257,7 +217,7 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
 
         ret = PyString_InternFromString("Dict:{");
 	/* just stringify the items list o' tuples */
-        PyString_ConcatAndDel(&ret, encodeSingle(items, counter, circDict));
+        PyString_ConcatAndDel(&ret, encodeSingle(items));
         PyString_ConcatAndDel(&ret, PyString_InternFromString("}"));
 
         /* Deref the items */
@@ -265,7 +225,8 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
 
         return ret;
     }
-
+    
+    /* NEW 3.x */
     if (!strcmp(obj->ob_type->tp_name, "DateTime")) /*if a datetime obj*/
     {
 	PyObject *dtstr;
@@ -274,9 +235,9 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
 	PyString_ConcatAndDel(&ret, dtstr);
 	return ret;
     }
+
     if (PyInstance_Check(obj))
-	CIRCULARITY_CHECK;
-	return encodeInstance(obj, counter, circDict);
+	return encodeInstance(obj);
 
     if (PyClass_Check(obj))
     {
@@ -294,15 +255,13 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
  */
 static PyObject *cachekey_encodeSingle ( PyObject *self, PyObject *args )
 {
-    PyObject *ptr, *res, *circDict;
-    int counter = 0;
+    PyObject *ptr, *res;
 
     if ( !PyArg_ParseTuple ( args, "O", &ptr ) )
         return NULL;
 
-    circDict = PyDict_New();
-    res = encodeSingle(ptr, &counter, circDict);
-    Py_DECREF(circDict);
+    res = encodeSingle(ptr);
+
     return res;
 }
 /*
@@ -316,9 +275,9 @@ static PyObject *cachekey_encodeSingle ( PyObject *self, PyObject *args )
 static PyObject *cachekey_genCacheKey ( PyObject *self, PyObject *args )
 {
     PyObject *items, *item, *key, *value, *out_list, *out_dict, *cachekey,
-             *md5_mod, *ptr, *md5_obj, *argdict, *circDict;
+             *md5_mod, *ptr, *md5_obj, *argdict;
     char buf[BUFSIZ], buf2[BUFSIZ], *s;
-    int i, counter;
+    int i;
 
     /* Extract the argdict */
     if ( !PyArg_ParseTuple ( args, "O!", &PyDict_Type, &argdict ) )
@@ -346,12 +305,8 @@ static PyObject *cachekey_genCacheKey ( PyObject *self, PyObject *args )
         value = PyTuple_GetItem ( item, 1 );
 
         /* Encode key / value and add them to output tuple */
-	counter = 0; circDict = PyDict_New();
-	key_obj = encodeSingle(key, &counter, circDict);
-	Py_DECREF(circDict);
-	counter = 0; circDict = PyDict_New();
-	val_obj = encodeSingle(value, &counter, circDict);
-	Py_DECREF(circDict);
+	key_obj = encodeSingle(key);
+	val_obj = encodeSingle(value);
 	if (PyErr_Occurred())
 	{
 	    Py_XDECREF(key_obj);
@@ -428,7 +383,7 @@ static PyMethodDef cachekey_methods[] = {
     { NULL, NULL }
 };
 
-void initcachekey(void)
+void initcachekey()
 {
     Py_InitModule ( "cachekey", cachekey_methods );
 }
