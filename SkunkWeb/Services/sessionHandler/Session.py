@@ -31,7 +31,7 @@ else:
 # methods that gets inserted into the HTTPConnection class
 
 def getSession(self,
-               create=0,
+               create=1,
                path=None,
                domain=None,
                secure=None):           

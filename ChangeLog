@@ -1,3 +1,8 @@
+2003-08-15  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/Session.py (getSession):
+	default value of create option changed from 0 to 1.
+
 2003-08-13  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* util/rpm/skunkweb.spec: removed cachefile argument from cronjob
