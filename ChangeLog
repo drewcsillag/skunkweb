@@ -1,3 +1,8 @@
+2003-02-11    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/vfs/importer.py (VFSOwner.getmod): Package imports were
+	broken, but now they seem to work.
+
 2003-02-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/FSSessionStore.py

@@ -1,5 +1,5 @@
-# $Id: importer.py,v 1.3 2002/02/21 07:20:17 smulloni Exp $
-# Time-stamp: <02/02/21 10:47:35 smulloni>
+# $Id: importer.py,v 1.4 2002/02/21 18:10:47 smulloni Exp $
+# Time-stamp: <03/02/11 00:56:19 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -41,30 +41,37 @@ _prefixlen=len(VFS_URL_PREFIX)
 
 _vfskeyRE=re.compile(r'vfs://<(.*)>(.*)')
 
+def makeVFSUrl(fskey, path):
+    return "%s<%s>%s" % (VFS_URL_PREFIX, fskey, path)
+
+def parseVFSUrl(vfsUrl):
+    m=_vfskeyRE.match(vfsUrl)
+    if not m:
+        raise ValueError, "not a vfs url: %s" % vfsUrl
+    return m.groups()
+
 class VFSOwner(iu.Owner):
     def __init__(self, vfsUrl):
-        m=_vfskeyRE.match(vfsUrl)
-        if not m:
-            raise ValueError, "not a vfs url: %s" % vfsUrl
-        self.fskey=m.group(1)
-        path=m.group(2)
+        self.fskey, self.fspath=parseVFSUrl(vfsUrl)
         self.fs=vfs.VFSRegistry.get(self.fskey)
         if not self.fs:
             raise vfs.VFSException, "no fs registered by name %s" % self.fskey
-        iu.Owner.__init__(self, path)
+        iu.Owner.__init__(self, vfsUrl)
 
     def getmod(self,
                nm,
                getsuffixes=imp.get_suffixes,
                loadco=marshal.loads,
                newmod=imp.new_module):
-        # this is taken almost verbatim from
-        # Gordon McMillan's iu.DirOwner.getmod,
-        # except that vfs methods are used
-        pth =  os.path.join(self.path, nm)
+        #print "nm: %s" % nm
+        pth =  os.path.join(self.fspath, nm)
+        # this is not, I think, what I am *supposed* to do;
+        # but it seems to work.
+        pth=pth.replace('.', '/')
         possibles = [(pth, 0, None)]
         if self.fs.isdir(pth):
             possibles.insert(0, (os.path.join(pth, '__init__'), 1, pth))
+        #print "possibles: %s" % str(possibles)
         py = pyc = None
         for pth, ispkg, pkgpth in possibles:
             for ext, mode, typ in getsuffixes():
@@ -72,9 +79,12 @@ class VFSOwner(iu.Owner):
                 try:
                     st = self.fs.ministat(attempt)
                 except:
+                    #print "not found: %s" % attempt
                     pass
                 else:
                     if typ == imp.C_EXTENSION:
+                        # I don't believe this will work; I could, however,
+                        # copy the file to /tmp ....
                         fp = self.fs.open(attempt)
                         mod = imp.load_module(nm, fp, attempt, (ext, mode, typ))
                         mod.__file__ = 'vfs://<%s>%s' % (self.fskey, attempt)
@@ -108,13 +118,34 @@ class VFSOwner(iu.Owner):
         mod = newmod(nm)
         mod.__file__ = co.co_filename
         if ispkg:
-            mod.__path__ = [pkgpth]
-            subimporter = iu.PathImportDirector(mod.__path__)
+            #print "***a package may be involved"
+            localpath=iu._os_path_dirname(self.fspath)
+            #print "localpath: %s" % localpath
+            vfspath="vfs://<%s>%s" % (self.fskey, localpath)
+            mod.__path__ = [self.path, pkgpth, iu._os_path_dirname(mod.__file__)]
+            subimporter = iu.PathImportDirector(mod.__path__,
+                                                {self.path:PkgInVFSImporter(nm, self),
+                                                 vfspath:ExtInPkgImporter(vfspath, nm)},
+                                                [VFSOwner])
             mod.__importsub__ = subimporter.getmod
         mod.__co__ = co
+        #print "returning: %s" % mod
         return mod        
 
-
+class PkgInVFSImporter:
+    def __init__(self, name, owner):
+        self.name = name
+        self.owner = owner
+    def getmod(self, nm):
+        #print "PkgInVFSImporter.getmod %s -> %s" % (nm, self.name+'.'+nm)
+        return self.owner.getmod(self.name+'.'+nm)
+    
+class ExtInPkgImporter(iu.Owner):
+    def __init__(self, path, prefix):
+        iu.Owner.__init__(self, path)
+        self.prefix = prefix
+    def getmod(self, nm):
+        return VFSOwner.getmod(self, self.prefix+'.'+nm)
 
 def install():
     import __builtin__
