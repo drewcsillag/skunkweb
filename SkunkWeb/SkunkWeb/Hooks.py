@@ -1,5 +1,5 @@
-# Time-stamp: <01/08/11 21:30:45 smulloni>
-# $Id: Hooks.py,v 1.2 2001/08/11 23:39:45 smulloni Exp $
+# Time-stamp: <01/08/12 13:57:57 smulloni>
+# $Id: Hooks.py,v 1.3 2001/08/12 01:35:31 smulloni Exp $
 
 ########################################################################
 #  
@@ -73,8 +73,12 @@ class KeyedHook:
 
     def __call__(self, jobName, *args, **kw):
         # SkunkWeb will not bootstrap if this is imported at the top level
-        import SkunkWeb.LogObj as LogObj
-        DEBUG=LogObj.DEBUG
+        global DEBUG
+        try:
+            DEBUG
+        except:
+            import SkunkWeb.LogObj
+            DEBUG=SkunkWeb.LogObj.DEBUG
         for f in self._getFuncList(jobName):
             DEBUG(CORE, "calling %s with args (%s, %s)" % (str(f),
                                                            str(args),
@@ -122,6 +126,9 @@ class SearchablePairList:
 
 ########################################################################
 # $Log: Hooks.py,v $
+# Revision 1.3  2001/08/12 01:35:31  smulloni
+# backing out previous change, which broke everything
+#
 # Revision 1.2  2001/08/11 23:39:45  smulloni
 # fixed a maladroit import-from inside a frequently called method
 #
