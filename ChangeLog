@@ -1,3 +1,8 @@
+2003-07-19  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/AECacheSessionStore.py: added
+	session store that uses the AE Cache.
+
 2003-07-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler: all modules in the package

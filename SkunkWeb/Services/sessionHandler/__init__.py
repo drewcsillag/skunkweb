@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.8 2003/07/18 18:28:26 smulloni Exp $
+# $Id: __init__.py,v 1.9 2003/07/18 19:56:18 smulloni Exp $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package
@@ -40,6 +40,10 @@ def __initConfig():
         # directory where pickle files are stored (for FSSessionStore)
         SessionHandler_FSSessionDir=os.path.join(SkunkWeb.confvars.LOCALSTATEDIR,
                                                  'skunksessions'),
+
+        # path for pseudo-components in the AE Cache; shouldn't
+        # conflict with any real files in your docroot.
+        SessionHandler_AECacheSessionPath='skunksessions',
         
         # reap interval (in seconds).  A negative value, or zero,
         # will turn off reaping.  it would be reasonable for at most
