@@ -4,6 +4,7 @@ Changes in 3.2.1 (not yet released)
 * PyDO fixes
 * Caching fix for stale 
 * Now works with Apache 2!
+* DateTime objects can now be used as arguments to cacheable components
 
 Changes in 3.2 beta 3
 ========================================

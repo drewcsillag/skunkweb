@@ -1,7 +1,9 @@
 2002-04-26  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/AE/cacheKey/cachekey.c(encodeSingle): now will encode
-	DateTime objects so they can be part of a cache key
+	DateTime objects so they can be part of a cache key, and improved the 
+	error message raised when an object that cannot be used for a cache
+	key component is used.
 
 2002-04-24  Andrew Csillag  <drew@localhost.localdomain>
 
