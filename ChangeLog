@@ -1,3 +1,7 @@
+2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/mod_skunkweb/Makefile.in: adding DESTDIR to install.
+
 2003-05-23  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* Makefile.in, SkunkWeb/Makefile.in,
