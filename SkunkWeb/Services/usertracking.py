@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/04/18 16:12:48 smulloni>
+# Time-stamp: <03/04/18 16:26:41 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -120,8 +120,8 @@ def _add_usertracking_cookie(conn, sessionDict):
                 v=getattr(Configuration, c)
                 if v is not None:
                     morsel[a]=v
-            DEBUG(USERTRACKING, morsel)
-            DEBUG(USERTRACKING, conn.responseCookie[cookiename])
+            DEBUG(USERTRACKING, str(morsel))
+            DEBUG(USERTRACKING, str(conn.responseCookie[cookiename]))
             #conn.responseCookie[cookiename]=morsel
 
 
