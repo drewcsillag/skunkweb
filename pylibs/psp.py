@@ -22,8 +22,13 @@ def psp_compile(s, name):
     for kind, s in l:
         #print kind, repr(s)
         if kind == LITERAL:
-            codestr+='print %s' % repr(s)
+            sl = s.split('\n')
+            for si in sl:
+                codestr+='print %s\n' % repr(si)
         else:
+            cs = s.split('\n')
+            if cs[0].strip() == '': #stuff after initial <% is blank to eol
+                s = '\n'.join(cs[1:])
             codestr+=s
     #print 'codestr is', codestr
     return compile(codestr, name, 'exec'), codestr
