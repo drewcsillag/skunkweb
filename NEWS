@@ -1,3 +1,7 @@
+Changes in 3.4 final
+========================================
+* vfs.LocalFS now follows symlinks by default.
+
 Changes in 3.4b2
 ========================================
 * fix to argextract handling of kwargs.
