@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <03/02/27 21:59:16 smulloni>
+# Time-stamp: <03/05/26 22:21:18 smulloni>
 
 ########################################################################
 #  
@@ -361,6 +361,27 @@ class LocalFS(FS):
 
     def isfile(self, path):
         return os.path.isfile(self._resolvepath(path))
+
+
+    def find_path(self, dname, base, root='/'):
+        """
+        searches upwards from directory dname to directory root for a file called base.
+        If found, the full path of the found file is returned; otherwise returns None.
+        """
+
+        while 1:
+            if not dname.startswith(root):
+                return 
+            try:
+                p=os.path.join(dname, base)
+                self.ministat(p)
+            except FileNotFoundException: 
+                if dname==root:
+                    return
+                dname=os.path.dirname(dname)
+            else: 
+                return p
+
 
 frontslashRE=re.compile(r'^/')
 endslashRE=re.compile(r'/$')

@@ -1,3 +1,8 @@
+2003-05-26  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/vfs.py (LocalFS.find_path): convenience method for
+	walking up the fs to find a file.
+
 2003-05-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/SkunkWeb/confvars.py.in (DEFAULT_CACHE),
