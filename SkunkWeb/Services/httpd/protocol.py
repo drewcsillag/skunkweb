@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.1.1.1 2001/08/05 15:00:01 drew_csillag Exp $
+# $Id: protocol.py,v 1.2 2001/08/28 11:38:47 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -180,7 +180,7 @@ class HTTPMethodRequestParser:
         
         env={ 'GATEWAY_INTERFACE': 'CGI/1.1',
               # possibly the following should come from somewhere else
-              'SERVER_NAME' : socket.getfqdn(),
+              'SERVER_NAME' : Configuration.ServerName,
               # the current server version
               'SERVER_SOFTWARE' : 'SkunkWeb %s' % Configuration.SkunkWebVersion,
               # this protocol version that called the script
@@ -520,6 +520,9 @@ HaveConnection.addFunction(_seekTerminus, jobGlob)
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.2  2001/08/28 11:38:47  drew_csillag
+# now uses normheader
+#
 # Revision 1.1.1.1  2001/08/05 15:00:01  drew_csillag
 # take 2 of import
 #

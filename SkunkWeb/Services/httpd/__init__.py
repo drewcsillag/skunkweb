@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.6 2001/07/09 20:38:40 drew Exp $
+# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:01 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:45 smulloni>
 ########################################################################
 
@@ -24,15 +24,17 @@ SkunkWeb.ServiceRegistry.registerService("httpd")
 
 
 from SkunkWeb import Configuration
+from socket import getfqdn as _getfqdn
 Configuration.mergeDefaults(lookupHTTPRemoteHost=0,
                             HTTPKeepAliveTimeout=15,
-                            HTTPListenPorts=['TCP::8080'])
+                            HTTPListenPorts=['TCP::8080'],
+                            ServerName=_getfqdn())
 
 if Configuration.HTTPListenPorts:
     import requestHandler.requestHandler as rh
     import protocol as prot
     httpProt=prot.HTTPProtocol()
-    # this needs some work -- TO BE DONE ***
+
     httpProt.addHandlers(prot.DisembodiedHandler("GET"),
                          prot.DisembodiedHandler("HEAD"),
                          prot.PotentiallyBodaciousHandler("POST"))
@@ -43,6 +45,10 @@ if Configuration.HTTPListenPorts:
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:01  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.6  2001/07/09 20:38:40  drew
 # added licence comments
 #
