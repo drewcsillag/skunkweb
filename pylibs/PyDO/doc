@@ -24,6 +24,14 @@ connection):
 or
    pydo:postgresql:normal_postgresql_connstr -- use pgdb directly
 
+   In the case that you need to connect to a database running on an
+   alternate port, replace the host part of the connect string with
+   host|port, and you should be good to go.
+
+   One note about SERIAL columns:  PostgreSQL mainly just creates a
+   sequence named table_column_seq, so for your sequenced item, make
+   sure to put it in.
+
 For MySQL, which hasn't been tested all that much, only the non-caching
 version is currently available.  If there is demand I can do it, I just
 don't have mysql installed anywhere convienient for me to test.

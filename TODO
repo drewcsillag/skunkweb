@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-13 14:44:37 drew> 
-#   $Id: TODO,v 1.9 2001/08/23 13:36:13 drew_csillag Exp $
+#   Time-stamp: <2001-09-06 16:31:35 drew> 
+#   $Id: TODO,v 1.10 2001/08/24 13:16:29 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -20,7 +20,7 @@ Push release to sourceforge
 Do Quick release
     https://sourceforge.net/project/admin/qrs.php?package_id=&group_id=32756
 
-SkunkWeb 3.0
+SkunkWeb 3.1
 ------------------------------
 
 Future stuff
@@ -91,6 +91,11 @@ N add a superteam service
 
 DONE
 ------------------------------
+X update PyDO/postconn docs about host|port thing
+X update PyDO/postconn docs about SERIAL columns
+X add host|port thing to pgenscript
+X add host|port thing to PostgreSQL module
+X add FastCGI handler
 X separate PyDO release
 X fix msg on swmgr start
 /usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration

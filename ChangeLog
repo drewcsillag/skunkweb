@@ -1,5 +1,15 @@
 2001-09-06  Drew Csillag  <drew@starmedia.net>
 
+        * pylibs/PyDO/doc: documentation of |port thing
+	
+	* docs/PyDO/PyDO.tex: documentation of |port thing
+
+	* pylibs/PyDO/pgenscript.py: enhancements by Greg Brauer and
+	now supports |port feature
+
+	* pylibs/PostgreSql/__init__.py:  added |port feature to connect
+	string
+
 	* configure, configure.in, SkunkWeb/configure, SkunkWeb/configure.in:
 	added stuff for fcgiprot
 
