@@ -45,7 +45,7 @@ class PreloadedAuthenticator(Authenticator):
         self.authDict = authDict
         
     def setUserPassword(self, user, password):
-        f = self.authDict[user] = self._makeHash(user, password)
+        self.authDict[user] = self._makeHash(user, password)
 
     def getHashBits(self, user):
         return self.authDict.get(user)
