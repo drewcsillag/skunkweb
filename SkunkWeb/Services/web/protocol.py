@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.5 2001/10/02 02:35:34 smulloni Exp $
+# $Id: protocol.py,v 1.6 2002/02/14 02:58:25 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -94,7 +94,51 @@ class HTTPConnection:
             return map(self._convertArg, val)
         if val.filename:
             return _File(val)
-        return val.value        
+        return val.value
+
+    def extract_args(self, *args, **kwargs):
+        
+        """
+        extracts and returns a dictionary of the specified fields
+        from self.args.  args are argument names to look for; they
+        will be placed in the dictionary unconverted, or None if not
+        found.  The values for kwargs may be one of three forms:
+        
+          1. a default value (which must not be a sequence and not callable);
+          2. a callable object, which will be taken to be a conversion function;
+          3. a sequence of length one or two, the first item of which must
+             be a callable and will be used as a conversion function, and the
+             second item of which, if present, will be used as a default value.
+
+        This is supposed to be equivalent to the <:args:> tag in STML.
+        """
+        
+        d={}
+        for i in args:
+            d[i]=self.args.get(i)
+        for k, v in kwargs.items():
+            if callable(v):
+                converter=v
+                default=None
+            elif type(v) in (types.TupleType, types.ListType):
+                vlen=len(v)
+                if vlen not in (1, 2) or not callable(v[0]):
+                    raise ValueError, \
+                          "inappropriate conversion/default specification: %s" % str(v)
+                converter=v[0]
+                if vlen==2:
+                    default=v[1]
+                else:
+                    default=None
+            val=self.args.get(k, default)
+            if converter != None:
+                try:
+                    d[k]=converter(val)
+                except:
+                    d[k]=None
+            else:
+                d[k]=val
+        return d
 
     def _initHeaders(self):
         self.requestHeaders = HeaderDict(self._requestDict['headers'])
@@ -327,6 +371,10 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.6  2002/02/14 02:58:25  smulloni
+# moved hooks into a pylib; added some logging to templating handler, and minor fix
+# to web service.
+#
 # Revision 1.5  2001/10/02 02:35:34  smulloni
 # support for scoping on unix socket path; very serious scope bug fixed.
 #

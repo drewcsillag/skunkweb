@@ -1,3 +1,9 @@
+2002-02-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args): added
+	a method that corresponds to the <:args:> tag to the connection object;
+	returns a dictionary rather than automatically updating the local namespace. 
+
 2002-02-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (_processRequest): added check

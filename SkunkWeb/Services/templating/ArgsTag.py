@@ -15,9 +15,9 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: ArgsTag.py,v 1.4 2001/07/09 20:38:40 drew Exp $
+#$Id: ArgsTag.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
 """
-args tag - suck stuff from REQUEST.args
+args tag - suck stuff from CONNECTION.args
 """
 
 import string
