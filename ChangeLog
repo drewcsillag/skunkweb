@@ -1,5 +1,12 @@
 2002-08-16  Andrew Csillag  <drew@localhost.localdomain>
 
+	* SkunkWeb/sw.conf.in: added userModuleCleanupIgnore and some
+	extra docs.
+
+	* SkunkWeb/SkunkWeb/Server.py (SkunkWebServer.postHandle): added
+	config option userModuleCleanupIgnore so you can specify module
+	prefixes that the umc cleaner should not clean
+
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.typeCheckAndConvert): added
 	check for longtype.
 
