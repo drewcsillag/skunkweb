@@ -1,5 +1,8 @@
 Changes in 3.3
 ========================================
+* the build process was revised to facilitate changing the installed
+  directory structure using standard configure options; FHS-compliant
+  packaging and installation is now feasible.
 * PSP support added.  For now should be considered alpha
 * Prebuilt documentation is now included in the distribution (HTML and
   paper-formats in letter dimensions)
