@@ -27,7 +27,7 @@ ac_help="$ac_help
 
                            ae_component aecgi basicauth httpd mysql oracle
                            pars postgresql remote remote_client requestHandler
-                           sessionHandler templating web"
+                           sessionHandler templating web fcgiprot"
 ac_help="$ac_help
   --with-sudo=/path/sudo  Specify path to sudo"
 ac_help="$ac_help
@@ -696,7 +696,7 @@ if test "${with_services+set}" = set; then
 	SERVICES=$withval
 else
   
-	SERVICES="ae_component aecgi basicauth httpd mysql oracle pars postgresql remote remote_client requestHandler sessionHandler templating web";
+	SERVICES="ae_component aecgi basicauth httpd mysql oracle pars postgresql remote remote_client requestHandler sessionHandler templating web fcgiprot";
 fi
 
 

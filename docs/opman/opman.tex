@@ -143,7 +143,7 @@ install space delimited list of personas to install, valid names are:
 \texttt{sessionHandler}, \texttt{requestHandler}, \texttt{remote},
 \texttt{ae_component}, \texttt{remote_client}
 \texttt{aecgi}, \texttt{httpd}, \texttt{basicauth}, \texttt{oracle},
-\texttt{pars}, \texttt{templating}, \texttt{web}
+\texttt{pars}, \texttt{templating}, \texttt{web}, \texttt{fcgiprot}
 
 default is to include everything.
 
@@ -216,6 +216,9 @@ services is what really makes the server tick.
 \item[aecgi] The service that handles the SkunkWeb server side of the
 Apache (or actually anything that speaks the aecgi protocol) to
 SkunkWeb connectivity.
+
+\item[fcgiprot] The service that allows FastCGI connections to the
+SkunkWeb server.
 
 \item[basicauth]  Allows for doing HTTP basic authentication \doref{swpasswd}.
 
@@ -417,6 +420,15 @@ by \texttt{mod\_skunkweb}) connections .
 Default is \texttt{['TCP:localhost:9888']}.
 \end{argdesc}
 
+Parameters for the \texttt{fcgiprot} service:
+\begin{argdesc}
+\item[FCGIListenPorts] \nonscope
+List of ports (specified as string(s) of either
+\texttt{TCP:}\emph{hostname}\texttt{:}\emph{portnumber} or
+\texttt{UNIX:}\emph{filepath}\texttt{:}\emph{octal_socket_permissions})
+that the SkunkWeb server will listen for FastCGI protocol.
+Default is \texttt{['TCP:localhost:9999']}.
+\end{argdesc}
 
 
 Parameters for the \texttt{pars} service:
