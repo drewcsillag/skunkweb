@@ -1,4 +1,4 @@
-2002-11-26    <smulloni@smullbola.smullyan.org>
+2002-11-26 Jacob Smullyan   <smulloni@smullyan.org>
 
 	* test/formlib/htdocs/testNestedList.pyinc: added some debug output.
 
