@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.1.1.1 2001/08/05 15:00:23 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.2 2002/04/14 01:38:09 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -302,11 +302,11 @@ static binbuffer *marshal_all(request_rec* r, const binbuffer *stdin_buf)
     int i;
 
     /* Setup the environment table for access */
-    ap_array_header_t *env_arr = ap_table_elts ( r->subprocess_env );
+    const ap_array_header_t *env_arr = ap_table_elts ( r->subprocess_env );
     ap_table_entry_t *env_elts = (ap_table_entry_t *)env_arr->elts;  /* iterator */
 
     /* Setup the headers-in for access */
-    ap_array_header_t *hdr_arr = ap_table_elts ( r->headers_in );
+    const ap_array_header_t *hdr_arr = ap_table_elts ( r->headers_in );
     ap_table_entry_t *hdr_elts = (ap_table_entry_t *)hdr_arr->elts;  /* iterator */
 
     /* Begin outer dictionary */
@@ -491,7 +491,9 @@ static int critical_error ( request_rec *r, const char *desc )
             r->status = 500;
 
             /* send the headers */
+#ifdef APACHEV1 /* appears that you don't need to do this in V2 */
             ap_send_http_header ( r );
+#endif
 
             /* send the file */
 #ifdef APACHEV1
@@ -532,7 +534,9 @@ static int critical_error ( request_rec *r, const char *desc )
     r->status = 500;
 
     /* send the headers */
+#ifdef APACHEV1 /*it appears that you don't need to do this in V2 */
     ap_send_http_header ( r );
+#endif
 
     /* send the buffer */
     ap_rputs ( vbuf, r );
@@ -559,13 +563,21 @@ static binbuffer *get_stdin(request_rec* r)
     }
 
     length = r->remaining;
+    SK_AP_RERROR2 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+		    "SkunkWeb: number remaining %d", length);
     buf = (char *)ap_palloc(r->pool, r->remaining );
 
     /* Tell the client we're ready to receive */
     if ( !ap_should_client_block ( r ) )
+    {
+	SK_AP_RERROR1 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+			"SkunkWeb: no client data");
         /* Client doesn't want to send anything */
         return buffer_new ( r, "", 0 );
-
+    }
+ 
+    SK_AP_RERROR1 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+		    "SkunkWeb: reading client data");
     /* setup the hard timeout */
 #ifdef APACHEV1
     ap_hard_timeout ( "until read", r );
@@ -923,6 +935,9 @@ static void make_socket(request_rec *r,
     {
 	struct sockaddr_un *unaddr;
 
+	SK_AP_RERROR1 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "making UNIX socket");
+
 	unaddr = (struct sockaddr_un*)ap_palloc(r->pool,
 						sizeof(struct sockaddr_un));
 	strncpy(unaddr->sun_path, address, sizeof(unaddr->sun_path) - 2);
@@ -931,6 +946,9 @@ static void make_socket(request_rec *r,
 	*sock = socket(AF_UNIX, SOCK_STREAM, 0);
 	*saddr = (struct sockaddr*)unaddr;
 	*saddrlen = sizeof(struct sockaddr_un);
+	SK_AP_RERROR1 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "made UNIX socket");
+
     }
     else /* it's a TCP socket */
     {
@@ -941,7 +959,10 @@ static void make_socket(request_rec *r,
 	int i;
 	int coloff = -1;
 	char *hostname;
+	int port;
 
+	SK_AP_RERROR1 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "making TCP/IP socket");
 
 	/* find colon in host spec */
 	for (i=0; i < strlen(address); i++)
@@ -958,7 +979,7 @@ static void make_socket(request_rec *r,
 	    abort();
 	}
 	inaddr = ap_palloc(r->pool, sizeof(struct sockaddr_in));
-	inaddr->sin_port = htons(strtol(address+coloff+1, NULL, 10));
+	port = inaddr->sin_port = htons(strtol(address+coloff+1, NULL, 10));
 	/* if port is bogus, yell */
 	if (errno == ERANGE)
 	{
@@ -970,21 +991,33 @@ static void make_socket(request_rec *r,
 	inaddr->sin_family = AF_INET;
 	hostname = ap_pstrdup(r->pool, address);
 	hostname[coloff] = 0;
+
+	SK_AP_RERROR2 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "doing hostname lookup on %s", hostname);
+
 #ifdef APACHEV1
 	hostaddr = ap_pgethostbyname(r->pool, hostname);
 	memcpy( (char*)&inaddr->sin_addr, hostaddr->h_addr, 
 		hostaddr->h_length);
 #else
 	{
-	    apr_sockaddr_t sa;
-	    apr_getservbyname(&sa, hostname);
-	    memcpy( (char*)&inaddr->sin_addr, &(sa.sa.sin.sin_addr),
-		    sa.salen);
+	    apr_sockaddr_t *sa;
+	    apr_sockaddr_info_get(&sa, hostname, AF_INET, port, 0, r->pool);
+
+	    /*apr_gethostname(&sa, hostname);*/
+	    memcpy( (char*)&inaddr->sin_addr, &(sa->sa.sin.sin_addr),
+		    sa->salen);
 	}
 #endif
+	SK_AP_RERROR1 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "lookup done");
+	
 	*saddrlen = sizeof(struct sockaddr_in);
 	*sock = socket(AF_INET, SOCK_STREAM, 0);
 	*saddr = (struct sockaddr*)inaddr;
+	SK_AP_RERROR1 (APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		       "made TCP/IP socket");
+
     }
     SK_AP_RERROR3(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		  "sock is %d  len is %d", *sock, *saddrlen);
@@ -1088,7 +1121,7 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
     skunkweb_server_config *conf=ap_get_module_config(r->server->module_config, 
 						   &skunkweb_module);
 
-
+    
     /* make the client socket */
     make_socket(r, conf->aedsockaddr, &sock, &addr, &addrlen);
 
@@ -1209,8 +1242,11 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
     ap_table_do ( show_headers, (void *)r, r->headers_out, NULL ); 
 #endif /*DEBUG_HEADERS*/
 
+#ifdef APACHEV1 /*only req'd for 1.x */
     /*send response*/
     ap_send_http_header(r);
+#endif
+
     /* adding support for HEAD Mon Apr 23 16:59:08 2001 js*/
     if (!r->header_only && returndata->len)
     {
@@ -1331,7 +1367,7 @@ static int skunkweb_handler(request_rec* r)
 */
 
 /*sets retries in server config*/
-static const char* set_skunkweb_retries ( cmd_parms *parms, void *dummy, char *arg)
+static const char* set_skunkweb_retries ( cmd_parms *parms, void *dummy, const char *arg)
 {
     server_rec *s = parms->server;
     skunkweb_server_config *conf;
@@ -1346,7 +1382,7 @@ static const char* set_skunkweb_retries ( cmd_parms *parms, void *dummy, char *a
 
 /*sets host in server config*/
 
-static const char* set_skunkweb_addr(cmd_parms *parms, void *dummy, char *arg)
+static const char* set_skunkweb_addr(cmd_parms *parms, void *dummy, const char *arg)
 {
     server_rec *s=parms->server;
     skunkweb_server_config *conf;
@@ -1359,7 +1395,7 @@ static const char* set_skunkweb_addr(cmd_parms *parms, void *dummy, char *arg)
 }
 
 /*sets error document in server config*/
-static const char* set_skunkweb_error_doc(cmd_parms *parms, void *dummy, char *arg)
+static const char* set_skunkweb_error_doc(cmd_parms *parms, void *dummy, const char *arg)
 {
     server_rec *s=parms->server;
     skunkweb_server_config *conf;
@@ -1372,7 +1408,7 @@ static const char* set_skunkweb_error_doc(cmd_parms *parms, void *dummy, char *a
 }
 
 static const char* set_skunkweb_connect_timeout(cmd_parms *parms, void *dummy,
-					     char *arg)
+						const char *arg)
 {
     server_rec *s=parms->server;
     skunkweb_server_config *conf;
@@ -1385,7 +1421,7 @@ static const char* set_skunkweb_connect_timeout(cmd_parms *parms, void *dummy,
 
 /*sets error email in server config*/
 static const char* set_skunkweb_error_email ( cmd_parms *parms, void *dummy,
-                                           char *arg)
+                                           const char *arg)
 {
     server_rec *s=parms->server;
     skunkweb_server_config *conf;
@@ -1401,7 +1437,7 @@ static const char* set_skunkweb_error_email ( cmd_parms *parms, void *dummy,
 }
 
 static const char* set_skunkweb_excludes ( cmd_parms *parms, void *dummy,
-					char *arg )
+					const char *arg )
 {
     server_rec *s = parms->server;
     skunkweb_server_config *conf;
@@ -1416,7 +1452,7 @@ static const char* set_skunkweb_excludes ( cmd_parms *parms, void *dummy,
 }
 
 static const char* set_skunkweb_failover_hosts ( cmd_parms *parms, void *dummy,
-					      char *arg )
+					      const char *arg )
 {
     server_rec *s = parms->server;
     skunkweb_server_config *conf;
@@ -1454,6 +1490,8 @@ static void* skunkweb_server_cfg_create(apr_pool_t *p, server_rec *s)
     return (void *) a;
 }
 
+/*the module definition*/
+#ifdef APACHEV1
 /*the command registry*/
 static command_rec skunkweb_cmds[] = 
 {
@@ -1484,8 +1522,7 @@ static handler_rec skunkweb_handlers[] =
     { NULL }
 };
 
-/*the module definition*/
-#ifdef APACHEV1
+
 module skunkweb_module = {
    STANDARD_MODULE_STUFF,
    NULL,                        /* initializer */
@@ -1504,7 +1541,39 @@ module skunkweb_module = {
    NULL,                        /* logger */
    NULL                         /* header parser */
 };
-#else
+#else  /*APACHE V2*/
+static const command_rec skunkweb_cmds[] = 
+{
+    AP_INIT_TAKE1("SkunkWebSocketAddress", set_skunkweb_addr, NULL, RSRC_CONF,
+		  "socket address of where AED lives host:port for TCP "
+		  "sockets or /path_to_sock for UNIX domain sockets"),
+    AP_INIT_TAKE1("SkunkWebRetries", set_skunkweb_retries, NULL, RSRC_CONF,
+		  "the number of times to try to connect to AE daemon before"
+		  " failing"),
+    AP_INIT_TAKE1("SkunkWebErrorDoc", set_skunkweb_error_doc, NULL, RSRC_CONF,
+		  "the html document to display when critical error occurs"),
+    AP_INIT_TAKE1("SkunkWebConnectTimeout", set_skunkweb_connect_timeout, 
+		  NULL, RSRC_CONF, "number of milliseconds to wait for a "
+		  "connect to succeed before retrying"),
+
+    AP_INIT_ITERATE("SkunkWebErrorEmails", set_skunkweb_error_email, NULL, 
+		    RSRC_CONF, "the list of email addresses to notify on "
+		    "critical errors"),
+    AP_INIT_ITERATE("SkunkWebExclude", set_skunkweb_excludes, NULL, RSRC_CONF,
+		    "list of uri prefixes for which mod_SkunkWeb should not "
+		    "intervene"),
+    AP_INIT_ITERATE("SkunkWebFailoverHosts", set_skunkweb_failover_hosts, NULL,
+		    RSRC_CONF, "other host/ports (form of host:port) to try "
+		    "in the event of a connection failure to primary "
+		    "SkunkWebHost"),
+    { NULL }
+};
+
+static void register_hooks(apr_pool_t *p)
+{
+    ap_hook_handler(skunkweb_handler, NULL, NULL, APR_HOOK_MIDDLE);
+}
+
 module skunkweb_module = {
    STANDARD20_MODULE_STUFF,
    NULL,                        /* dir config creater */
@@ -1512,8 +1581,7 @@ module skunkweb_module = {
    skunkweb_server_cfg_create,     /* server config */
    NULL,                        /* merge server config */
    skunkweb_cmds,          	/* command table */
-   skunkweb_handlers,      	/* handlers */
-   NULL,                        /* hooks */
+   register_hooks,              /* hooks */
 };
 #endif
 /*
