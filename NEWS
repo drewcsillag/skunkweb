@@ -1,6 +1,11 @@
 Changes in cvs
 ==============
 * http access logging, based on patch by JvD.
+* fixes for sessionHandler.PostgreSQLSessionStore, which was 
+  totally broken before.
+* PyDO2 fixes. 
+* PyDO and PyDO2 now make it easier to specify order by, limit, and offset.
+* bug fixes for httpd and product service.
 
 Changes in 3.4b5
 ================
