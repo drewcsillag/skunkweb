@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/06/10 11:42:28 smulloni>
+# Time-stamp: <02/06/10 11:44:02 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -18,7 +18,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #
-import string
+import string, types
 
 class SQLOperator:
     def asTuple(self):
