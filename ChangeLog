@@ -1,5 +1,11 @@
 2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* SkunkWeb/sample_webdocs/demo/gallery/index.html, SkunkWeb/sample_webdocs/demo/index.html, SkunkWeb/sample_webdocs/demo/geeknews/index.html, SkunkWeb/sample_webdocs/index.html:  added bit so that favicon.ico will show up in mozilla
+
+	* SkunkWeb/Makefile.in: added bit for favicon.ico
+
+	* SkunkWeb/sample_webdocs/favicon.ico: added
+
 	* SkunkWeb/Services/templating/MailServices.py: fixed way old bug.
 	Had a reference to AED that would get hit when sending a message
 	via SMTP would fail.
