@@ -21,7 +21,11 @@ try:
     from mx import DateTime
 except:
     import DateTime
-import DateTime.ISO
+
+try:
+    from mx.DateTime import ISO
+except:
+    import DateTime.ISO
 
 from Date import LocalDate, UTCDate, GMTDate
 from Date import DateTruncate, DateTrunc, DateRound, trunc, round
