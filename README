@@ -25,6 +25,17 @@ Template Markup Language) operations and developer (the developer
 manual is currently old and incorrect, don't rely on it just yet)
 manuals are under docs/.
 
+***Note for those 
+If you have upgraded python from 2.1 to 2.2 you will notice that pickle is
+quite a bit more picky about the pickling of classes not defined in modules.
+There had been some mailling list activity about this at one point about
+things like this, but now Python 2.2 appears to have set the rule: you 
+cannot pickle objects that are not in modules.
+
+So if you get the following exception:
+PicklingError, "Can't pickle foo: its not found as __main__.foo"
+
+This is what's happening.
 
 Starting the SkunkWeb Server
 ------------------------------

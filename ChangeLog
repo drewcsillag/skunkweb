@@ -1,3 +1,12 @@
+2002-01-02  Andrew Csillag  <drew@localhost.localdomain>
+	* SkunkWeb/sample_webdocs/demo/geeknews/*many*: fixed so will work
+	with Python 2.2 pickling issue
+
+	* README: added note about Python 2.1 to 2.2 upgrade issue
+
+	* pylibs/Date/__init__.py: lagging fix after the *many* change below.
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/dcomps/newsforge.pydcmp: fixed so it works because they changed their xml format
 
 2001-12-26  Andrew Csillag  <drew@localhost.localdomain>
 
