@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.3 2002/05/24 20:56:20 smulloni Exp $
+# $Id: __init__.py,v 1.4 2003/05/01 20:45:53 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:45 smulloni>
 ########################################################################
 
@@ -16,7 +16,7 @@ SkunkWeb.ServiceRegistry.registerService("httpd")
 from SkunkWeb import Configuration, Hooks
 from socket import getfqdn as _getfqdn
 Configuration.mergeDefaults(lookupHTTPRemoteHost=0,
-                            HTTPKeepAliveTimeout=15,
+                            HTTPKeepAliveTimeout=0,
                             HTTPListenPorts=['TCP::8080'],
                             ServerName=_getfqdn())
 
@@ -44,6 +44,9 @@ if Configuration.HTTPListenPorts:
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.4  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.3  2002/05/24 20:56:20  smulloni
 # now add request handlers in ServerStart hook
 #

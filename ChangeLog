@@ -1,3 +1,11 @@
+2004-03-01  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in (HTTPKeepaliveTimeout): document new default
+	value for HTTPKeepaliveTimeout.
+
+	* SkunkWeb/Services/httpd/__init__.py: setting default value of
+	HTTPKeepaliveTimeout to 0 rather than 15.
+
 2004-02-27    <drew@loki.sai.local>
 
 	* SkunkWeb/sw.conf.in: added documentation of dontCacheSource,

@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.35 2003/09/08 00:24:18 smulloni Exp $
-# Time-stamp: <2004-02-27 11:58:12 drew>
+# $Id: sw.conf.in,v 1.36 2004/02/27 16:52:05 drew_csillag Exp $
+# Time-stamp: <04/03/01 11:31:30 smulloni>
 
 ########################################################################
 #
@@ -537,12 +537,11 @@ documentRoot = '@DOCROOT@'
 #
 # PostResponseTimeout = 20
 
-
 ########################################################################
 # How long (in seconds) the http keepalive timeout should be between
-# HTTP requests
+# HTTP requests.  0 (the default) effectively turns off keepalive.
 #
-# HTTPKeepAliveTimeout = 15
+# HTTPKeepAliveTimeout = 0
 
 ########################################################################
 # A list of mime types that should not be accessible via web request
