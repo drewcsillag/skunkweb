@@ -23,7 +23,7 @@
 \newcommand{\NOTE}[1]{\textbf{\Large #1}}
 \newcommand{\None}{\texttt{None}}
 \newcommand{\nolocation}{[N]}
-
+\newcommand{\service}[1]{\texttt{#1}\index{\texttt{#1}}}
 
 %function argument list environment
 \newcommand{\argdescitem}[1]{\hspace\labelsep
@@ -41,14 +41,14 @@
 This file documents the SkunkWeb Web Application Framework.
 
 \noindent
-Copyright (C) 2001 Andrew T. Csillag, Jacob Smullyan
+Copyright (C) 2002 Andrew T. Csillag, Jacob Smullyan
 
 \noindent
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
 are preserved on all copies.
 
-%%end titilepage stuff
+%%end titlepage stuff
 
 \tableofcontents
 
@@ -57,7 +57,6 @@ This document is intended for the SkunkWeb developer that needs to get
 more into the inner guts of the SkunkWeb server.  This document will
 describe the inner architecture of the server, the file formats used,
 the core APIs, the APIs of foundation services,
-%%basically things like auth, httpd, requestHander, web, etc.
 as well as how to
 write SkunkWeb services.
 
@@ -65,517 +64,648 @@ It is assumed that you are familliar with the SkunkWeb server,
 i.e. you don't need to be told that what \texttt{<:component
 foo.comp:>} would do, and that you know Python well.
 
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Core Services}
-The core services that SkunkWeb supplies are (intentionally) fairly minimal. 
-The services provided are:
-\begin{itemize}
-\item The reading of configuration file(s)
-\item The loading of Python modules or packages
-\item A logging service
-\item A multi-process TCP server framework
-\item Two hooks, one for pre-\texttt{fork} initialization and one for
-post-\texttt{fork} initialization.
-\item An interactive Python prompt (a.k.a. \texttt{swpython})
-\end{itemize}
-
-\section{Configuration}
-Configuration proceeds by first checking to see if a \verb!-c! or
-\verb!--config-files=! option was specified (as a colon delimited list
-of configuration files to read), if not, a configuration-time
-hardcoded default is used.  A namespace is set up with a small amount
-of preloaded stuff \footnote{The \texttt{Scope} ``directives'' is loaded and the default \texttt{SkunkRoot} is set}
-(and the configuration files executed (they're
-Python programs really) in this namespace in the order given on the
-command line (if given).
-
-\subsection{The \texttt{SkunkWeb.Configuration} ``Module''}
-
-The current configuration is available via the
-\texttt{SkunkWeb.Configuration} ``module''.  In reality, it is not a
-real Python module, but a class instance that has been set up to be
-importable.  The implementation of the ``module'' is the
-\texttt{ScopeableConfig} class in  \verb!pylibs/ConfigLoader.py!.
-(\texttt{ScopeableConfig} is itself a \texttt{scopeable.Scopeable} subclass
-with a backwards compatibility layer that will probably be removed soon.)
-
-\begin{methoddesc}{mergeDefaults}{dict} Function taking any number of dictionary
-arguments, and/or keyword arguments. For each key/value in each dictionary, (with 
-any keyword arguments comprising a final dictionary), if the current
-configuration already has a variable with that name, it is skipped,
-otherwise a the configuration variable with that name is set to the
-corresponding value. 
-\end{methoddesc}
-
-\begin{methoddesc}{update}{dict} Updates the root configuration with the
-contents of the argument (argument should be a dictionary-like
-object). 
-\end{methoddesc}
-\begin{methoddesc}{push}{} Overlay configuration with the contents
-of the argument (should be a dictionary-like object). 
-\end{methoddesc}
-\begin{methoddesc}{pop}{} Undo the last overlay.
-\end{methoddesc}
-\begin{methoddesc}{trim}{} Undo all overlays, resulting in just the
-root configuration. 
-\end{methoddesc}
-\begin{methoddesc}{mash}{} No argument function that returns a
-dictionary whose contents are the current view of the configuration.
-\end{methoddesc}
-\begin{methoddesc}{mashSelf}{} Sets the root configuration to
-\verb![self.mash()]!. 
-\end{methoddesc}
-
-Since the configuration is read prior to the services being loaded,
-the configuration is available to services at their time of import.
-
-The configuration variables show up as attributes in the module
-\verb!SkunkWeb.Configuration!.  Thus, the configuration
-variable \texttt{debugFlags} would appear as
-\verb!SkunkWeb.Configuration.debugFlags!.
-
-\section{Service Loading}
-The loading of services is done by the normal Python import facility.
-This being the case, the directory(ies) that the service
-modules/packages live in \strong{must} be in \texttt{sys.path}.  When
-SkunkWeb is installed, the services shipped with SkunkWeb are placed
-in a directory that is added to \texttt{sys.path} by the bootloader
-automatically.  If you decide to move them, or add services of your
-own (which should be located elsewhere so that future upgrades won't
-accidentally wipe it out), you can add paths to \texttt{sys.path} in
-the configuration file like so:
-\begin{verbatim}
-import sys
-sys.path.append('/some/other/path')
-\end{verbatim}
-
-Even though a service sounds like a big deal, services are merely
-Python modules and/or packages that are loaded 
-just after the configuration has been read in.  Conventionally though,
-service packages/modules assume presence of the SkunkWeb environment
-(i.e. configuration information, hooks, etc.) and plug into the
-SkunkWeb evironment in some way.
-
-
-\section{Logging}
-Logging is done by the \verb!SkunkWeb.LogObj! module.  The main
-functions of interest are:
-
-\begin{funcdesc}{DEBUG}{debugFlag, message} Takes two arguments, a debug flag (explained below) and a
-message string.  If the flag masked against \verb!Configuration.debugFlags!
-results in a non-zero value, the message is logged to the debug flag.
-\end{funcdesc}
-\begin{funcdesc}{DEBUGIT}{debugFlag} Take a single argument, a debug flag.  If the flag
-masked against \verb!Configuration.debugFlags! 
-results in a non-zero value, returns 1, else 0.  Useful for doing
-computation for debug messages that you don't want to do if you aren't
-going to log said message.
-\end{funcdesc}
-\begin{funcdesc}{LOG}{message} Takes one argument, the message to log.  Used for logging
-normal, but significant events.
-\end{funcdesc}
-\begin{funcdesc}{WARN}{message} Takes one argument, the message to log.  Used for logging
-events that require attention.  Logs to the error log file. 
-\end{funcdesc}
-\begin{funcdesc}{ERROR}{message} Takes one argument, the message to log.  Used for logging
-erroneous events.  Logs to the error log file.
-\end{funcdesc}
-\begin{funcdesc}{ACCESS}{message} Takes one argument, the message to log.  Used mainly by
-the \texttt{AE} library to log access events, but is available for
-general use.  Logs to the access log.
-\end{funcdesc}
-\begin{funcdesc}{logException}{} Logs the current exception to the error log.
-\end{funcdesc}
-
-
-If, when SkunkWeb is started, standard out and/or standard error are
-not TTY's (i.e. hooked to a terminal), they will be redirected to the
-\texttt{LOG} nad \texttt{ERROR} functions, respectively.
-
-\section{The \texttt{Server} Object}
-The \texttt{Server} object handles the routing of TCP connections to
-appropriate handlers, presumably installed during the loading of
-Python modules, to handle whatever protocol is spoken over that TCP
-connection. 
-
-In the \texttt{SkunkWeb.Server} module there is a single function of
-interest: 
-\begin{funcdesc}{addService}{sockaddr, func}
-Opens up a socket and listens for connections, and when connections
-arrive calls \texttt{func} (with the \texttt{accept()}ed socket to
-handle them. 
-\begin{argdesc}
-\item[sockaddr] An address specfier of one of two forms:
-\begin{enumerate}
-\item \texttt{('TCP', 'hostname', port)} --- bind to the TCP address
-\texttt{host}/\texttt{port} where \texttt{port} is an integer.  To
-bind to all addresses on host, specify the empty string as the
-hostname.
-\item \texttt{('UNIX', '/path/to/socket' [,
-\textit{socket_permissions} ])} --- bind to the Unix socket located at
-\verb!/path/to/socket! and optionally set the permissions of the
-socket to \texttt{\textit{socket_permissions}}.
-\end{enumerate}
-\item[func] A function to call (with the socket) when a connection
-comes in.
-\end{argdesc}
-\end{funcdesc}
-
-\section{Hook Objects}
-Hook objects are used in SkunkWeb to provide extensibility.  They
-allow you to setup functions to be called at specific points in
-processing.  They can be viewed as a list of functions to call 
-(the \texttt{Hook} class is actually a subclass of \texttt{UserList})
-that calls the functions in the list, in order, until one of them
-returns a non-\None\ value.  The return value of calling a hook then,
-is the return value of the function that returned a non-\None\ value,
-or if all of the calls returned \None, the return value is \None.
-
-\section{Initialization Hooks}
-
-\begin{datadesc}{ServerStart}  Called after services have been imported but
-before the server \texttt{fork()}s.
-\end{datadesc}
-\begin{datadesc}{ChildStart}
-Called in the child process just after the \texttt{fork()}
-\end{datadesc}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{The \texttt{web} Service}
-\index{services!\texttt{web}}
-The \texttt{web} service, is short provides base request phase
-handling (extendable/configurable via hooks), an \connection\ object
-and socket connectivity to 
-Apache (via \texttt{mod\_skunkweb}).
-
-
-\section{Protocol}
-The protocol between the web listener (presumably Apache, but could be
-something else) is as follows:
-\begin{enumerate}
-\item Client connects to server at some prearranged port
-(\texttt{WebListenPorts}).
-\item Server sends one byte (the byte value should be 0)
-\item Client sends 10 byte ascii length of request (e.g. a length of
-twenty would be sent as the ascii string \verb*!        20! (a 
-\verb*! ! is a blank space)).
-\item Client sends Python marshalled form of a dictionary whose
-key/value pairs are:
+\chapter{Services}
+The crux of most of what SkunkWeb does lies in services, of which
+there are three kinds.
 \begin{description}
-\item[\texttt{'stdin'}] the request body (in CGI-land, it's standard
-input)
-\item[\texttt{'headers'}] a dictionary of HTTP headers
-\item[\texttt{'env'}] the CGI environment variables.
+\item[provider] Provides direct functionality, but few, if any API functions.
+\item[linkage] Mainly links in some external (from \texttt{pylibs})
+code, and may provide functionality of it's own.
+\item[API] Provides little, if any functionality on it's own, but
+provides API functions to do various things.  A few services in this
+category (notably \texttt{web} and \texttt{requestHandler}) form the
+foundation that services of other types are built upon.
 \end{description}
-\item Server sends 10 byte ascii length of request --- as in (3).
-\item Server sends full response (headers and body).
-\item Both sides close connection.
-\end{enumerate}
 
-\section{Hooks Exposed}
+\section{Provider Services}
+Many of the provider services are protocol adaptors, those being the
+\service{aecgi}, \service{fcgiprot}, \service{scgi}, \service{httpd}
+and \service{remote}, whose purpose is merely to provide support for a
+network protocol.
 
-\begin{datadesc}{InitRequest} Called with the raw request data as received from
-Apache.  If the return value is a tuple of
-(\textit{HTTP\_RESPONSE\_CODE}, string),  request processing stops and
-the string (which is assumed to contain headers also) is sent back as
-the response.
-\end{datadesc}
-\begin{datadesc}{HaveConnection} Called after the \connection\ object has been
-constructed but before the location specific configuration has been
-overlayed.
-Argument is the \connection\ object.  If the
-return value is an HTTP response code, the \connection\  object
-is assumed to be complete and a response is sent.
-\end{datadesc}
-\begin{datadesc}{PreRequest} Called after the location specific configuration has been
-overlayed.  Argument is the \connection\ object.  If the
-return value is an HTTP response code, the \connection\  object
-is assumed to be complete and a response is sent.
-\end{datadesc}
-\begin{datadesc}{HandleRequest} Called after the \texttt{PreRequest}
-hook. Argument is the \connection\  object.  If the
-return value is an HTTP response code, the \connection\  object
-is assumed to be complete and a response is sent.  If no response code
-is returned in the calling of this hook, a \texttt{'NoHandler'} string
-exception is raised and processing proceeds to the
-\texttt{RequestFailed} hook.
-\end{datadesc}
-\begin{datadesc}{PostRequest} Called after the response has been sent. Arguments
-are the \connection\  object and the raw request data.  If the
-exception occurs before the \connection\  has been constructed,
-the connection argument is \texttt{None}, otherwise the raw request
-data argument is \texttt{None}.
-\end{datadesc}
-\begin{datadesc}{CleanupRequest} Called after the \texttt{PostRequest} hook. Arguments
-are the \connection\  object and the raw request data.  If the
-exception occurs before the \connection\  has been constructed,
-the connection argument is \texttt{None}, otherwise the raw request
-data argument is \texttt{None}.
-\end{datadesc}
-\begin{datadesc}{RequestFailed} Called if there is an exception before a response
-has been sent.  It should return the text of a full response
-(i.e. headers and body).  After this hook returns (even if by a raised
-exception), the \texttt{PostRequest} and \texttt{CleanupRequest}
-handlers are called.
-\end{datadesc}
+There are others in this category.  These are the services that
+provide direct functionality and really don't have any API to speak of.
 
-\section{The \connection\  Object}
-The \connection\ object is used to obtain information about the
-request and to produce a response.  As such, it contains things like
-the CGI arguments sent from forms, and things like the request and
-response headers.  The attributes of the \connection\ object are as
-follows:
+The \service{basicauth} service, while deprecated, provides the
+ability to do basicauth (i.e. browser-based) authentication.  It has
+an API inasmuch setting of the
+\texttt{REMOTE_USER}\index{\texttt{REMOTE_USER}} and
+\texttt{REMOTE_PASSWORD}\index{\texttt{REMOTE_PASSWORD}} is an API.
+The newer \service{auth} service provides the functionality that the
+\service{basicauth} service provides and more and is the replacement
+now that \service{basicauth} is deprecated.
 
-\begin{memberdesc}[dictionary]{\_initRequestData}
- the raw data that the \connection\ object is
-constructed from.  Is the same data that the \texttt{InitRequest} hook
-is called with.
-\end{memberdesc}
-\begin{memberdesc}[integer]{\_status}
- The HTTP response code to send back to Apache.  If not
-otherwise set via call to \texttt{setStatus()}, is 200.
-\end{memberdesc}
-\begin{memberdesc}[dictionary]{env}
- The CGI environment set by Apache.
-\end{memberdesc}
-\begin{memberdesc}[string]{\_stdin}
-The request body text sent by the browser to Apache.
-\end{memberdesc}
-\begin{memberdesc}[HeaderDict]{requestHeaders} The HTTP headers of the request.
-\end{memberdesc}
-\begin{memberdesc}[Cookie]{requestCookie} The cookie sent by the browser.
-\end{memberdesc}
-\begin{memberdesc}[HeaderDict]{responseHeaders} The HTTP headers to be
-sent in the response. 
-\end{memberdesc}
-\begin{memberdesc}[Cookie]{responseCookie} The cookie to be sent in
-the response.
-\end{memberdesc}
-\begin{memberdesc}[File]{\_output} A file-like object that contains
-the body of the response. 
-\end{memberdesc}
-\begin{memberdesc}[Browser]{browser} An object with three attributes
-that describes the user agent as sent in the \texttt{User-Agent} HTTP header.  Those attributes are:
+The \service{rewrite} service allows for some pre-request URL
+rewriting.  In addition, named groups in the matched regular
+expression will be added to \texttt{CONNECTION.args} if the
+appropriate configuration variable is set.  See the SkunkWeb
+Operations Manual for details.
 
-\begin{memberdesc}[string]{version} the version of the client browser
-\end{memberdesc}
-\begin{memberdesc}[string]{lang} the language of the client browser
-\end{memberdesc}
-\begin{memberdesc}[string]{name} the name of the client browse (e.g. Mozilla)
-\end{memberdesc}
-\end{memberdesc}
-\begin{memberdesc}[dictionary]{args} A dictionary of CGI variables.
-\end{memberdesc}
-\begin{memberdesc}[string]{uri} The URI of the request.
-\end{memberdesc}
+The \service{userdir} service allows you to provide simple SkunkWeb
+services to the users on your machine.  If the URL starts with
+\texttt{\~}\emph{username}, it will serve the pages from the directory
+named by the \texttt{userDirPath} configuration variable
+(\texttt{public_html} by default) in their home directory.
 
-\begin{methoddesc}{redirect}{url}  A function taking a URL that sets the appropriate response
-variables to enact a redirect.  
-\end{methoddesc}
-\begin{methoddesc}{setContentType}{contentType}  Convienience function taking a single argument
-to set the \texttt{Content-Type} header.  Equivalent to:
-\begin{verbatim}
-connObj.responseHeaders['Content-Type'] = arg
-\end{verbatim}
-\end{methoddesc}
-\begin{methoddesc}{write}{s} Function taking a string to be written into the request body.
-\end{methoddesc}
-\begin{methoddesc}{setStatus}{statusCode} Set the HTTP response code to the integer argument.
-\end{methoddesc}
-\begin{methoddesc}{response}{} Returns a string containing the full text of the response.
-\end{methoddesc}
+The \service{extcgi} service allows SkunkWeb to directly handle CGI
+programs.  This is useful in the event that you either aren't running
+Apache (or some other SkunkWeb compatible server), or that your
+configuration is such that having your main HTTP server handle it is
+either not aesthetically pleasing or just plain annoying.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{The \texttt{templating} Service}
-\index{services!\texttt{templating}}
-The main raison d'\^etre of the \texttt{templating} service is to
-integrate the \texttt{AE} library (see Appendix \ref{aelib}, page
-\pageref{aelib}).  The \texttt{AE} library, in short, is responsible
-for the component rendering, caching and message catalog facilities
-that are generally the reason for using SkunkWeb in the first place.
+The \service{pycgi} service also allows SkunkWeb to directly handle
+CGI programs, but \service{pycgi} only works for CGI programs that are
+Python scripts.  It handles them in such a way that, unlike
+\service{extcgi}, does not require a call to \texttt{fork}, so should
+provide better performance in the case that you are running a Python
+CGI program.
+
+\section{Linkage Services}
+       * exist mainly to link other stuff into skunkweb 
+
+       mysql
+       oracle
+       postgresql
+       ae_component -- the AE API
+       templating -- hooks up AE to web and adds tags
+
+\section{API Services}
+       * mainly provide API's to do skunkweb specific stuff
+       * some are "foundation services"
+       * some do provide direct functionality too
+
+       requestHandler
+       web
+       auth
+       remote_client
+       sessionHandler
+
+\subsection{The \service{requestHandler} Service}
+\subsection{The \service{web} Service}
+\subsection{The \service{product} Service}
+The \service{product} service allows you to package up a subsection of
+a document root, in addition to python modules, into an archive format
+(e.g. \texttt{.tar.gz}, \texttt{.zip}) and be able to serve it out of
+the archive.
 
 
-\section{API}
-The API to the \texttt{templating} service is actually quite minimal,
-as most of the interesting bits are in the \texttt{AE} library proper.
+a service to support SkunkWeb products, which can be installed as
+archive files (zip, tar, or tgz), or as directories in the SkunkWeb
+product directory.  This service requires that the documentRootFS be a
+MultiFS (at least prior to scoping); the assumption is that MultiFS
+will become the default fs.
 
-\subsection{\texttt{templating.MailServices.sendmail}}
+The product loader is configured to load by default all product
+archives in the product directory, but can be configured to load any
+arbitrary subset.
 
-In the \texttt{templating.MailServices} module, there is one function
-of interest:
+The loader opens the MANIFEST file in each archive, looks for
+dependencies stated therein, and loads any products therein listed,
+raising an error for circular or missing dependencies.  For each load,
+it adds mount points to the MultiFS for the docroot and, by means of
+an import hook in the vfs which permits python modules to be imported
+from the vfs, adds the libs (if any) to sys.path.  Services specified
+in the MANIFEST are then imported.
 
-\begin{funcdesc}{sendmail}{to_addrs, subj, msg, from_addr =
-Configuration.FromAddress} 
-The general-purpose sendmail function, which is called
-    by the STML \texttt{<:sendmail:>} tag, or directly by Python code.
+The MANIFEST is essentially an init file for the product which
+integrates it into the SkunkWeb framework.  It must contain the
+product version, and can also contain product dependencies and
+services (python modules that use SkunkWeb hooks, to be imported at
+product load time).  See manifest.py for details.
 
-\begin{argdesc}
-\item[to\_addrs] should be a list or tuple of email address
-    strings. 
-\item[subj] must be a string, although it may be empty.
-\item[msg] is a string containing the body of the message; it can
-    be empty. 
-\item[from\_addr] is a single mail address string; it 
-    defaults to the value of the \texttt{FromAddress} configuration variable.
-\end{argdesc}
-This function returns nothing on success, and raises a
-\texttt{MailError} on any mail failure. 
+By default, a product's docroot will be mounted at
+products/<product-name>, relative to the SkunkWeb documentRoot.  This
+can be altered by modifying Configuration.defaultProductPath, which
+will affect all products, or by adding the product-name to the
+Configuration.productPaths mapping.
 
-\end{funcdesc}
+This service will also contain a utility for creating products, creating
+the MANIFEST file, byte-compiling the python modules, and creating the
+archive file.
 
 
 
-\subsection{\texttt{templating.UrlBuilder} Functions}
+\chapter{Writing a Service}
+   Hooks
+   reload gotchas
 
-\begin{funcdesc}{url}{path, queryargs, text = None, kwargs = {},
-noescape = None, url = None}
+\chapter{Writing a New STML Tag}
+   empty tags
+   block tags
+   debugging and vicache.py
+   metadata
 
-Returns either the url part of the request (\texttt{http://path}) or
-(if \texttt{text} is not \None) the complete link:
-\verb!<A href="http://path">text</A>!. 
-
-If the \texttt{url} argument is given, it is used in place of
-\texttt{path} and \texttt{query}.
-
-\begin{argdesc}
-\item[path] Path to the target document.
-\item[queryargs] Any HTTP GET style CGI arguments.
-\item[text] Text to appear between the open and close \texttt{<A>} tags.
-\item[kwargs] Any additional arguments to the open \texttt{<A>} tag
-(e.g. \texttt{onClick}).
-\item[noescape] Boolean specifying that the path should not be
-properly escaped.
-\item[url] As an alternate to \texttt{path}, the full absolute URL to the
-target document.
-\end{argdesc}
-\end{funcdesc}
+\chapter{Adding a Templating Type}
 
 
-\begin{funcdesc}{image}{path, queryargs = None, kwargs={}, noescape = None}
-
-Generate an HTML \texttt{<IMG>} tag.  Arguments are the same as those
-for \texttt{url}.
-\end{funcdesc}
 
 
-\begin{funcdesc}{form}{path, kwargs = {}, noescape = None}
-Generate an HTML \texttt{<FORM>} tag.  Arguments are the same as those
-for \texttt{url}.
-\end{funcdesc}
 
-
-\begin{funcdesc}{redirect}{path = None, url = None, queryargs = {},
-kwargs = {}, noescape = None} 
-Cause a redirect to either the URL specified or to the path specified.
-Arguments are the same as those for \texttt{url}.  
-\end{funcdesc}
-
-\begin{funcdesc}{retain}{dict}
-Returns a string containing HTML \texttt{<INPUT TYPE=HIDDEN>} tags
-that contain the contents of \texttt{dict}.  The dictionary keys are
-used for the \texttt{NAME} arguments and the corresponding values are
-used for the \texttt{VALUE} arguments.
-\end{funcdesc}
-
-
-\section{Component Cache Distribution}
-\NOTE{NEEDS ATTENTION}
-\label{ccdist}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{The \texttt{pars} Service}
-
-\section{The \PAR\ File Format}
-The \PAR\ file format is quite simple.  What it is is a Python
-marshalled format dictionary where the keys are directory/file names
-and the values are a tuple of the offset into the data area (I'll get
-to that in a second) and the information acquired at packaging time
-from calling \texttt{os.stat()} on the file.
-
-After the marshalled dictionary is the data area.  The data area is
-where the contents of the files are stored (directiories, obviously
-don't have anything here).  So, if you've loaded the dictionary into a
-variable named, say \texttt{archDict}, and the data area loaded into
-\texttt{dataArea} you can obtain the contents by:
-\begin{verbatim}
-offset, stat_info = archDict[filename]
-contents = dataArea[offset:offset + stat_info[stat.ST_SIZE]]
-\end{verbatim}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{The \texttt{basicauth} Service}
-\index{services!\texttt{basicauth}}
-
-The \texttt{basicauth} service provides a basic authentication
-mechanism for browser based authentication.
-
-\section{API}
-The \texttt{basicauth} service adds a few things to the
-\connection\ object.  Namely,
-\begin{memberdesc}[string]{AUTH_TYPE} The type of authentication,
-should always be \verb!'Basic'!.
-\end{memberdesc}
-\begin{memberdesc}[string]{REMOTE_USER} The name that the browser
-specified when authenticating to the server.  May be \None.
-\end{memberdesc}
-\begin{memberdesc}[string]{REMOTE_PASSWORD} The password that the browser
-specified when authenticating to the server.  May be \None.
-\end{memberdesc}
-
-\section{The \texttt{swpasswd} Utility}
-The \texttt{swpasswd} utility is a simple program to maintain
-password files.  
-
-Its general form is:
-\begin{verbatim}
-swpasswd [-cb] password_file username [password]
-\end{verbatim}
-
-The two options are:
-\begin{argdesc}
-\item[-c] Create a new password file
-\item[-b] Specify the password on the command line as opposed to being
-asked for it interactively.
-\end{argdesc}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Writing A Service}
-
-uri rewriting likely in web.HaveConnection
-
-cookie auth schemes (probably also in web.HaveConnection)
-
-document handlers
-
-daisy chaining functions \'al\`a basicauth
-
-
-an example easter egg service
-
-a remote swpython example?  if so, warn why \textbf{really} bad
-
-\textbf{Explain the \texttt{SkunkWeb.Configuration} ``module'' and
-it's methods and that the namespace above is in this object}
-
-\verb!_mergeDefaultsKw!
-
-Hooks
-
-The \verb!Server! interface
-
-A request recording service
-
-
-\appendix
-\input ae.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{Core Services}
+%The core services that SkunkWeb supplies are (intentionally) fairly minimal. 
+%The services provided are:
+%\begin{itemize}
+%\item The reading of configuration file(s)
+%\item The loading of Python modules or packages
+%\item A logging service
+%\item A multi-process TCP server framework
+%\item Two hooks, one for pre-\texttt{fork} initialization and one for
+%post-\texttt{fork} initialization.
+%\item An interactive Python prompt (a.k.a. \texttt{swpython})
+%\end{itemize}
+%
+%\section{Configuration}
+%Configuration proceeds by first checking to see if a \verb!-c! or
+%\verb!--config-files=! option was specified (as a colon delimited list
+%of configuration files to read), if not, a configuration-time
+%hardcoded default is used.  A namespace is set up with a small amount
+%of preloaded stuff \footnote{The \texttt{Scope} ``directives'' is loaded and the default \texttt{SkunkRoot} is set}
+%(and the configuration files executed (they're
+%Python programs really) in this namespace in the order given on the
+%command line (if given).
+%
+%\subsection{The \texttt{SkunkWeb.Configuration} ``Module''}
+%
+%The current configuration is available via the
+%\texttt{SkunkWeb.Configuration} ``module''.  In reality, it is not a
+%real Python module, but a class instance that has been set up to be
+%importable.  The implementation of the ``module'' is the
+%\texttt{ScopeableConfig} class in  \verb!pylibs/ConfigLoader.py!.
+%(\texttt{ScopeableConfig} is itself a \texttt{scopeable.Scopeable} subclass
+%with a backwards compatibility layer that will probably be removed soon.)
+%
+%\begin{methoddesc}{mergeDefaults}{dict} Function taking any number of dictionary
+%arguments, and/or keyword arguments. For each key/value in each dictionary, (with 
+%any keyword arguments comprising a final dictionary), if the current
+%configuration already has a variable with that name, it is skipped,
+%otherwise a the configuration variable with that name is set to the
+%corresponding value. 
+%\end{methoddesc}
+%
+%\begin{methoddesc}{update}{dict} Updates the root configuration with the
+%contents of the argument (argument should be a dictionary-like
+%object). 
+%\end{methoddesc}
+%\begin{methoddesc}{push}{} Overlay configuration with the contents
+%of the argument (should be a dictionary-like object). 
+%\end{methoddesc}
+%\begin{methoddesc}{pop}{} Undo the last overlay.
+%\end{methoddesc}
+%\begin{methoddesc}{trim}{} Undo all overlays, resulting in just the
+%root configuration. 
+%\end{methoddesc}
+%\begin{methoddesc}{mash}{} No argument function that returns a
+%dictionary whose contents are the current view of the configuration.
+%\end{methoddesc}
+%\begin{methoddesc}{mashSelf}{} Sets the root configuration to
+%\verb![self.mash()]!. 
+%\end{methoddesc}
+%
+%Since the configuration is read prior to the services being loaded,
+%the configuration is available to services at their time of import.
+%
+%The configuration variables show up as attributes in the module
+%\verb!SkunkWeb.Configuration!.  Thus, the configuration
+%variable \texttt{debugFlags} would appear as
+%\verb!SkunkWeb.Configuration.debugFlags!.
+%
+%\section{Service Loading}
+%The loading of services is done by the normal Python import facility.
+%This being the case, the directory(ies) that the service
+%modules/packages live in \strong{must} be in \texttt{sys.path}.  When
+%SkunkWeb is installed, the services shipped with SkunkWeb are placed
+%in a directory that is added to \texttt{sys.path} by the bootloader
+%automatically.  If you decide to move them, or add services of your
+%own (which should be located elsewhere so that future upgrades won't
+%accidentally wipe it out), you can add paths to \texttt{sys.path} in
+%the configuration file like so:
+%\begin{verbatim}
+%import sys
+%sys.path.append('/some/other/path')
+%\end{verbatim}
+%
+%Even though a service sounds like a big deal, services are merely
+%Python modules and/or packages that are loaded 
+%just after the configuration has been read in.  Conventionally though,
+%service packages/modules assume presence of the SkunkWeb environment
+%(i.e. configuration information, hooks, etc.) and plug into the
+%SkunkWeb evironment in some way.
+%
+%
+%\section{Logging}
+%Logging is done by the \verb!SkunkWeb.LogObj! module.  The main
+%functions of interest are:
+%
+%\begin{funcdesc}{DEBUG}{debugFlag, message} Takes two arguments, a debug flag (explained below) and a
+%message string.  If the flag masked against \verb!Configuration.debugFlags!
+%results in a non-zero value, the message is logged to the debug flag.
+%\end{funcdesc}
+%\begin{funcdesc}{DEBUGIT}{debugFlag} Take a single argument, a debug flag.  If the flag
+%masked against \verb!Configuration.debugFlags! 
+%results in a non-zero value, returns 1, else 0.  Useful for doing
+%computation for debug messages that you don't want to do if you aren't
+%going to log said message.
+%\end{funcdesc}
+%\begin{funcdesc}{LOG}{message} Takes one argument, the message to log.  Used for logging
+%normal, but significant events.
+%\end{funcdesc}
+%\begin{funcdesc}{WARN}{message} Takes one argument, the message to log.  Used for logging
+%events that require attention.  Logs to the error log file. 
+%\end{funcdesc}
+%\begin{funcdesc}{ERROR}{message} Takes one argument, the message to log.  Used for logging
+%erroneous events.  Logs to the error log file.
+%\end{funcdesc}
+%\begin{funcdesc}{ACCESS}{message} Takes one argument, the message to log.  Used mainly by
+%the \texttt{AE} library to log access events, but is available for
+%general use.  Logs to the access log.
+%\end{funcdesc}
+%\begin{funcdesc}{logException}{} Logs the current exception to the error log.
+%\end{funcdesc}
+%
+%
+%If, when SkunkWeb is started, standard out and/or standard error are
+%not TTY's (i.e. hooked to a terminal), they will be redirected to the
+%\texttt{LOG} nad \texttt{ERROR} functions, respectively.
+%
+%\section{The \texttt{Server} Object}
+%The \texttt{Server} object handles the routing of TCP connections to
+%appropriate handlers, presumably installed during the loading of
+%Python modules, to handle whatever protocol is spoken over that TCP
+%connection. 
+%
+%In the \texttt{SkunkWeb.Server} module there is a single function of
+%interest: 
+%\begin{funcdesc}{addService}{sockaddr, func}
+%Opens up a socket and listens for connections, and when connections
+%arrive calls \texttt{func} (with the \texttt{accept()}ed socket to
+%handle them. 
+%\begin{argdesc}
+%\item[sockaddr] An address specfier of one of two forms:
+%\begin{enumerate}
+%\item \texttt{('TCP', 'hostname', port)} --- bind to the TCP address
+%\texttt{host}/\texttt{port} where \texttt{port} is an integer.  To
+%bind to all addresses on host, specify the empty string as the
+%hostname.
+%\item \texttt{('UNIX', '/path/to/socket' [,
+%\textit{socket_permissions} ])} --- bind to the Unix socket located at
+%\verb!/path/to/socket! and optionally set the permissions of the
+%socket to \texttt{\textit{socket_permissions}}.
+%\end{enumerate}
+%\item[func] A function to call (with the socket) when a connection
+%comes in.
+%\end{argdesc}
+%\end{funcdesc}
+%
+%\section{Hook Objects}
+%Hook objects are used in SkunkWeb to provide extensibility.  They
+%allow you to setup functions to be called at specific points in
+%processing.  They can be viewed as a list of functions to call 
+%(the \texttt{Hook} class is actually a subclass of \texttt{UserList})
+%that calls the functions in the list, in order, until one of them
+%returns a non-\None\ value.  The return value of calling a hook then,
+%is the return value of the function that returned a non-\None\ value,
+%or if all of the calls returned \None, the return value is \None.
+%
+%\section{Initialization Hooks}
+%
+%\begin{datadesc}{ServerStart}  Called after services have been imported but
+%before the server \texttt{fork()}s.
+%\end{datadesc}
+%\begin{datadesc}{ChildStart}
+%Called in the child process just after the \texttt{fork()}
+%\end{datadesc}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{The \texttt{web} Service}
+%\index{services!\texttt{web}}
+%The \texttt{web} service, is short provides base request phase
+%handling (extendable/configurable via hooks), an \connection\ object
+%and socket connectivity to 
+%Apache (via \texttt{mod\_skunkweb}).
+%
+%
+%\section{Protocol}
+%The protocol between the web listener (presumably Apache, but could be
+%something else) is as follows:
+%\begin{enumerate}
+%\item Client connects to server at some prearranged port
+%(\texttt{WebListenPorts}).
+%\item Server sends one byte (the byte value should be 0)
+%\item Client sends 10 byte ascii length of request (e.g. a length of
+%twenty would be sent as the ascii string \verb*!        20! (a 
+%\verb*! ! is a blank space)).
+%\item Client sends Python marshalled form of a dictionary whose
+%key/value pairs are:
+%\begin{description}
+%\item[\texttt{'stdin'}] the request body (in CGI-land, it's standard
+%input)
+%\item[\texttt{'headers'}] a dictionary of HTTP headers
+%\item[\texttt{'env'}] the CGI environment variables.
+%\end{description}
+%\item Server sends 10 byte ascii length of request --- as in (3).
+%\item Server sends full response (headers and body).
+%\item Both sides close connection.
+%\end{enumerate}
+%
+%\section{Hooks Exposed}
+%
+%\begin{datadesc}{InitRequest} Called with the raw request data as received from
+%Apache.  If the return value is a tuple of
+%(\textit{HTTP\_RESPONSE\_CODE}, string),  request processing stops and
+%the string (which is assumed to contain headers also) is sent back as
+%the response.
+%\end{datadesc}
+%\begin{datadesc}{HaveConnection} Called after the \connection\ object has been
+%constructed but before the location specific configuration has been
+%overlayed.
+%Argument is the \connection\ object.  If the
+%return value is an HTTP response code, the \connection\  object
+%is assumed to be complete and a response is sent.
+%\end{datadesc}
+%\begin{datadesc}{PreRequest} Called after the location specific configuration has been
+%overlayed.  Argument is the \connection\ object.  If the
+%return value is an HTTP response code, the \connection\  object
+%is assumed to be complete and a response is sent.
+%\end{datadesc}
+%\begin{datadesc}{HandleRequest} Called after the \texttt{PreRequest}
+%hook. Argument is the \connection\  object.  If the
+%return value is an HTTP response code, the \connection\  object
+%is assumed to be complete and a response is sent.  If no response code
+%is returned in the calling of this hook, a \texttt{'NoHandler'} string
+%exception is raised and processing proceeds to the
+%\texttt{RequestFailed} hook.
+%\end{datadesc}
+%\begin{datadesc}{PostRequest} Called after the response has been sent. Arguments
+%are the \connection\  object and the raw request data.  If the
+%exception occurs before the \connection\  has been constructed,
+%the connection argument is \texttt{None}, otherwise the raw request
+%data argument is \texttt{None}.
+%\end{datadesc}
+%\begin{datadesc}{CleanupRequest} Called after the \texttt{PostRequest} hook. Arguments
+%are the \connection\  object and the raw request data.  If the
+%exception occurs before the \connection\  has been constructed,
+%the connection argument is \texttt{None}, otherwise the raw request
+%data argument is \texttt{None}.
+%\end{datadesc}
+%\begin{datadesc}{RequestFailed} Called if there is an exception before a response
+%has been sent.  It should return the text of a full response
+%(i.e. headers and body).  After this hook returns (even if by a raised
+%exception), the \texttt{PostRequest} and \texttt{CleanupRequest}
+%handlers are called.
+%\end{datadesc}
+%
+%\section{The \connection\  Object}
+%The \connection\ object is used to obtain information about the
+%request and to produce a response.  As such, it contains things like
+%the CGI arguments sent from forms, and things like the request and
+%response headers.  The attributes of the \connection\ object are as
+%follows:
+%
+%\begin{memberdesc}[dictionary]{\_initRequestData}
+% the raw data that the \connection\ object is
+%constructed from.  Is the same data that the \texttt{InitRequest} hook
+%is called with.
+%\end{memberdesc}
+%\begin{memberdesc}[integer]{\_status}
+% The HTTP response code to send back to Apache.  If not
+%otherwise set via call to \texttt{setStatus()}, is 200.
+%\end{memberdesc}
+%\begin{memberdesc}[dictionary]{env}
+% The CGI environment set by Apache.
+%\end{memberdesc}
+%\begin{memberdesc}[string]{\_stdin}
+%The request body text sent by the browser to Apache.
+%\end{memberdesc}
+%\begin{memberdesc}[HeaderDict]{requestHeaders} The HTTP headers of the request.
+%\end{memberdesc}
+%\begin{memberdesc}[Cookie]{requestCookie} The cookie sent by the browser.
+%\end{memberdesc}
+%\begin{memberdesc}[HeaderDict]{responseHeaders} The HTTP headers to be
+%sent in the response. 
+%\end{memberdesc}
+%\begin{memberdesc}[Cookie]{responseCookie} The cookie to be sent in
+%the response.
+%\end{memberdesc}
+%\begin{memberdesc}[File]{\_output} A file-like object that contains
+%the body of the response. 
+%\end{memberdesc}
+%\begin{memberdesc}[Browser]{browser} An object with three attributes
+%that describes the user agent as sent in the \texttt{User-Agent} HTTP header.  Those attributes are:
+%
+%\begin{memberdesc}[string]{version} the version of the client browser
+%\end{memberdesc}
+%\begin{memberdesc}[string]{lang} the language of the client browser
+%\end{memberdesc}
+%\begin{memberdesc}[string]{name} the name of the client browse (e.g. Mozilla)
+%\end{memberdesc}
+%\end{memberdesc}
+%\begin{memberdesc}[dictionary]{args} A dictionary of CGI variables.
+%\end{memberdesc}
+%\begin{memberdesc}[string]{uri} The URI of the request.
+%\end{memberdesc}
+%
+%\begin{methoddesc}{redirect}{url}  A function taking a URL that sets the appropriate response
+%variables to enact a redirect.  
+%\end{methoddesc}
+%\begin{methoddesc}{setContentType}{contentType}  Convienience function taking a single argument
+%to set the \texttt{Content-Type} header.  Equivalent to:
+%\begin{verbatim}
+%connObj.responseHeaders['Content-Type'] = arg
+%\end{verbatim}
+%\end{methoddesc}
+%\begin{methoddesc}{write}{s} Function taking a string to be written into the request body.
+%\end{methoddesc}
+%\begin{methoddesc}{setStatus}{statusCode} Set the HTTP response code to the integer argument.
+%\end{methoddesc}
+%\begin{methoddesc}{response}{} Returns a string containing the full text of the response.
+%\end{methoddesc}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{The \texttt{templating} Service}
+%\index{services!\texttt{templating}}
+%The main raison d'\^etre of the \texttt{templating} service is to
+%integrate the \texttt{AE} library (see Appendix \ref{aelib}, page
+%\pageref{aelib}).  The \texttt{AE} library, in short, is responsible
+%for the component rendering, caching and message catalog facilities
+%that are generally the reason for using SkunkWeb in the first place.
+%
+%
+%\section{API}
+%The API to the \texttt{templating} service is actually quite minimal,
+%as most of the interesting bits are in the \texttt{AE} library proper.
+%
+%\subsection{\texttt{templating.MailServices.sendmail}}
+%
+%In the \texttt{templating.MailServices} module, there is one function
+%of interest:
+%
+%\begin{funcdesc}{sendmail}{to_addrs, subj, msg, from_addr =
+%Configuration.FromAddress} 
+%The general-purpose sendmail function, which is called
+%    by the STML \texttt{<:sendmail:>} tag, or directly by Python code.
+%
+%\begin{argdesc}
+%\item[to\_addrs] should be a list or tuple of email address
+%    strings. 
+%\item[subj] must be a string, although it may be empty.
+%\item[msg] is a string containing the body of the message; it can
+%    be empty. 
+%\item[from\_addr] is a single mail address string; it 
+%    defaults to the value of the \texttt{FromAddress} configuration variable.
+%\end{argdesc}
+%This function returns nothing on success, and raises a
+%\texttt{MailError} on any mail failure. 
+%
+%\end{funcdesc}
+%
+%
+%
+%\subsection{\texttt{templating.UrlBuilder} Functions}
+%
+%\begin{funcdesc}{url}{path, queryargs, text = None, kwargs = {},
+%noescape = None, url = None}
+%
+%Returns either the url part of the request (\texttt{http://path}) or
+%(if \texttt{text} is not \None) the complete link:
+%\verb!<A href="http://path">text</A>!. 
+%
+%If the \texttt{url} argument is given, it is used in place of
+%\texttt{path} and \texttt{query}.
+%
+%\begin{argdesc}
+%\item[path] Path to the target document.
+%\item[queryargs] Any HTTP GET style CGI arguments.
+%\item[text] Text to appear between the open and close \texttt{<A>} tags.
+%\item[kwargs] Any additional arguments to the open \texttt{<A>} tag
+%(e.g. \texttt{onClick}).
+%\item[noescape] Boolean specifying that the path should not be
+%properly escaped.
+%\item[url] As an alternate to \texttt{path}, the full absolute URL to the
+%target document.
+%\end{argdesc}
+%\end{funcdesc}
+%
+%
+%\begin{funcdesc}{image}{path, queryargs = None, kwargs={}, noescape = None}
+%
+%Generate an HTML \texttt{<IMG>} tag.  Arguments are the same as those
+%for \texttt{url}.
+%\end{funcdesc}
+%
+%
+%\begin{funcdesc}{form}{path, kwargs = {}, noescape = None}
+%Generate an HTML \texttt{<FORM>} tag.  Arguments are the same as those
+%for \texttt{url}.
+%\end{funcdesc}
+%
+%
+%\begin{funcdesc}{redirect}{path = None, url = None, queryargs = {},
+%kwargs = {}, noescape = None} 
+%Cause a redirect to either the URL specified or to the path specified.
+%Arguments are the same as those for \texttt{url}.  
+%\end{funcdesc}
+%
+%\begin{funcdesc}{retain}{dict}
+%Returns a string containing HTML \texttt{<INPUT TYPE=HIDDEN>} tags
+%that contain the contents of \texttt{dict}.  The dictionary keys are
+%used for the \texttt{NAME} arguments and the corresponding values are
+%used for the \texttt{VALUE} arguments.
+%\end{funcdesc}
+%
+%
+%\section{Component Cache Distribution}
+%\NOTE{NEEDS ATTENTION}
+%\label{ccdist}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{The \texttt{pars} Service}
+%
+%\section{The \PAR\ File Format}
+%The \PAR\ file format is quite simple.  What it is is a Python
+%marshalled format dictionary where the keys are directory/file names
+%and the values are a tuple of the offset into the data area (I'll get
+%to that in a second) and the information acquired at packaging time
+%from calling \texttt{os.stat()} on the file.
+%
+%After the marshalled dictionary is the data area.  The data area is
+%where the contents of the files are stored (directiories, obviously
+%don't have anything here).  So, if you've loaded the dictionary into a
+%variable named, say \texttt{archDict}, and the data area loaded into
+%\texttt{dataArea} you can obtain the contents by:
+%\begin{verbatim}
+%offset, stat_info = archDict[filename]
+%contents = dataArea[offset:offset + stat_info[stat.ST_SIZE]]
+%\end{verbatim}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{The \texttt{basicauth} Service}
+%\index{services!\texttt{basicauth}}
+%
+%The \texttt{basicauth} service provides a basic authentication
+%mechanism for browser based authentication.
+%
+%\section{API}
+%The \texttt{basicauth} service adds a few things to the
+%\connection\ object.  Namely,
+%\begin{memberdesc}[string]{AUTH_TYPE} The type of authentication,
+%should always be \verb!'Basic'!.
+%\end{memberdesc}
+%\begin{memberdesc}[string]{REMOTE_USER} The name that the browser
+%specified when authenticating to the server.  May be \None.
+%\end{memberdesc}
+%\begin{memberdesc}[string]{REMOTE_PASSWORD} The password that the browser
+%specified when authenticating to the server.  May be \None.
+%\end{memberdesc}
+%
+%\section{The \texttt{swpasswd} Utility}
+%The \texttt{swpasswd} utility is a simple program to maintain
+%password files.  
+%
+%Its general form is:
+%\begin{verbatim}
+%swpasswd [-cb] password_file username [password]
+%\end{verbatim}
+%
+%The two options are:
+%\begin{argdesc}
+%\item[-c] Create a new password file
+%\item[-b] Specify the password on the command line as opposed to being
+%asked for it interactively.
+%\end{argdesc}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{Writing A Service}
+%
+%uri rewriting likely in web.HaveConnection
+%
+%cookie auth schemes (probably also in web.HaveConnection)
+%
+%document handlers
+%
+%daisy chaining functions \'al\`a basicauth
+%
+%
+%an example easter egg service
+%
+%a remote swpython example?  if so, warn why \textbf{really} bad
+%
+%\textbf{Explain the \texttt{SkunkWeb.Configuration} ``module'' and
+%it's methods and that the namespace above is in this object}
+%
+%\verb!_mergeDefaultsKw!
+%
+%Hooks
+%
+%The \verb!Server! interface
+%
+%A request recording service
+%
+%
+%\appendix
+%\input ae.tex
 
 
 \cleardoublepage
