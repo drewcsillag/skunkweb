@@ -54,6 +54,8 @@ opman/opman.html: ../opman/opman.tex
 PyDO/PyDO.html: ../PyDO/PyDO.tex
 	$(MKHTML) $(TOPDIR)/PyDO/PyDO.tex
 
+tutorial/tutorial.html: ../tutorial/tutorial.tex
+	$(MKHTML) $(TOPDIR)/tutorial/tutorial.tex
 clean:
 	-rm -rf PyDO opman devel stmlrefer
 	-for i in aux dvi how idx ilg ind l2h log tar.gz toc;\
