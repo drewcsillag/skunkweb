@@ -74,6 +74,8 @@ class ViewableDomainField(_requirable, DomainField, Viewable):
                  default=None,
                  required=0,
                  multiple=0,
+                 setable=1,
+                 lenient=0,
                  **view_attrs):
         self.required = required
         DomainField.__init__(self,
@@ -81,7 +83,9 @@ class ViewableDomainField(_requirable, DomainField, Viewable):
                              domain,
                              description,
                              default,
-                             multiple)
+                             multiple,
+                             setable,
+                             lenient)
         Viewable.__init__(self, **view_attrs)
 
 
@@ -553,9 +557,16 @@ class ButtonBar(ViewableDomainField):
     def __init__(self,
                  name,
                  options,
+                 setable=1,
+                 lenient=0,
                  **view_attrs):
         self.options, domain=self._parse_options(options)
-        ViewableDomainField.__init__(self, name, domain, **view_attrs)
+        ViewableDomainField.__init__(self,
+                                     name,
+                                     domain,
+                                     setable=setable,
+                                     lenient=lenient,
+                                     **view_attrs)
 
     def _parse_options(self, options):
         d=Set()

@@ -204,9 +204,12 @@ class DomainField(Field):
                  domain,
                  description,
                  default=None,
-                 multiple=0):
+                 multiple=0,
+                 setable=1,
+                 lenient=0):
         self.__domain=domain
-        Field.__init__(self, name, description, default, multiple)
+        self.lenient=lenient
+        Field.__init__(self, name, description, default, multiple, setable)
         
     def _get_domain(self):
         return self.__domain
@@ -222,6 +225,8 @@ class DomainField(Field):
     domain=property(_get_domain, _set_domain)
 
     def in_domain(self, value, domain=None):
+        if self.lenient:
+            return 1
         if (self.multiple and value==[]) or \
            ((not self.multiple) and value==None):
             return 1
@@ -267,6 +272,7 @@ class Form(object):
                                    storelists=1)
         self.state=None
 
+    
     def _get_fields(self):
         return self._fields
 

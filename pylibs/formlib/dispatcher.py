@@ -1,5 +1,5 @@
-# Time-stamp: <03/01/10 14:02:16 smulloni>
-# $Id: dispatcher.py,v 1.13 2003/01/06 21:47:59 smulloni Exp $
+# Time-stamp: <03/01/21 13:49:37 smulloni>
+# $Id: dispatcher.py,v 1.14 2003/01/10 19:04:26 smulloni Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
@@ -41,7 +41,7 @@ class Goto(object):
         dispatcher.statemgr.store_form(form)
         form.process(argdict, dispatcher, ns)
         if self.formname:
-            return dispatcher.createForm(self.formname)
+            return dispatcher.createForm(self.formname, args=self.args)
 
 class Pop(object):
     def __init__(self, args=None):
@@ -61,7 +61,7 @@ class Pop(object):
         form.process(argdict, dispatcher, ns)
         nextformname=dispatcher.statemgr.pop_formname()
         if nextformname:
-            f=dispatcher.createForm(nextformname)
+            f=dispatcher.createForm(nextformname, args=self.args)
             f.setData(dispatcher.statemgr.state.get(nextformname, {}))
             return f
 
@@ -84,7 +84,7 @@ class Push(object):
                 return form
         dispatcher.statemgr.store_form(form)                    
         dispatcher.statemgr.push_formname(form.name)
-        f=dispatcher.createForm(self.formname)
+        f=dispatcher.createForm(self.formname, args=self.args)
         f.setData(dispatcher.statemgr.state.get(self.formname, {}))
         return f
     
@@ -95,7 +95,7 @@ class AbstractFormDispatcher(object):
         self.statemgr=statemgr
         self.stateVariable=stateVariable
 
-    def createForm(self, formname, argdict=None):
+    def createForm(self, formname, argdict=None, args=None):
         raise NotImplementedError
 
     def getStartForm(self, argdict):

@@ -1,3 +1,8 @@
+2003-01-21    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib: many changes, back and forth, resulting
+	in no detectable forward progress.
+
 2003-01-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py (_writeCompileCache): fixed typo.
