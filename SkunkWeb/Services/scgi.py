@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: fcgiprot.py,v 1.1 2001/09/06 19:16:33 drew_csillag Exp $
+# $Id: scgi.py,v 1.1 2002/06/17 19:29:52 drew_csillag Exp $
 # Time-stamp: <01/05/04 17:32:39 smulloni>
 ########################################################################
 #http://www.mems-exchange.org/software/scgi/
@@ -77,7 +77,7 @@ class SCGIProtocol(requestHandler.protocol.Protocol):
         headers = parseHeaders(recvstr(sock))
         cl = int(headers.get('CONTENT_LENGTH', '0'))
         if cl:
-            body = r.recv(cl)
+            body = sock.recv(cl)
         else:
             body = ''
 
@@ -122,6 +122,9 @@ if Configuration.SCGIListenPorts:
         SCGIProtocol(), Configuration.SCGIListenPorts)
 
 ########################################################################
-# $Log: fcgiprot.py,v $
+# $Log: scgi.py,v $
+# Revision 1.1  2002/06/17 19:29:52  drew_csillag
+# added
+#
 #
 ########################################################################
