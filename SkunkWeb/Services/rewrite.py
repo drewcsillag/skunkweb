@@ -1,5 +1,5 @@
 # Time-stamp: <02/07/15 09:54:01 smulloni>
-# $Id: rewrite.py,v 1.6 2002/06/21 20:48:38 smulloni Exp $
+# $Id: rewrite.py,v 1.7 2002/07/15 15:07:10 smulloni Exp $
 
 ########################################################################
 #  
@@ -107,7 +107,33 @@ class Status404(DynamicRewriter):
             self.connection,
             self.sessionDict)
 
+class ExtraPathFinder(DynamicRewriter):
+    """
+    finds extra path info by walking up the supplied
+    path until a non-directory file is found.  Returns
+    a 404 if not found; otherwise, the url is rewritten
+    to point to the existing resource, and a connection argument
+    called (by default, but this may be changed with the
+    "path_info_var_name" constructor argument)
+    "path_info" is populated with the extra path info.
+    """
+    def __init__(self,
+                 notFoundHandler=fourOhFourHandler,
+                 path_info_var_name='path_info'):
+        self.notFoundHandler=notFoundHandler
+        self.path_info_var_name=path_info_var_name
 
+    def call(self, match):
+        fs=Configuration.documentRootFS
+        (path, info)=fs.split_extra(self.connection.uri)
+        if not path:
+            raise PreemptiveResponse, self.notFoundHandler(
+                self.connection,
+                self.sessionDict)
+        else:
+            connection.uri=path
+            connection.args[self.path_info_var_name]=info
+        
 ########################################################################
 
 def _dorewrite(match, connection, sessionDict, replacement, key):
@@ -199,6 +225,11 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.7  2002/07/15 15:07:10  smulloni
+# various changes: configuration (DOCROOT); new sw.conf directive (File);
+# less spurious debug messages from rewrite; more forgiving interface to
+# MsgCatalog.
+#
 # Revision 1.6  2002/06/21 20:48:38  smulloni
 # error-handling tweak.
 #

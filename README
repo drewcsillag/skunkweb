@@ -53,7 +53,8 @@ you get the congratulations page.  N.B. Chances are fair that if
 you are using Apache to front skunkweb, you can:
    1) remove httpd from the services list in sw.conf
    and
-   2) comment out HTTPListenPorts in sw.conf
+   2) comment out HTTPListenPorts in sw.conf (not necessary, actually,
+   as they will be ignored if you do 1) above).
 
 SkunkWeb, Smell the power!
 
@@ -70,7 +71,8 @@ Support
 ------------------------------
 Currently, you have a few options:
    * use the mailing list
-   * Contact Drew Csillag <drew_csillag@yahoo.com> for rate information
+   * Contact Drew Csillag <drew_csillag@yahoo.com> and/or Jacob Smullyan 
+     <smulloni@smullyan.org> for rate information. 
 
 (from docs/Pitch)
 What is it?

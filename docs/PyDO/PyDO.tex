@@ -350,7 +350,19 @@ obj.getSomeWhere(LIKE(FIELD('last_name'), ('Ingers%')))
 \end{verbatim}
 
 The complete list of operators is in \doref{operators}.
-\item[getTupleWhere(opTuple, **kw)]
+\item[getTupleWhere(opTuple, **kw)] Allows you to use a somewhat
+Lispish notation for generating SQL queries, like so:
+\begin{verbatim}
+obj.getTupleWhere(('OR', 
+                  ('LIKE', FIELD('last_name'), 'Ingers%'), 
+                  ('OR', ('<>', FIELD('id'), 355),
+                         ('=', FIELD('id'), 356))))
+\end{verbatim}
+
+Strings are used to represent operators rather than the SQLOperator class wrappers 
+used in getSomeWhere(), but the FIELD and SET classes are still useful.
+The \texttt{kw} argument is treated the same as in getSome() and 
+getSomeWhere().
 
 \item[getSQLWhere(sql, values=())] executes a sql statement to fetch
 the object type where you supply the where clause (without the
@@ -849,10 +861,14 @@ getting committed.
 
 \chapter{Operators}
 \label{operators}
-Operators let you do more with the \texttt{getSomeWhere} and
-\texttt{getTupleWhere} methods.
 
-The operator list:
+The \texttt{PyDO.operators} module consists of support code to let you
+do more with the \texttt{getSomeWhere} and \texttt{getTupleWhere}
+static methods of PyDO objects.  These are no more than SQL-generating
+routines, and hence fall into the category of syntactic sugar, but
+they can be convenient in some circumstances.
+
+The below are SQLOperator subclasses for use with the \texttt{getSomeWhere} method:
 \begin{argdesc}
 \item[NOT] takes one argument, the item to negate.
 \item[EQ] takes two arguments, the items to compare for equality.
@@ -863,19 +879,27 @@ equal to.
 \item[GT]takes two arguments, the items to compare for greater than.
 \item[GT_EQ]takes two arguments, the items to compare for greater than
 or equal to.
-\item[LIKE] takes two arguments, the first should be a \texttt{FIELD} and the second, a string that is the LIKE matcher.
-\item[IN] takes a variable (at least one) number of arguments.  The
-first should be a \texttt{FIELD} the rest should be items that should
+\item[LIKE] takes two arguments, the first a \texttt{FIELD}and the second, 
+a string that is the LIKE matcher.
+\item[IN] takes two arguments, the first a \texttt{FIELD}, and the second,
+a \texttt{SET} constructed with the items that should
 be checked for membership.  In short, the SQL IN operator.
-\item[AND] Takes two arguments, should be two sub expressions to
-logically and.
-\item[OR] Takes two arguments, should be two sub expressions to
+\item[AND] Takes two arguments, two sub expressions to logically and.
+\item[OR] Takes two arguments, two sub expressions to
 logically or.
-\item[PLUS, MINUS, MULT, DIV] Takes two arguments, one should probably be a
-\texttt{FIELD}, the other either a number or a \texttt{FIELD}.  The values willbe mathematically operated on as appropriate.
-
+\item[PLUS, MINUS, MULT, DIV] Takes two arguments, both of them either numerical constants
+or a \texttt{FIELD}.  The values will be mathematically operated on as appropriate.
 \end{argdesc}
 
+Two other classes exist to control the escaping of SQL output. The
+\texttt{FIELD} class is used to indicate that a given string is not a
+string literal, but the name of a database column.  The \texttt{SET}
+class is used to generate a properly formatted list of things to use
+as the second argument of the \texttt{IN} operator.
+
+\texttt{getTupleWhere} does not use thes SQLOperator subclasses, but directly
+inserts the operator strings provided by the user into the generated
+SQL.  The FIELD and SET classes are still needed, however.
 
 \chapter{The *Genscripts}
 In the PyDO distribution, there are a number of scripts called

@@ -1,3 +1,11 @@
+2002-07-28  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/PyDO/PyDO.tex (chapter{Operators}): more information about
+	operators. 
+
+	* SkunkWeb/Services/rewrite.py (ExtraPathFinder): added a dynamic
+	rewriter for finding extra path info.
+
 2002-07-27  Andrew Csillag  <drew@localhost.localdomain>
 
 	* util/make_distr.py (doc_cmds): made it so that it builds the
