@@ -59,9 +59,13 @@ import SkunkWeb
 if not configFiles:
     configFiles=[bootloader.DEFAULT_CONFIG_FILE_NAME]
     
-bootloader.init(configFiles, bootloader.SkunkRoot)
+mods = bootloader.init(configFiles, bootloader.SkunkRoot)
 import SkunkWeb.Server
 bootloader.load()
+
+#fix so module snapshot is complete, but not include stuff imported
+#in sw.conf
+SkunkWeb.Server.svr._modules = mods
 
 try:
     SkunkWeb.Server.start()

@@ -15,10 +15,16 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
+# $Id: Server.py,v 1.2 2001/08/17 16:47:21 drew_csillag Exp $
 # Time-stamp: <01/04/16 14:10:32 smulloni>
 ########################################################################
 
+########################################################################
+###IMPORTANT!!!!
+###if you add imports to this module, make sure to update
+###bootloader._stupidfunc (contained in bootloader.init) so that reload
+###will continue to work
+########################################################################
 from SocketMan.SocketMan import SocketMan
 import Configuration
 import LogObj
@@ -146,6 +152,9 @@ svr.moduleSnapshot()
 
 ########################################################################
 # $Log: Server.py,v $
+# Revision 1.2  2001/08/17 16:47:21  drew_csillag
+# fixed syntax warning
+#
 # Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
 # take 2 of import
 #

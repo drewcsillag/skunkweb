@@ -1,3 +1,16 @@
+2002-06-05  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind
+	us that in the event that we add an import, that we add that import
+	to _stupidfunc in the bootloader
+
+	* SkunkWeb/SkunkWeb/bootloader.py.in(init): now has some logic
+	to produce a true module snapshot that should always do the right
+	thing so reload will work
+
+	* SkunkWeb/skunkweb.py.in: adjusted for bootloader change so reload
+	should now work properly -- again
+
 2002-06-03  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: fixed a goof that showed
