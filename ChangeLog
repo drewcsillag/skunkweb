@@ -1,3 +1,10 @@
+2003-06-03  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/cronjob.py: module for defining and executing cron jobs.
+	There also needs to be a service that defines a crontab that can
+	be configured in sw.conf, and a swpython script to run the crontab 
+	(standalone or from the normal cron).
+
 2003-05-26  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/vfs.py (LocalFS.find_path): convenience method for
