@@ -21,7 +21,7 @@ import DateTime
 import string
 from PyDO import SYSDATE #circular import ok, since we're loaded after PyDO
 import DCOracle
-import SQL
+import Oracle
 
 class _NO_VALUE: pass
 
@@ -35,7 +35,7 @@ class PyDOOracle:
         self.connectString = connectString
         realConn, self.verbose = self._parseConnectString(connectString)
         self.realConn = realConn
-        self.conn = SQL.getConnection(realConn)
+        self.conn = Oracle.getConnection(realConn)
         #self.conn = DCOracle.Connect(realConn)
         self.bvcount = 0
         oraConns.append(self.conn)
@@ -154,7 +154,7 @@ class PyDOOracle:
         return val
 
     def getProcedure(self, procName):
-        return SQL.getProcedure(self.realConn, procName)
+        return Oracle.getProcedure(self.realConn, procName)
 
     def getCursor(self):
         return self.conn.cursor()
