@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/12/18 16:30:26 smulloni>
+# Time-stamp: <2002-01-22 11:23:43 drew>
 
 ########################################################################
 #  
@@ -25,3 +25,4 @@ from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS
 from zipfs import ZipFS
 from parfs import ParFS
+from tarfs import TarFS

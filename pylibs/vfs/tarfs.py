@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <2002-01-23 10:27:17 drew>
+# $Id: tarfs.py,v 1.1 2002/01/23 15:30:00 drew_csillag Exp $
+# Time-stamp: <2002-01-23 10:38:23 drew>
 
 ######################################################################## 
 #  Copyright (C) 2002 Andrew Csillag <drew_csillag@yahoo.com>
@@ -27,7 +27,10 @@ import os
 
 
 def bslog(msg):
-    open('/tmp/bullshit','a').write('%s\n' % msg)
+#    try:
+#        open('/tmp/bullshit','a').write('%s\n' % msg)
+#    except:
+        pass
     
 class TarFS(FS):
     def __init__(self, path, prefix='/'):
@@ -42,7 +45,7 @@ class TarFS(FS):
         bslog(str(self._filelist))
         
     def ministat(self, path):
-        mslog('ministat %s' % path)
+        bslog('ministat %s' % path)
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted): 
             raise VFSException, "no such file or directory: %s" % path
