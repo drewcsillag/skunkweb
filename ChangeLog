@@ -1,3 +1,11 @@
+2002-11-22 <heiho1@mac.com>
+
+	* test/formlib/htdocs/test4.html added internationalizable address test
+	* test/formlib/htdocs/test4.pyinc  added internationalizable address test
+	* test/formlib/unittests/formtest.py added unittests for form classes
+	* test/formlib/htdocs/testAllViews.html added test for all viewable components
+	* test/formlib/htdocs/testAllViews.pyinc added test for all viewable components
+
 2002-11-21    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/form.py (_getname): change to make the form
