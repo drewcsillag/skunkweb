@@ -1,5 +1,5 @@
-#   Time-stamp: <2002-06-18 17:07:10 acsillag> 
-#   $Id: TODO,v 1.40 2002/06/18 21:00:43 drew_csillag Exp $
+#   Time-stamp: <02/06/19 10:03:11 smulloni> 
+#   $Id: TODO,v 1.41 2002/06/18 21:02:25 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -20,24 +20,6 @@ Push release to sourceforge
 Do Quick release
     https://sourceforge.net/project/admin/qrs.php?package_id=&group_id=32756
 
-SkunkWeb 3.2
-------------------------------
-L support for BETWEEN in PYDO.operators
-
-TESTING:
-* userdir (I suspect scoping bug)
-
-NEW CODING:
-* tweak makefiles (for RPM_BUILD_ROOT) and documentation
-* gallery demo: multiple directories, config file 
-+ wizard -- show required fields, show picture of skunk
-
-DOCS
-* a doc on the website that tells of the protocol frontends we support --
-  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami and what databases 
-  are supported.
-* probably expand the above doc to the marketing bullet-points -- perhaps
-  a whitepaper too?
 
 SkunkWeb 3.3
 ------------------------------
@@ -54,21 +36,31 @@ SkunkWeb 3.3
 * Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
   (at least in 4.0.4) under jk/doc
 * rewrite enhancements
+* another hard look at scoping -- how are overlapping scopes handled?  Can
+  the default scope directives be made more powerful?  Can the code be made
+  more efficient?
 ? Quixote support - is it feasable given how it works?
 * PSP support
-
+* get standard directory configuration options to actually work; distributions
+  for gentoo, debian, redhat.
+* test userdir (I suspect scoping bug)
 ? DAV support built on httpd
 ? convert from using Makefile.pre.in to using distutils to build
   and install our C modules 
-? dynamic scoping: to implement things like "if a url matches
-  r'/~(\w)/(.*)', make Configuration.documentRootFS be
-  LocalFS(os.path.expanduser('~%s') % username)" 
-? ZODB FS implementation.
-? sessionHandler's FSSessionStore rewritten to use VFS.
-? image handling service, built on basis of mime-type-specific handlers
+* tweak makefiles (for RPM_BUILD_ROOT) and documentation
+* gallery demo: multiple directories, config file 
+
+DOCS
+* a doc on the website that tells of the protocol frontends we support --
+  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami and what databases 
+  are supported.
+* probably expand the above doc to the marketing bullet-points -- perhaps
+  a whitepaper too?
 
 Future stuff
 ------------------------------
+* a formhandler service, to make html forms and chains thereof easier
+  to manage.  Adam's formlib is a start in that direction.
 * a means to pass arguments to a cachable component that do not become
   part of the cache key
 * ways to get expired and rendered flags via the component tags
@@ -80,10 +72,8 @@ Future stuff
 * a PSP (python server pages implementation) (I've got a really cheesy one,
   but I've got to imagine there's more to it than that).
 * tags which make javascript easier to live with
-* precompiled .par files
-@ allow site-libs to be in .par files
 * other uses for swpython
-
+L support for BETWEEN in PYDO.operators
 * an XML-RPC component handler;
     Drew:
     > Do you mean to effectively have a standard mapping from XML-RPC to the
@@ -92,23 +82,16 @@ Future stuff
     > The latter, yes, so apps other than SkunkWeb can use SW components.  And
     > just as important, so SW can make component calls to XML-RPC servers.
 * remote debugging (again!);
-* SW products (combined par/service), with an swpython-based installer:
+* products:
   wiki, bulletin board, and other standard web toys (the toys themselves
   would obviously not be part of the core);
 * support for chat and p2p protocols;
-* component protocol/host aliasing, so an application can call a component
-  without knowing whether it is remote or, if remote, what host it is from.
-  Would be useful for product deployment; this could be done with a component
-  handler that delegates to other handlers depending on configuration options.
-
 
 Unknowns
 ------------------------------
 ? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
 ? add request data recording/playback extension
 ? single submit library (use uuid lib probably)
-? make precompiled .pars - or option to compile on server start? 
-  - would be a good application of swpython
 ? add an input tag (mimicking HTMLs) which can do client-side checking via
   javascript
   - ? a way to have a form redisplay if invalid data in a field
