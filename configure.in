@@ -169,6 +169,7 @@ else
 Get it at:
     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
 ])
+exit 1;
 fi
 
 dnl # Check for location of bash
