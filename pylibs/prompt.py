@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: prompt.py,v 1.11 2001/07/27 16:30:08 drew Exp $
+# $Id: prompt.py,v 1.1.1.1 2001/08/05 15:00:30 drew_csillag Exp $
 """
 A prompt module, useful for asking interactive questions.
 It's fairly simple, and generally for use in command-line
@@ -111,7 +111,7 @@ class CharQuestion(Question):
              print ( 'Single character expected' )
              ret = None
         elif ret not in self._allowed:
-             print ( 'Answer has to be one of [%s]' % self.astr )
+             print ( 'Answer has to be one of [%s]' % astr )
              ret = None
 
         return ret
