@@ -214,13 +214,16 @@ portion of the normal PostgreSQL connection string you put
 on the port \emph{port} instead of the default port.
 \end{argdesc}
 
-For MySQL, which hasn't been tested all that much, only the non-caching
-version is currently available.  If there is demand I can do it, I just
-don't have mysql installed anywhere convienient for me to test.
-The form of PyDO/MySQL connect strings is:
-\begin{verbatim}
-pydo:mysql:normal\_mysql\_connect\_string
-\end{verbatim}
+For MySQL, they can take one of a few forms:
+\begin{argdesc}
+\item[pydo:mysql:normal\_mysql\_connect\_string] use the
+\texttt{MySQL} module directly.  To use a cached connection
+(maintained by the \texttt{mysql} SkunkWeb Service, just use
+\texttt{pydo:mysql:::::name} where \texttt{name} is the connection
+name from the \texttt{MySQLConnectParams} configuration variable in
+\texttt{sw.conf}.
+\end{argdesc}
+
 
 \section{Inheritance}
 %  * inheritance semantics from doc
@@ -329,6 +332,61 @@ contents of \texttt{\_dict}
 \texttt{\_matchUnique}
 \item[getUnique(**kw)] get a unique obj based on keyword args
 \item[getSome(**kw)] get some objs based on keyword args
+\item[getSomeSQL(**kw)] given the attribute/value pairs in kw, return
+sql statement, values to be used in a call to \texttt{conn.execute}.
+If kw is empty, the WHERE text in the sql statement will still be
+preseverved.  Basically useful for constructing ad-hoc queries on a
+table.
+\item[getSomeWhere(*args, **kw)] Allows you to use the operator
+objects in \texttt{PyDO.operators} to be able to use sql operators
+other than the implicit \texttt{AND} as used by the other static get
+methods.  The \texttt{**kw} argument is the same as the other static
+get methods.  The \texttt{*args} argument however allows you to
+combine operators to do operations like OR, NOT, LIKE, etc.  For
+example, the following would get all rows where the last name field
+was LIKE \texttt{Ingers\%}.
+\begin{verbatim}
+obj.getSomeWhere(LIKE(FIELD('last_name'), ('Ingers%')))
+\end{verbatim}
+
+The complete list of operators is in \doref{operators}.
+\item[getTupleWhere(opTuple, **kw)]
+
+\item[getSQLWhere(sql, values=())] executes a sql statement to fetch
+the object type where you supply the where clause (without the
+\texttt{WHERE} keyword) and values in the case that you bind
+variables.
+
+\item[scatterFetchSQL(objlist)] do a scatter fetch (a select from more than one table) based
+        on the relation information in objs which is of the form:
+\begin{verbatim}
+[
+   (object, attributes, destinationObject, destinationAttributes),
+   (object, attributes, destinationObject, destinationAttributes)
+]
+\end{verbatim}
+
+        This basically states that objects attributes are a foreign key to
+        destinationObject's destinationAttributes.
+
+        For example, if you have User and UserResidence classes, a scatter
+        fetch may be simply:
+\begin{verbatim}
+userObj.scatterFetchSQL( [ (UserResidence, 'USER_OID', User, 'OID') ] )
+\end{verbatim}
+        which if executed would return a list of tuples of:
+            (userObj, userResObj)
+        where \texttt{userObj.['OID'] == userResObj['USER_OID']}
+
+        This function returns sql, baseColumnNames, and a modified version of
+        the objs argument.
+\item[scatterFetchPost(objs, sql, vals, cols)] handle the execution
+and processing of a scatter fetch to produce a result list -- returns
+the list of tuples referred to in the docstring of \texttt{scatterFetchSQL}.
+\item[scatterFetch(objs, **kw)] see \texttt{scatterFetchSQL} for
+format of \texttt{objs} and \texttt{getSome} for format of
+\texttt{**kw}.
+
 \item[new(refetch = None, **kw)] get new object based on kw args, if
 refetch is true, refetch obj after insert
 \item[_validateFields(dict)] does simple validation of fields on
@@ -354,10 +412,9 @@ thatSideColumns, thatObject, thatAttrNames)] returns \texttt{sql} and
 doesn't execute it so you can do ordering or other stuff.
 \end{argdesc}
 
-FIXME scatterFetch stuff
 
-\subsection{Dict-Stype Instance Methods}
-PyDO object also obey a good majority of the dictionary interface.
+\subsection{Dict-type Instance Methods}
+PyDO objects also obey a good majority of the dictionary interface.
 They are:
 \begin{verbatim}
 __getitem__(item)
@@ -790,8 +847,54 @@ confusion, but in the case of using multiple database connections
 simultaneously, this could be a bit more confusing on what exactly is
 getting committed.
 
-\chapter{Tools}
-ogenscript.py and pgenscript.py
+\chapter{Operators}
+\label{operators}
+Operators let you do more with the \texttt{getSomeWhere} and
+\texttt{getTupleWhere} methods.
+
+The operator list:
+\begin{argdesc}
+\item[NOT] takes one argument, the item to negate.
+\item[EQ] takes two arguments, the items to compare for equality.
+\item[NE]takes two arguments, the items to compare for inequality.
+\item[LT ] takes two arguments, the items to compare for less than.
+\item[LT_EQ]takes two arguments, the items to compare for less than or
+equal to.
+\item[GT]takes two arguments, the items to compare for greater than.
+\item[GT_EQ]takes two arguments, the items to compare for greater than
+or equal to.
+\item[LIKE] takes two arguments, the first should be a \texttt{FIELD} and the second, a string that is the LIKE matcher.
+\item[IN] takes a variable (at least one) number of arguments.  The
+first should be a \texttt{FIELD} the rest should be items that should
+be checked for membership.  In short, the SQL IN operator.
+\item[AND] Takes two arguments, should be two sub expressions to
+logically and.
+\item[OR] Takes two arguments, should be two sub expressions to
+logically or.
+\item[PLUS, MINUS, MULT, DIV] Takes two arguments, one should probably be a
+\texttt{FIELD}, the other either a number or a \texttt{FIELD}.  The values willbe mathematically operated on as appropriate.
+
+\end{argdesc}
+
+
+\chapter{The *Genscripts}
+In the PyDO distribution, there are a number of scripts called
+\emph{something}\texttt{genscript.py}.  What these scripts do, is
+login to the database, and ask the database about the schema (read as:
+grovel over the system catalogs), and ask the user (that is, you) a
+few questions about what it finds, and what to call things.  Then,
+they output a python module containing premade PyDO classes that
+contain the knowledge of the schema it produced.  Currently genscripts
+exist for Oracle (\texttt{ogenscript.py}, PostgreSQL
+\texttt{pgenscript.py} and SAPDB \texttt{sabdbgenscript}.  They are a
+great way to automate something that would otherwise be tedious (at
+least) and errorprone.  Not only that, but occasionally, you wind up
+discovering relations in your schema that you werent aware of.
+
+In order for these tools to be able to gather relation information,
+the appropriate referential integrity constraints must be in place.
+
+
 
 \chapter{Adding Support for Another Database}
 If you wish to add support for another database that is currently not
