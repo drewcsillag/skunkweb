@@ -1,7 +1,28 @@
 <!-- 
 a dtd for a notation used to define state machines
-Time-stamp: <02/08/31 18:06:27 smulloni> 
-$Id: flowdef.dtd,v 1.1 2002/08/30 19:47:54 smulloni Exp $ 
+Time-stamp: <02/09/03 13:10:41 smulloni> 
+$Id: flowdef.dtd,v 1.2 2002/09/03 14:14:47 smulloni Exp $ 
+
+Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
+  
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+  
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+  
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+-->
+
+<!--
+This DTD exists primarily for documentation purposes, not
+for programmatic use.
 -->
 
 <!-- 
@@ -13,7 +34,7 @@ toplevel.
 
 <!--
 a stage is essentially a namespace, optionally containing some 
-number of fields, an optionally inheriting fields from one or
+number of fields, and optionally inheriting fields from one or
 more other stages. Stages can be defined where they occur in a
 flow, or at top level.  When a stage is not defined inline, or
 occurs more than once within one or more flows, it can be
@@ -68,4 +89,7 @@ gives the application a cue as how to evaluate the expression.
 -->
 
 <!ELEMENT expr ANY>
-<!ATTLIST expr type CDATA #IMPLIED>
+<!ATTLIST expr 
+    type CDATA #IMPLIED
+    id ID #IMPLIED
+    idref IDREF #IMPLIED>
