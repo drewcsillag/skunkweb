@@ -19,10 +19,32 @@
 
 from containers import FieldContainer
 from form import Field, DomainField, Form, FormError, \
-     _getname, CompositeField, _defaultValueComposer
+     _getname, CompositeField, _defaultValueComposer, \
+     FieldProxy
 from containers import Set
 import ecs
 
+# utility function to determine if a given object is
+# viewable, handles cases where an object
+# is not directly a Viewable implementation but can
+# still be viewed [i.e. the case of a FieldProxy 
+# proxying a viewable field].
+def isviewable(anObject):
+    if isinstance(anObject, Viewable):
+        return 1
+    if isinstance(anObject, FieldProxy):
+        tstfld = anObject.field
+        return isinstance(tstfld, Viewable)
+    if isinstance(anObject, CompositeField):
+        for fld in anObject.components:
+            if isinstance(fld, Viewable):
+                return 1
+            if isinstance(fld, FieldProxy):
+                if isinstance(fld.field, Viewable):
+                    return 1
+    return 0        
+                
+    
 # some base classes.
 
 class Viewable(object):
@@ -547,14 +569,15 @@ class Layout(object):
     "Superclass for ViewableForm layouts"
     def handleError(self, form, tr, fld):
         numErrs = 0
-        msgs=form.errors.get(fld)
-        if msgs:
-            msg='\n'.join([x.errormsg for x in msgs])
-            numErrs = numErrs + 1
-            em=ecs.Em(msg).setAttribute('class', 'form_error')
-            pr = ecs.Pre(em)
-            td=ecs.Td(pr).setAttribute('colspan', '2')
-            tr.addElement(td)
+        if form.errors:
+            msgs=form.errors.get(fld)
+            if msgs:
+                msg='\n'.join([x.errormsg for x in msgs])
+                numErrs = numErrs + 1
+                em=ecs.Em(msg).setAttribute('class', 'form_error')
+                pr = ecs.Pre(em)
+                td=ecs.Td(pr).setAttribute('colspan', '2')
+                tr.addElement(td)
         return numErrs    
     
 
@@ -597,9 +620,7 @@ class FlowLayout(Layout):
 
         tr = ecs.Tr()
         for fld in form.fields:
-            if not isinstance(f, Viewable):
-                # non-viewable fields are not directly displayed
-                # TODO:  this is a bit of a poor hack...
+            if not isviewable(f):
                 continue
             
             if f.description:
@@ -646,9 +667,7 @@ class StackLayout(Layout):
         if table is None:
             table=ecs.Table()
         for fld in form.fields:
-            if not isinstance(fld, Viewable):
-                # non-viewable fields are not directly displayed
-                # TODO:  this is a bit of a poor hack...
+            if not isviewable(fld):
                 continue
 
             errTr = ecs.Tr()
@@ -756,9 +775,7 @@ class NestedListLayout(Layout):
             fnm = list[idx]
             fld = form.fields[fnm]
 
-            if not isinstance(fld, Viewable):
-                # non-viewable fields are not directly displayed
-                # TODO:  this is a bit of a poor hack...
+            if not isviewable(fld):
                 return
             
             if idx == lstLen - 1:
@@ -778,9 +795,7 @@ class NestedListLayout(Layout):
             if numErr:
                 table.addElement(errTr)
 
-        if not isinstance(f, Viewable):
-            # non-viewable fields are not directly displayed
-            # TODO:  this is a bit of a poor hack...
+        if not isviewable(f):
             return 
             
         if f.description:
@@ -920,6 +935,19 @@ class ViewableForm(Viewable, Form):
 # viewable version of the composite field
 ########################################################################
 
+class ViewableFieldProxy(FieldProxy, Viewable):
+    "A viewable version of the FieldProxy which overrides"\
+    "the view produced to use the proxied name for "\
+    "submissions instead of the name of the proxied field."
+
+    def __init__(self, proxyName, proxiedField):
+        FieldProxy.__init__(self, proxyName, proxiedField)
+
+    def getView(self):
+        tmpVw = self.field.getView()
+        tmpVw.setAttribute('name', self.name)
+        return tmpVw
+
 class ViewableCompositeField(Viewable, CompositeField):
     def __init__(self,
                  name,
@@ -941,8 +969,18 @@ class ViewableCompositeField(Viewable, CompositeField):
                                 componentFieldDelimiter,
                                 valueComposer)
 
+        # must override initialization of composite fields to ensure that ViewableFieldProxies ]
+        # are used
+        tmpComponents = []
+        for fld in componentFields:
+            prxy = ViewableFieldProxy(self._getComponentName(fld), fld)
+            tmpComponents.append(prxy)
+        self._fields = FieldContainer(tmpComponents,
+                                          fieldmapper=_getname,
+                                          storelists=0)
+
         self.layout=layout or StackLayout()
 
     def getView(self):
-        return self.layout.layoutFields(self.components)
+        return self.layout.layoutFields(self)
 

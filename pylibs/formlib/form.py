@@ -108,7 +108,18 @@ class FieldProxy(object):
             return self._name
         else:
             return getattr(self.field, name)
-
+        
+    def _get_name(self):
+        return self._name
+    def _set_name(self, newname):
+        self._name = newname
+    name=property(_get_name, _set_name)     
+        
+    def _get_value(self):
+        return self.field.value
+    def _set_value(self, value):
+        self.field.value = value
+    value=property(_get_value, _set_value)
 
 def _defaultValueComposer(fieldList):
     """\
@@ -145,15 +156,17 @@ class CompositeField(Field):
         for fld in componentFields:
             prxy = FieldProxy(self._getComponentName(fld), fld)
             tmpComponents.append(prxy)
-        self._components = FieldContainer(tmpComponents,
-                                          _getname,
+        self._fields = FieldContainer(tmpComponents,
+                                          fieldmapper=_getname,
                                           storelists=0)
+        self.errors=FieldContainer(fieldmapper=_getfield,
+                                   storelists=1)
         self.composeValue = valueComposer
+        self.setable=setable
         
-    def _get_components(self):
-        return self._components
-
-    components=property(_get_components)
+    def _get_fields(self):
+        return self._fields
+    fields=property(_get_fields)
 
     def _getComponentName(self, x):
         """
@@ -167,8 +180,7 @@ class CompositeField(Field):
         The value of a composite field is the result of calling the
         valueComposer on the composite field's component fields.
         """
-        return self.composeValue(self.components)
-
+        return self.composeValue(self.fields)
     value=property(_get_value)
     
 
@@ -270,7 +282,14 @@ class Form(object):
     def setData(self, data):
         for f in self.fields:
             if f.setable:
-                f.value=data.get(f.name)
+                if isinstance(f, CompositeField):
+                    #search subfields for key
+                    for ky in data.keys():
+                        if f.fields.has_key(ky):
+                            chgfld = f.fields[ky]
+                            chgfld.value = data.get(ky)
+                else:
+                    f.value=data.get(f.name)
 
     def submit(self, data):
         self.reset()
