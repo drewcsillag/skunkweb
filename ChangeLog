@@ -67,7 +67,6 @@
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: now handles Apache 2!
 
->>>>>>> 1.166
 2002-04-19  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/postconn.py: A number of changes with regard to how
