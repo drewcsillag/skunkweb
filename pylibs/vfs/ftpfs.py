@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.3 2002/10/04 19:08:42 smulloni Exp $
-# Time-stamp: <02/10/04 23:29:18 smulloni>
+# $Id: ftpfs.py,v 1.4 2002/10/06 03:54:42 smulloni Exp $
+# Time-stamp: <02/10/09 16:44:29 smulloni>
 
 ########################################################################
 #  
@@ -176,10 +176,10 @@ if _have22:
         """
         __metaclass__=_robustmeta
 
-        def connect(self, host='', port=0):
+        def connect(self, host='', port=ftplib.FTP_PORT):
             self.host=host
             self.port=port
-            ftplib.FTP.connect(host, port)
+            ftplib.FTP.connect(self, host, port)
         
         def login(self, user='', passwd='', acct=''):
             self.user=user
@@ -229,7 +229,7 @@ class FtpFS(vfs.FS):
                  password='',
                  acct='',
                  passive=1,
-                 port=0):
+                 port=ftplib.FTP_PORT):
         self._host=host
         self._port=port
         self._username=username
