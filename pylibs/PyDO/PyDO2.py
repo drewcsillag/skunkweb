@@ -45,7 +45,7 @@ class _metapydo(type):
         return type.__new__(self, cl_name, bases, namespace)
                 
     def __init__(self, cl_name, bases, namespace):
-        print "self in metaclass __init__: %s" % self
+        #print "self in metaclass __init__: %s" % self
         
         for b in bases:
             try:
@@ -245,14 +245,10 @@ class PyDO(_pydobase):
         where = []
         values = []
         for k, v in kw.items():
-            notFlag = ''
-            if isinstance(v, NOT):
-                notFlag = '!'
-                v = v.val
             lit, val = conn.sqlStringAndValue(v, k, klass.fieldDict[k])
             
-            where.append("%s %s= %s" % (
-                k, notFlag, lit))
+            where.append("%s=%s" % (
+                k, lit))
             values.append(val)
         sql = sql + ' AND '.join(where)
         return sql, values
