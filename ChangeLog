@@ -1,3 +1,20 @@
+2003-01-01  James Richards  <jrichards@satie.wnyc.org>
+
+	* views.py (ViewableCompositeField.__init__): Overriding setting of fields attribute to use ViewableFieldProxies instead 
+	of FieldProxies
+	
+	(ViewableFieldProxy.__init__): Added ViewableFieldProxy class to override viewable name of proxied fields in output xhtml
+	
+	(isviewable): added isviewable utility function to simplify checks for viewable objects during form layouts, etc...moved Layout 
+	subclasses to use new utility method
+
+	* form.py (Form.setData): added explicit check for composite field and iteration over composite fields during data setting
+	(CompositeField.__init__): changed components property to be named fields to simplify interactions with layout objects 
+	also added errors list for same reason....NOTE, it may be better to handle absence of error property in layout objects, 
+	not certain which approach is best..minor issue for now
+
+	* testCompositeField.pyinc (cmpFld): Added more debugging output to track composite field values 
+
 2002-12-30    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/views.py (SubmitButtonGroupField): support for
