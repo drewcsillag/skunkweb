@@ -243,6 +243,9 @@ class Session(_dict):
     def isDirty(self):
         return self._dirty
 
+    def setDirty(self, d):
+        self._dirty=d
+
     def isDeleted(self):
         return self._deleted
 

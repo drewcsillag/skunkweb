@@ -1,3 +1,8 @@
+2003-08-22  Jacob Smullyan <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/Session.py (Session.setDirty): 
+	restoring mutator method that I had inadvertently removed.
+
 2003-08-16  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (_processRequest): no longer
@@ -35,7 +40,7 @@
 	for cross-site scripting vulnerability in default 404 page,
 	reported by Jeroen van Dongen.
 
-2003-08-11    <smulloni@smullyan.org>
+2003-08-11 Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/util/cache_reaper.py.in: now a swpython script,
 	and by default finds all the scoped component cache roots and clears them. 
