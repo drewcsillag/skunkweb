@@ -11,8 +11,17 @@
 	* SkunkWeb/SkunkWeb/confvars.py.in: adding.  Contains constants
 	produced by configure.
 
-	* configure.in, SkunkWeb/configure.in (and numerous other files):
-	changes to configuration so skunk actually works in other layouts.
+	* Makefile.in, configure, configure.in, SkunkWeb/Makefile.in,
+	SkunkWeb/configure, SkunkWeb/configure.in,
+	SkunkWeb/skunkweb.py.in, SkunkWeb/sw.conf.in,
+	SkunkWeb/swpython.py.in, SkunkWeb/Services/Makefile.in,
+	SkunkWeb/Services/ae_component.py,
+	SkunkWeb/Services/basicauth/swpasswd.py.in,
+	SkunkWeb/Services/product/productwiz.in,
+	SkunkWeb/SkunkWeb/LogObj.py, SkunkWeb/SkunkWeb/Server.py,
+	SkunkWeb/SkunkWeb/bootloader.py.in,
+	SkunkWeb/mod_skunkweb/httpd_conf.stub.in: changes to configuration
+	so skunk actually works in other layouts.
 
 2002-07-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
