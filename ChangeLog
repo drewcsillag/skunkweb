@@ -1,3 +1,13 @@
+2002-11-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Cache.py (getMessageCatalog): a fix for relative paths
+	in getting message catalogs that Drew had posted to the list in
+	August but not checked in (probably was waiting for someone on the
+	list to say it worked).
+
+	* pylibs/ecs/xhtml.py (EMPTY_ELEMENTS): For some reason, I had "i"
+	here where I clearly had begun to type "input".  Oops.
+
 2002-11-07    <smulloni@smullbola.smullyan.org>
 
 	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.logout): fix
