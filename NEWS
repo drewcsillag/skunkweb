@@ -5,6 +5,18 @@ Changes since 3.1
 * caching fixes
 * misc output fixes
 * Now have a CGI adaptor -- swcgi.  See docs for details
+* new image gallery demo
+* new suffixes for includes (.inc and .pyinc)
+* optional enhancement to <:img:> tag if PIL is installed 
+  (auto-generates height and width)
+* many PyDO improvements, including a SAP driver and *three* 
+  new ways of specifying custom WHERE clauses
+* services can now easily provide mime-type-specific request 
+  handlers
+* upgraded MySQL support to use MySQLdb
+* works with Python 2.2 as well as 2.1.x
+* now accesses resources via a vfs layer; resources can be stored in 
+  zip and par archives as well as the local filesystem.
 
 Changes from 3.0 to 3.1
 ========================================

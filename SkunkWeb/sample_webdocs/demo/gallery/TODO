@@ -18,4 +18,13 @@ that can be installed in various places, and making one instance of it
 service multiple directories (and give the user the ability to
 navigate between them).
 
+Mon Jan 21 17:58:16 2002
+
+The page_num argument to index.inc is perhaps less good than
+specifying an item number.
+
+The gallery's appearance hasn't changed, but the application can now
+be included in other directories without copying over files.
+
+
 
