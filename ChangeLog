@@ -1,3 +1,7 @@
+2001-08-13  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* 3.0 Beta 2 recut.
+
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (untouch): altered session handler
