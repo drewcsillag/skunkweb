@@ -1,5 +1,13 @@
 2002-01-13  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.__unpackConnectArgs): bug
+	fixes.  After doing an insert, c.fetchall() returns an empty
+	sequence rather than raising an error; c.fetchone() will return
+	None in that case.
+
+	* pylibs/PyDO/PyDBI.py (DBIGetConnection): Fixed some painfully
+	dumb typos I introduced.
+
 	* SkunkWeb/sample_webdocs/demo/gallery/comp/list_thumbnails.dcmp:
 	Use component stack to determine the current path of this
 	component, to determine where thumbnails.py is (if not given to

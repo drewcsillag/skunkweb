@@ -20,16 +20,16 @@ import types
 import Date
 from Date import DateTime
 import string
-import MySQL
 import MySQLdb
 import PyDBI
 
 class PyDOMySQL:
-    def __init__(self, connectParams):
-        
+    
+    def __init__(self, connectArgs):        
         verbose, cacheUser, connectParams= self.__unpackConnectArgs(connectArgs)
         self.verbose=verbose
         if cacheUser:
+            import MySQL
             self.conn=MySQL.getConnection(cacheUser)
         else:
             self.conn=MySQLdb.connect(**connectParams)
@@ -39,7 +39,8 @@ class PyDOMySQL:
         if type(connectArgs) in (types.StringType, types.UnicodeType):
             fields='host', 'db', 'user', 'passwd'
             d={}
-            [d[i[0]]=i[1] for i in zip(fields, connectArgs.split(':'))]
+            for k, v in zip(fields, connectArgs.split(':')):
+                d[k]=v
         else:
             d=connectArgs.copy()
         if d.has_key('verbose'):
@@ -50,7 +51,8 @@ class PyDOMySQL:
         if d.has_key('cacheUser'):
             cacheUser=d['cacheUser']
             del d['cacheUser']
-
+        else:
+            cacheUser=''
         return verbose, cacheUser, d
     
     def getConnection(self): return self.conn
@@ -78,14 +80,12 @@ class PyDOMySQL:
             print 'SQL> ', sql
         cur=self.conn.cursor()
         cur.execute(sql)
-        try:
-            result = cur.fetchall()
-        except MySQLdb.MySQLError:
+        result = cur.fetchall()
+        if not result and None==cur.fetchone():
             return cur.rowcount
-        
         if attributes is None:
-            return result, [x[0].upper() for x in cur.description]
-        fields = [x[0].upper() for x in cur.description]
+            return result, [x[0] for x in cur.description]
+        fields = [x[0] for x in cur.description]
         return self.convertResultRows(fields, attributes, result)
 
     def convertResultRows(self, colnames, attributes, rows):

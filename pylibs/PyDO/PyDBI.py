@@ -48,8 +48,8 @@ def DBIGetConnection(alias):
         argType=type(connArgs)
         if argType in (types.StringType, types.UnicodeType):
             if connArgs[:5] != 'pydo:':
-                raise ValueError, "invalid connect string: doesn't start"
-                                   " with pydo: <%s>" % connArgs
+                raise ValueError, ("invalid connect string: doesn't start"
+                                   " with pydo: <%s>") % connArgs
             rconnString = connArgs[5:]
             colInd = string.index(rconnString, ':')
             driverName = rconnString[:colInd]
