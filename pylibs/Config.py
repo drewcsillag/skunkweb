@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Config.py,v 1.33 2001/07/27 16:31:47 drew Exp $
+# $Id: Config.py,v 1.1.1.1 2001/08/05 15:00:33 drew_csillag Exp $
 """
 An implementation of a general purpose 'Config' class. 
 It can be used to store information pertinent to a 
@@ -30,8 +30,6 @@ import types
 import string
 import sys
 import os
-import getopt
-import cStringIO
 
 # Our modules
 import LineWrap
