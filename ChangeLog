@@ -1,5 +1,9 @@
 2002-06-21  Jacob Smullyan  <jsmullyan@wnyc.org>
 
+	* SkunkWeb/Services/rewrite.py (_rewritePost): when other things
+	go wrong on the server, delling rewriteRules from the session dict
+	sometimes fails.  I'm moving it into the try block.
+
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c (get_stdin): changed
 	(temporarily!) the level for some notice messages that were
 	getting logged regardless of the configured LogLevel.

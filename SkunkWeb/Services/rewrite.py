@@ -1,5 +1,5 @@
-# Time-stamp: <02/05/21 21:30:25 smulloni>
-# $Id: rewrite.py,v 1.4 2002/05/10 18:05:12 smulloni Exp $
+# Time-stamp: <02/06/21 16:46:14 smulloni>
+# $Id: rewrite.py,v 1.5 2002/05/22 01:35:58 smulloni Exp $
 
 ########################################################################
 #  
@@ -180,9 +180,10 @@ def _rewritePost(requestData, sessionDict):
         DEBUG(REWRITE, 'executing PreRewriteCleanup hook')
         PreRewriteCleanup(requestData, sessionDict)
         DEBUG(REWRITE, 'survived PreRewriteCleanup hook')
+        del sessionDict['rewriteRules']
     except:
         logException()
-    del sessionDict['rewriteRules']
+
 
 def __initHooks():
     import web.protocol as wp
@@ -196,6 +197,9 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.5  2002/05/22 01:35:58  smulloni
+# fix for 404 handler for case when templating is loaded after rewrite.
+#
 # Revision 1.4  2002/05/10 18:05:12  smulloni
 # added a rewriter that returns a 404.
 #
