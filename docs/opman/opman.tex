@@ -435,89 +435,158 @@ Default is \texttt{['TCP::8080']}.
 \end{argdesc}
 
 
-mysql
+
+Parameters for the \texttt{requestHandler} service.
+\begin{argdesc}
+\item[DocumentTimeout]
+The time (in seconds) allowed for a request to complete before timing
+it out (by raising an exception).
+Default is 30.
+\item[PostResponseTimeout]
+The amount of time (in seconds) allowed for the PostRequest hooks to
+execute before timing them out.
+Default is 20.
+\item[job] 
+JACOB--FIXME
+\end{argdesc}
+
+
+
+Parameters for the \texttt{mysql} service:
+\begin{argdesc}
+\item[MySQLConnectParams] \nonscope
+To use cached connections with the pylibs/MySQL module set this to
+a dictionary of 'name': 'connection\_string' pairs.
+Default is \texttt{\{\}}.
+\end{argdesc}
+
+
+Parameters for the \texttt{oracle} service.
+\begin{argdesc}
+\item[OracleConnectStrings]  \nonscope
+To use cached connections with the pylibs/Oracle module set this to
+a dictionary of 'name': 'connection\_string' pairs
+Default is \texttt{\{\}}.
+\item[OracleProcedurePackageLists] \nonscope
+To speed up the use of stored procedures (saves one query per sp fetch)
+we can preload the procedure signatures ahead of time.
+Set to a dictionary of 'name': ['list', 'of', 'packagenames'] where name
+matches that used in OracleConnectStrings.
+Default is \texttt{\{\}}.
+\end{argdesc}
+
+Parameters for the \texttt{postgresql} service.
+\begin{argdesc}
+\item[PostgreSQLConnectParams] \nonscope
+To use cached connections with the pylibs/PostgreSql module set this to
+a dictionary of 'name': 'connection\_string' pairs.
+Default is \texttt{\{\}}.
+\end{argdesc}
+
+
+
+Parameter for the \texttt{remote} service.
+\begin{argdesc}
+\item[RemoteListenPorts] \nonscope
+List of port(s) for the remote service to listen on (specified in the same
+way as the \texttt{AecgiListenPorts} socket is).  
+Default is \texttt{['TCP:localhost:9887']}.
+\end{argdesc}
+
+
+
+Parameters for the \texttt{sessionHandler} service.
+%% JACOB--FIXME -- re: \nonscope
+\begin{argdesc}
+\item[SessionTimeout] 
+The session timeout, in seconds.  Sessions which have seen no action
+for this period of time are ripe for reaping.
+Default is 1800 (30 minutes).
+\item[SessionReapInterval]
+Session reap interval, in seconds.  When the reap interval has elapsed,
+the server may reap old sessions in the aftermath of its next
+request handling cycle.  To turn off reaping (if more than one
+server is using the same session store, or if another process
+is performing reaping separately), set this to zero or a negative
+value.
+Default is 300 (5 minutes).
+\item[SessionStore]
+The session store implementation class (full package name). This
+defaults to None, which, if the sessionHandler service is imported,
+will cause an error.  To use sessionHandler, you must specify a session
+store implementation; e.g.:
 \begin{verbatim}
-    MySQLConnectParams = {},
+SessionStore='sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
 \end{verbatim}
+Default is \texttt{None}.
+\item[SessionIDKey]
+The key under which the session is kept (in a cookie or in URL rewriting).
+Default is \texttt{'sessionID'}.
+\end{argdesc}
+The following \texttt{sessionHandler} config variables specify names
+of the session table and its columns and the MySQL host, user and password.
+\begin{argdesc}
+\item[SessionHandler_MySQLHost]='localhost'
+\item[SessionHandler_MySQLUser]='sessionHandler'
+\item[SessionHandler_MySQLPass]='sessionPass'
+\item[SessionHandler_MySQLDB]='sessionStore'
+\item[SessionHandler_MySQLTable]='Sessions'
+\item[SessionHandler_MySQLIDColumn]='id'
+\item[SessionHandler_MySQLPickleColumn]='pickle'
+\item[SessionHandler_MySQLTimestampColumn]='accessTime'
+\end{argdesc}
 
 
-requestHandler
+
+
+Parameters for the \texttt{templating} service.
+\begin{argdesc}
+\item[errorTemplate] \nonscope
+path to a template in the docroot (or parfile), dependent on scope
+that should be shown if the we send back an error (500) page
+The exception text will show up in an additional template variable
+ERROR_TEXT.
+Default is \texttt{None}.
+\item[notFoundTemplate] \nonscope
+Path to a template in the docroot (or parfile), dependent on scope
+that should be shown if the we send back a 404 Not Found response.
+Default is \texttt{None}.
+\item[indexDocuments]
+List of document names that will be recognized as index documents;
+Default is \texttt{['index.html']}
+\item[hideMimeTypes]
+A list of mime types that should not be accessible via web request.
+Default is 
 \begin{verbatim}
-DocumentTimeout=30,
-PostResponseTimeout=20,
-job=None
+[
+    "text/x-stml-component",
+    "text/x-stml-python-component",
+    "text/x-stml-data-component",
+    "text/x-stml-python-data-component",
+]
 \end{verbatim}
+\item[interpretMimeTypes]
+Mime types of things that should be rendered as templates when called
+via web request.
+Default is \texttt{["text/html", "application/x-python"]}.
+\end{argdesc}
 
-oracle
-\begin{verbatim}
-    OracleConnectStrings = {},
-    OracleProcedurePackageLists = {}
-\end{verbatim}
-
-
-remote
-\begin{verbatim}
-RemoteListenPorts=['TCP:localhost:9887']
-\end{verbatim}
-
-
-sessionHandler
-\begin{verbatim}
-        # session timeout, in seconds. 
-        SessionTimeout = 30*60,
-        
-        # the key under which the session is kept
-        SessionIDKey='sessionID',
-        
-        # the host, user, password, and database (for MySQLSessionStoreImpl)
-        SessionHandler_MySQLHost='localhost',
-        SessionHandler_MySQLUser='sessionHandler',
-        SessionHandler_MySQLPass='sessionPass',
-        SessionHandler_MySQLDB='sessionStore',
-        
-        # table, id column, session value column, and timestamp column
-        # (for MySQLSessionStoreImpl)
-        SessionHandler_MySQLTable='Sessions',
-        SessionHandler_MySQLIDColumn='id',
-        SessionHandler_MySQLPickleColumn='pickle',
-        SessionHandler_MySQLTimestampColumn='accessTime',
-        
-        # reap interval (in seconds).  A negative value, or zero,
-        # will turn off reaping.  it would be reasonable for at most
-        # one server to reap any given session store.
-        SessionReapInterval=300,
-        SessionStore=None    #'sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
-\end{verbatim}
+For the sendmail tag, how to actually send it.
+If MailMethod == 'sendmail', it will call the sendmail program to do
+it (this is the default).  If you set it to 'relay', it will send the
+mail via SMTP to the host specified by the MailHost config variable
+(which defaults to localhost).  If using the 'sendmail' MailMethod,
+the pragram that is run comes from SendmailCommand.  When no from
+address is specified in the call to the sendmail tag (or it's
+corresponding function), the address FromAddress is used.
+\begin{argdesc}
+\item[MailMethod] = 'sendmail',
+\item[MailHost] = 'localhost',
+\item[SendmailCommand] = 'sendmail -t',
+\item[FromAddress] = "root@localhost"
+\end{argdesc}
 
 
-postgresql
-\begin{verbatim}
-    PostgreSQLConnectParams = {},
-\end{verbatim}
-
-
-templating
-\begin{verbatim}
-    errorTemplate
-    notFoundTemplate
-    indexDocuments = ['index.html'],
-    hideMimeTypes = [
-        "text/x-stml-component",
-        "text/x-stml-python-component",
-        "text/x-stml-data-component",
-        "text/x-stml-python-data-component",
-        ],
-    interpretMimeTypes = [
-        "text/html",
-        "application/x-python"
-        ]
-
-    MailMethod = 'sendmail',
-    MailHost = 'localhost',
-    SendmailCommand = 'sendmail -t',
-    FromAddress = "root@localhost"
-
-\end{verbatim}
 
 \chapter{Service Details}
 
