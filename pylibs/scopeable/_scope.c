@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.4 2001/09/04 17:54:41 smulloni Exp $ 
- * Time-stamp: <01/09/04 13:55:07 smulloni>
+ * $Id: _scope.c,v 1.5 2001/09/04 18:26:59 smulloni Exp $ 
+ * Time-stamp: <01/09/04 23:54:14 smulloni>
  */
 
 /***********************************************************************
@@ -232,10 +232,11 @@ static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
     /* check for special attribute "__all__" */
     char *allattr="__all__";
     if (!strncmp(attrname, allattr, strlen(allattr))) {
-      PyObject *newargs=PyTuple_New(1);
+      PyObject *mashed, *keys, *newargs;
+      newargs=PyTuple_New(1);
       PyTuple_SetItem(newargs, 0, realSelf);
-      PyObject *mashed=Scopeable_mash(self, newargs);
-      PyObject *keys=PyMapping_Keys(mashed);
+      mashed=Scopeable_mash(self, newargs);
+      keys=PyMapping_Keys(mashed);
       Py_DECREF(mashed);
       val=keys;
     } else {
@@ -516,6 +517,9 @@ void init_scope() {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.5  2001/09/04 18:26:59  smulloni
+ * minor improvement to error handling
+ *
  * Revision 1.4  2001/09/04 17:54:41  smulloni
  * removed some unnecessary debugging statements
  *
