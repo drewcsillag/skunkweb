@@ -224,3 +224,14 @@ Use the Include directive:
 # in sw.conf
 Include("/usr/local/skunk/etc/vhosts.conf")
 Include("/usr/local/skunk/etc/rewrite.conf") # etc.
+
+9) How do I get at what in CGI land would be PATH_INFO?
+
+Add the rewrite service to your sw.conf services listing and 
+add this:
+
+rewriteRules=(r'(.*\..*?)(?P<pathinfo>/.*)', r'\1')
+
+and a cgi argument (accessed via CONNECTION.args or <:args:>) named
+pathinfo will contain what you want.
+
