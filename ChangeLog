@@ -1,3 +1,11 @@
+2002-03-18  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/newsvac.comp, dcomps/newsvac.pydcmp:
+	added
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/index.html, dcomps/newsforge.pydcmp:
+	fixes now that newsforge and linux.com have changed a bit	
+
 2002-03-03  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in (userModuleCleanup): this was being turned
