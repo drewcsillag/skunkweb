@@ -24,6 +24,11 @@ import ecs
 
 class Viewable(object):
     def __init__(self, **view_attrs):
+        if view_attrs.has_key('value'):
+            # setting value as a view attribute is not correct as the value of a field is
+            # based initially upon the default value
+            raise ValueError
+            
         self.view_attrs=view_attrs
 
     def getView(self):
@@ -35,10 +40,18 @@ class ViewableField(Field, Viewable):
                  name,
                  description=None,
                  default=None,
+                 required=0,
                  multiple=0,
                  **view_attrs):
+        self.required = required
         Field.__init__(self, name, description, default, multiple)
         Viewable.__init__(self, **view_attrs)
+
+
+    def validate(self, form=None):
+        if self.required and not self.value:
+            return {self:"%s is required but has no value" % (self.name)}
+        
 
 class ViewableDomainField(DomainField, Viewable):
     def __init__(self,
@@ -46,8 +59,10 @@ class ViewableDomainField(DomainField, Viewable):
                  domain,
                  description=None,
                  default=None,
+                 required=0,
                  multiple=0,
                  **view_attrs):
+        self.required = required
         DomainField.__init__(self,
                              name,
                              domain,
@@ -63,11 +78,13 @@ class InputField(ViewableField):
                  name,
                  description=None,
                  default=None,
+                 required=0,
                  **view_attrs):
         ViewableField.__init__(self,
                                name,
                                description,
                                default,
+                               required,
                                multiple=0,
                                **view_attrs)
 
@@ -154,15 +171,10 @@ class TextAreaField(ViewableField):
                  name,
                  description=None,
                  default=None,
+                 required=0,
                  **view_attrs):
-        Field.__init__(self, name, description, default, multiple=0)
+        ViewableField.__init__(self, name, description, default, required,  multiple=0,  **view_attrs)
         
-        if view_attrs.has_key('value'):
-            # setting value as a textarea *attribute* is not correct as the value of a text area is
-            # it's child text element (set by the default parameter),  therefore don't permit 'value' as a constructor keyword arg
-            del view_attrs['value']
-            
-        Viewable.__init__(self, **view_attrs)
         
     def getView(self):
         elem=ecs.Textarea()
@@ -507,5 +519,5 @@ class ViewableForm(Viewable, Form):
         elem.addElement(table)
         elem.addElement('\n')
         return elem
-        
-        
+
+

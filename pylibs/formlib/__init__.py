@@ -1,6 +1,7 @@
 
 
 from views import *
+from validates import *
 
 # My strategy is as follows:
 

@@ -76,7 +76,12 @@ class Field(object):
         return value
         
     def validate(self, form=None):
+        """\
+        Override to return a mapping where the key is the subclass instance failing validation
+        and the value is a message indicating the validation failure
+        """
         pass
+
 
 class DomainField(Field):
     """
