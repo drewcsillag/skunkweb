@@ -1,5 +1,7 @@
 2003-04-22  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py: remove import of scopeable. 
+
 	* pylibs/setup-pylibs.in: removed scopeable stuff.
 
 	* pylibs/formlib/views.py: use htmlquote for displaying text in 

@@ -1,5 +1,5 @@
-# $Id: ConfigAdditives.py,v 1.5 2002/07/15 15:07:10 smulloni Exp $
-# Time-stamp: <02/09/30 12:34:46 smulloni>
+# $Id: ConfigAdditives.py,v 1.6 2002/09/30 20:02:27 smulloni Exp $
+# Time-stamp: <03/04/22 18:07:34 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
 #                     Jacob Smullyan <smulloni@smullyan.org>
@@ -32,7 +32,7 @@ __all__=['Location',
          'Include']
 
 from SkunkWeb.Hooks import ServerStart
-import scopeable as scope
+import scope
 import ConfigLoader
 import KickStart
 
@@ -110,6 +110,9 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.6  2002/09/30 20:02:27  smulloni
+# support for scoping based on SERVER_PORT.
+#
 # Revision 1.5  2002/07/15 15:07:10  smulloni
 # various changes: configuration (DOCROOT); new sw.conf directive (File);
 # less spurious debug messages from rewrite; more forgiving interface to
