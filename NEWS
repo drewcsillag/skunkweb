@@ -1,4 +1,10 @@
-Changes in 3.4
+Changes in 3.4b2
+========================================
+* build system revised to work with Python 2.3a1.
+* fixes for mysql support in PyDO.
+* more rewrite enhancements.
+
+Changes in 3.4b1
 ========================================
 * an ftp filesystem for the vfs (vfs.ftpfs).
 * a very simple xhtml generation library (ecs, named

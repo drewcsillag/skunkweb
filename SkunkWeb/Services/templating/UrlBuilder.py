@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: UrlBuilder.py,v 1.4 2002/07/12 14:35:29 drew_csillag Exp $
+# $Id: UrlBuilder.py,v 1.5 2002/10/25 16:51:55 smulloni Exp $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -27,9 +27,9 @@ functions and / or tags which would utilize them.
 """
 
 
+
 import types
 import urllib
-import string
 
 import DT
 import skunklib
@@ -38,6 +38,7 @@ import AE.Component
 from web.protocol import Redirect
 from SkunkWeb.LogObj import DEBUG
 from SkunkWeb.ServiceRegistry import TEMPLATING
+import SkunkWeb.Configuration as Config
 
 # for img tag, try to import PIL (to get default image width and height)
 try:
@@ -48,6 +49,8 @@ try:
 except:
     _havePIL=0
 
+Config.mergeDefaults(tagsGenerateXHTML=1)
+                     
 
 def _genUrl ( path, query = {}, need_full = 0, noescape=None ):
     """
@@ -123,16 +126,21 @@ def image ( path, queryargs = None, kwargs={}, noescape = None  ):
     Create an image tag
     """
     if _havePIL and not path.startswith('http://'):
-        lckws=map(string.lower, kwargs.keys())
+        lckws=[x.lower() for x in kwargs]
         if not filter(lambda x: x in ('height', 'width'), lckws):
             try:
                 im=Image.open(Cache._openDocRoot(path))
                 kwargs['width'], kwargs['height']=im.size
             except:
                 DEBUG(TEMPLATING, "failed to read doc root for path %s" % path)
-
-    ret = '<img src="%s"%s>' % (_genUrl(path, query = queryargs, 
-                                noescape=noescape), _genKwArgs(kwargs))
+    if Config.tagsGenerateXHTML:
+        template='<img src="%s"%s />'
+    else:
+        template='<img src="%s"%s>'
+    ret = template % (_genUrl(path,
+                              query=queryargs, 
+                              noescape=noescape),
+                      _genKwArgs(kwargs))
 
     return ret
 
@@ -170,6 +178,10 @@ def hidden ( dict ):
     """
     Make hidden form fields for the items in the dictionry
     """
+    if Config.tagsGenerateXHTML:
+        template='<input type="hidden" name="%s" value="%s" />'
+    else:
+        template='<input type="hidden" name="%s" value="%s">' 
     l = []
     for k,v in dict.items():
         enck = DT.DTUtil.htmlquote(str(k))
@@ -179,45 +191,12 @@ def hidden ( dict ):
                     encv = ""
                 else:
                     encv=DT.DTUtil.htmlquote(str(vi))
-                l.append('<input type=hidden name="%s" value="%s">'
-                         % (enck, encv))
+                l.append(template % (enck, encv))
         else: 
             if v is None:
                 encv = ""
             else:
                 encv=DT.DTUtil.htmlquote(str(v))
-            l.append('<input type=hidden name="%s" value="%s">' % (enck, encv))
-    return string.join(l,'\r\n')
+            l.append(template % (enck, encv))
+    return '\n'.join(l)
 
-########################################################################
-# $Log: UrlBuilder.py,v $
-# Revision 1.4  2002/07/12 14:35:29  drew_csillag
-# fixed so that PIL should no longer get hosed when userModuleCleanup is turned
-# on.
-#
-# Revision 1.3  2002/05/09 19:10:46  drew_csillag
-# now encodes key/value pairs where the value is None as "" instead of not putting in the hidden tag altogether
-#
-# Revision 1.2  2001/12/02 20:57:50  smulloni
-# First fold of work done in September (!) on dev3_2 branch into trunk:
-# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
-# to templating's <:img:> tag.
-#
-# Revision 1.1.1.1  2001/08/05 15:00:11  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.6  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.5  2001/07/06 18:28:02  drew
-# removed extraneous argument
-#
-# Revision 1.4  2001/04/25 20:18:49  smullyan
-# moved the "experimental" services (web_experimental and
-# templating_experimental) back to web and templating.
-#
-# Revision 1.2  2001/04/12 22:05:32  smullyan
-# added remote call capability to the STML component tag; some cosmetic changes.
-#
-########################################################################

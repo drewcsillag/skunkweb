@@ -1,8 +1,8 @@
 # $Id$
-# Time-stamp: <01/12/19 13:19:30 smulloni>
+# Time-stamp: <03/02/07 17:16:06 smulloni>
 
 ######################################################################## 
-#  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2001-2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 ########################################################################
 
 from cStringIO import StringIO
-from xreadlines import xreadlines
 from vfs import VFSException
 
 class RO_StringIO:
@@ -38,9 +37,6 @@ class RO_StringIO:
 
     def readlines(self, sizehint=0):
         return self.__sio.readlines(sizehint)
-
-    def xreadlines(self):
-        return xreadlines(self.__sio)
 
     def close(self):
         self.__sio.close()
@@ -67,8 +63,14 @@ class RO_StringIO:
     def writelines(self, list):
         raise VFSException, "unsupported operation: writelines"
 
+    def __iter__(self):
+        return self.readlines().__iter__()
+
 ########################################################################
 # $Log$
+# Revision 1.4  2003/02/08 03:23:44  smulloni
+# XHTML compliance and Python 2.3a1 compatibility.
+#
 # Revision 1.3  2002/01/02 06:39:24  smulloni
 # work on vfs
 #

@@ -1,5 +1,13 @@
 2003-02-07    <smulloni@smullbola.smullyan.org>
 
+	* pylibs/vfs/rosio.py (RO_StringIO.__iter__): removed xreadlines, since
+	it produces a DeprecationWarning with Python 2.3a1.
+
+2003-02-07 Jacob Smullyan <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/UrlBuilder.py: now XHTML-compliant
+	by default.  
+
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.sqlStringAndValue): fix for NULL.
 
 	* pylibs/setup-pylibs.in: distutils setup script used by the
@@ -7,7 +15,7 @@
 
 	* pylibs/Makefile.in: now uses distutils to build the extension modules;
 	excludes some deprecated or unnecessary material from being built
-	and installed.  Should work with Python 2.3.
+	and installed.  Now works with Python 2.3a1!
 
 	* Makefile.in: SW_VERSION is now defined here.
 
