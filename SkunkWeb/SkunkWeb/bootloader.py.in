@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: bootloader.py.in,v 1.8 2001/07/09 20:38:40 drew Exp $
+# $Id: bootloader.py.in,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 # Time-stamp: <01/04/23 15:51:51 smulloni>
 ########################################################################
 
@@ -34,6 +34,8 @@ if SkunkRoot[0] == '@':
     SkunkRoot = '/usr/local/skunk'
 
 def init(configFiles, SkunkRoot):
+    # necessary for restart
+    import vfs; vfs.importer.uninstall()
     import ConfigLoader
     import KickStart
     #get the configuration module
@@ -58,6 +60,10 @@ def load():
 
 ########################################################################
 # $Log: bootloader.py.in,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.8  2001/07/09 20:38:40  drew
 # added licence comments
 #
