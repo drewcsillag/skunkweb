@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.7 2002/06/03 13:51:39 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.8 2002/06/21 14:42:19 smulloni Exp $
  *
  *
  * Configuration:
@@ -109,6 +109,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <sys/time.h>
+#include <sys/syslog.h>
 
 /* Apache includes */
 #include "httpd.h"

@@ -74,20 +74,15 @@ are preserved on all copies.
    be needed depending on the caching configuration.
 
 \section{Software}
-If you are installing SkunkWeb on a Linux machine, the first three
-items below are already taken care of.
 
 %%ATC FIXME, should provide urls
 \begin{itemize}
 \item An ANSI C compiler
-%\item GNU find (part of the GNU findutils package)
-%\item GNU or Solaris xargs (part of the GNU fileutils package)
 \item Python 2.1.1 (or later) (optionally) compiled with the crypt
 module installed.  Actually, Python 2.1 works just fine, except that
 the license for 2.1 isn't GPL compatible, thus I don't believe you can
 distribute the whole thing precompiled.
-%\item The MM library. 
-
+\item The mxBase Python extension package, available from www.egenix.com.
 \item Optionally, Apache 1.3.x configured with (at least) the switch
 \texttt{--enable-module=so}.  If you run into some weirdness with it
 (specifically with the root \texttt{index.html}), you may want to try

@@ -974,6 +974,8 @@ class ViewableForm(Viewable, Form):
         if self.action:
             elem.setAttribute('action', self.action)
         elem.attributes.update(self.view_attrs)
+        if self.name:
+            elem.setAttribute('name', self.name)
         table=ecs.Table()
         table.addElement('\n')
         top_level_errors=self.errors.get(self)
