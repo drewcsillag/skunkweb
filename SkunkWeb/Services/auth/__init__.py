@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.6 2002/06/27 21:18:46 drew_csillag Exp $
-# Time-stamp: <2002-06-30 13:27:43 drew>
+# $Id: __init__.py,v 1.7 2002/06/30 17:28:56 drew_csillag Exp $
+# Time-stamp: <02/10/08 07:39:44 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -37,6 +37,8 @@ Configuration.mergeDefaults(
     )
 ServiceRegistry.registerService("auth")
 AUTH=ServiceRegistry.AUTH
+
+class OK(Exception): pass
 
 # an authorizer 
 #class authorizer:
@@ -103,7 +105,8 @@ class RespAuthBase:
         try:
             page=AE.Component.callComponent(
                 self.loginPage, {'CONNECTION':conn})
-        except "OK":
+        # string exception left here for backwards compatibility
+        except ("OK", OK):
             #this is the magical "do whatever you would've done" bit
             AE.Component.resetComponentStack()
             return
@@ -226,6 +229,8 @@ class CookieAuthBase: #class that does basic cookie authentication
         password = ':'.join(bits[1:])
         conn.remoteUser = user
         conn.remotePassword = password
+        conn.env['REMOTE_USER']=conn.remoteUser
+        conn.env['REMOTE_PASSWORD']=conn.remotePassword        
         return self.validate(user, password)
 
     #a simple login method to set the cookie as appropriate
@@ -240,6 +245,8 @@ class CookieAuthBase: #class that does basic cookie authentication
                     conn.responseCookie[self.cookieName][k] = v
             conn.remoteUser = username
             conn.remotePassword = password
+            conn.env['REMOTE_USER']=conn.remoteUser
+            conn.env['REMOTE_PASSWORD']=conn.remotePassword            
             return 1
 
     def logout(self, conn):
@@ -370,6 +377,10 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.7  2002/06/30 17:28:56  drew_csillag
+#  made it so
+# 	we don't need the PseudoDict thing we used to need.
+#
 # Revision 1.6  2002/06/27 21:18:46  drew_csillag
 # fixed so that you can have two different auth schemes going at the same time
 # in different dirs and still have it all work.

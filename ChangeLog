@@ -4,7 +4,14 @@
 	"self".  Oy.
 	(FtpFS.__init__): changed default port to ftplib.FTP_PORT rather
 	than 0.
+	
+2002-10-08    <smulloni@smullbola.smullyan.org>
 
+	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.login): added
+	REMOTE_USER and REMOTE_PASSWORD to CONNECTION.env more consistently.
+	(RespAuthBase.authFailed): no longer require use of string exception, 
+	but permit it for backwards compatibility.
+	
 2002-10-08  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/xmlrpchandler.py (XMLRPCServer.handle_cgi): added support
