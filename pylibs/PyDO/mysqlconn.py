@@ -153,7 +153,7 @@ def _dateConvertFromDB(item):
     if item is None:
         return item
     # MySQLdb will now return DateTime objects is egenix is present.
-    if isinstance(item, DateTime.DateTime):
+    if type(item)==DateTime.DateTimeType:
         return item
     if string.find(item, '-') == -1: #timestamp form
         y = item[:4]
