@@ -23,7 +23,7 @@
  * extensively for virtually every request, and speedup here will be noticeable
  * on overall AED performance.
  *
- * $Id: cachekey.c,v 1.4 2001/07/27 17:21:10 drew Exp $
+ * $Id: cachekey.c,v 1.1.1.1 2001/08/05 15:00:45 drew_csillag Exp $
  */
 
 #include "Python.h"
@@ -263,6 +263,14 @@ static PyObject *encodeSingle( PyObject *obj, int *counter,
         return ret;
     }
 
+    if (!strcmp(obj->ob_type->tp_name, "DateTime")) /*if a datetime obj*/
+    {
+	PyObject *dtstr;
+	ret = PyString_InternFromString("DateTime:");
+	dtstr = PyObject_Str(obj);
+	PyString_ConcatAndDel(&ret, dtstr);
+	return ret;
+    }
     if (PyInstance_Check(obj))
 	CIRCULARITY_CHECK;
 	return encodeInstance(obj, counter, circDict);
