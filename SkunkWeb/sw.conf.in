@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.25 2002/07/25 18:20:07 drew_csillag Exp $
-# Time-stamp: <2002-07-29 13:56:02 drew>
+# $Id: sw.conf.in,v 1.26 2002/07/29 17:57:51 drew_csillag Exp $
+# Time-stamp: <2002-08-16 11:41:48 drew>
 
 ########################################################################
 #
@@ -172,8 +172,22 @@ sys.path.append('@prefix@/sitelibs')
 ########################################################################
 # for development, this will cause changes to sitelibs to be reflected
 # on the next request, without a bounce of the server.  Turn it off
-# for production environments.
+# for production environments.  If you get weird errors with it on,
+# see the option below.
+# 
 # userModuleCleanup = 1
+
+########################################################################
+# When using the userModuleCleanup option, sometimes there are modules
+# that the module cleaner will whack that you don't want it to,
+# usually resulting in an odd exception where a global variable or
+# builtin isn't defined that ought to be.  When that happens, add
+# the full module name (including package it's in, e.g. PyDO.mysqlconn)
+# to this list and the module cleaner won't clear out the module.
+# You can also just specify a prefix of the full module name, so you could
+# have the cleaner ignore entire packages, etc.
+#
+# userModuleCleanupIgnore = []
 
 ########################################################################
 # list of document names that will be recognized as index documents;
@@ -666,6 +680,9 @@ documentRoot = '@DOCROOT@'
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.26  2002/07/29 17:57:51  drew_csillag
+# added bits for psptemplate
+#
 # Revision 1.25  2002/07/25 18:20:07  drew_csillag
 # made it so that if --with-runasroot was specified to configure, it
 # automatically will set user/groupToRunAs

@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.4 2002/07/11 22:57:00 smulloni Exp $
+# $Id: Server.py,v 1.5 2002/07/25 17:27:46 drew_csillag Exp $
 ########################################################################
 
 ########################################################################
@@ -34,6 +34,13 @@ from SkunkWeb.ServiceRegistry import CORE
 import pwd
 import os
 import grp
+
+def _aPrefixIn(item, l):
+    for i in l:
+        ll = len(l)
+        if item[:l] == l:
+            return 1
+    return None
 
 class SkunkWebServer(SocketMan):
     def __init__(self):
@@ -58,7 +65,8 @@ class SkunkWebServer(SocketMan):
         if not Configuration.userModuleCleanup:
             return
         for k, v in sys.modules.items():
-            if k not in self._umcMods:
+            if (k not in self._umcMods and
+                not _aPrefixIn(k, Configuration.userModuleCleanupIgnore)):
                 LogObj.DEBUG(CORE, 'killing module - %s' % k)
                 if sys.modules[k]:
                     LogObj.DEBUG(CORE, 'mod is real')
@@ -149,6 +157,7 @@ def _setConfigDefaults():
         pollPeriod = 5,
         maxRequests = 256,
         userModuleCleanup = 0,
+        userModuleCleanupIgnore = []
     )    
 
 def start():
@@ -175,6 +184,9 @@ svr.moduleSnapshot()
 
 ########################################################################
 # $Log: Server.py,v $
+# Revision 1.5  2002/07/25 17:27:46  drew_csillag
+# made it do uid switching
+#
 # Revision 1.4  2002/07/11 22:57:00  smulloni
 # configure changes to support other layouts
 #
