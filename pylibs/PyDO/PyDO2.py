@@ -402,13 +402,42 @@ class PyDO(_pydobase):
         conn = klass.getDBI()
         where = []
         values = []
+        order = []
+        limit = 0
+        offset = 0
+        key_count = 0
         for k, v in kw.items():
+            if k == 'order':
+                order.extend(v)
+                continue
+            elif k == 'limit':
+                limit = v
+                continue
+            elif k == 'offset':
+                offset = v
+                continue
+            else:
+                key_count += 1
             lit, val = conn.sqlStringAndValue(v, k, klass.dbColumns[k])
             
             where.append("%s=%s" % (
             k, lit))
             values.append(val)
-        sql = sql + ' AND '.join(where)
+        
+        if key_count != 0:
+            sql = sql + ' AND '.join(where)
+        else:
+            sql = sql[:-7]
+                
+        if len(order):
+            sql = sql + ' ORDER BY %s' % ', '.join(order)
+        
+        if limit:
+            sql = sql + ' LIMIT %d' % limit
+            
+        if offset:
+            sql = sql + ' OFFSET %d' % offset 
+        
         return sql, values
     
     def class_getSome(klass, **kw):
@@ -420,8 +449,6 @@ class PyDO(_pydobase):
         """
         kw = klass._convertKW(kw)
         sql, values=klass.getSomeSQL(**kw)
-        if not kw:
-            sql=sql[:-7]
         conn=klass.getDBI()
         results = conn.execute(sql, values, klass.dbColumns)
         if type(results)==types.ListType:
@@ -447,7 +474,8 @@ class PyDO(_pydobase):
         kw = klass._convertKW(kw)
         andValues=list(args)
         for k, v in kw.items():
-            andValues.append(operators.EQ(operators.FIELD(k), v))
+            if k not in ('order', 'offset', 'limit'):
+                andValues.append(operators.EQ(operators.FIELD(k), v))
         andlen=len(andValues)
         if andlen > 1:
             daOp=operators.AND(*andValues)
@@ -456,9 +484,20 @@ class PyDO(_pydobase):
         else:
             daOp=None
         sql=(daOp and daOp.asSQL()) or ''
-        return klass.getSQLWhere(sql)
+        
+        order=()
+        limit=0
+        offset=0
+        if kw.get('order'):
+            order = kw['order']
+        if kw.get('limit'):
+            limit = kw['limit']
+        if kw.get('offset'):
+            offset = kw['offset']
+        
+        return klass.getSQLWhere(sql, order=order, limit=limit, offset=offset)
     
-    def class_getTupleWhere(klass, opTuple, **kw):
+    def class_getTupleWhere(klass, opTuple, order=(), limit=0, offset=0, **kw):
         """ Retrieve objects using Lisp-like queries
         
         Allows you to use a somewhat Lispish notation for generating
@@ -476,15 +515,16 @@ class PyDO(_pydobase):
         
         """
         kw = klass._convertKW(kw)
+        
         if kw:
             _and=opTuple and ['AND', opTuple] or []
             for k, v in kw.items():
                 _and.append(('=', FIELD(k), v))
             opTuple=tuple(_and)
         sql=opTuple and operators.tupleToSQL(opTuple) or ''
-        return klass.getSQLWhere(sql)
+        return klass.getSQLWhere(sql, order=order, limit=limit, offset=offset)
     
-    def class_getSQLWhere(klass, sql, values=()):
+    def class_getSQLWhere(klass, sql, values=(), order=(), limit=0, offset=0):
         """ Retrieve objects with custom 'where' clause.
         
         Executes a sql statement to fetch the object type where
@@ -496,6 +536,14 @@ class PyDO(_pydobase):
             sql="%s WHERE %s" % (base, sql)
         else:
             sql=base
+
+        if len(order):
+            sql += ' ORDER BY ' + ', '.join(order)
+        if limit:
+            sql += ' LIMIT %d' % limit
+        if offset:
+            sql += ' OFFSET %d' % offset
+
         conn = klass.getDBI()
         results = conn.execute(sql, values, klass.dbColumns)
         if results and type(results)==types.ListType:
@@ -836,6 +884,20 @@ def _tupleize(item):
     return (item,)
 
 
+
+# 2003-10-20 
+#   Brian Olsen <brian@qinternet.com>
+#
+# Added the offset, limit, and order parameters to getSome(), getSomeSQL()
+# getTupleWhere(), getSomeWhere(), and getSQLWhere(). A PyDO statement like
+# this:
+#
+# MyTable.getSome(id=1, order=('id',), limit=1, offset=2)
+#
+# will produce something like this:
+#
+# SELECT id FROM my_table WHERE id=1 ORDER BY id LIMIT 1 OFFSET 2
+#
 # 2003-08-24 several modifications by:
 #   Jacob Smullyan <smulloni@smullyan.org>
 #   Jeroen van Dongen <jeroen@vthings.net>

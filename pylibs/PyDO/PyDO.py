@@ -293,18 +293,47 @@ class PyDO(PyDOBase):
         conn = self.getDBI()
         where = []
         values = []
+        order = []
+        limit = 0
+        offset = 0
+        key_count = 0
         for k, v in kw.items():
             notFlag = ''
             if isinstance(v, NOT):
                 notFlag = '!'
                 v = v.val
+            if k == 'order':
+                order.extend(v)
+                continue
+            elif k == 'limit':
+                limit = v
+                continue
+            elif k == 'offset':
+                offset = v
+                continue
+            else:
+                key_count += 1
             lit, val = conn.sqlStringAndValue(v, k, self.fieldDict[k])
             
             where.append("%s %s= %s" % (
                 k, notFlag, lit))
             values.append(val)
-        whereClause = string.join(where, ' AND ')
-        sql = sql + whereClause
+        
+        if key_count != 0:
+            whereClause = string.join(where, ' AND ')
+            sql = sql + whereClause
+        else:
+            sql = sql[:-7]
+            
+        if len(order):
+            sql = sql + ' ORDER BY %s' % string.join(order, ', ')
+        
+        if limit:
+            sql = sql + ' LIMIT %d' % limit
+            
+        if offset:
+            sql = sql + ' OFFSET %d' % offset            
+        
         return sql, values
     
     def static_getSome(self, **kw):
@@ -312,8 +341,8 @@ class PyDO(PyDOBase):
         empty) list of data class instances representing the rows that
         fulfill the constraints in kw"""
         sql, values = apply( self.getSomeSQL, (), kw)
-        if not kw:
-            sql = sql[:-7]
+        #if not kw:
+        #    sql = sql[:-7]
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
         if type(results)==types.ListType:
@@ -327,7 +356,8 @@ class PyDO(PyDOBase):
         """
         andValues=list(args)
         for k, v in kw.items():
-            andValues.append(operators.EQ(operators.FIELD(k), v))
+            if k not in ('order', 'limit', 'offset'):
+                andValues.append(operators.EQ(operators.FIELD(k), v))
         andlen=len(andValues)
         if andlen > 1:
             daOp=operators.AND(*andValues)
@@ -336,23 +366,44 @@ class PyDO(PyDOBase):
         else:
             daOp=None
         sql=(daOp and daOp.asSQL()) or ''
-        return self.getSQLWhere(sql)
+        
+        order=()
+        limit=0
+        offset=0
+        if kw.get('order'):
+            order = kw['order']
+        if kw.get('limit'):
+            limit = kw['limit']
+        if kw.get('offset'):
+            offset = kw['offset']
+            
+        
+        return self.getSQLWhere(sql, order=order, limit=limit, offset=offset)
 
-    def static_getTupleWhere(self, opTuple, **kw):
+    def static_getTupleWhere(self, opTuple, order=(), limit=0, offset=0, **kw):
         if kw:
             _and=opTuple and ['AND', opTuple] or []
             for k, v in kw.items():
-                _and.append(('=', FIELD(k), v))
+                if k not in ('order', 'limit', 'offset'):
+                    _and.append(('=', operators.FIELD(k), v))
             opTuple=tuple(_and)
         sql=opTuple and operators.tupleToSQL(opTuple) or ''
-        return self.getSQLWhere(sql)
+        
+        return self.getSQLWhere(sql, order=order, limit=limit, offset=offset)
 
-    def static_getSQLWhere(self, sql, values=()):
+    def static_getSQLWhere(self, sql, values=(), order=(), limit=0, offset=0):
         base=self._baseSelect()
         if sql:
             sql="%s WHERE %s" % (base, sql)
         else:
             sql=base
+
+        if len(order):
+            sql += ' ORDER BY ' + string.join(order, ', ')
+        if limit:
+            sql += ' LIMIT %d' % limit
+        if offset:
+            sql += ' OFFSET %d' % offset
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
         if results and type(results)==types.ListType:
