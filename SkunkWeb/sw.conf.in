@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: sw.conf.in,v 1.4 2001/08/08 19:52:30 drew_csillag Exp $
+# $Id: sw.conf.in,v 1.5 2001/09/07 16:50:54 smulloni Exp $
 # Time-stamp: <01/05/07 13:57:33 smulloni>
 
 ########################################################################
@@ -152,6 +152,12 @@ userModuleCleanup = 1
 # list of document names that will be recognized as index documents;
 # default is ['index.html']
 # indexDocuments=['index.html', 'index.htm', 'index.py']
+
+########################################################################
+# If you are going to a directory, and none of indexDocuments exist,
+# use this as the index.html for that directory.  
+#
+# defaultIndexHtml = None
 
 ########################################################################
 # basicauth service variables can be declared globally,
@@ -487,7 +493,22 @@ userModuleCleanup = 1
 # PostgreSQLConnectParams = {}
 
 ########################################################################
+# To turn the userdir functionality on (outside of mere inclusion of
+# the service) set UserDir to 1 (it's default).  To turn it off, set
+# it to a false value (None, 0, '', etc.)
+#
+# userDir = 1
+
+########################################################################
+# The path to append to the user's home directory for the userdir path.
+#
+# userDirPath = 'public_html'
+
+########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.5  2001/09/07 16:50:54  smulloni
+# documented ServerName variable
+#
 # Revision 1.4  2001/08/08 19:52:30  drew_csillag
 # fixed minor typo
 #
