@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.19 2003/07/22 14:29:17 smulloni Exp $
+#$Id: Cache.py,v 1.20 2003/07/23 15:06:02 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -29,6 +29,8 @@ import cfg
 import vfs
 import Component
 from DT import DTCompilerUtil
+import skunklib
+_normpath=skunklib.normpath
 
 PYCODE_CACHEFILE_VERSION = 1
 DT_CACHEFILE_VERSION = 1
@@ -280,14 +282,15 @@ def _getCompileCache(name, srcModTime, version):
     else:
         return 0, _readDocRoot(name), srcModTime 
 
-#### basically, some insurance that we don't escape a given root
-
-#_normpath = os.path.normpath
-import skunklib._normpath
-_normpath = skunklib.normpath
-
 def _fixPath(root, path):
-    return _normpath('%s/%s' % (root,path)) 
+    ## basically, some insurance that we don't escape a given root
+
+    # N.B.: the above comment used to be separated from the below line of code
+    # by several lines.  Then, in version 1.6 of this file, I moved
+    # normpath so it applied to the whole string rather than just the path.
+    # This resulted in it being possible to escape the document root.
+    # reverting to 1.5 version. -- js
+    return '%s/%s' % (root,_normpath(path))
 
 ### The real disk access routines
 #set so we have a tempfile prefix specific to the pid, host, etc.
