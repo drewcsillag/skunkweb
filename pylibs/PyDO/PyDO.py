@@ -286,10 +286,10 @@ class PyDO(PyDOBase):
         where, values = self._uniqueWhere(conn, kw)
         sql = sql + where
         results = conn.execute(sql, values, self.fieldDict)
-        if len(results) > 1:
-            raise PyDOError, 'got more than one row on unique query!'
         if not results:
             return
+        if len(results) > 1:
+            raise PyDOError, 'got more than one row on unique query!'
         if results:
             return self(results[0]) 
 
