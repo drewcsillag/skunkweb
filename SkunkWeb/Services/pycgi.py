@@ -1,5 +1,5 @@
-# Time-stamp: <02/07/23 21:54:46 smulloni>
-# $Id$
+# Time-stamp: <02/07/25 07:19:08 smulloni>
+# $Id: pycgi.py,v 1.1 2002/07/24 01:57:57 smulloni Exp $
 
 ########################################################################
 #  
@@ -22,7 +22,6 @@
 
 from SkunkWeb import ServiceRegistry, Configuration
 from SkunkWeb.LogObj import DEBUG, logException
-from requestHandler.protocol import PreemptiveResponse
 import AE.Cache
 import vfs
 import os, sys
@@ -70,7 +69,7 @@ def _processRequest(conn, sessionDict):
         env=_fix(conn.env, conn.uri)
     except vfs.FileNotFoundException:
         DEBUG(PYCGI, "file not found!")
-        raise PreemptiveResponse, fourOhFourHandler(conn, sessionDict)
+        return fourOhFourHandler(conn, sessionDict)
     DEBUG(PYCGI, "file evidently exists")
     oldpwd=os.getcwd()
     os.environ.update(env)
