@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: aecgi.py,v 1.2 2002/05/24 20:56:20 smulloni Exp $
+# $Id: extcgi.py,v 1.4 2002/07/11 21:45:10 drew_csillag Exp $
 # Time-stamp: <01/05/04 17:32:39 smulloni>
 ########################################################################
 
@@ -55,9 +55,8 @@ def _fix(dict): #fixup the environment variables
 
 def _dispenv(env):
     s = []
-    for i in env:
-        if env.has_key(i):
-            s.append('%s: %s' % (i,env[i]))
+    for i in env.keys():
+        s.append('%s: %s' % (i,env[i]))
     return '\n'.join(s)
 
 def _processRequest(conn, sessionDict):
