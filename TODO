@@ -1,5 +1,5 @@
-#   Time-stamp: <2002-01-30 10:43:58 drew> 
-#   $Id: TODO,v 1.29 2002/01/28 14:13:11 smulloni Exp $
+#   Time-stamp: <02/02/02 00:53:23 smulloni> 
+#   $Id: TODO,v 1.30 2002/01/30 15:44:54 drew_csillag Exp $
 
 
 * - TODO
@@ -36,9 +36,9 @@ X pluggable mime-type handlers
 ? image handling service, built on basis of above
 * tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
-? product service and product packaging utility
 * support for extra path info and urls with params after a semicolon
-
+? documentRootFS should be single FS (maybe?); documentRoot should go 
+  bye-bye (maybe not!).
 --- 
 
 X pluggable file retrieval system for AE (would have to rework pars)
@@ -58,11 +58,22 @@ X fix so everything (including PyDO) works with Python 2.2
 
 SkunkWeb 3.3
 ------------------------------
+* product service and product packaging utility
 * DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
 * convert from using Makefile.pre.in to using distutils to build
   and install our C modules
 * make PyDO separate release use distutils also for install
+* dynamic scoping: to implement things like "if a url matches
+  r'/~(\w)/(.*)', make Configuration.documentRootFS be
+  LocalFS(os.path.expanduser('~%s') % username)" 
+* a rewrite service or builtin facility) that makes url rewriting
+  possible without writing a service, permits multiple rewriting
+  schemes to coexist without hook function order being an issue, and
+  works with scoping (perhaps a Rewrite directive for sw.conf?)
+* ZODB FS implementation.
+* sessionHandler's FSSessionStore rewritten to use VFS.
+* import hook so we can import modules from the VFS.
 
 Future stuff
 ------------------------------

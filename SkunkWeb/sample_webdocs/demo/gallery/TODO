@@ -34,6 +34,30 @@ gallery should be embeddable in a table.
 ability to sort and hide images.
 templates.
 
+Tue Jan 29 00:28:58 2002
+
+First of all, deal with the question of where to store application
+data, preferably by not dealing with it and writing an abstraction. 
+
+I had an idea anyway.  Object properties could be stored in data
+components with a particular name (or whose name matches a particular
+pattern -- you could have multiple streams of object properties at
+once if you wanted, which, with a versioning filesystem, would present
+one with interesting possibilities).  A url property service could
+implement PathPropertyStore, with acquisition; it would look up
+properties in the current component, then look in the component
+upstream if it wasn't stated there, etc.  (Implementing this with a
+scopeable would be possible.)  If a programmer didn't want the
+acquired value, obtaining any value specified in that directory alone
+should be possible (this can be done in scopeable, too, but I don't
+have the api there that I should to make it obvious).
+
+There is no reason that the properties components need to be in the
+same filesystem -- there simply has to be a definite and configurable
+way of obtaining the properties data component corresponding to a
+particular object label.  Of course, using AE as an object database
+may be a pretty dumb idea.
+
 
 
 
