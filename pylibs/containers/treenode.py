@@ -73,7 +73,7 @@ class TreeNode(object):
                 raise NodeNotFoundException, path
         return node
 
-    def createPath(self, path):
+    def createPath(self, path, *args, **kw):
         vector=path.split('/')
         if path.startswith('/'):
             node=self._get_root()
@@ -84,7 +84,7 @@ class TreeNode(object):
             if node.children.has_key(v):
                 node=node.children[v]
             else:
-                n=TreeNode(v)
+                n=self.__class__(v, *args, **kw)
                 node.addChild(n)
                 node=n
         return node
@@ -97,6 +97,13 @@ class TreeNode(object):
         l.reverse()
         return l + [self]
 
+    def walk(self, visitfunc, state=None, filter=None):
+        if filter is not None:
+            if not filter(self):
+                return
+        visitfunc(self, state)
+        for c in self._get_children():
+            c.walk(visitfunc, state, filter)
 
 class _parent_iterator(object):
     def __init__(self, node):
