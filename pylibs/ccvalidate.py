@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/05/09 22:38:04 smulloni>
-# $Id: ccvalidate.py,v 1.1 2003/05/10 02:39:38 smulloni Exp $
+# Time-stamp: <03/06/09 18:06:53 smulloni>
+# $Id: ccvalidate.py,v 1.2 2003/05/14 03:50:33 smulloni Exp $
 
 """
 contains a function for validating credit card numbers.
@@ -162,3 +162,48 @@ def check_credit_card(ccnum, cctype=None):
     if foundtype!=EN_ROUTE and (s % 10) != 0:
         raise CreditCardFormatException, "wrong check digit"
 
+def _gen_fake(cctype,
+              start=None,
+              num=1,
+              prefix=None,
+              length=None):
+    """
+    generates valid test credit cards, for testing.
+    This isn't particularly efficient, as it simply
+    cycles through numbers in sequence and tests
+    them, rather than generating the check digits from
+    the rest of the number.  But I have no reason to make
+    this efficient.
+    """
+    if prefix is None:
+        prefix=card_prefix_map[cctype][0]
+    elif prefix not in card_prefix_map[cctype]:
+        raise ValueError, "invalid prefix for card type: %s" % prefix
+    if length is None:
+        length=prefix_length_map[prefix][0]
+    elif length not in prefix_length_map[prefix]:
+        raise ValueError, \
+              "invalid length for card prefix %s: %s" % (prefix, length)
+    if start is None:
+        start='%s%s' % (prefix, '0' * (length-len(prefix)))
+    elif not (start.startswith(prefix) and len(start)==length):
+        raise ValueError, "starting value %s inconsistent with "\
+              "prefix %s and length %s" % (start, prefix, length)
+    
+    res=[]
+    while 1:
+        if len(start)!=length or not start.startswith(prefix):
+            break
+        try:
+            check_credit_card(start, cctype)
+            res.append(start)
+            if num and len(res)>=num:
+                break
+        except CreditCardFormatException:
+            pass
+        start=str(long(start)+1)
+    return res
+
+        
+     
+    
