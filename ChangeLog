@@ -1,3 +1,12 @@
+2002-02-03  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/remote_client.py (getRemoteException, etc): 
+	revamped the remote exception generation code, taking into account
+	the possibility of string exceptions
+
+	* SkunkWeb/Services/remote/test.py (runInteractive): for test
+	script, added support for regular components
+
 2002-02-01  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/__init__.py (__initSession): 

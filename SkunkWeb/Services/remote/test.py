@@ -51,12 +51,21 @@ def runInteractive():
             path=sys.argv[3]
         else:
             path=raw_input("path: ")
+        path=path.strip()
         if argLen>=5:
             argDict=eval(sys.argv[4])
         else:
             argDict=eval(raw_input("argDict: "))
-    
-        result=run(host, port, path, argDict)
+        print "path is \"%s\"" % path
+        if path.endswith('.comp') or path.endswith('.pycomp'):
+            compType=AE.Component.DT_REGULAR
+        else:
+            compType=AE.Component.DT_DATA
+        if compType==AE.Component.DT_REGULAR:
+            print "regular component"
+        else:
+            print "data component"
+        result=run(host, port, path, argDict, compType=compType)
         print
         print '*'*72
         print 

@@ -1,6 +1,5 @@
-#   Time-stamp: <02/02/02 00:53:23 smulloni> 
-#   $Id: TODO,v 1.30 2002/01/30 15:44:54 drew_csillag Exp $
-
+#   Time-stamp: <02/02/03 00:30:24 smulloni> 
+#   $Id: TODO,v 1.31 2002/02/02 06:08:39 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -37,9 +36,15 @@ X pluggable mime-type handlers
 * tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
 * support for extra path info and urls with params after a semicolon
+* support for BETWEEN in PYDO.operators
 ? documentRootFS should be single FS (maybe?); documentRoot should go 
   bye-bye (maybe not!).
---- 
+
+CHORES
+
+* remove pars and references to it in configure
+
+--
 
 X pluggable file retrieval system for AE (would have to rework pars)
   parfile should use relative paths, like zip; parfs should work.
@@ -59,10 +64,14 @@ X fix so everything (including PyDO) works with Python 2.2
 SkunkWeb 3.3
 ------------------------------
 * product service and product packaging utility
+* testing framework built using product service (so client scripts 
+  can know the location of server-side components they call)
 * DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
 * convert from using Makefile.pre.in to using distutils to build
-  and install our C modules
+  and install our C modules 
+* support for running python cgis persistently, for running viewcvs, 
+  mailman scripts, etc.
 * make PyDO separate release use distutils also for install
 * dynamic scoping: to implement things like "if a url matches
   r'/~(\w)/(.*)', make Configuration.documentRootFS be
@@ -73,7 +82,9 @@ SkunkWeb 3.3
   works with scoping (perhaps a Rewrite directive for sw.conf?)
 * ZODB FS implementation.
 * sessionHandler's FSSessionStore rewritten to use VFS.
-* import hook so we can import modules from the VFS.
+* import hook so we can import modules from the VFS (necessary for products).
+* an authorization service that supports cookie, basic, digest,
+  and pluggable authorization stores.
 
 Future stuff
 ------------------------------

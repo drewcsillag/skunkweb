@@ -15,12 +15,13 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: remote_client.py,v 1.2 2001/10/30 15:02:17 drew_csillag Exp $
+# $Id: remote_client.py,v 1.3 2001/10/30 15:44:36 drew_csillag Exp $
 # Time-stamp: <01/05/09 14:36:02 smulloni>
 ########################################################################
 
 import AE.Component
 import exceptions
+import new
 import socket
 import SocketScience
 import cPickle
@@ -34,7 +35,29 @@ REMOTE_CLIENT=ServiceRegistry.REMOTE_CLIENT
 SWRC_PROTOCOL="swrc"
 DEFAULT_PORT=9887
 
-class RemoteException: pass
+class RemoteException(Exception):
+    """
+    a class that wraps a remotely raised exception
+    """
+    def __init__(self, remoteInstance):
+        if isinstance(remoteInstance, Exception):
+            Exception.__init__(self, remoteInstance.args)
+        else:
+            Exception.__init__(self, remoteInstance)
+        self.remoteInstance=remoteInstance
+
+
+def getRemoteExceptionClass(exceptionClass):
+    gl=globals()
+    classname='Remote%s' % exceptionClass.__name__
+    if gl.has_key(classname):
+        return gl[classname]
+    
+    newclass=new.classobj(classname,
+                          (RemoteException, exceptionClass),
+                          RemoteException.__dict__)
+    gl[classname]=newclass
+    return newclass
 
 def getRemoteException(realException):
     """
@@ -43,22 +66,11 @@ def getRemoteException(realException):
     a copy of the realException in the 'remoteInstance'
     field
     """
-    remoteClassName=realException.__class__.__name__
-    gns=globals()
-    lns=locals()
-    gns.update({'RemoteException' : RemoteException,
-                remoteClassName : realException.__class__})
-    classname='Remote%s' % remoteClassName
-    if not gns.has_key(classname):
-        exec 'global %s\n' \
-             'class %s(RemoteException, %s): pass' % \
-             (classname, classname, remoteClassName) \
-             in gns, lns
-    newclass=eval("%s()" % classname, gns, lns)
-    newclass.remoteInstance=realException
-    newclass.args=realException.args
-    return newclass
-
+    if isinstance(realException, Exception):
+        newclass=getRemoteExceptionClass(realException.__class__)
+        return newclass(realException)
+    else:
+        return RemoteException(realException)
     
 class SkunkWebRemoteComponentHandler(AE.Component.ComponentHandler):
 
@@ -91,13 +103,8 @@ class SkunkWebRemoteComponentHandler(AE.Component.ComponentHandler):
                 return unPickled[1]
             else:
                 raise getRemoteException(unPickled[2])
-            #if (type(unPickled)==types.TupleType
-            #and len(unPickled)==3
-            #    and type(unPickled[0])==types.ClassType
-            #    and issubclass(unPickled[0], exceptions.Exception)
-            #    and isinstance(unPickled[1], exceptions.Exception)):       
-            #    raise getRemoteException(unPickled[1])
-        #return unPickled, 1, 1
+        raise RemoteException, ("remote host did not speak "
+                                "protocol: %s:%s") % (host, port)
 
     def __parseComponentName(self, name):
         """
@@ -132,6 +139,9 @@ AE.Component.componentHandlers[SWRC_PROTOCOL]=SkunkWebRemoteComponentHandler()
 
 ########################################################################
 # $Log: remote_client.py,v $
+# Revision 1.3  2001/10/30 15:44:36  drew_csillag
+# now deals properly with new protocol
+#
 # Revision 1.2  2001/10/30 15:02:17  drew_csillag
 # fixed bug so remote components work again
 #
