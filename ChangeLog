@@ -1,3 +1,17 @@
+2002-02-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/product/loader.py (ProductMountPoint): 
+	now use dynamic mounting for product docroots.
+
+	* pylibs/vfs/vfs.py (MultiFS): dynamic mounting
+	is now possible.
+
+	* pylibs/wizard.py: adding Rich Salz's wizard.py (version 2.0),
+	with his permission.
+
+	* SkunkWeb/Services/product/loader.py (Product.load): now do
+	version comparisons using strnatcmp.
+
 2002-02-21  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/__init__.py, 

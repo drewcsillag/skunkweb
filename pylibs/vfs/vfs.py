@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/21 13:38:32 smulloni>
+# Time-stamp: <02/02/22 15:45:54 smulloni>
 
 ########################################################################
 #  
@@ -353,39 +353,48 @@ endslashRE=re.compile(r'/$')
 
 class MultiFS(FS):
     """
+    
     an FS implementation that permits other FS's to be
     mounted within it
     """
     def __init__(self,  mountdict=None):
+
         """
         mountdict should be a dict of the form:
-        { '/desired/mount/point/' : [FSImplementation(), FSImplementation(), ...], ... }
-        i.e., the keys are mount points, and the values are lists of fs implementations.
-        see MultiFS.mount, below
+        
+        {'/desired/mount/point/' : [FSImplementation(),
+                                    FSImplementation(), ...],
+        ... }
+        
+        i.e., the keys are mount points, and the values are lists of
+        fs implementations.  See MultiFS.mount, below.  The mount
+        points can either be strings or other objects which return a
+        mount point via their __str__ method; this enables the mount
+        point to be determined dynamically.
 
-        strange bug: I had defined the default value for mountdict as {},
-        but after creating one instance with mounted directories, creating another instance
-        without specifying a value for mountdict caused the *first* print statement below to
-        print the value of the previous instance's mounts attribute!  Changing the default value
-        to None removed that behavior.
+        strange bug: I had defined the default value for mountdict as
+        {}, but after creating one instance with mounted directories,
+        creating another instance without specifying a value for
+        mountdict caused the *first* print statement below to print
+        the value of the previous instance's mounts attribute!
+        Changing the default value to None removed that behavior.
+        
         """
-        # print mountdict
         if mountdict!=None:
             self.mounts=mountdict
         else:
             self.mounts={}
-        # print self.mounts
+        self.__mountpoints=self.mounts.keys()
         self.__sortMountPoints()
-        # print self.mounts
 
     def __sortMountPoints(self):
         """
-        keeps mount points sorted longest first (and otherwise in alphabetical order,
-        which doesn't actually matter)
+        keeps mount points sorted longest first (and otherwise in
+        alphabetical order, which doesn't actually matter)
         """
-        self.__mountpoints=self.mounts.keys()
         def lencmp(x, y):
-            return cmp(len(y), len(x)) or cmp(x, y)
+            xs, ys=map(str, (x, y))
+            return cmp(len(ys), len(xs)) or cmp(xs, ys)
         self.__mountpoints.sort(lencmp)
         
     def mount(self, fs, mountPoint='/'):
@@ -393,13 +402,18 @@ class MultiFS(FS):
             self.mounts[mountPoint].append(fs)
         else:
             self.mounts[mountPoint]=[fs]
-        self.__sortMountPoints()
+            self.__mountpoints.append(mountPoint)
+            self.__sortMountPoints()
 
     def find_mount(self, path, strict=0):
         found=None
+        # because of dynamic mounting, these need to be re-sorted
+        # at find_mount invocation time, which is too bad
+        self.__sortMountPoints()
         # these are kept sorted longest first
         for p in self.__mountpoints:
-            if path.startswith(p):
+            ps=str(p)
+            if path.startswith(ps):
                 found=p
                 break
         if not found:
@@ -407,7 +421,7 @@ class MultiFS(FS):
         # for each fs mounted at that point, try to locate the file; if
         # an exception occurs, try the next, and so on.
         # print "found: %s" % found
-        translatedPath=os.path.join('/', path[len(found):])
+        translatedPath=os.path.join('/', path[len(ps):])
         # print "translated path: %s" % translatedPath
         ministatinfo=None
         fs=None
@@ -435,7 +449,8 @@ class MultiFS(FS):
         listing=fs.listdir(translated)
         #print listing
         mounts=map(lambda x, y=dir: x[len(y):],
-                   pathutil.containedPaths(self.__mountpoints, dir))
+                   pathutil.containedPaths(map(str, self.__mountpoints),
+                                           dir))
         #print mounts
         def cleanpath(path):
             path=frontslashRE.sub('', path)
@@ -480,6 +495,10 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.11  2002/02/22 20:56:07  smulloni
+# adding wizard.py, for the product wizard; adding fixes for product mount/documenRoot
+# scoping incompatibility.
+#
 # Revision 1.10  2002/02/21 18:47:16  smulloni
 # bug fix: had forgotten to compile a regex.
 #

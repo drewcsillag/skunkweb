@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.5 2002/02/21 18:10:47 smulloni Exp $
-# Time-stamp: <02/02/21 18:29:05 smulloni>
+# $Id: loader.py,v 1.6 2002/02/21 23:35:09 smulloni Exp $
+# Time-stamp: <02/02/22 15:30:34 smulloni>
 
 ########################################################################
 #  
@@ -31,6 +31,7 @@ from SkunkExcept import SkunkStandardError
 import vfs
 import manifest
 from skunklib import normpath2
+from strnatcmp import strnatcmp
 
 __all__=['product_suffixes',
          'product_directory',
@@ -66,6 +67,13 @@ def _directories_and_files(directory):
     return df[1], df[0]
 
 class ProductDependencyError(Exception): pass
+
+class ProductMountPoint:
+    def __init__(self, mount):
+        self.mount=mount
+
+    def __str__(self):
+        return os.path.join(Cfg.documentRoot, self.mount)
 
 class Product:
     
@@ -118,8 +126,8 @@ class Product:
                 dprod=findProduct(p)
                 if not dprod:
                     raise ProductDependencyError, "product not found: %s" % p
-                if vr!=None and dprod.version < vr:
-                    raise ProductDependencyError, ("need version %s of product %s, "
+                if vr!=None and strnatcmp(dprod.version, vr)==-1:
+                    raise ProductDependencyError, ("need at least version %s of product %s, "
                                                    "found version %s") % (vr,
                                                                           pr,
                                                                           dprod.version)
@@ -130,12 +138,10 @@ class Product:
         Product.loaded.append(self.name)
 
     def __reallyload(self):
-        docroot_mountpath=Cfg.productPaths.get(self.name)
         havelocal=self.__fsclass==vfs.LocalFS
-        if not docroot_mountpath:
-            docroot_mountpath=normpath2('/'.join((Cfg.documentRoot,
-                                                  Cfg.defaultProductPath,
-                                                  self.name)))
+        docmount=Cfg.productPaths.get(self.name)
+        if not docmount:
+            docmount=os.path.join(Cfg.defaultProductPath, self.name)
         if havelocal:
             newfs=vfs.LocalFS(os.path.join('%s/' % self.file, self.docroot))
             libdir=normpath2('%s/%s' % (self.file, self.libs))
@@ -150,7 +156,7 @@ class Product:
                 k=vfs.registerFS(libfs, self.name)
                 vfs.importer.install()
                 sys.path.append('vfs://<%s>/' % k)
-        self.__targetfs.mount(newfs, docroot_mountpath)
+        self.__targetfs.mount(newfs, ProductMountPoint(docmount))
 
         # this will import services even if they are not contained in
         # the product itself; I'm unclear at this point whether that is
