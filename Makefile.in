@@ -29,7 +29,8 @@ components  	= pylibs @WITH_SKUNKWEB@
 owner		= @OWNER@
 group		= @GROUP@
 
-INSTALL		= @INSTALL@ -o $(owner) -g $(group)
+# added for rpm's sake
+REAL_INSTALL	= @INSTALL@ -o $(owner) -g $(group)
 
 default:	build
 
@@ -74,7 +75,7 @@ install: make-tree
 make-tree:
 	@# Build the core tree
 	for dee in $(prefix) $(skunk_config_dir) $(skunk_bin_dir) $(skunk_log_dir) $(skunk_data_dir) $(skunk_var_dir); do \
-	    $(INSTALL) -d $$DESTDIR$$dee; \
+	    $(REAL_INSTALL) -d $$DESTDIR$$dee; \
 	done
 
 #

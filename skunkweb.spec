@@ -83,7 +83,7 @@ make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 mkdir -p $RPM_BUILD_ROOT%{_prefix}
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 %makeinstall DESTDIR="%{buildroot}" APXSFLAGS="-c" \
-           INSTALL=install INSTALL_DATA=install
+           INSTALL=install INSTALL_DATA=install REAL_INSTALL=install
 
 #  set up cache reaper
 echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/cache/skunkweb' >"$RPM_BUILD_ROOT"/etc/cron.daily
