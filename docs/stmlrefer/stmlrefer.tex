@@ -119,13 +119,19 @@ is in STML. But STML, which uses Python, is smart enough
 to know about Python's real data types, such as integers 
 and floating-point numbers.
 
-Therefore, if you want an attribute value to be 
-something other than a string, use STML's best feature: 
-the \emph{backticks}. Any value which you enclose in backticks 
-\texttt{`like this`} will be taken to be a Python expression. 
-Thus when you say \texttt{bar=5}, STML sees the string \texttt{"5"} 
-for \texttt{bar}, but when you say \texttt{bar=`5`}, STML sees 
-the Python expression \texttt{5}, which it knows is an integer.
+Therefore, if you want an attribute value to be something other than a
+string, use STML's best feature: the \emph{backticks}. Any value which
+you enclose in backticks \texttt{`like this`} will be taken to be a
+Python expression.  Thus when you say \texttt{bar=5}, STML sees the
+string \texttt{"5"} for \texttt{bar}, but when you say
+\texttt{bar=`5`}, STML sees the Python expression \texttt{5}, which it
+knows is an integer.  
+
+In short, the backticks tell STML to evaluate the contents of the
+backticked expression.  Otherwise, the value will be taken as a string
+argument.  This is analogous to quoting in regular Python:  regular
+quotes (double or single) do not evaluate their contents but backticks
+do evaluate their contents.
 
 The attribute \texttt{dib} is an example of more powerful 
 uses of backticked Python expressions: the use of Python variables.
@@ -674,7 +680,7 @@ the \texttt{Date} module's default format, which is the ISO format
     For all of the above, leading zeroes are included 
     as necessary: ``01'' instead of 1, etc. However, 
     if the format element is in UPPERCASE, leading zeroes 
-    are not included: ``MM'' -> ``1'', ``mm'' -> ``01''.
+    are not included: ``MM'' \texttt{->} ``1'', ``mm'' \texttt{->} ``01''.
 
 \begin{argdesc}
 \item[mon] abbreviated name of month
