@@ -119,8 +119,15 @@ class instance:
             _boundmethod(self, k._instanceMethods['__setattr__'])(attr, value)
         else: #otherwise, normal behavior
             self.__dict__[attr] = value
-            
-class _StaticBase:
+
+try:
+    object
+    _baseClass=object
+except:
+    class _baseClass: pass
+_fakeMethods = ["__call__"]
+
+class _StaticBase(_baseClass):
     def __init__(self, klass = None, superClasses = (), dict = {}):
         self._modname = _getModName()
         self._klass = klass
@@ -150,6 +157,14 @@ class _StaticBase:
         return repr(self)
 
     def __getattr__(self, attr):
+        try:
+            #print 'attr is', attr
+            rv = object.__getattr__(self, attr)
+            if attr not in _fakeMethods: return rv
+        except:
+            pass
+                        
+        # print 'attr', attr, type(self), dir(self)
         #try static method, bound
         meth = self._staticMethods.get(attr)
         if meth: return _boundmethod(self, meth)
@@ -176,6 +191,15 @@ class _StaticBase:
         self._modname = arg['_modname']
         _updateMe(self)
 
+    try:
+        object
+        #for 2.2 need to make bogus methods so their tp_slots get
+        #filled since we inherit from object
+        for i in _fakeMethods:
+            exec "def %s(*args, **kw): pass" % i
+    except:
+        pass
+    
 def _getModName():
     S = "someexc"
     import sys
@@ -199,10 +223,21 @@ def _updateMe(obj):
             return
     raise "static.error", 'cannot load static class %s' % obj._klass
                 
-            
-_static = _StaticBase()
+try:
+    object #testing for 2.2
 
-class static(_static):    
+    class _dufus(_StaticBase):
+        def __new__(self, name, bases, dict):
+            return object.__new__(_StaticBase)
+    
+    class _static: pass
+except:
+    #print 'doing old way'
+    _static = _StaticBase() #old metaclass way
+    _dufus = None
+
+class static(_static):
+    __metaclass__ = _dufus
     def __repr__(self):
         return '<instance of static class %s at %x>' % (
             self._klass._klass, id(self))
@@ -224,7 +259,10 @@ class static(_static):
 
         for sc in scs:
             if not isinstance(sc, _StaticBase):
-                raise TypeError, 'cannot inherit from non static base class'
+                if sc == _static:
+                    continue
+                else:
+                    raise TypeError, 'cannot inherit from non static base class'
             self._instanceMethods.update(sc._instanceMethods)
             self._staticMethods.update(sc._staticMethods)
             self._classAttributes.update(sc._classAttributes)
