@@ -18,7 +18,7 @@ dnl
 AC_INIT(mod_skunkweb/mod_skunkweb.c)
 
 AC_SUBST(SW_VERSION)
-SW_VERSION=3.0beta2
+SW_VERSION=3.0
 
 AC_PREFIX_DEFAULT(/usr/local/skunk)
 
