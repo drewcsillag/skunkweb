@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/06/03 10:07:45 smulloni>
-# $Id: cronjob.py,v 1.2 2003/06/03 13:50:54 smulloni Exp $
+# Time-stamp: <03/06/03 11:24:51 smulloni>
+# $Id: cronjob.py,v 1.3 2003/06/03 14:09:23 smulloni Exp $
 
 """
 a simple cron implementation.  
@@ -145,10 +145,10 @@ class CronLogger(object):
     """
     interface for logging the output from cron jobs.
     """
-    def out(msg):
+    def out(self, msg):
         pass
 
-    def err(msg):
+    def err(self, msg):
         pass
 
 class StreamLogger(CronLogger):
@@ -158,27 +158,23 @@ class StreamLogger(CronLogger):
     def __init__(self, out=sys.stdout, err=sys.stderr):
         self._out=out
         self._err=err
-    def out(msg):
+    def out(self, msg):
         self._out.write(msg)
         self._out.flush()
-    def err(msg):
+    def err(self, msg):
         self._err.write(msg)
         self._err.flush()
 
 class CronTab(object):
     """
     a collection of cronjobs, that share
-    user, group, poll period, and a logger.
+    poll period, and a logger.
     """
     def __init__(self,
-                 user=None,
-                 group=None,
                  pollPeriod=5,
                  logger=None):
 
         self.cronjobs=[]
-        self.user=user
-        self.group=group
         self.pollPeriod=pollPeriod
         if logger is None:
             logger=StreamLogger()
@@ -196,10 +192,6 @@ class CronTab(object):
         to run in its own loop.  If you don't, you are
         responsible for killing off the zombies yourself.
         """
-        if self.user is not None:
-            os.setuid(self.user)
-        if self.group is not None:
-            os.setgid(self.group)
         signal.signal(signal.SIGCHLD, self._handle_sigchld)            
         while 1:
             try:
