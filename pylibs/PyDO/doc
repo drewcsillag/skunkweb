@@ -127,6 +127,7 @@ Static Methods
 getDBI()                      - gets database interface (see conn.readme)
 getColumns(qualified = None)  - get column names (with table name if qualified)
 getTable()                    - get table name
+scatterFetch(objs, **kw)      - get multiple object types that are related
 _baseSelect(qualified = None) - get SELECT fragment to get rows of object
 _matchUnique(kw)              - returns an eligible candidate key based on 
                                 contents of _dict
