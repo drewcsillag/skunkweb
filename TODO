@@ -1,5 +1,5 @@
-#   Time-stamp: <2003-12-26 14:53:47 smulloni> 
-#   $Id: TODO,v 1.48 2003/07/19 17:08:16 smulloni Exp $
+#   Time-stamp: <2004-01-03 23:40:06 smulloni> 
+#   $Id: TODO,v 1.49 2003/12/30 03:31:22 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -22,6 +22,94 @@ Do Quick release
 update Freshmeat
     http://freshmeat.net/add-release/16533/17283/
 
+SkunkWeb 3.5
+------------
+
+3.5 should be the first major refactoring of SkunkWeb since the 3.0
+release.  Previous releases have been incremental; 3.5 should retain a
+considerable amount of backwards compatibility, but involve a major
+code cleanup and rethinking of fundamental organization.
+
+* move much of pylibs into the new skunk package:
+	* skunk.components (the old AE)
+	* skunk.cache (the old AE.Cache, generalized)
+	* skunk.config (the old scope, plus various versions/interfaces lying around) 
+	* skunk.logging (replacing Logger)
+	* skunk.templates (replacing DT; contains subset of STML that doesn't depend 
+	  on AE)
+	* skunk.templates.stml (containing complete stml implementation, including tags 
+	  currently defined in AE)
+	* skunk.pydo (replacing PyDO; PyDO2 replaces the old PyDO -- PyDBI should have optional 
+	  connection pooling for threadsafety)
+	* skunk.dbcache (replacing various connection cache modules)
+	* skunk.vfs
+	* skunk.formlib
+	* skunk.xhtmlgen (replacing ecs) -- should have a better parser, that accepts entities. 
+	* skunk package should have a doctest-based test suite!
+
+* review use of globals and modify them to free much of skunk's
+libraries from being tied to SkunkWeb's process model.  In order to do
+this, add a more general object precursor of CONNECTION to
+requestHandler -- Transaction (actually, it could be a dict, even the
+sessionDict; I'm not sure yet).  Currently, the state of the current
+transaction is stored globally, which makes it easy to access within
+SkunkWeb but makes use of skunk libraries in other (threaded,
+asynchronous) contexts impossible; by storing this data in a
+transaction object, SkunkWeb won't need to change very much (although
+there is some lack of backwards compatibility for existing skunkweb
+apps), but the libraries will be much more flexible (and neater, too).
+Embedding SkunkWeb in WebWare/Twisted/CGI will be possible, and I'd
+like that to be a realized goal for 3.5 (CGI may be almost possible
+now).  The main change will be ensuring that the transaction object is
+available is in the right places, rewriting libraries to factor out
+configuration appropriately, and modifying the request-handling
+infrastructure in requestHandler, web, and templating in a way that
+makes sense.  The globals that will be affected are:
+
+	 * componentStack.  One per transaction.  (In multi-process
+           SkunkWeb, there will only be one at a time anyway.)
+	 * configuration.  Because this will no longer be global, 
+           the scoping games played in the past probably won't be
+           necessary any longer; instead, the scoped configuration can
+	   simply be a copy of the definitive configuration
+	   dictionary, updated as appropriate.  This will be a little
+	   bit faster, and simpler, too.  Access to
+	   SkunkWeb.Configuration should be deprecated; but perhaps a
+	   config option will let skunkweb operate in backwards
+	   compatibility mode, and continue to perform scoping of the
+	   global config, but it won't be necessary any longer for new
+	   apps. 
+	 * (anything else I am forgetting?)
+
+From within a transaction, access to the current transaction and to
+its potentially scoped configuration data should always be simple.
+Service hooks should be able to get at it directly.  Components should
+be given enough introspective ability to be able to identify the
+transaction (and hence configuration and component stack) they are
+being executed in from within themselves; therefore, it will be
+possible from within components to replace references to those globals
+with no-arg method calls: getTransaction(), etc. 
+
+? The installation of SkunkWeb might be revisited when just about
+  everything is implemented in the skunk package.  A conventional
+  distutils installation might work.  The normal services should still
+  be directly importable without package qualification, but that could
+  be achieved by munging sys.path within the skunkweb environment. 
+
+* No side-effects in the default services; instead of having active
+  code directly within the scripts, look for a main method with a name
+  like "initService" or something like that.  That way, in case code
+  winds up in a service that needs to be used somewhere else, the
+  service hooks won't necessarily have to be added for the code to be
+  used (to avoid this problem in the past I have copied the default
+  404 handler from templating to several other services!).
+
+* revise release utilities; add freshmeat xmlrpc calls.
+* swpython will fail if log files can't be opened, even with the -r
+  option. This raises the question: if this is fixed, swpython will
+  enable any user on a system to access any databases configured for
+  the skunkweb installation.  That's a problem.
+
 SkunkWeb 3.4
 ------------
 * urls in html-helper tags should htmlquote ampersands in querystrings
@@ -34,37 +122,6 @@ X gentoo ebuild
 * docs: somewhat presentable version of new handbook
 X product service/vfs -- import hook seems to be misbehaving; deprecate it
   and use Python2.3 zipimport
-* move much of pylibs into the new skunk package:
-* skunk.components (the old AE)
-* skunk.cache (the old AE.Cache, generalized)
-* skunk.config (the old scope, plus various versions/interfaces lying around) 
-* skunk.logging (replacing Logger)
-* skunk.templates (replacing DT; contains subset of STML that doesn't depend 
-  on AE)
-* skunk.templates.stml (containing complete stml implementation, including tags 
-  currently defined in AE)
-* skunk.pydo (replacing PyDO; PyDO2 replaces the old PyDO)
-* skunk.dbcache (replacing various connection cache modules)
-* skunk.vfs
-* skunk.formlib
-* skunk.xhtmlgen (replacing ecs) -- should have a better parser, that accepts entities. 
-* skunk package should have a doctest-based test suite!
-
-* review use of globals and modify them.  componentStack, for instance,
-  should the attribute of a particular "component transaction" (?).In
-  normal SkunkWeb use, there will be only one.  Configuration will be
-  available as from the CONNECTION.  A more general object precursor
-  of CONNECTION may be best to add to requestHandler.
-
-? installation modification -- use distutils and install in
-  site-packages/skunk, with a top-level __init__.py and a sys.path
-  modification inside the skunkweb environment  ??
-
-* revise release utilities; add freshmeat xmlrpc calls.
-* swpython will fail if log files can't be opened, even with the -r
-  option. This raises the question: if this is fixed, swpython will
-  enable any user on a system to access any databases configured for
-  the skunkweb installation.  That's a problem.
 
 SkunkWeb 3.3
 ------------------------------
