@@ -207,7 +207,8 @@ class TextAreaField(ViewableField):
 
 class SelectField(ViewableDomainField):
     """\
-    A component view which accepts a list of options for composing a <select> field:
+    A component view which accepts a list of options for composing a <select>
+    field:
     - a list of strings ['1','2', '3'] becomes
       <select>
        <option value="1">1</option>
@@ -613,8 +614,10 @@ class ViewableForm(Viewable, Form):
             # handle the errors display...these will always span two columns
             numErrs = self.handleError(errTr, fld)
             if not numErrs:
-                # if there were no errors, we need to add an empty TD for this field's error
-                errTr.addElement(ecs.Td().setAttribute('colspan', '2').addElement("&nbsp;"))
+                # if there were no errors, we need to add an empty TD for
+                #this field's error
+                errTr.addElement(ecs.Td().setAttribute('colspan', '2')\
+                                 .addElement("&nbsp;"))
             else:
                 # increment the total number of errors
                 ttlErr = ttlErr + numErrs
@@ -639,7 +642,8 @@ class ViewableForm(Viewable, Form):
                 return
             
             if idx == lstLen - 1:
-                # if we are on the last column, add the colspan, else add no colspan
+                # if we are on the last column, add the colspan, else add no
+                #colspan
                 self.handleField(fld, tr, table, colspan, fromList=1)
             else:
                 self.handleField(fld, tr, table, 0, fromList=1)

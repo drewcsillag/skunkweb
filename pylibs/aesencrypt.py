@@ -1,6 +1,6 @@
 #! /usr/bin/env python
-# Time-stamp: <02/11/29 20:59:36 smulloni>
-# $Id: aesencrypt.py,v 1.1 2002/11/20 17:34:11 smulloni Exp $
+# Time-stamp: <02/11/29 21:42:30 smulloni>
+# $Id: aesencrypt.py,v 1.2 2002/11/30 02:11:34 smulloni Exp $
 """
 a convenience class for encrypting strings or
 arbitrary length using AES.  Requires PyCrypto,
@@ -84,14 +84,14 @@ if __name__=='__main__':
     opts=dict(optlist)
     help=opts.has_key('-h')
     if help:
-        print usage
+        print >> sys.stderr, usage
         sys.exit(1)
    
     decrypt=opts.has_key('-x')
     encrypt=opts.has_key('-c')
     if decrypt and encrypt:
-        print "decrypt and encrypt are mutually incompatible options!"
-        print usage
+        print >> sys.stderr, "decrypt and encrypt are mutually incompatible options!"
+        print >> sys.stderr, usage
         sys.exit(1)
     if not (decrypt or encrypt):
         encrypt=1

@@ -1,0 +1,73 @@
+from formlibtest.testDispatch3 import *
+from formlib import *
+from formlib.form import UNDEF
+import rotor
+import pprint
+import ecs
+
+forms=[ViewableForm('page1',
+                    method="POST",
+                    fields=[HiddenField(stateVar),
+                            TextField('item', 'Item', required=1),
+                             ButtonField(name=flowactionVar,
+                                         content='Find Item...',
+                                         default='PUSH.finditem',
+                                         setable=0),
+                            SubmitField('_submit',
+                                        default='Submit')],
+                    processors=[process_store]),
+       ViewableForm('finditem',
+                    method="POST",
+                    fields=[HiddenField(stateVar),
+                            ButtonGroupField('item',
+                                             description='Select Item',
+                                             options=['fruitcake',
+                                                      'bazooka',
+                                                      'Stradivarius',
+                                                      'handcuffs',
+                                                      'primrose',
+                                                      'gloves'],
+                                             multiple=0,
+                                             required="You must select an item, or forever burn in Hell."),
+                            HiddenField(flowactionVar, default="POP"),
+                            HiddenField('_mungeitem', default='item'),
+                            HiddenField('_mungetarget', default='item'),
+                            SubmitField('_submit', default="submit")], 
+                    processors=[process_munge]),
+       ViewableForm('confirm',
+                    method="POST",
+                    fields=[HiddenField(stateVar),
+                            ButtonGroupField('confirm',
+                                             description='Are you sure you want to dizmanzansify this item?',
+                                             options=[('1', 'Yes, dismanzansify it!'),
+                                                      ('0', 'No, send me to the beginning')],
+                                             multiple=0,
+                                             required='Please say what you want to do.',
+                                             default='0'), 
+                            SubmitField('_submit', default='Take the Plunge')],  
+                    processors=[process_submit])]
+
+statemgr=InPageStateManager('don\'t touch my nougat',
+                            rotor.newrotor('time for dinner'))
+            
+dispatcher=FormDispatcher(statemgr,
+                          forms,
+                          flowmgr=PushyFlowManager(forms),
+                          stateVariable=stateVar)
+
+
+
+curform=dispatcher.dispatch(CONNECTION.args, globals())
+state=dispatcher.statemgr.state
+print ecs.H5('state:')
+print ecs.Pre(pprint.pformat(state))
+print ecs.Pre(pprint.pformat(dispatcher.statemgr.stack))
+print ecs.Pre(UNDEF)
+
+if curform:
+    print
+    print curform.getView()
+    print
+else:
+    print '<h2>congratulations, you are done.</h2>'
+

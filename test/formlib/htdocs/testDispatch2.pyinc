@@ -43,9 +43,6 @@ statemgr=InPageStateManager('google-google GaiPan',
                             rotor.newrotor('my artichoke', 12))
 
 class SillyFlowManager(object):
-    def __init__(self):
-        pass
-    
     def getStartForm(self):
         return form1
 
@@ -63,8 +60,6 @@ class SillyFlowManager(object):
             else:
                 return Goto(form3.name)
         return Goto(form1.name)
-
-
 
 
 dispatcher=FormDispatcher(statemgr,
