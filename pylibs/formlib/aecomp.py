@@ -119,8 +119,21 @@ class ComponentValidator:
                           cache=NO)
         # should be a list of FormErrorMessage objects
         return res or []
+
+class ComponentSubmitProcessor:
+    def __init__(self, form, comp_path):
+        self.form=form
+        self.comp_path=rectifyRelativeName(comp_path)
+    def __call__(self, **kwargs):
+        res=callComponent(self.comp_path,
+                          argDict=kwargs,
+                          compType=DT_DATA,
+                          cache=NO)
+        return res
+
         
 __all__=['ComponentViewableField',
          'ComponentViewableDomainField',
          'ComponentViewableForm',
-         'ComponentValidator']
+         'ComponentValidator',
+         'ComponentSubmitProcessor']

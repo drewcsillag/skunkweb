@@ -1,3 +1,8 @@
+2003-07-17  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/aecomp.py (ComponentSubmitProcessor): added new
+	class that wraps a component call in a function in a trivial way.
+
 2003-07-16  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/templating/SafeSpoolTag.py: modified to use
