@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.16 2002/04/29 21:11:14 drew_csillag Exp $
-# Time-stamp: <2002-04-29 22:10:01 drew>
+# $Id: sw.conf.in,v 1.17 2002/04/30 02:16:56 drew_csillag Exp $
+# Time-stamp: <2002-06-07 11:41:51 acsillag>
 
 ########################################################################
 #
@@ -588,6 +588,7 @@ sys.path.append('@prefix@/sitelibs')
 # Set to a dictionary of 'name': ['list', 'of', 'packagenames'] where name
 # matches that used in OracleConnectStrings
 #
+# IF YOU ARE USING DCOracle2 -- DO NOT USE THIS OPTION!!!
 # OracleProcedurePackageLists = {}
 
 ########################################################################
@@ -614,6 +615,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.17  2002/04/30 02:16:56  drew_csillag
+# removed part where you specified the password slot for the PlainSessionAuth authorizer since we do not do that anymore
+#
 # Revision 1.16  2002/04/29 21:11:14  drew_csillag
 # changed re:cookieauth/auth
 #

@@ -20,7 +20,17 @@ import Date
 from Date import DateTime
 import string
 from PyDO import SYSDATE #circular import ok, since we're loaded after PyDO
-import DCOracle
+try:
+    import DCOracle
+except:
+    import DCOracle2 as DCOracle
+
+try:
+    dbiRaw, dbiDate = DCOracle.dbi.dbiRaw, DCOracle.dbi.dbiDate
+except:
+    dbiRaw = DCOracle.dbiRaw
+    dbiDate = DCOracle.DateFromTicks
+
 import Oracle
 
 class _NO_VALUE: pass
@@ -69,7 +79,7 @@ class PyDOOracle:
         if Date.isDateTime(val):
             val = _dateConvertToDB(val)
         if string.upper(dbtype) == "LONG RAW":
-            val = DCOracle.dbi.dbiRaw(val)
+            val = dbiRaw(val)
         self.bvcount = self.bvcount + 1
         return ':p%d' % self.bvcount, val
 
@@ -199,7 +209,7 @@ def _dateConvertFromDB(dbd):
     return DateTime.localtime(dbd)
 
 def _dateConvertToDB(dt):
-    return DCOracle.dbi.dbiDate(float(dt))
+    return dbiDate(float(dt))
 
 def _isNumber(attr):
     return attr == 'INTEGER'

@@ -29,14 +29,17 @@ know the ordering of the columns in the result set -- they are exposed as a
 dictionary where the keys are the column names and the values are the result
 values.
 """
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:01:28 drew_csillag Exp $
+# $Id: __init__.py,v 1.2 2001/12/20 17:35:34 drew_csillag Exp $
 
 import sys
 import string
 import types
 import marshal
 
-import DCOracle
+try:
+    import DCOracle
+except:
+    import DCOracle2 as DCOracle
 
 import Date.Format
 import Date.Date
@@ -46,7 +49,12 @@ try:
 except:
     import DateTime
     
-dbiRaw, dbiDate = DCOracle.dbi.dbiRaw, DCOracle.dbi.dbiDate
+try:
+    dbiRaw, dbiDate = DCOracle.dbi.dbiRaw, DCOracle.dbi.dbiDate
+except:
+    dbiRaw = DCOracle.dbiRaw
+    dbiDate = DCOracle.DateFromTicks
+    
 from SkunkExcept import *
 
 _connections = {}

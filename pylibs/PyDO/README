@@ -18,9 +18,12 @@ O-R database access tools, PyDO:
     * is easy to figure out how it works and when it does things so
       that you won't piss off your DB admin
 
-If you are going to use oracle, you need the DCOracle pacakge
-available from the zope.org site at:
+If you are going to use oracle, you need the DCOracle, or preferably
+the DCOracle2 pacakge available from the zope.org site at:
     http://www.zope.org/Products/DCOracle
+  and 
+    http://www.zope.org/Members/matt/dco2
+respectively
 
 First, you will need the mx.DateTime module available from the mxBASE package
 http://www.lemburg.com/files/python/eGenix-mx-Extensions.html#mxBASE.
