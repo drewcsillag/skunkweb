@@ -74,7 +74,7 @@ file in the docs directory, that goes into a bit more detail.
    debate simmers about ZPT; its usability by designers is one of its major
    justifications, and yet its legibility for programmers is poor, because
    the programming logic is rolled up inside tag attributes.  All of Zope's
-   templating languages restrict the the programmer from using the full
+   templating languages restrict the programmer from using the full
    power of Python in templates, for security reasons; SkunkWeb makes
    different assumptions about what template authors should be trusted to
    do, and permits the unlimited importation and use of Python modules (see

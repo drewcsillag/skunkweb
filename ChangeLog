@@ -1,5 +1,7 @@
 2003-04-23  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* FAQ: typo fix.
+
 	* pylibs/AE/cfg.py (Config.mergeDefaults): fixed typo
 	that has been there forever.
 
