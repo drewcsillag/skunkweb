@@ -1,7 +1,7 @@
-# Time-stamp: <02/11/20 00:10:30 smulloni>
+# Time-stamp: <02/11/20 12:11:39 smulloni>
 # $Id$
 """
-a convenience class for encoding strings or
+a convenience class for encrypting strings or
 arbitrary length using AES.  Requires PyCrypto,
 available at from http://www.amk.ca/python/code/crypto.html.
 """
@@ -9,7 +9,7 @@ import Crypto.Cipher.AES as AES
 import md5
 
 
-class AESEncoder:
+class AESEncryptor:
     def __init__(self, key, IV=None):
         self.key=key
         self.__key=md5.md5(key).digest()
@@ -28,10 +28,10 @@ class AESEncoder:
         num=int(padded[:xind])
         return padded[xind+1:xind+1+num]
 
-    def encode(self, thing):
+    def encrypt(self, thing):
         thing=self._pad(thing)
         return AES.new(self.__key, AES.MODE_CBC, self.IV).encrypt(thing)
 
-    def decode(self, encoded):
-        thing=AES.new(self.__key, AES.MODE_CBC, self.IV).decrypt(encoded)
+    def decrypt(self, encrypted):
+        thing=AES.new(self.__key, AES.MODE_CBC, self.IV).decrypt(encrypted)
         return self._unpad(thing)

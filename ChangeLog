@@ -1,3 +1,12 @@
+2002-11-20    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/state.py: made stateEncoder => stateEncryptor.
+
+	* pylibs/aesencrypt.py: moved aesencode.py to aesencrypt.py
+	and renamed encode/decode to encrypt/decrypt, so as not to wince
+	every time I see the module.  Also, now rotors objects have the same
+	interface, which is helpful to formlib.state.InPageStateManager.
+
 2002-11-20  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/formlib/state.py (InPageStateManager.setstate): moved

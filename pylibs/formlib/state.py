@@ -1,20 +1,33 @@
 import base64
 import cPickle
-from md5 import md5
+import md5
 
 class InvalidStateException(Exception): pass
 
 class InPageStateManager:
-    def __init__(self, nonce, stateEncoder=None, stateVariable='_state'):
+    """
+    responsible for holding and marshalling into
+    a value that can be placed securely in a hidden field
+    some value.  The nonce is used to generate a verifiable
+    hash.  If you want to further encrypt the pickled value
+    of the state, use a stateEncryptor, which should have
+    encrypt() and decrypt() methods (like the class in aesencrypt,
+    or a rotor object).  The stateVariable is the cgi key
+    used for retrieving and setting state.
+    """
+    def __init__(self,
+                 nonce,
+                 stateEncryptor=None,
+                 stateVariable='_state'):
         self.state = {'stack' : []}
-        self.encoder=stateEncoder
+        self.encryptor=stateEncryptor
         self.stateVariable=stateVariable
 
     def write(self):
         s = cPickle.dumps(self.state, 1)
-        if self.encoder:
-            s=self.encoder.encode(s)
-        hash = md5(self.nonce + s).digest()
+        if self.encryptor:
+            s=self.encryptor.encrypt(s)
+        hash = md5.md5(self.nonce + s).digest()
         outv = base64.encodestring(hash + s)
         return ''.join(outv.split('\n'))
 
@@ -24,14 +37,14 @@ class InPageStateManager:
         nhash = md5.md5(self.nonce + pick).digest()
         if nhash != hash:
             raise InvalidStateException, 'state has been tampered with'
-        if self.encoder:
-            pick=self.encoder.decode(pick)
+        if self.encryptor:
+            pick=self.encryptor.decrypt(pick)
         self.state = cPickle.loads(pick)
 
     def setstate(self, cgiarguments):
         try:
             statestr = cgiarguments[self.stateVariable]
-        except:  # no state to get
+        except KeyError:  # no state to get
             return
         self.read(statestr)
         
