@@ -1,5 +1,7 @@
 2002-12-04  James Richards  <jrichards@satie.wnyc.org>
 
+	* test/formlib/htdocs/testNestedList.pyinc (form): Added NestedListLayout() to ViewableForm construction to test new nested list layout support
+
 	* pylibs/formlib/views.py (Layout.handleError): Base class with standard semantics for error handling during layout
 	(FlowLayout.layoutFields): flow layout for simple flow based form layout 
 	(StackLayout.layoutFields): stack layout for default stack based form layout 
