@@ -51,7 +51,7 @@ opman/opman.html: ../opman/opman.tex
 	$(MKHTML) $(TOPDIR)/opman/opman.tex
 
 PyDO/PyDO.html: ../PyDO/PyDO.tex
-	$(MKHTML) $(TOPDIR)/../PyDO/PyDO.tex
+	$(MKHTML) $(TOPDIR)/PyDO/PyDO.tex
 
 clean:
 	echo
