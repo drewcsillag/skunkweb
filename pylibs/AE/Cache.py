@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.21 2003/08/12 01:01:30 smulloni Exp $
+#$Id: Cache.py,v 1.22 2003/08/13 02:03:04 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -291,7 +291,7 @@ def _fixPath(root, path):
     # This resulted in it being possible to escape the document root.
     # reverting to 1.5 version. -- js
     # it turns out that 1.5 breaks some things, as there resulting path isn't
-    # normalized (it can have an extra slash
+    # normalized (it can have an extra slash)
     return _normpath('%s/%s' % (root,_normpath(path)))
 
 
