@@ -1,5 +1,7 @@
 2003-08-23  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/swmgr.in: typo-type bug fix.
+
 	* pylibs/Date/Format.py (_DateFormatter.format): stop passing 
 	the mx.DateTime tuple() to time.strftime, as it causes a
 	DeprecationWarning with Python 2.3 (until Lemburg fixes it, at

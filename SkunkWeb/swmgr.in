@@ -11,7 +11,7 @@
 # This is the manager script for SkunkWeb, used for stopping,
 # starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.7 2003/05/08 14:15:09 drew_csillag Exp $
+# $Id: swmgr.in,v 1.8 2003/08/22 20:34:16 smulloni Exp $
 
 umask 002
 
@@ -135,7 +135,7 @@ case "$1" in
         then
           PIDFILE=@localstatedir@/run/sw.pid
         else
-	  PIDFILE=`get_pid_file`
+	  PIDFILE=`$run_as_user @bindir@/swpython -q -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'`
           if [ -z "$PIDFILE" ]
 	  then
 	      echo "run of swpython to determine pidfile failed!"
