@@ -104,6 +104,9 @@ class PyDOMySQL:
         return newresult
 
     def typeCheckAndConvert(self, val, aname, attr):
+        if val == None:
+            return 'NULL'
+            
         if _isDateKind(attr):
             if not Date.isDateTime(val) and not val == PyDBI.SYSDATE:
                 raise TypeError,'trying to assign %s to %s and is not a date'%(
