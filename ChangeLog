@@ -1,7 +1,16 @@
+2002-02-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/product/loader.py (Product.__reallyload):
+	stopped using a vfs importer for directory products.
+
+	* configure.in, configure, SkunkWeb/configure.in,
+	SkunkWeb/configure: added reference to product service.
+
 2002-02-19  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/: adding first cut at a
-	product service.  
+	product service.  loader.py has a Product class, and loads
+	products; manifest.py reads and writes manifest files.
 
 	* pylibs/vfs/zipfs.py (ZipFS.__init__), pylibs/vfs/tarfs.py
 	(TarFS.__init__):  default value for root parameter was wrong in

@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <02/02/19 23:42:21 smulloni>
+# $Id: loader.py,v 1.1 2002/02/20 04:54:14 smulloni Exp $
+# Time-stamp: <02/02/20 00:58:04 smulloni>
 
 ########################################################################
 #  
@@ -23,6 +23,7 @@
 
 import os
 import re
+import sys
 import types 
 import SkunkWeb.Configuration as Cfg
 from SkunkWeb.LogObj import ERROR, logException
@@ -102,10 +103,10 @@ class Product(static.static):
             return self.manifest[attr]
         raise AttributeError, attr
 
-    def __getitem__(self, item):
-        if self.manifest.has_key(item):
-            return self.manifest[item]
-        raise KeyError, item
+##    def __getitem__(self, item):
+##        if self.manifest.has_key(item):
+##            return self.manifest[item]
+##        raise KeyError, item
 
     def static_findProduct(self, productname, fromFile=0):
         pdir=product_directory()
@@ -161,20 +162,25 @@ class Product(static.static):
         lib_mountpath=Cfg.productLibdirs.get(self.name, Cfg.defaultProductLibdir)
         havelocal=self.__fsclass==vfs.LocalFS
         if not docroot_mountpath:
-            docroot_mountpath=os.path.join('%s/' % Cfg.documentRoot,
-                                           os.path.join(Cfg.defaultProductPath, self.name))
+            docroot_mountpath=normpath2('/'.join((Cfg.documentRoot,
+                                                  Cfg.defaultProductPath,
+                                                  self.name)))
         if havelocal:
-            newfs=vfs.LocalFS(os.path.join(self.file, self.docroot))
-            libfs=vfs.LocalFS(os.path.join(self.file, self.libs))
+            newfs=vfs.LocalFS(os.path.join('%s/' % self.file, self.docroot))
+            libdir=normpath2('%s/%s' % (self.file, self.libs))
+            if os.path.exists(libdir) and libdir not in sys.path:
+                sys.path.append(libdir)
+                
         else:
             newfs=self.__fsclass(self.file, root=self.docroot)
             libfs=self.__fsclass(self.file, root=self.libs)
+            # if the libfs is empty, don't bother mounting it 
+            if libfs.listdir('/'):
+                self.__targetfs.mount(libfs, lib_mountpath)
+                vfs.importer.install()
+                sys.path.append(vfs.importer.VFSImporter(libfs, ['/']))
         self.__targetfs.mount(newfs, docroot_mountpath)
-        # if the libfs is empty, don't bother mounting it 
-        if libfs.listdir('/'):
-            self.__targetfs.mount(libfs, lib_mountpath)
-            vfs.importer.install()
-            sys.path.append(vfs.importer.VFSImporter(libfs, ['/']))
+
         # this will import services even if they are not contained in the product itself;
         # I'm unclear at this point whether that is good or not
         for service in self.services:
