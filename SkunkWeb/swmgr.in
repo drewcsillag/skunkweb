@@ -21,7 +21,7 @@
 # startup / shutdown procedures for the Skunk Application Environment 
 # Daemon :-). 
 #
-# $Id: swmgr.in,v 1.1.1.1 2001/08/05 14:59:30 drew_csillag Exp $
+# $Id: swmgr.in,v 1.2 2002/07/25 17:29:15 drew_csillag Exp $
 
 umask 002
 
@@ -80,6 +80,18 @@ function get_pid_file
     run_as_user @bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
 }
 
+if [ "$1" = '-r' ]
+then
+    RUNASROOT=root
+    echo "If you want to make it so swmgr always starts skunkweb as root,"
+    echo "edit swmgr and change the line where it says RUNASROOT=user"
+    echo "and make it say RUNASROOT=root"
+    echo
+    echo "In addition, to restart and stop skunkweb you must use the -r"
+    echo "option when skunkweb was started with -r"
+    shift
+fi
+
 # See how we were called.
 case "$1" in
   start)
@@ -137,7 +149,8 @@ case "$1" in
 	echo "SkunkWeb restarted"
 	;;
   *)
-	echo "Usage: $0 {start|stop|restart}"
+	echo "Usage: $0 -r {start|stop|restart}"
+	echo "    -r     start skunkweb as root so it can bind to a low port"
 	exit 1
 esac
 
