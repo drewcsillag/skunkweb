@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/12/31 13:13:52 smulloni>
+# Time-stamp: <02/01/07 17:30:23 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -63,13 +63,30 @@ class ParFS(FS):
         self.__archive.exists(path)
 
     def isfile(self, path):
-        return not self.__pfile.isdir(path)
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
+            raise VFSException, "no such file or directory: %s" % path        
+        realname=self.__archive.paths[adjusted]
+        if realname!=None:
+            return self.__pfile.isfile(realname)
+        else:
+            return 0
 
     def isdir(self, path):
-        return self.__pfile.isdir(path)
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
+            raise VFSException, "no such file or directory: %s" % path        
+        realname=self.__archive.paths[adjusted]
+        if realname!=None:
+            return self.__pfile.isdir(realname)
+        else:
+            return 1        
 
 ########################################################################
 # $Log$
+# Revision 1.4  2002/01/10 02:34:18  smulloni
+# vfs tweaks
+#
 # Revision 1.3  2002/01/02 06:39:24  smulloni
 # work on vfs
 #

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/12/31 13:02:50 smulloni>
+# Time-stamp: <02/01/07 17:32:22 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -24,7 +24,6 @@ from vfs import FS, VFSException
 from rosio import RO_StringIO
 import time
 import os
-import re
 import pathutil
 
 class ZipFS(FS):
@@ -70,8 +69,8 @@ class ZipFS(FS):
         return self.__archive.exists(path)
 
     def isdir(self, path):
-        adjusted=_adjust_user_path(path)
-        if not self.archive.paths.has_key(adjusted):
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
             raise VFSException, "no such file or directory: %s" % path
         realname=self.__archive.paths[adjusted]
         if realname==None:
@@ -84,13 +83,21 @@ class ZipFS(FS):
                    self.__zfile.getinfo(realname).file_size==0
 
     def isfile(self, path):
-        adjusted=_adjust_user_path(path)
-        return self.exists(path) and \
-               not adjusted.endswith('/')
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
+            raise VFSException, "no such file or directory: %s" % path
+        realname=self.__archive.paths[adjusted]
+        if realname==None:
+            return 0
+        else:
+            return not adjusted.endswith('/')
 
 
 ########################################################################
 # $Log$
+# Revision 1.4  2002/01/10 02:34:18  smulloni
+# vfs tweaks
+#
 # Revision 1.3  2002/01/02 06:39:24  smulloni
 # work on vfs
 #
