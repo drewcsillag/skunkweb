@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTCompilerUtil.py,v 1.3 2001/09/21 20:36:08 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.4 2001/09/21 21:07:14 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 
@@ -119,7 +119,7 @@ def genCodeNode(indent, codeout, tagreg, children, meta):
         # tags!!!!
         genCodeChild(indent, codeout, tagreg, i, meta)
 
-def genCodeChild ( indent, codeout, tagreg, thing, meta = None ):
+def genCodeChild ( indent, codeout, tagreg, thing, meta ):
     if type(thing) == types.StringType:
         # XXX experiment by Roman - do not write empty strings
         #
@@ -141,7 +141,7 @@ def genCodeChild ( indent, codeout, tagreg, thing, meta = None ):
 
         codeout.write(indent, '')
         codeout.write(indent, '#----------------------------------------')
-        dttag.genCode(indent, codeout, tagreg, thing)
+        dttag.genCode(indent, codeout, tagreg, thing, meta)
         codeout.write(indent, '#----------------------------------------')
     else: #an "empty" tag
         tagname=thing.tagname
@@ -195,6 +195,11 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.4  2001/09/21 21:07:14  drew_csillag
+# now made
+# it so that if you have a multi-line <:call:> tag, you don't have
+# to have the ':> on it's own line for it to work.
+#
 # Revision 1.3  2001/09/21 20:36:08  drew_csillag
 # fixed so print statements in templates now work
 #
