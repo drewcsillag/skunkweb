@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.3 2001/09/04 17:23:55 smulloni Exp $ 
- * Time-stamp: <01/09/04 13:51:16 smulloni>
+ * $Id: _scope.c,v 1.4 2001/09/04 17:54:41 smulloni Exp $ 
+ * Time-stamp: <01/09/04 13:55:07 smulloni>
  */
 
 /***********************************************************************
@@ -62,7 +62,9 @@ static PyObject  *Scopeable_init(PyObject *self, PyObject *args) {
   PyObject *dictList=PyList_New(0);
   PyObject *matchers=PyList_New(0);
   PyObject *currentScopes=PyDict_New();
-  PyArg_ParseTuple(args, "O|O", &self, &dict);
+  if (!PyArg_ParseTuple(args, "O|O", &self, &dict)) {
+    return NULL;
+  }
   if (dict == NULL) {
     dict=PyDict_New();
     Py_INCREF(dict);
@@ -514,6 +516,9 @@ void init_scope() {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.4  2001/09/04 17:54:41  smulloni
+ * removed some unnecessary debugging statements
+ *
  * Revision 1.3  2001/09/04 17:23:55  smulloni
  * fix to mergeDefaults(), which was bombing out.
  *
