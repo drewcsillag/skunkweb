@@ -34,9 +34,9 @@ URL: http://skunkweb.sourceforge.net/
 Packager:  Jacob Smullyan <smulloni@smullyan.org>
 BuildRoot: /var/tmp/%{name}-%{version}-root
 Requires: %{pythonpath}
-Requires: %{pylibdir}/site-packages/mx
+Requires: %{pylibdir}/site-packages/mx/__init__.py
 BuildRequires: %{apxspath}
-BuildRequires: python >= 2.1
+BuildRequires: python2 >= 2.1
 
 %description
 SkunkWeb is a scalable, extensible and easy to use web application server
