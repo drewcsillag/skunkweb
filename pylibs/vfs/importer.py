@@ -1,5 +1,5 @@
-# $Id: importer.py,v 1.1 2002/02/16 06:37:00 smulloni Exp $
-# Time-stamp: <02/02/19 23:47:17 smulloni>
+# $Id: importer.py,v 1.2 2002/02/20 04:54:14 smulloni Exp $
+# Time-stamp: <02/02/21 02:05:31 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -23,80 +23,135 @@
 This adds an import hook so that python modules can be imported from
 the vfs.  It makes no attempt to load c modules or to check the
 timestamps of pyc files.
+
+Originally coded to use imputil.py; problems with that module necessitated
+a port to use Gordon McMillan's iu.py, which actually works.
 """
 
 import os
 import marshal
 import imp
-import imputil
+import iu
+import re
 import types
+import vfs
 
-MAGIC_LEN=8 # len(imp.get_magic()) + 4 for a timestamp
+VFS_URL_PREFIX='vfs://'
+_prefixlen=len(VFS_URL_PREFIX)
 
-def _importpyc(bytes, name):
-    return marshal.loads(bytes[MAGIC_LEN:])
-def _importpy(bytes, name):
-    return compile(bytes, '%s.py' % name, 'exec')
-suffixes=[('.pyc', _importpyc), ('.py', _importpy)]
+_vfskeyRE=re.compile(r'vfs://<(.*)>(.*)')
 
+class VFSOwner(iu.Owner):
+    def __init__(self, vfsUrl):
+        m=_vfskeyRE.match(vfsUrl)
+        if not m:
+            raise ValueError, "not a vfs url: %s" % vfsUrl
+        self.fskey=m.group(1)
+        path=m.group(2)
+        self.fs=vfs.VFSRegistry.get(self.fskey)
+        if not self.fs:
+            raise vfs.VFSException, "no fs registered by name %s" % self.fskey
+        iu.Owner.__init__(self, path)
 
-class VFSImporter(imputil.Importer):
-    """
-    An imputil-based importer for importing python modules
-    from a vfs.  To use this, create one, call importer.install(),
-    and add the importer to sys.path.
-    """
-    def __init__(self, fs, path):
-        self.fs=fs
-        self.path=path
-
-    def get_code(self, parent, modname, fqname):
-        # print "in get_code: %s, %s, %s" % (parent, modname, fqname)
-        if parent==None:
-            pname=''
-        elif type(parent)==types.ModuleType:
-            pname=parent.__name__
-        else:
-            pname=parent
-        
-        for p in self.path:
-            # try package
-            dirname=os.path.join(p, modname)
-            if self.fs.isdir(dirname):
-                initmod='%s.%s' % (modname, '__init__')
-                result=self.get_code(modname, '__init__', initmod)
-                if result:
-                    return 1, result[1], result[2]
+    def getmod(self,
+               nm,
+               getsuffixes=imp.get_suffixes,
+               loadco=marshal.loads,
+               newmod=imp.new_module):
+        # this is taken almost verbatim from
+        # Gordon McMillan's iu.DirOwner.getmod,
+        # except that vfs methods are used
+        pth =  os.path.join(self.path, nm)
+        possibles = [(pth, 0, None)]
+        if self.fs.isdir(pth):
+            possibles.insert(0, (os.path.join(pth, '__init__'), 1, pth))
+        py = pyc = None
+        for pth, ispkg, pkgpth in possibles:
+            for ext, mode, typ in getsuffixes():
+                attempt = pth+ext
+                try:
+                    st = self.fs.ministat(attempt)
+                except:
+                    pass
                 else:
-                    return None
-            # not a package
-            for suffix, importFunc in suffixes:
-                filename=os.path.join(p, "%s%s" % (os.path.join(pname, modname), suffix))
-                # print "testing filename %s" % filename
-                if self.fs.exists(filename):
-                    # bingo
-                    # print "found!"
-                    bytes=self.fs.open(filename).read()
-                    return 0, importFunc(bytes, modname), {}
+                    if typ == imp.C_EXTENSION:
+                        fp = self.fs.open(attempt)
+                        mod = imp.load_module(nm, fp, attempt, (ext, mode, typ))
+                        mod.__file__ = 'vfs://<%s>%s' % (self.fskey, attempt)
+                        return mod
+                    elif typ == imp.PY_SOURCE:
+                        py = (attempt, st)
+                    else:
+                        pyc = (attempt, st)
+            if py or pyc:
+                break
+        if py is None and pyc is None:
+            return None
+        while 1:
+            if pyc is None or py and pyc[1][vfs.MST_MTIME] < py[1][vfs.MST_MTIME]:
+                try:
+                    co = compile(self.fs.open(py[0], 'r').read()+'\n', py[0], 'exec')
+                    break
+                except SyntaxError, e:
+                    print "Invalid syntax in %s" % py[0]
+                    print e.args
+                    raise
+            elif pyc:
+                stuff = self.fs.open(pyc[0]).read()
+                try:
+                    co = loadco(stuff[8:])
+                    break
+                except (ValueError, EOFError):
+                    pyc = None
+            else:
+                return None
+        mod = newmod(nm)
+        mod.__file__ = co.co_filename
+        if ispkg:
+            mod.__path__ = [pkgpth]
+            subimporter = iu.PathImportDirector(mod.__path__)
+            mod.__importsub__ = subimporter.getmod
+        mod.__co__ = co
+        return mod        
+
+
 
 def install():
-    if type(__import__)==types.BuiltinFunctionType:
+    import __builtin__
+    if type(__builtin__.__import__)==types.BuiltinFunctionType:
+        global __oldimport__
+        __oldimport__=__import__
+        iu._globalownertypes.insert(0, VFSOwner)
         global _manager
-        _manager=imputil.ImportManager()
+        _manager=iu.ImportManager()
         _manager.install()
-
-def uninstall():
-    if type(__import)==types.MethodType:
-        try:
-            global _manager
-            _manager.uninstall()
-            del _manager
-        except NameError:
-            # something else may have put in an import hook
-            pass
         
+def uninstall():
+    import __builtin__
+    if type(__builtin__.__import__)==types.MethodType:
+        global __oldimport__
+        __builtin__.__import__==__oldimport__
+        del __oldimport__
+        global _manager
+        del _manager
 
-    
+
+def _test():
+    # this only works for me, sorry
+    vfsurl='vfs://<localtest>/home/smulloni/workdir/pycomposer/'
+    import sys
+    sys.path.append(vfsurl)
+    vfs.VFSRegistry['localtest']=vfs.LocalFS()
+    install()
+    try:
+        import series
+        print "success!"
+    except:
+        print "failed!"
+
+    uninstall()
+
+
 
                     
                     

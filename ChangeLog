@@ -1,4 +1,24 @@
+2002-02-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/zipfs.py (ZipFS.isdir), pylibs/vfs/tarfs.py
+	(TarFS.isdir): 	no longer raise an exception when calling isdir on
+	a nonexistent file. 
+
+	* SkunkWeb/Services/product/loader.py (Product.__reallyload): use
+	the new vfs.importer; no longer mount the libfs on the multifs,
+	since it is easier to import directly from the archive file, and
+	the sys.path entry refers to the archive file fs by registered key.
+
+	* pylibs/vfs/vfs.py (VFSRegistry, registerFS): added vfs registry,
+	to support vfs urls, used by vfs.importer and product service.
+
+	* pylibs/vfs/importer.py: totally rewritten to use Gordon
+	McMillan's iu module (with his generous permission).
+
 2002-02-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/ServiceRegistry.py (registerService): cosmetic
+	improvements.
 
 	* pylibs/MySQL/__init__.py (initUser): now tolerate
 	calls to initUser on users who have already been initialized (the

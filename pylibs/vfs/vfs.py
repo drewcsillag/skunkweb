@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/19 11:43:45 smulloni>
+# Time-stamp: <02/02/21 01:31:49 smulloni>
 
 ########################################################################
 #  
@@ -39,6 +39,25 @@ MST_SIZE=0
 MST_ATIME=1
 MST_MTIME=2
 MST_CTIME=3
+
+VFSRegistry={}
+
+_keyRE=r'.*(\d+)$'
+
+def registerFS(fs, key='default'):
+    for k, f in VFSRegistry.items():
+        if fs is f:
+            return k
+    while key in VFSRegistry.keys():
+        m=_keyRE.search(key)
+        if not m:
+            d=1
+        else:
+            # I dare you to overflow this int
+            d=int(m.group(1))+1
+        key='%s%d' % (key, d)
+    VFSRegistry[key]=fs
+    return key
 
 class VFSException(exceptions.Exception): pass
 class FileNotFoundException(VFSException): pass
@@ -461,6 +480,10 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.9  2002/02/21 07:20:17  smulloni
+# numerous changes for product service and vfs, to support importing from the
+# latter.
+#
 # Revision 1.8  2002/02/19 17:17:49  smulloni
 # vfs improvements; documentation typo fix.
 #

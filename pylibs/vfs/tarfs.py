@@ -1,5 +1,5 @@
-# $Id: tarfs.py,v 1.3 2002/02/19 17:17:49 smulloni Exp $
-# Time-stamp: <02/02/19 22:54:46 smulloni>
+# $Id: tarfs.py,v 1.4 2002/02/20 04:54:14 smulloni Exp $
+# Time-stamp: <02/02/20 13:19:43 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Andrew Csillag <drew_csillag@yahoo.com>
@@ -90,7 +90,8 @@ class TarFS(FS):
         bslog('isdir %s' % path)
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise VFSException, "no such file or directory: %s" % path
+            #raise VFSException, "no such file or directory: %s" % path
+	    return 0
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 1
@@ -102,7 +103,8 @@ class TarFS(FS):
         bslog('isfile %s' % path)
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise VFSException, "no such file or directory: %s" % path
+            #raise VFSException, "no such file or directory: %s" % path
+	    return 0
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 0

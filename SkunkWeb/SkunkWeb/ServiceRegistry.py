@@ -15,10 +15,11 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ServiceRegistry.py,v 1.7 2001/07/28 15:45:16 drew Exp $
+# $Id: ServiceRegistry.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 # Time-stamp: <01/04/16 14:07:47 smulloni>
 ########################################################################
 import Logger
+import sys
 
 registeredServices={}
 _flags={}
@@ -36,15 +37,15 @@ def registerService(serviceName, flagName=None):
     
     if not flagName:
         flagName=serviceName.upper()
-    import sys
     if not registeredServices.has_key(serviceName):        
         registeredServices[serviceName]=flagName
-        import ServiceRegistry
-        newFlag=1<<ServiceRegistry._n
-        setattr(ServiceRegistry, flagName, newFlag)
+        global _n
+        global _flags
+        newFlag=1<<_n
+        globals()[flagName]=newFlag
         _flags[newFlag]=serviceName
         _flags[flagName]=serviceName
-        ServiceRegistry._n+=1
+        _n+=1
 
 def __initFlags():
     for coreService in ['component',
@@ -93,6 +94,10 @@ __initFlags()
 
 ########################################################################    
 # $Log: ServiceRegistry.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/28 15:45:16  drew
 # no longer uses shared memory for debug flags
 #

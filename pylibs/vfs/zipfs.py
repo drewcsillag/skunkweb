@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/19 17:02:46 smulloni>
+# Time-stamp: <02/02/20 13:19:17 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -74,7 +74,8 @@ class ZipFS(FS):
     def isdir(self, path):
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise FileNotFoundException, path
+            #raise FileNotFoundException, path
+            return 0
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 1
@@ -88,7 +89,8 @@ class ZipFS(FS):
     def isfile(self, path):
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise FileNotFoundException, path
+            #raise FileNotFoundException, path
+            return 0
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 0
@@ -98,6 +100,10 @@ class ZipFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.7  2002/02/21 07:20:17  smulloni
+# numerous changes for product service and vfs, to support importing from the
+# latter.
+#
 # Revision 1.6  2002/02/20 04:54:14  smulloni
 # vfs fixes and first cut at a product service.
 #

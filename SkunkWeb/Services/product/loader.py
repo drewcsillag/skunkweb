@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.2 2002/02/20 06:12:32 smulloni Exp $
-# Time-stamp: <02/02/20 11:41:51 smulloni>
+# $Id: loader.py,v 1.3 2002/02/20 17:00:54 smulloni Exp $
+# Time-stamp: <02/02/21 02:01:30 smulloni>
 
 ########################################################################
 #  
@@ -87,6 +87,7 @@ class Product:
         
         self.__fsclass=_fsmap[self.format]
         self.__targetfs=targetfs
+        self.__fsname=vfs.registerFS(targetfs, 'documentRootFS')
         self.__readManifest()
 
     def __readManifest(self):
@@ -131,7 +132,9 @@ class Product:
 
     def __reallyload(self):
         docroot_mountpath=Cfg.productPaths.get(self.name)
-        lib_mountpath=Cfg.productLibdirs.get(self.name, Cfg.defaultProductLibdir)
+        lib_mountpath=Cfg.productLibdirs.get(self.name,
+                                             Cfg.defaultProductLibdir)
+
         havelocal=self.__fsclass==vfs.LocalFS
         if not docroot_mountpath:
             docroot_mountpath=normpath2('/'.join((Cfg.documentRoot,
@@ -148,9 +151,10 @@ class Product:
             libfs=self.__fsclass(self.file, root=self.libs)
             # if the libfs is empty, don't bother mounting it 
             if libfs.listdir('/'):
-                self.__targetfs.mount(libfs, lib_mountpath)
+                #self.__targetfs.mount(libfs, lib_mountpath)
+                k=vfs.registerFS(libfs, self.name)
                 vfs.importer.install()
-                sys.path.append(vfs.importer.VFSImporter(libfs, ['/']))
+                sys.path.append('vfs://<%s>/' % k)
         self.__targetfs.mount(newfs, docroot_mountpath)
 
         # this will import services even if they are not contained in the product itself;
