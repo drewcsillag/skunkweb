@@ -152,6 +152,11 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
         for k, (f, a) in self.socketMap.items():
             k.close()
             if a[0] == 'UNIX':
-                os.remove(a[1])
+                try:
+                    os.remove(a[1])
+                except:
+                    self.logInterface.ERROR(('removal of unix socket %s '
+                                             'failed, continuing and hoping'
+                                             ' for the best') % a[1])
 
         self.socketMap = {}
