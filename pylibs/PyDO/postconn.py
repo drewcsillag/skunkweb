@@ -213,7 +213,9 @@ def _isIntervalKind(t):
 def _dateConvertFromDB(d):
     if d==None:
         return None
-    for format in ('%Y-%m-%d', #  Y/M/D
+    
+    for format in ('%Y-%m-%d %H:%M:%S',
+                   '%Y-%m-%d', #  Y/M/D
                    '%H:%M:%S', #  hh:mm:ss
                    '%H:%M',    #  hh:mm
                    '%Y-%m'):   #  Y-M
@@ -221,24 +223,28 @@ def _dateConvertFromDB(d):
             return DateTime.strptime(d, format)
         except:
             pass
-    dashind = max(d.rfind('-'), d.rfind('+'))
-    tz = d[dashind:]
-    d = d[:dashind]
 
     #maybe it has a miliseconds ?
     dotind = string.rfind(d, '.')
     if dotind > 0:
-        d = d[:dotind]
+        dotless=d[:dotind]
+        try:
+            return DateTime.strptime(dotless, '%Y-%m-%d %H:%M:%S') # full date
+        except: 
+            pass
+    else:
+        dotless=None
+    candidates=dotless is None and (d,) or (d, dotless)
+    for dt in candidates:
+        dashind = max(dt.rfind('-'), dt.rfind('+'))
+        tz = dt[dashind:]
+        dt = dt[:dashind]
+        try:
+            return DateTime.strptime(dt, '%H:%M:%S'), tz # timetz
+        except:
+            pass
+    raise DateTime.Error, "could not parse datetime: %s" % d
 
-    try:
-        return DateTime.strptime(d, '%H:%M:%S'), tz # timetz
-    except:
-        pass
-    if 1:#try:
-        # why is tz returned above and not here?
-        return DateTime.strptime(d, '%Y-%m-%d %H:%M:%S') # full date
-    #except: 
-    #    pass
 
 
 def _timeConvertFromDB(t):

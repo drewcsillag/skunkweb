@@ -1,3 +1,9 @@
+2002-09-30    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/PyDO/postconn.py (_dateConvertFromDB): module was broken,
+	at least with postgresql 7.2.2, when the timestamp returned contained
+	milliseconds but no timezone.
+	
 2002-09-29    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/xmlrpchandler.py: helper module for writing XMLRPC servers. 
