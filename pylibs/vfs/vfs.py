@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/12/18 01:26:58 smulloni>
+# Time-stamp: <01/12/21 00:20:54 smulloni>
 
 ########################################################################
 #  
@@ -22,8 +22,11 @@
 
 import exceptions
 import os
+import re
 import shutil
 import stat
+
+import pathutil
 
 # constants for "ministat"
 MST_SIZE=0
@@ -224,20 +227,35 @@ class LocalFS(FS):
     def isfile(self, path):
         return os.path.isfile(path)
 
+frontslashRE=re.compile(r'^/')
+endslashRE=re.compile(r'/$')
+
 class MultiFS(FS):
     """
     an FS implementation that permits other FS's to be
     mounted within it
     """
-    def __init__(self,  mounts={}):
+    def __init__(self,  mountdict=None):
         """
-        mounts should be a dict of the form:
+        mountdict should be a dict of the form:
         { '/desired/mount/point/' : [FSImplementation(), FSImplementation(), ...], ... }
         i.e., the keys are mount points, and the values are lists of fs implementations.
         see MultiFS.mount, below
+
+        strange bug: I had defined the default value for mountdict as {},
+        but after creating one instance with mounted directories, creating another instance
+        without specifying a value for mountdict caused the *first* print statement below to
+        print the value of the previous instance's mounts attribute!  Changing the default value
+        to None removed that behavior.
         """
-        self.mounts=mounts
+        # print mountdict
+        if mountdict!=None:
+            self.mounts=mountdict
+        else:
+            self.mounts={}
+        # print self.mounts
         self.__sortMountPoints()
+        # print self.mounts
 
     def __sortMountPoints(self):
         """
@@ -267,7 +285,9 @@ class MultiFS(FS):
             raise VFSException, "no mount point found for path %s" % path
         # for each fs mounted at that point, try to locate the file; if
         # an exception occurs, try the next, and so on.
-        translatedPath="/%s" % path[len(found):]
+        #print "found: %s" % found
+        translatedPath=os.path.join('/', path[len(found):])
+        #print "translated path: %s" % translatedPath
         ministatinfo=None
         fs=None 
         for tmp in self.mounts[found]:
@@ -288,11 +308,26 @@ class MultiFS(FS):
         return ministat
 
     def listdir(self, dir):
+        if not dir.endswith('/'):
+            dir='%s/' % dir
         found, fs, translated, ministat=self.find_mount(dir, 1)
-        return fs.listdir(translated)
+        listing=fs.listdir(translated)
+        #print listing
+        mounts=map(lambda x, y=dir: x[len(y):],
+                   pathutil.containedPaths(self.__mountpoints, dir))
+        #print mounts
+        def cleanpath(path):
+            path=frontslashRE.sub('', path)
+            path=endslashRE.sub('', path)
+            return path
+        listing.extend(map(cleanpath, mounts))
+        listing.sort()
+        return listing
 
     def isdir(self, path):
-        found, fs, translated, ministat=self.find_mount(dir, 1)
+        if not path.endswith('/'):
+            path='%s/' % path
+        found, fs, translated, ministat=self.find_mount(path, 1)
         return fs.isdir(translated)
 
     def isfile(self, path):
@@ -322,10 +357,13 @@ class MultiFS(FS):
             except:
                 continue
         raise VFSException, "cannot open file: %s with mode: %s" % (path, mode)
-            
+
 
 ########################################################################
 # $Log$
+# Revision 1.4  2002/01/02 06:39:24  smulloni
+# work on vfs
+#
 # Revision 1.3  2001/12/18 06:31:50  smulloni
 # added preliminary version of vfs.MultiFS.
 #

@@ -1,3 +1,4 @@
+
 2001-12-26  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/stmlrefer/stmlrefer.tex: fixed desc of <:msg:> tag
@@ -19,6 +20,10 @@
 
 	* pylibs/PyDO/postconn.py: fix from Gregory Brauer for setting string
 	  attributes to None
+
+2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/__init__.py: import vfs.vfs.MultiFS into vfs package namespace	
 
 2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/09/28 12:47:29 smulloni>
+# Time-stamp: <01/12/31 13:13:52 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -22,31 +22,45 @@
 from vfs import FS, VFSException
 from parfile import ParFile
 from rosio import RO_StringIO
+import pathutil
 
 class ParFS(FS):
 
-    def __init__(self, parpath):
+    def __init__(self, parpath, prefix='/'):
         self.parpath=parpath
         self.__pfile=ParFile(parpath)
+        self.__archive=pathutil.Archive(prefix)
+        self.prefix=prefix
+        self.__archive.savePaths(self.__pfile.names())
 
     def ministat(self, path):
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
+            raise VFSException, "no such file or directory: %s" % path
+        realname=self.__archive.paths[adjusted]
+        if realname==None:
+            # fictitious directory
+            arcstat=os.stat(self.parpath)[7:]
+            return (0,) + arcstat
         return self.__pfile.stat(path)[6:]
 
     def open(self, path, mode="r"):
+        adjusted=pathutil._adjust_user_path(path)
+        if not self.__archive.paths.has_key(adjusted):
+            raise VFSException, "no such file: %s" % path
         if mode<>'r':
             raise VFSException, "unsupported file open mode"
-        return RO_StringIO(path, self.__pfile.read(path))        
+        realname=self.__archive.paths[adjusted]
+        if realname!=None:            
+            return RO_StringIO(adjusted, self.__pfile.read(realname))
+        else:
+            raise VFSException, "cannot open directory as file: %s" % path
 
-    def listdir(self, dir):
-        names=self.__pfile.names()
-        if not dir.endswith('.'):
-            dir+='/'
-        if dir not in names:
-            raise VFSException, "directory %s not found" % dir
-        return filter(lambda x, y=dir: x.startswith(y) \
-                      and y!=x \
-                      and '/' not in x[len(y):-1],
-                      names)
+    def listdir(self, path):
+        self.__archive.listdir(path)
+
+    def exists(self, path):
+        self.__archive.exists(path)
 
     def isfile(self, path):
         return not self.__pfile.isdir(path)
@@ -56,6 +70,9 @@ class ParFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.3  2002/01/02 06:39:24  smulloni
+# work on vfs
+#
 # Revision 1.2  2001/12/02 20:57:50  smulloni
 # First fold of work done in September (!) on dev3_2 branch into trunk:
 # vfs and PyDO enhancements (webdav still to come).  Also, small enhancement

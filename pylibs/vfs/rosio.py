@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/09/21 22:23:33 smulloni>
+# Time-stamp: <01/12/19 13:19:30 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -47,7 +47,7 @@ class RO_StringIO:
         self.closed=1
 
     def flush(self):
-        raise VFSException, "unsupported operation: truncate"
+        raise VFSException, "unsupported operation: flush"
 
     def isatty(self):
         return self.__sio.isatty()
@@ -69,6 +69,9 @@ class RO_StringIO:
 
 ########################################################################
 # $Log$
+# Revision 1.3  2002/01/02 06:39:24  smulloni
+# work on vfs
+#
 # Revision 1.2  2001/12/02 20:57:50  smulloni
 # First fold of work done in September (!) on dev3_2 branch into trunk:
 # vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
