@@ -1,3 +1,7 @@
+2002-04-13  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/PyDO/PyDO.py: fixed bug in scatterFetchPost when got no results back from the query.  Thanks to Karl Putland <kperacles@yahoo.com>.
+
 2002-04-09  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/AE/Cache.py (CachedComponent.__init__): stale was
