@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.10 2002/02/07 07:18:41 smulloni Exp $
+# $Id: Makefile.in,v 1.11 2002/03/21 18:10:17 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -104,14 +104,7 @@ install:
 	else \
 		$(INSTALL_DATA) sw.conf $(conf_dir)/sw.conf; \
 	fi
-	if [ -f $(conf_dir)/mime.types ] ;\
-	then \
-		echo '****************************************';\
-		echo 'preserving existing mime.types';\
-		echo '****************************************';\
-	else \
-		$(INSTALL_DATA) ../pylibs/AE/mime.types $(conf_dir)/mime.types; \
-	fi
+	$(INSTALL_DATA) ../pylibs/AE/mime.types $(conf_dir)/mime.types
 	$(INSTALL) -d $(util_dir)
 	for f in cache_reaper.py vicache.py; do \
 	    $(INSTALL) -m0755 util/$$f $(util_dir)/$$f; \
@@ -159,6 +152,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.11  2002/03/21 18:10:17  smulloni
+# adding new demo files
+#
 # Revision 1.10  2002/02/07 07:18:41  smulloni
 # documentRootFS is now a single instance.
 #

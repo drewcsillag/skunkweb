@@ -91,12 +91,12 @@ AC_ARG_WITH(services,
                            space delimited list of services to install, valid
                            names are:
 
-                           ae_component aecgi basicauth httpd mysql oracle
+                           ae_component aecgi auth basicauth httpd mysql oracle
                            postgresql product remote remote_client requestHandler
                            rewrite sessionHandler templating web fcgiprot 
-                           userdir auth], [
+                           userdir], [
 	SERVICES=$withval], [
-	SERVICES="ae_component aecgi basicauth httpd mysql oracle postgresql product remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir cookieauth";])
+	SERVICES="ae_component aecgi auth basicauth httpd mysql oracle postgresql product remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir cookieauth";])
 
 
 dnl Checks for programs.
