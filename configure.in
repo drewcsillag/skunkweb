@@ -287,7 +287,7 @@ dnl  --with-port=port    Configure SkunkWeb daemon to listen on given port
 AC_ADD_HELP([
 Additional options if building SkunkWeb:
   --with-webdoc           Install some sample content
-  --with-services=svcs    Specify the list of personalities to install
+  --with-services=svcs    Specify the list of services to install
                            space delimited list of personas to install, valid
                            names are:
 
