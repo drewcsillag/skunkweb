@@ -18,6 +18,7 @@
 #   
 import sys
 import getopt
+import os
 
 def help():
     print >> sys.stderr, "Usage: skunkweb [-c configfilelist] [-h]"
@@ -60,6 +61,28 @@ if not configFiles:
     configFiles=[bootloader.DEFAULT_CONFIG_FILE_NAME]
     
 mods = bootloader.init(configFiles, bootloader.SkunkRoot)
+
+##NEW
+from SkunkWeb import Configuration
+if hasattr(Configuration, 'groupToRunAs'):
+    import grp
+    try:
+        gid = grp.getgrnam(Configuration.groupToRunAs)[2]
+    except:
+        raise "ConfigurationError", "group %s specified in groupToRunAs does not exist" % Configuration.groupToRunAs
+    os.setegid(gid)
+
+if hasattr(Configuration, 'userToRunAs'):
+    import pwd
+    try:
+        uid = pwd.getpwnam(Configuration.userToRunAs)[2]
+    except:
+        raise "ConfigurationError", "user %s specified in userToRunAs does not exist" % Configuration.userToRunAs
+    if os.getuid() == 0: # if running as root, switch to the user
+        os.seteuid(uid)
+        
+#/NEW
+
 import SkunkWeb.Server
 bootloader.load()
 
