@@ -1,3 +1,10 @@
+2002-08-01  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/devel/devel.tex: more doc updates, readded the AE appendix
+
+	* pylibs/AE/Executables.py (PythonExecutable.mergeNamespaces):
+	doesn't set __name__ to '__main__' in data components
+
 2002-07-31  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/devel/devel.tex: new chapter: Templating Languages, started
