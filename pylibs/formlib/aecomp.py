@@ -54,17 +54,17 @@ class ComponentViewableField(ComponentViewableMixin, ViewableField):
                  multiple=0,
                  setable=1,
                  **view_attrs):
-        super(ViewableField, self).__init__(self,
-                                            name,
-                                            description,
-                                            default,
-                                            required,
-                                            multiple,
-                                            setable,
-                                            **view_attrs)
-        super(ComponentViewableField, self).__init__(self,
-                                                     component,
-                                                     cache)
+        ViewableField.__init__(self,
+                               name,
+                               description,
+                               default,
+                               required,
+                               multiple,
+                               setable,
+                               **view_attrs)
+        ComponentViewableMixin.__init__(self,
+                                        component,
+                                        cache)
         
 class ComponentViewableDomainField(ComponentViewableMixin, ViewableDomainField):
     def __init__(self,
@@ -79,16 +79,47 @@ class ComponentViewableDomainField(ComponentViewableMixin, ViewableDomainField):
                  setable=1,
                  lenient=0,
                  **view_attrs):
-        super(ViewableDomainField, self).__init__(self,
-                                                  name,
-                                                  domain,
-                                                  description,
-                                                  default,
-                                                  required,
-                                                  multiple,
-                                                  setable,
-                                                  lenient,
-                                                  **view_attrs)
-        super(ComponentViewableField, self).__init__(self,
-                                                     component,
-                                                     cache)
+        ViewableDomainField.__init__(self,
+                                     name,
+                                     domain,
+                                     description,
+                                     default,
+                                     required,
+                                     multiple,
+                                     setable,
+                                     lenient,
+                                     **view_attrs)
+        ComponentViewableField.__init__(self,
+                                        component,
+                                        cache)
+        
+class ComponentViewableForm(ComponentViewableMixin, Viewable, Form):
+    def __init__(self,
+                 component,
+                 cache=NO,
+                 name=None,
+                 method=None,
+                 action=None,
+                 enctype=None,
+                 fields=None,
+                 validators=None,
+                 processors=None,
+                 **view_attrs):
+        ComponentViewableMixin.__init__(self,
+                                        component,
+                                        cache)
+        Viewable.__init__(self,
+                          **view_attrs)
+        Form.__init__(self,
+                      name,
+                      method,
+                      action,
+                      enctype,
+                      fields,
+                      validators,
+                      processors)
+
+
+        
+        
+        
