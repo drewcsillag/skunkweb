@@ -31,9 +31,12 @@ field names should be in lower case!
 import types
 import string
 import PyDBI
-import Date
 import DateTime
 import pgdb
+
+
+def isDateTime(x):
+    return isinstance ( x, DateTime.DateTimeType )
 
 
 class PyDOPostgreSQL:
@@ -111,7 +114,7 @@ class PyDOPostgreSQL:
 
     def typeCheckAndConvert(self, val, aname, attr):
         if _isDateKind(attr):
-            if (not Date.isDateTime(val)) and not val == PyDBI.SYSDATE:
+            if (not isDateTime(val)) and not val == PyDBI.SYSDATE:
                 raise TypeError,'trying to assign %s to %s and is not a date, being of type %s ' %  (val,
                                                                                                      aname,
                                                                                                      type(val))
@@ -186,7 +189,7 @@ def _dateConvertFromDB(d):
     
 
 def _dateConvertToDB(d):
-    if not Date.isDateTime(d) and d == PyDBI.SYSDATE:
+    if not isDateTime(d) and d == PyDBI.SYSDATE:
         return "'now'"
     return "'" + str(d)[:-3] + "'"
 
