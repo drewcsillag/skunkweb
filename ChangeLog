@@ -1,3 +1,16 @@
+2002-11-07    <smulloni@smullbola.smullyan.org>
+
+	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.logout): fix
+	to prevent two cookies from being created with the same name and
+	different paths.
+
+	* docs/tutoria/src/htdocs/: (various files) more files added.
+
+2002-11-05  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+
+	* docs/tutorial/src/htdocs/: (various files) user registration for
+	hoptime now works.
+
 2002-11-05  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/vfs/ftpfs.py (FtpFS.walk): Added a separate walk
@@ -33,7 +46,7 @@
 
 	* pylibs/static.py: made to work with Python 2.2.2.
 
-2002-10-22    <smulloni@smullbola.smullyan.org>
+2002-10-22  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: fixes to metaclass.  Doesn't work well
 	anyway, on my installation; for me, ftplib segfaults, which is
@@ -50,7 +63,7 @@
 	(FtpFS.__init__): changed default port to ftplib.FTP_PORT rather
 	than 0.
 	
-2002-10-08    <smulloni@smullbola.smullyan.org>
+2002-10-08 Jacob Smullyan  <smulloni@smullbola.smullyan.org>
 
 	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.login): added
 	REMOTE_USER and REMOTE_PASSWORD to CONNECTION.env more consistently.
@@ -71,7 +84,7 @@
 	reading all there was to be read off the aecgi socket; use of the
 	SocketScience module fixed that.
 
-2002-10-04    <smulloni@smullbola.smullyan.org>
+2002-10-04  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: a vfs.FS implementation for FTP.
 	For Python 2.2, provides some error recovery in case of timeouts.
@@ -96,13 +109,13 @@
 	SkunkWeb/SkunkWeb/ConfigAdditives.py (ServerPort): support for
 	scoping based on the SERVER_PORT environmental variable.
 
-2002-09-30    <smulloni@smullbola.smullyan.org>
+2002-09-30  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): module was broken,
 	at least with postgresql 7.2.2, when the timestamp returned contained
 	milliseconds but no timezone.
 	
-2002-09-29    <smulloni@smullbola.smullyan.org>
+2002-09-29  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
 
 	* pylibs/xmlrpchandler.py: helper module for writing XMLRPC servers. 
 

@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>Hoptime</title>
+</head>
+<body>
+<div id="login">
+<:include /comp/login.inc:>
+</div>
+<div id="welcome">
+<:component /comp/welcome_text.comp cache=yes:>
+</div>
+<div id="published_items">
+<:component /comp/published_item_links.comp:>
+</div>
+<div id="user_items">
+<:component /comp/user_items.comp 
+            user=`CONNECTION.hoptimeUser`:>
+</div>
+</body>
+</html>

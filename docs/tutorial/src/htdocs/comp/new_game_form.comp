@@ -1,0 +1,27 @@
+<:compargs title action formdata=`{}` errors=`{}`:>
+<table>
+<form method="POST" action="<:val `action`:>">
+<tr><td colspan="2">
+<b><:val `title`:></b>
+</td></tr>
+  <:if `errors`:>
+    <span style="font-size: larger;">
+       <:component /comp/error_field.comp 
+                   error="There were errors with your form submission.":>
+    </span>
+  <:/if:>
+<:component /comp/error_field.comp 
+            error=`errors.get('title')`:>
+<tr><td>Game Title</td><td><input type="text" name="title" size="50" value="<:val `formdata.get('title', "")`:>" /></td></tr>
+<:component /comp/error_field.comp
+            error=`errors.get('description')`:>
+<tr><td>Game Description</td><td><textarea rows="10" cols="50" name="description"><:val `formdata.get('description', "")`:></textarea></td></tr>
+<:component /comp/error_field.comp
+            error=`errors.get('capacity')`:>
+<tr><td>Maximum No. of Players</td><td><input type="text" size="3" maxlength="2" name="capacity" value="<:val `formdata.get('capacity', '6')`:>" /></td></tr>
+<:component /comp/error_field.comp
+            error=`errors.get('quorum')`:>
+<tr><td>Mimimum No. of Players</td><td><input type="text" size="3" maxlength="2" name="quorum" value="<:val `formdata.get('quorum', '2')`:>" /></td></tr>
+<tr><td colspan="2"><input type="submit" value="create new game" /></td></tr>
+</form>
+</table>

@@ -1,0 +1,65 @@
+formdata=CONNECTION.extract_args('firstname',
+                                 'middlename',
+                                 'lastname',
+                                 'password1',
+                                 'password2',
+                                 'honorific',
+                                 'email',
+                                 'username')
+
+import re
+import hoptime.hopapi as H
+import auth
+
+# OK, this isn't very restrictive.
+_email_pattern=re.compile(r'\S+@\S+\.\S+')
+
+def validate(firstname,
+             middlename,
+             lastname,
+             password1,
+             password2,
+             honorific,
+             email,
+             username):
+    # required: passwords must match and be at least 4 characters long,
+    # username must be unique,
+    # email must be plausible,
+    # and there must be a first and last name.
+    errors={}
+    if not firstname:
+        errors['firstname']='Please enter your first name.'
+    if not lastname:
+        errors['lastname']='Please enter your last name.'
+    if not password1:
+        errors['password1']='Please enter a password.'
+    elif len(password1)<4:
+        errors['password1']='The password you entered is too short.  '\
+                             'Please use a password at least 4 characters long.'        
+    elif password1!=password2:
+        errors['password2']='The passwords you entered do not match.'
+
+    if not username:
+        errors['username']='Please enter a username'
+
+    if not email or not _email_pattern.match(email):
+        errors['email']='Please enter a valid email address.'
+    if username and H.Users.getUnique(username=username):
+        errors['username']='The username you entered is already in use.  '\
+                            'Please try another.'
+    return errors
+
+def do_login(user):
+    auth.getAuthorizer().login(CONNECTION, user['username'], user['password'])
+    CONNECTION.redirect('/users/%s' % user['username'])
+
+
+errors=validate(**formdata)
+if not errors:
+    formdata['password']=formdata['password1']
+    del formdata['password1']
+    del formdata['password2']
+    u=H.Users.new(refetch=1, **formdata)
+    u.commit()
+    do_login(u)    
+

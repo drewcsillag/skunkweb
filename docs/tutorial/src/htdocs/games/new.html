@@ -1,0 +1,23 @@
+<:include /comp/process_new_game.pyinc:>
+<:if `submitted and not errors`:>
+ <:redirect `"/games/%d" % new_game['id']`:>
+<:else:>
+<html>
+  <head>
+    <title></title>
+  </head>
+
+  <body>
+<:#:><p>
+This page should consist of a form used to create a new game.
+Since it is in the protected area, if you are looking at the page,
+you are a registered user and can log in.
+</p><:/#:>
+<:component /comp/new_game_form.comp 
+            title="Create New Game" 
+            action="" 
+            formdata=`formdata`
+            errors=`errors`:>
+  </body>
+</html>
+<:/if:>

@@ -1,0 +1,12 @@
+
+<:compargs uri  :>
+
+<:comment:>
+this will be a logo.  the uri
+is passed in so to determine
+whether to add a link to the
+home page.
+<:/comment:>
+<:if `uri=='/index.html'`:>
+<:url /index.html text="home" abs=1:>
+<:/if:>

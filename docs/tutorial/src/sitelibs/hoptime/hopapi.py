@@ -1,8 +1,9 @@
-# Time-stamp: <02/11/03 17:54:42 smulloni> 
-# $Id: hopapi.py,v 1.3 2002/11/01 17:54:16 smulloni Exp $
+# Time-stamp: <02/11/03 23:24:20 smulloni> 
+# $Id: hopapi.py,v 1.4 2002/11/04 00:41:23 smulloni Exp $
 
 import PyDO
 import sys
+import mx.DateTime as M
 
 def DEBUG(message):
     # at runtime in SkunkWeb, this method will
@@ -269,13 +270,17 @@ class Stories(_hoptimebase):
 
 def getLatestStoryLinks(limit):
     sql="""
-select s.id, g.title from stories s, games g
+select s.id, g.title, s.published from stories s, games g
 where s.game=g.id and g.status='published'
 order by s.published desc limit %s
     """ % limit
 
     c=getDBI().conn.cursor()
     c.execute(sql)
-    return c.fetchall()
+    rows=c.fetchall()
+    # manually convert the date to a datetime.
+    # we could also use PyDO.postconn._dateConvertFromDB
+    # instead of DateTimeFrom.
+    return [[x, y, M.DateTimeFrom(z)] for x, y, z  in rows]
 
         

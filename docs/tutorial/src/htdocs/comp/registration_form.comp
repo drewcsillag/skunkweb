@@ -1,0 +1,50 @@
+<:compargs title action formdata=`{}` errors=`{}`:>
+<:datacomp honorifics /dcmp/honorifics.pydcmp cache=yes:>
+<table>
+    <tr>
+      <td colspan="2"><b><:val `title`:></b></td>
+    </tr>
+  <:if `errors`:>
+    <span style="font-size: larger;"><:component /comp/error_field.comp error="There were errors with your form submission.":></span>
+  <:/if:>
+  <form method="POST" action="<:val `action`:>">
+    
+    <:component /comp/error_field.comp error=`errors.get('honorific')`:>
+    <tr>
+      <td>title: </td><td><select name="honorific"> <:for `honorifics` h:>
+         <option value="<:val `h`:>"<:bool `h==formdata.get('honorific')` " selected" "":>><:val `h`:></option><:/for:>
+      </select></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('firstname')`:>
+    <tr>
+      <td>first name: </td><td><input type="text" name="firstname" size="30" value="<:val `formdata.get('firstname', "")`:>" /></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('middlename')`:>
+    <tr>
+      <td>middle name: </td><td><input type="text" name="middlename" size="30" value="<:val `formdata.get('middlename', "")`:>"/></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('lastname')`:>
+    <tr>
+      <td>last name: </td><td><input type="text" name="lastname" size="30" value="<:val `formdata.get('lastname', "")`:>" /></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('username')`:>
+    <tr>
+      <td>username: </td><td><input type="text" name="username" value="<:val `formdata.get('username', "")`:>" size="20" /></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('email')`:>
+    <tr>
+      <td>email: </td><td><input type="text" name="email" size="20" value="<:val `formdata.get('email', "")`:>" /></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('password1')`:>
+    <tr>
+      <td>password: </td><td><input type="password" name="password1" size="20" value="<:val `formdata.get('password1', "")`:>"/></td>
+    </tr>
+    <:component /comp/error_field.comp error=`errors.get('password2')`:>
+    <tr>
+      <td>confirm password: </td><td><input type="password" name="password2" size="20" value="<:val `formdata.get('password2', "")`:>"/></td>
+    </tr>
+    <tr>
+      <td colspan="2"><input type="submit" value="register" /></td>
+    </tr>
+   </form>
+</table>

@@ -1,8 +1,22 @@
+<:spool nav:><:include /comp/login.inc:><:/spool:>
 <:args username:>
 <:if `not username`:>
-  <:component /comp/user_list.comp:>
+  <:component /comp/user_list.comp nav=`nav`:>
 <:else:>
-  <:component /comp/user_page.comp username=`username`:>
+  <:import hoptime.hopapi as=H:>
+  <:set user `H.Users.getUnique(username=username)`:>
+  <:if `not user`:>
+   <:#:>do the 404 dance<:/#:>
+    <:import templating.Handler fourOhFourHandler:>
+    <:call `CONNECTION.uri=CONNECTION.realUri`:>
+    <:call `CONNECTION.setStatus(404)`:>
+    <:call `fourOhFourHandler(CONNECTION, {})`:>
+    <:halt:>
+  <:/if:>
+  <:component /comp/user_page.comp 
+              user=`user` 
+              hopuser=`CONNECTION.hoptimeUser` 
+              nav=`nav`:>
 <:/if:>
 <html>
 <head>

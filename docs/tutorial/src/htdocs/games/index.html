@@ -1,3 +1,21 @@
+<:args id=`int`:>
+<:import hoptime.hopapi as=H:>
+<:if `id is not None`:>
+  <:set game `H.Games.getUnique(id=id)`:>
+  <:if `not game`:>
+    <:import templating.Handler fourOhFourHandler:>
+    <:call `CONNECTION.uri=CONNECTION.realUri`:>
+    <:call `CONNECTION.setStatus(404)`:>
+    <:call `fourOhFourHandler(CONNECTION, {})`:>
+    <:halt:>
+  <:/if:>
+  <:#:>we've got a specific game; render it<:/#:>
+  <:component /games/game.comp game=`game`:>
+<:else:>
+  <:#:>an index of all games<:/#:>
+  <:component /games/game_index.comp:>
+<:/if:>
+<:*
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
@@ -5,15 +23,23 @@
   </head>
 
   <body>
-    <h1></h1>
-
+<p>This page should index games, or link to these indices:
+   <ol><li> active games</li>
+   <li> inactive games</li>
+   <li> games that can be joined</li>
+   </ol>
+The last is the most important; the most recent of them should
+appear elsewhere on the site, too -- on the user page or the home page.
+</p>
+<pre><:val `CONNECTION.args`:></pre>
 
 
     <hr>
     <address><a href="mailto:smulloni@smullbola.smullyan.org"></a></address>
 <!-- Created: Sun Nov  3 19:48:39 EST 2002 -->
 <!-- hhmts start -->
-Last modified: Sun Nov  3 19:48:42 EST 2002
+Last modified: Thu Nov  7 10:37:29 EST 2002
 <!-- hhmts end -->
   </body>
 </html>
+*:>

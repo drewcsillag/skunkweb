@@ -1,13 +1,13 @@
-<:compargs hopuser username:>
-<:if `hopuser`:>
+<:compargs user:>
+<:if `user`:>
  <:datacomp games /dcmp/games.pydcmp 
-            hopuser=`hopuser` 
+            user=`user` 
             statuses=`('published', 
                        'joining', 
                        'playing', 
                        'editing')`:>
  <:if `games`:>
-  <h3><:component /comp/user.comp user=`hopuser` cache=yes:>'s Games</h3>
+  <h3><:val `user['username']`:>'s Games</h3>
   <:catalog /msgcat/statuses.msg statcat:>
   <:for `games.iteritems()` i:>
    <:call `status, glist=i`:>

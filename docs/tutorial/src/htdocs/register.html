@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Register</title>
+  </head>
+  <body>
+<:set submitted `CONNECTION.method=='POST'`:>
+<:if `submitted`:>
+<:#:>
+     we've got a form submission;
+     validate the form and either redirect to a welcome page
+     or show the form again with an appropriate error message.
+<:/#:>
+     <:include /comp/process_register.pyinc:>
+<:else:>
+   <:set formdata `{}`:>
+   <:set errors `{}`:>
+<:/if:>
+<:component /comp/registration_form.comp 
+            action="/register.html" 
+            title="Register with Hoptime" 
+            formdata=`formdata` 
+            errors=`errors`:>
+  </body>
+</html>

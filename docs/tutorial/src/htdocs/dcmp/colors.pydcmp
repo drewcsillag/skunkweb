@@ -1,0 +1,7 @@
+# Time-stamp: <02/10/07 23:17:20 smulloni>
+# $Id$
+
+sectionMap={'home': '8ba4d1'}
+
+
+raise ReturnValue, sectionMap

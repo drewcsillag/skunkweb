@@ -1,0 +1,8 @@
+<:compargs error:>
+<:if `error`:>
+<tr>
+  <td colspan="2" style="color: red; font-weight: bold;">
+   <:val `error`:>
+  </td>
+</tr>
+<:/if:>

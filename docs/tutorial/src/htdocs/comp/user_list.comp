@@ -1,8 +1,15 @@
+<:compargs nav:>
 <html>
 <head><title>User List</title></head>
 <body>
-<p>
-This page should list all the registered users on the site.
+<:val `nav`:>
+<p>Registered Hoptime Users
+<:datacomp users /dcmp/users.pydcmp:>
+<ul>
+<:for `users` u:>
+<li><:component /comp/user.comp user=`u`:></li>
+<:/for:>
+</ul>
 </p>
 </body>
 </html>

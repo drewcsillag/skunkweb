@@ -1,0 +1,4 @@
+<:compargs uri:>
+<:if `uri!='/index.html'`:>
+ <:url /index.html text="home" abs=`1`:>
+<:/if:>

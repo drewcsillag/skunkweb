@@ -1,11 +1,12 @@
-<:compargs action="" title="Login" vals="":>
+<:compargs action title="Login" vals="":>
 <table>
-  <form method="POST" action=<:val `action`:>>
+  <form method="POST" action="<:val `action`:>">
     <tr>
       <td colspan="2"><b><:val `title`:></b></td>
     </tr>
-    <tr>
-      <td>username: </td><td><input type="text" name="username" size="20" /></td>
+    <tr><:#:>the field name "lusername" (login username) is used here instead of 
+             "username" to prevent a namespace conflict when accessing a user page.<:/#:>
+      <td>username: </td><td><input type="text" name="lusername" size="20" /></td>
     </tr>
     <tr>
       <td>password:</td><td><input type="password" name="password" size="20" /></td>
@@ -13,6 +14,6 @@
     <tr>
       <td colspan="2"><input type="submit" value="login" /></td>
     </tr>
-    <:hidden vals=`vals`:>
+    <:if `vals`:><:hidden vals=`vals`:><:/if:>
   </form>
 </table>

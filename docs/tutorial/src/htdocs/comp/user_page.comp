@@ -1,20 +1,25 @@
-<:compargs username:>
-<:import hoptime.hopapi as=H:>
-<:set user `H.Users.getUnique(username=username)`:>
-<:if `not user`:>
-   <:#:>do the 404 dance<:/#:>
-<:else:>
+<:compargs user hopuser nav:>
 <html>
 <head>
-  <title><:val `username`:>'s page</title>
+  <title><:val `user['username']`:>'s page</title>
 </head>
 <body>
+<:val `nav`:>
+<p>This should the main page for the user.</p>
+<p>Public information about the user goes here.</p>
 
-<p>This should the main page for the user.
-The listing I've put on the front page should perhaps go here
-as well; also it should be possible to change user information
-here, or get to forms to do that, at least.</p>
+
+
+
+<div id="user_items">
+<:component /comp/user_items.comp 
+            user=`user`:>
+</div>
+<:if `hopuser and hopuser['username']==user['username']`:>
+<p>Private items that only pertain to the logged-in user go here;
+a link to allow the user to start a game, messages for that user from
+the system, etc.</p>
+<:/if:>
 </body>
 </html>
 
-<:/if:>

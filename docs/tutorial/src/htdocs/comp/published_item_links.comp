@@ -8,7 +8,7 @@
 <h3>Recent Stories</h3>
 <ul>
 <:for `story_links[:10]` slink:>
-  <li><:url `"/texts/%s" % slink[0]` text=`slink[1]`:></li>
+  <li><:url `"/texts/%s" % slink[0]` text=`slink[1]`:> <:date "dd Mon YYYY hh12:min PM" to_zone="UTC" date=`slink[2]`:> GMT</li>
 <:/for:>
 </ul>
 <:if `len(story_links)==11`:>

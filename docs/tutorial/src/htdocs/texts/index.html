@@ -9,4 +9,5 @@
   <:halt:>
 <:/if:>
 <:#:>we have a story, render it<:/#:>
-<:component text.comp story=`story` cache=yes:>
+<:spool nav:><:include /comp/login.inc:><:/spool:>
+<:component text.comp story=`story` nav=`nav` cache=yes:>

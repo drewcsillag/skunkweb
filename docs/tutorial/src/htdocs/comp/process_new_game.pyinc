@@ -1,0 +1,45 @@
+formdata=CONNECTION.extract_args('title',
+                                 'description',
+                                 capacity=int,
+                                 quorum=int)
+
+import re
+import hoptime.hopapi as H
+import auth
+
+def validate(title, description, capacity, quorum):
+    
+    errors={}
+    if not title:
+        errors['title']="Please enter a title."
+    if not description:
+        errors['description']="Please enter a description."
+    if capacity is None or not 0 < capacity <=12:
+        errors['capacity']="Please enter a capacity between 1 and 12."
+    if quorum is None or not 0 < quorum <= (capacity is None and 1 or capacity):
+        errors['quorum']="Please enter a quorum between 1 and the capacity."
+
+    return errors
+
+def create_game(owner, title, description, capacity, quorum):
+    g=H.Games.new(refetch=1,
+                  owner=owner['id'],
+                  title=title,
+                  description=description,
+                  capacity=capacity,
+                  quorum=quorum)
+
+    g.commit()
+    return g
+    
+
+submitted=CONNECTION.method=='POST'
+if submitted:
+    errors=validate(**formdata)
+    if not errors:
+        new_game=create_game(owner=CONNECTION.hoptimeUser, **formdata)
+else:
+    errors={}
+    formdata={}
+
+

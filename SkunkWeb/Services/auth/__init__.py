@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.8 2002/10/15 17:24:20 smulloni Exp $
-# Time-stamp: <02/10/30 23:13:01 smulloni>
+# $Id: __init__.py,v 1.9 2002/11/01 17:54:06 smulloni Exp $
+# Time-stamp: <02/11/02 15:14:13 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -254,8 +254,12 @@ class CookieAuthBase: #class that does basic cookie authentication
             return val
 
     def logout(self, conn):
-        conn.responseCookie[self.cookieName] = ""
-        
+        # the standard cookie class really sucks
+        conn.responseCookie[self.cookieName]=""
+        for k, v in self.cookieExtras.items():
+            conn.responseCookie[self.cookieName][k]=v
+        conn.responseCookie[self.cookieName]['expires']=-1-sys.maxint        
+
 class SessionAuthBase: #class to do auth using sessions
     """
     This class uses the session object (you must have the sessionHandler
@@ -381,6 +385,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.9  2002/11/01 17:54:06  smulloni
+# progress on hoptime demo for tutorial.
+#
 # Revision 1.8  2002/10/15 17:24:20  smulloni
 # deprecated string exception, set environmental variables more
 # consistently.

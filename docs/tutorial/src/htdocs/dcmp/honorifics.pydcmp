@@ -1,0 +1,23 @@
+h=['', 
+   'Mr.', 
+   'Ms.', 
+   'Mrs.', 
+   'Dr.', 
+   'Prof.', 
+   'Rev.', 
+   'Senator',
+   'Representative',
+   'Father',
+   'Sister',
+   'Brother',
+   'Mother',
+   'President',
+   'Right Honorable',
+   'Rabbi', 
+   'Bhagwan', 
+   'His Holiness', 
+   'Her Holiness',
+   'Sir', 
+   'Dame']
+h.sort()
+raise ReturnValue, h
