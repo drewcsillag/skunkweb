@@ -377,6 +377,121 @@ class PyDO(PyDOBase):
             if not self.fieldDict.has_key(k):
                 raise KeyError, 'object has no field %s' % k
 
+    def static_scatterFetchSQL(self, objs):
+        """do a scatter fetch (a select from more than one table) based
+        on the relation information in objs which is of the form:
+        [
+           (object, attributes, destinationObject, destinationAttributes),
+           (object, attributes, destinationObject, destinationAttributes)
+        ]
+        This basically states that objects attributes are a foreign key to
+        destinationObject's destinationAttributes.
+
+        For example, if you have User and UserResidence classes, a scatter
+        fetch may be simply:
+        userObj.scatterFetchSQL( [ (UserResidence, 'USER_OID', User, 'OID') ] )
+        which if executed would return a list of tuples of:
+            (userObj, userResObj)
+        where userObj.['OID'] == userResObj['USER_OID']
+
+        This function returns sql, baseColumnNames, and a modified version of
+        the objs argument.
+        """
+        objs = ((self, None, None, None),) + tuple(objs)
+        cols = []
+        for obj in objs:
+            cols.extend(obj[0].getColumns(1))
+        tabs = map(lambda x:x[0].getTable(), objs)
+        sql = "SELECT %s FROM %s WHERE " % (
+            string.join(cols, ', '), string.join(tabs, ', '))
+        j = []
+        for obj, attr, dobj, dattr in objs:
+            if type(attr) in (types.TupleType, types.ListType):
+                if type(dattr) != type(attr):
+                    raise TypeError, ("source and destination attributes for"
+                                      " %s/%s aren't of same length") % (
+                                          obj, dobj)
+                
+                for attri, dattri in map(None, attr, dattr):
+                    j.append('%s.%s = %s.%s' % (obj.getTable(), attri,
+                                                dobj.getTable(), dattri))
+
+            else:
+                if dobj:
+                    j.append('%s.%s = %s.%s' % (obj.getTable(), attr,
+                                                dobj.getTable(), dattr))
+        sql = sql + string.join(j, ' AND ')
+        return sql, cols, objs
+
+    def static_scatterFetchPost(self, objs, sql, vals, cols):
+        """handle the execution and processing of a scatter fetch to produce
+        a result list -- returns the list of tuples referred to in the
+        docstring of scatterFetchSQL"""
+        conn = self.getDBI()
+        results, fields = conn.execute(sql, vals, None)
+        endResults = []
+
+        sliceSets = []
+        counter = 0 
+        for obj in objs:
+            cols = obj[0].getColumns()
+            lenCols = len(cols)
+            sliceSets.append([counter, counter+lenCols, obj[0]])
+            counter = counter+lenCols
+
+        resultSets = {}
+
+        for result in results:
+            counter = 0
+            for set in sliceSets:
+                if not resultSets.has_key(counter):
+                    resultSets[counter] = []
+                resultSets[counter].append(result[set[0]: set[1]])
+                counter = counter + 1
+
+        cvtedResultSets = {}
+        for i in range(len(objs)):
+            obj = objs[i][0]
+            #print 'keys-->', resultSets.keys()
+            r = map(obj, conn.convertResultRows(
+                obj.getColumns(), obj.fieldDict, resultSets[i]))
+            cvtedResultSets[i] = r
+
+        result = []
+        for i in range(len(cvtedResultSets[0])):
+            l = []
+            for j in range(len(cvtedResultSets)):
+                l.append(cvtedResultSets[j][i])
+            result.append(l)
+        return result
+
+    def static_scatterFetch(self, objs, **kw):
+        """see scatterFetchSQL for format of objs and getSome for format
+        of **kw
+        """
+        
+        sql, cols, objs = self.scatterFetchSQL(objs)
+
+        conn = self.getDBI()
+        where = []
+        values = []
+        for k, v in kw.items():
+            notFlag = ''
+            if isinstance(v, NOT):
+                notFlag = '!'
+                v = v.val
+            lit, val = conn.sqlStringAndValue(v, k, self.fieldDict[k])
+            
+            where.append("%s.%s %s= %s" % (
+                self.getTable(), k, notFlag, lit))
+            values.append(val)
+        whereClause = string.join(where, ' AND ')
+        if whereClause:
+            sql = sql + " AND " + whereClause
+
+        #make where clause here from **kw
+        return self.scatterFetchPost(objs, sql, values, cols)
+
     ##############################
     ## PyDO instance methods
     ##############################
@@ -495,120 +610,6 @@ class PyDO(PyDOBase):
         results = conn.execute(sql, vals, thatObject.fieldDict)
         return map(thatObject, results)        
 
-    def static_scatterFetchSQL(self, objs):
-        """do a scatter fetch (a select from more than one table) based
-        on the relation information in objs which is of the form:
-        [
-           (object, attributes, destinationObject, destinationAttributes),
-           (object, attributes, destinationObject, destinationAttributes)
-        ]
-        This basically states that objects attributes are a foreign key to
-        destinationObject's destinationAttributes.
-
-        For example, if you have User and UserResidence classes, a scatter
-        fetch may be simply:
-        userObj.scatterFetchSQL( [ (UserResidence, 'USER_OID', User, 'OID') ] )
-        which if executed would return a list of tuples of:
-            (userObj, userResObj)
-        where userObj.['OID'] == userResObj['USER_OID']
-
-        This function returns sql, baseColumnNames, and a modified version of
-        the objs argument.
-        """
-        objs = ((self, None, None, None),) + tuple(objs)
-        cols = []
-        for obj in objs:
-            cols.extend(obj[0].getColumns(1))
-        tabs = map(lambda x:x[0].getTable(), objs)
-        sql = "SELECT %s FROM %s WHERE " % (
-            string.join(cols, ', '), string.join(tabs, ', '))
-        j = []
-        for obj, attr, dobj, dattr in objs:
-            if type(attr) in (types.TupleType, types.ListType):
-                if type(dattr) != type(attr):
-                    raise TypeError, ("source and destination attributes for"
-                                      " %s/%s aren't of same length") % (
-                                          obj, dobj)
-                
-                for attri, dattri in map(None, attr, dattr):
-                    j.append('%s.%s = %s.%s' % (obj.getTable(), attri,
-                                                dobj.getTable(), dattri))
-
-            else:
-                if dobj:
-                    j.append('%s.%s = %s.%s' % (obj.getTable(), attr,
-                                                dobj.getTable(), dattr))
-        sql = sql + string.join(j, ' AND ')
-        return sql, cols, objs
-
-    def static_scatterFetchPost(self, objs, sql, vals, cols):
-        """handle the execution and processing of a scatter fetch to produce
-        a result list -- returns the list of tuples referred to in the
-        docstring of scatterFetchSQL"""
-        conn = self.getDBI()
-        results, fields = conn.execute(sql, vals, None)
-        endResults = []
-
-        sliceSets = []
-        counter = 0 
-        for obj in objs:
-            cols = obj[0].getColumns()
-            lenCols = len(cols)
-            sliceSets.append([counter, counter+lenCols, obj[0]])
-            counter = counter+lenCols
-
-        resultSets = {}
-
-        for result in results:
-            counter = 0
-            for set in sliceSets:
-                if not resultSets.has_key(counter):
-                    resultSets[counter] = []
-                resultSets[counter].append(result[set[0]: set[1]])
-                counter = counter + 1
-
-        cvtedResultSets = {}
-        for i in range(len(objs)):
-            obj = objs[i][0]
-            #print 'keys-->', resultSets.keys()
-            r = map(obj, conn.convertResultRows(
-                obj.getColumns(), obj.fieldDict, resultSets[i]))
-            cvtedResultSets[i] = r
-
-        result = []
-        for i in range(len(cvtedResultSets[0])):
-            l = []
-            for j in range(len(cvtedResultSets)):
-                l.append(cvtedResultSets[j][i])
-            result.append(l)
-        return result
-
-    def static_scatterFetch(self, objs, **kw):
-        """see scatterFetchSQL for format of objs and getSome for format
-        of **kw
-        """
-        
-        sql, cols, objs = self.scatterFetchSQL(objs)
-
-        conn = self.getDBI()
-        where = []
-        values = []
-        for k, v in kw.items():
-            notFlag = ''
-            if isinstance(v, NOT):
-                notFlag = '!'
-                v = v.val
-            lit, val = conn.sqlStringAndValue(v, k, self.fieldDict[k])
-            
-            where.append("%s.%s %s= %s" % (
-                self.getTable(), k, notFlag, lit))
-            values.append(val)
-        whereClause = string.join(where, ' AND ')
-        if whereClause:
-            sql = sql + " AND " + whereClause
-
-        #make where clause here from **kw
-        return self.scatterFetchPost(objs, sql, values, cols)
     
 def _tupleize(item):
     if type(item) == types.TupleType:
