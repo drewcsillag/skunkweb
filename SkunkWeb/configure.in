@@ -66,13 +66,15 @@ AC_SUBST(OWNER)
 AC_ARG_WITH(user, 
 [  --with-user=user        Make Skunk installation owned by user], [
 	OWNER=$withval], [
-	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
+	OWNER=`$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
+dnl	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
 
 AC_SUBST(GROUP)
 AC_ARG_WITH(group, 
 [  --with-group=group      Make Skunk installation owned by group], [
 	GROUP=$withval], [
-	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
+	GROUP=`$PYTHON -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
+dnl	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
 
 AC_SUBST(RUNASROOT)
 AC_ARG_WITH(runasroot,
