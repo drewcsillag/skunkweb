@@ -1,3 +1,7 @@
+2001-08-10  Drew Csillag  <drew@starmedia.net>
+
+	* added FAQ
+
 2001-08-10  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* INSTALL, configure, configure.in (ac_help): removed reference to 

@@ -1,0 +1,51 @@
+1) Marcos Sánchez Provencio <rapto@arrakis.es> asked:  
+  I think that the closest project to skunkweb is webware. They seem to
+  share objectives. Is it not possible to join them? What are the
+  important differences between them?
+
+Yes, they definitely do share objectives, but they differ in many ways
+as to tho approach:
+
+ * WebWare uses a threaded model.  While in some ways makes things
+   simpler, it makes many things more complicated.  Also, because of
+   the Python global interpreter lock, if you have more than 1 CPU,
+   WebWare won't actually use very much, if any of the additional CPUs
+   since only one thread can run at a time.  SkunkWeb uses a forking
+   process model, which makes resource sharing more complicated in
+   certain circumstances, it will fully utilize all available
+   processors, so SkunkWeb scales better.  It also makes reliability
+   simpler, since if you screw up in one process, it won't kill the
+   whole server.  OTOH, this makes it probably not run on Windows, but
+   it may run under Windows with the Cygwin toolkit.  Besides, windows
+   has enough problems.
+
+ * Caching.  WebWare does cache some stuff in memory (I believe it can
+   cache output in memory, SkunkWeb caches compiled things in memory),
+   but last I knew, didn't cache anything to disk.  So if you have a
+   lot of "components", the output can easily consume all available
+   memory.  Not only that, but if you have a bunch of machines running
+   the site, with SkunkWeb, they can share the cache.  Also, with
+   component caching, you have much better control as to when the
+   cache for a component expires.
+
+ * Templating language.  WebWare uses PSP as it's sole templating language.
+   While PSP is good for the experienced web developer, it's a killer if
+   you have to work in an environment with less experienced people.  STML
+   on the other hand, is easy for novices to learn, can almost
+   entirely be ignored by the people who just do markup, and doesn't
+   constrain the power users too much.  On my future feature list, PSP
+   support is on there, so that people who want PSP with SkunkWeb can
+   have it also.  As far as runtime overhead on STML, well, STML is
+   compiled to python source, and subsequently to bytecode, so the
+   overhead is minimal.
+
+ * Internationalization.  I don't believe that WebWare has any builtin
+   support for message catalogs and the like.
+
+ * Web Components.  SkunkWeb encourages the componentization of your web
+   pages through caching and the like.  It can also call components on
+   other SkunkWeb servers if you set it up to do so.
+
+I guess that's the short list.  If you run latex on the SkunkIPC10.tex
+file (a paper I hope to give at the February conference) in the docs
+directory, that goes into a bit more detail.
