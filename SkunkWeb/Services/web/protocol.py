@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.7 2001/07/09 20:38:40 drew Exp $
+# $Id: protocol.py,v 1.1.1.1 2001/08/05 14:59:58 drew_csillag Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -164,12 +164,13 @@ class NullOutput:
         return ''
 
 ########################################################################
-
+import skunklib
 class HeaderDict:
     '''
     dictionary class that stores headers and formats them consistently.
     '''
     def __init__(self, initval={}):
+        self._fixHeader = skunklib.normheader
         self._d = {}
         for k, v in initval.items():
             self._d[self._fixHeader(k)] = v
@@ -268,6 +269,7 @@ def _processRequest(requestData, sessionDict):
     HandleRequest hook.
     """
     response=None
+    
     DEBUG(WEB, 'creating Connection')
     DEBUG(WEB, 'requestData is %s' % str(requestData))
     connection=HTTPConnection(requestData)
@@ -318,6 +320,10 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/09 20:38:40  drew
 # added licence comments
 #

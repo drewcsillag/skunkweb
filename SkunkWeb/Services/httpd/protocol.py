@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.12 2001/07/09 20:38:40 drew Exp $
+# $Id: protocol.py,v 1.1.1.1 2001/08/05 15:00:01 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -304,8 +304,10 @@ def _healHeaders(raw):
             joined.append(h)
     return joined
 
-def _fixHeaderName(name):
-    return '-'.join([x.capitalize() for x in name.split('-')])
+#def _fixHeaderName(name):
+#    return '-'.join([x.capitalize() for x in name.split('-')])
+import skunklib
+_fixHeaderName=skunklib.normheader
 
 def _getHeaderDict(headerLines):
     headers={}
@@ -518,6 +520,10 @@ HaveConnection.addFunction(_seekTerminus, jobGlob)
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:01  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.12  2001/07/09 20:38:40  drew
 # added licence comments
 #
