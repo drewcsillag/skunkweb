@@ -1,5 +1,8 @@
 2002-06-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* docs/stmlrefer/stmlrefer.tex: going over with a fine toothed comb.
+	Stopped just before "The CONNECTION Object"
+
 	* 3.2.2 cut
 
 	* SkunkWeb/SkunkWeb/bootloader.py.in: fixed bug that made the server
