@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.3 2002/05/14 17:37:53 smulloni Exp $
-# Time-stamp: <02/05/15 12:18:56 smulloni>
+# $Id: __init__.py,v 1.4 2002/05/15 16:19:39 smulloni Exp $
+# Time-stamp: <2002-06-06 09:42:55 acsillag>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -238,6 +238,8 @@ class CookieAuthBase: #class that does basic cookie authentication
             if self.cookieExtras:
                 for k,v in self.cookieExtras.items():
                     conn.responseCookie[self.cookieName][k] = v
+            conn.remoteUser = username
+            conn.remotePassword = password
             return 1
 
     def logout(self, conn):
@@ -359,6 +361,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.4  2002/05/15 16:19:39  smulloni
+# fixing broken import
+#
 # Revision 1.3  2002/05/14 17:37:53  smulloni
 # bug fix
 #
