@@ -13,8 +13,8 @@ Prerequisites
 ------------------------------
 Python 2.1.1 or later (2.1 works but is not GPL compatible)
   optionally compiled with the crypt module
-Marc Andre Lemburg's eGenix mx Extensions
-    http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
+Marc Andre Lemburg's eGenix mx Extensions (BASE)
+    http://www.lemburg.com/files/python/eGenix-mx-Extensions.html#mxBASE
 An ANSI C compiler
 
 Optionally install apache.  Make sure you configure it with at least:
@@ -59,4 +59,4 @@ Additional options if building SkunkWeb:
 
 Once ``configure'' has completed, simply type ``make; make install''.
 
-$Id: INSTALL,v 1.4 2001/08/21 11:56:46 smulloni Exp $
+$Id: INSTALL,v 1.5 2001/08/21 14:15:52 drew_csillag Exp $
