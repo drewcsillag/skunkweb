@@ -1,3 +1,11 @@
+2002-05-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/__init__.py: now import two more exceptions from
+	vfs.py. 
+
+	* pylibs/DT/DT.py (DT.__store_ns, DT.__unstore_ns): fix for
+	calling an include from a top-level python document which does not
+	have "__t", "__h", or "__d".
 
 2002-05-24  Jacob Smullyan  <jsmullyan@wnyc.org>
 
