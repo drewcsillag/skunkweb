@@ -91,3 +91,64 @@ directory, that goes into a bit more detail.
 
 Again, the SkunkWebIPC10.tex file in the docs directory goes into this
 stuff in greater detail.
+
+Paul Rubin <phr-n2001@nightsong.com> Asks:
+How does it compare to Mason?
+
+Mason and SkunkWeb compare rather well with each other, as they do tend 
+to attack the web serving problem in similar ways
+
+ * Mason and SkunkWeb have a similar approach to their templating languages,
+   but I don't think you can reasonably extent Mason's whereby SkunkWeb's
+   templating language was designed to be extendable.
+
+ * Mason and SkunkWeb both have HTML and data components.
+
+ * Mason and SkunkWeb both have a Request object (though SkunkWeb calls
+   it CONNECTION).
+
+ * Mason uses Perl, SkunkWeb uses Python.
+
+ * Mason runs in-process with Apache (under mod_perl), SkunkWeb is
+   it's own daemon (Apache talks to the daemon either by mod_skunkweb
+   or by a CGI) and if you like, can serve HTTP itself directly.
+   Mason's approach can easily use more memory and database resources
+   that the standalone daemon model if you are talking to slow web
+   connections (which you generally are) since the time it takes to
+   send the page is much more than it takes to render the page.  In
+   this case, you have a bunch of processes with Mason in memory and
+   database connections open that are sitting idle waiting for the
+   client to get the data, whereby with SkunkWeb, as soon as Apache
+   gets the response back from SkunkWeb, the SkunkWeb daemon can start
+   handling another request while the Apache process goes about
+   sending the page back to the slow client.  As an example, with
+   SkunkWeb, you may have 100 Apache processes (not even necessarily
+   on the same machine mind you) using only maybe 30 SkunkWeb
+   processes.  The other thing, since Apache's process pool grows and
+   shrinks over time, you a) have less control over memory
+   utilization, and b) you tend to reconnect to the database more
+   frequently.
+
+ * It doesn't appear that you can make custom url schemes with Mason
+   without writing an Apache module to do it.  In SkunkWeb, you can
+   write a Service which does it.  As an example, for my current
+   employer, we have a url translation scheme which translates urls to
+   and from Spanish and Portugese.
+
+ * Internationalization.  Mason appears not to have any builtin
+   internationalization features.  SkunkWeb has message catalogs.
+
+ * Caching.  Mason caches component output to DBM whereby SkunkWeb
+   caches to disk files.  SkunkWeb's cache can be shared between
+   machines as well as managed with filesystem tools.  SkunkWeb's
+   caching interface is also a lot easier to use.
+
+ * Caching again.  Since you can't get at the compiled representation
+   of Perl code, you can't cache the compiled forms of things in
+   Mason.  In SkunkWeb, the templating language is compiled down to
+   Python bytecode and cached to disk.  Compiled forms of Python
+   components and message catalogs are also cached to disk.  The
+   compile cache can also be additionaly stored in memory (as a
+   read-through, write-through cache).
+
+
