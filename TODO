@@ -1,5 +1,5 @@
 #   Time-stamp: <2001-08-13 14:44:37 drew> 
-#   $Id: TODO,v 1.7 2001/08/12 16:45:35 drew_csillag Exp $
+#   $Id: TODO,v 1.8 2001/08/13 18:42:34 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -22,10 +22,6 @@ Do Quick release
 
 SkunkWeb 3.0
 ------------------------------
-
-* fix msg on swmgr start
-/usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration
-  def reload(self):
 
 Future stuff
 ------------------------------
@@ -98,6 +94,9 @@ N add a superteam service
 
 DONE
 ------------------------------
+X fix msg on swmgr start
+/usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration
+  def reload(self):
 X build docs and include in dist as opposed to building during build
   or distribute docs separately (as Python does) - distribute separately
 X clean up configure.in
