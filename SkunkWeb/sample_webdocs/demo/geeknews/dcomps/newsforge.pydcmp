@@ -21,7 +21,7 @@ class EntCont:
     def getKind(self, kind):
         r = []
         for i in self.children:
-            if type(i) != type('') and i.tag == kind:
+            if type(i) != type('') and i.tag.split()[-1] == kind:
                 r.append(i)
         return r
     
@@ -69,11 +69,13 @@ def getArticles():
     except:
         return []
     l = []
-    items = tree.getKind('rss')[0].getKind('channel')[0].getKind('item')
+    items = tree.children[1].getKind('item')
     for i in items:
         l.append(Story(i))
     return l
 
-#if __name__=='__main__':
-#    print getArticles()        
-raise ReturnValue, getArticles()
+if __name__=='__main__':
+    print getArticles()        
+else:
+    raise ReturnValue, getArticles()
+
