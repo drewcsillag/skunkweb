@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.16 2002/07/11 22:57:00 smulloni Exp $
+# $Id: Makefile.in,v 1.17 2003/04/05 04:16:14 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -64,7 +64,6 @@ default:	build
 
 build:
 install:
-
 	$(INSTALL) -d $$DESTDIR$(sw_dir) $$DESTDIR$(services_dir) $$DESTDIR$(pid_dir) $$DESTDIR$(log_dir) \
 	$$DESTDIR$(docroot) $$DESTDIR$(cache)
 
@@ -73,10 +72,10 @@ install:
 	    $(INSTALL_DATA) $$f $$DESTDIR$(skunklib)/$$f; \
 	done
 
-	$(INSTALL) -m0755 swpython.py $$DESTDIR$(skunk_bindir)/swpython
-	$(INSTALL) -m0755 swcgi.py $$DESTDIR$(skunk_bindir)/swcgi
-	$(INSTALL) -m0755 skunkweb.py $$DESTDIR$(skunk_bindir)/skunkweb
-	$(INSTALL) -m0755 swmgr $$DESTDIR$(skunk_bindir)/swmgr
+	$(INSTALL) -m 0755 swpython.py $$DESTDIR$(skunk_bindir)/swpython
+	$(INSTALL) -m 0755 swcgi.py $$DESTDIR$(skunk_bindir)/swcgi
+	$(INSTALL) -m 0755 skunkweb.py $$DESTDIR$(skunk_bindir)/skunkweb
+	$(INSTALL) -m 0755 swmgr $$DESTDIR$(skunk_bindir)/swmgr
 	if [ -x $$DESTDIR$(conf_dir) ] ;\
 	then \
 		if [ -d $$DESTDIR$(conf_dir) ] ;\
@@ -99,7 +98,7 @@ install:
 	$(INSTALL_DATA) ../pylibs/AE/mime.types $$DESTDIR$(conf_dir)/mime.types
 	$(INSTALL) -d $$DESTDIR$(util_dir)
 	for f in cache_reaper.py vicache.py; do \
-	    $(INSTALL) -m0755 util/$$f $$DESTDIR$(util_dir)/$$f; \
+	    $(INSTALL) -m 0755 util/$$f $$DESTDIR$(util_dir)/$$f; \
 	done
 
 	for comp in ${components}; do \
@@ -145,6 +144,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.17  2003/04/05 04:16:14  smulloni
+# added DESTDIR to make install targets.
+#
 # Revision 1.16  2002/07/11 22:57:00  smulloni
 # configure changes to support other layouts
 #

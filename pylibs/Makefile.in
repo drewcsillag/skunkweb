@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.6 2003/02/07 19:55:08 smulloni Exp $
+# $Id: Makefile.in,v 1.7 2003/04/05 04:16:14 smulloni Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -52,23 +52,22 @@ build:
 	@PYTHON@ setup-pylibs build_ext --inplace
 	-rm -fR build
 
+# Locate all the files that need installing and install them
 install:	
-
-	@# Locate all the files that need installing and install them
-	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -iname '*\.dll' -o -type d \) -print | egrep -v $(exclude) | sort`; \
+	for file in `find . \( -name '*\.py' -o -name '*\.so' -o -name '*\.sl' -o -name '*\.DLL' -o -name '*\.dll' -o -type d \) -print | egrep -v $(exclude) | sort`; \
 	do \
 	    if [ -d $${file} ]; \
 	    then \
-	        $(INSTALL) -d $$DESTDIR$(pylibs_dir)/$${file};\
+	        sh $(INSTALL) -d $$DESTDIR$(pylibs_dir)/$${file};\
 	    else \
-	    $(INSTALL_DATA) $${file} $$DESTDIR$(pylibs_dir)/$${file}; \
+	        sh $(INSTALL) -m $(execmode) $${file} $$DESTDIR$(pylibs_dir)/$${file}; \
             fi; \
 	done
 
 clean:
 	@# Clean up the python components
 	-for pycomp in $(py_comps); do \
-	     rm -f $${pycomp}/*.{so,dll,DLL}; \
+	     rm -f $${pycomp}/*.{so,dll,DLL,sl}; \
         done
 
 distclean: clean
