@@ -11,7 +11,7 @@ import PIL.Image as Image
 
 SUPPORTED_EXTENSIONS=[x[1:] for x in Image.EXTENSION.keys()]
 
-globals().update(CONNECTION.extract_args(imagefile, x=150, y=150))
+globals().update(CONNECTION.extract_args('imagefile', x=150, y=150))
 if not imagefile:
     raise NameError, "imagefile"
 

@@ -1,3 +1,11 @@
+2002-04-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args): 
+	fixed bug that produced UnboundLocalError in some cases
+
+	* SkunkWeb/sample_webdocs/demo/gallery/thumbnail.py: fixed
+	dumb typo that produced NameError.
+
 2002-03-31  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sample_webdocs/demo/gallery/thumbnail.py: now use
