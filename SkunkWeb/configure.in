@@ -93,7 +93,7 @@ AC_ARG_WITH(webdoc,
 	WEBDOC="no";])
 
 AC_SUBST(SERVICES)
-SERVICES=ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir web
+SERVICES="ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir web"
 
 dnl Checks for programs.
 AC_PROG_CC
