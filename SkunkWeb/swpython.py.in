@@ -103,12 +103,14 @@ bootloader.load()
 SkunkWeb.Hooks.ChildStart()
 
 signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+ll = {'__name__':'__main__'}
 if interactive or (not args and not command):
     import code
-    code.interact('SkunkWeb @SW_VERSION@ -- NO WARRANTY')
+    code.interact('SkunkWeb @SW_VERSION@ -- NO WARRANTY', local=ll)
 else:
+    ll = {'__name__':'__main__'}
     if command:
-        exec command in {}, {}
+        exec command in ll,ll
 	sys.exit(0)
     try:
         co = compile(open(args[0]).read(), args[0], 'exec')
@@ -117,7 +119,6 @@ else:
         v.filename = args[0]
         raise
     sys.argv = args
-    ll = {'__name__':'__main__'}
     exec co in ll, ll
     
     if interactive:
