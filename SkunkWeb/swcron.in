@@ -1,0 +1,95 @@
+#! @bindir@/swpython
+# -*-python-*-
+
+import cron
+import getopt
+import sys
+import time
+import os
+
+PIDFILE="@localstatedir@/run/swcron.pid"
+
+usage="""\
+Usage: swcron [-d] [-s]
+
+Runs the crontab configured in SkunkWeb to be run by the cron service.
+Options:
+  -h | --help            show this help message and exit.
+  -d | --daemonize       run in daemon mode (go into background).
+  -s | --single-shot     run only the cron jobs that should be
+                         executed at the current time, and then exit.
+
+Without options, the crontab will be run in the foreground.
+"""               
+
+
+def help(msg=""):
+    if msg:
+        print >> sys.stderr, msg
+    print >> sys.stderr,  usage
+    sys.exit(1)
+
+
+def handle_sigterm(sig_num, frame):
+    maxKillTime=5
+    curtime=time.time()
+    kids=cron.CronTab._children
+
+    for pid in kids.keys():
+        os.kill(pid, signal.SIGTERM)
+        
+    while len(kids):
+        try:
+            time.sleep(1)
+        except:
+            pass
+        if time.time() - curtime > maxKillTime:
+            break
+    for pid in kids.keys():
+        os.kill(pid, signal.SIGKILL)
+        
+    os.remove(PIDFILE)
+    sys.exit()
+
+def main(argv=sys.argv[1:]):
+    daemonize=0
+    single_shot=0
+    try:
+        optlist, args=getopt.getopt(argv,
+                                    'dsh',
+                                    ['help',
+                                     'daemonize',
+                                     'single-shot'])
+    except getopt.GetoptError, val:
+        help("Error: %s\n" % val)
+    if args:
+        # there shouldn't be any arguments!
+        help("Extra arguments encountered: %s" % ' '.join(args))
+    for (opt, optval) in optlist:
+        if opt in ('--help', '-h'):
+            help()
+        elif opt in ('--daemonize', '-d'):
+            daemonize=1
+        elif opt in ('--single-shot', '-s'):
+            single_shot=1
+
+    if daemonize:
+        # fork into background
+        if os.fork():
+            sys.exit()
+        if os.fork():
+            sys.exit()            
+        os.setsid()
+        
+    open(PIDFILE, 'w').write("%s" % os.getpid())
+
+    if single_shot:
+        cron.CronTab.run_jobs()
+    else:
+        cron.CronTab.run(termhandler=handle_sigterm)
+    
+
+
+
+if __name__=='__main__':
+    main()

@@ -85,7 +85,7 @@ AC_ARG_WITH(webdoc,
 	WEBDOC="no";])
 
 AC_SUBST(SERVICES)
-SERVICES="ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir usertracking web"
+SERVICES="ae_component aecgi auth basicauth cron extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir usertracking web"
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -199,4 +199,4 @@ eval CACHE=$CACHE
 AC_OUTPUT(Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
 Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py SkunkWeb/confvars.py
 util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
-Services/product/productwiz swcgi.py swpython.c util/precompile.py)
+Services/product/productwiz swcgi.py swpython.c util/precompile.py swcron)

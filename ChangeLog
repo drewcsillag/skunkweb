@@ -1,11 +1,21 @@
 2003-06-03  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/configure.in, configure: configure swcron.in.
+
+	* SkunkWeb/Makefile.in: install swcron.
+
+	* SkunkWeb/Services/cron.py, SkunkWeb/swcron.in: first cut at a
+	cron daemon.  
+
+	* SkunkWeb/.cvsignore: ignoring swcron.
+
 	* pylibs/cronjob.py: module for defining and executing cron jobs.
 	There also needs to be a service that defines a crontab that can
 	be configured in sw.conf, and a swpython script to run the crontab 
 	(standalone or from the normal cron).
 	(CronLogger, CronTab): fixed typos in Logger classes (left out
-	"self"), and removed user/group stuff.
+	"self"), and removed user/group stuff; now keep list of children
+	so they can be murdered if they straggle.
 
 2003-05-26  Jacob Smullyan  <smulloni@smullyan.org>
 

@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/06/03 11:24:51 smulloni>
-# $Id: cronjob.py,v 1.3 2003/06/03 14:09:23 smulloni Exp $
+# Time-stamp: <03/06/03 16:08:30 smulloni>
+# $Id: cronjob.py,v 1.4 2003/06/03 15:26:14 smulloni Exp $
 
 """
 a simple cron implementation.  
@@ -127,28 +127,28 @@ class CronJob(object):
         return times
         
     def __call__(self,
-                 locals=None,
-                 globals=None,
+                 local_ns=None,
+                 global_ns=None,
                  *args,
                  **kwargs):
         if callable(self.jobFunc):
             ret=self.jobFunc(*args, **kwargs)
         else:
-            if locals is None:
-                locals=globals()
-            if globals is None:
-                globals=globals()
-            ret=eval(self.jobFunc, globals, locals)
+            if local_ns is None:
+                local_ns=globals()
+            if global_ns is None:
+                global_ns=globals()
+            ret=eval(self.jobFunc, global_ns, local_ns)
         return ret
 
 class CronLogger(object):
     """
     interface for logging the output from cron jobs.
     """
-    def out(self, msg):
+    def out(self, msg, job):
         pass
 
-    def err(self, msg):
+    def err(self, msg, job):
         pass
 
 class StreamLogger(CronLogger):
@@ -158,10 +158,12 @@ class StreamLogger(CronLogger):
     def __init__(self, out=sys.stdout, err=sys.stderr):
         self._out=out
         self._err=err
-    def out(self, msg):
+        
+    def out(self, msg, job):
         self._out.write(msg)
         self._out.flush()
-    def err(self, msg):
+        
+    def err(self, msg, job):
         self._err.write(msg)
         self._err.flush()
 
@@ -172,36 +174,43 @@ class CronTab(object):
     """
     def __init__(self,
                  pollPeriod=5,
-                 logger=None):
+                 logger=None,
+                 cronjobs=None):
 
-        self.cronjobs=[]
+        self.cronjobs=cronjobs or []
         self.pollPeriod=pollPeriod
         if logger is None:
             logger=StreamLogger()
         self.logger=logger
+        self._children={}
 
     def _handle_sigchld(self, signum, frame):
         try:
-            os.waitpid(0, os.WNOHANG)
+            pid, status=os.waitpid(0, os.WNOHANG)
         except OSError:
             pass
+        else:
+            del self._children[pid]            
 
-    def run(self):
+    def run(self, termhandler=None):
         """
         this method is used if you want the crontab
         to run in its own loop.  If you don't, you are
         responsible for killing off the zombies yourself.
         """
-        signal.signal(signal.SIGCHLD, self._handle_sigchld)            
+        signal.signal(signal.SIGCHLD, self._handle_sigchld)
+        if termhandler:
+            signal.signal(signal.SIGTERM, termhandler)
         while 1:
             try:
                 time.sleep(self.pollPeriod)
                 self.run_jobs()
             # this is for testing
             except KeyboardInterrupt:
-                break
-        signal.signal(signal.SIGCHLD, sig.SIG_IGN)
-            
+                    break
+        signal.signal(signal.SIGCHLD, sig.SIG_DFL)
+        signal.signal(signal.SIGTERM, sig.SIG_DFL)
+        
     def run_jobs(self, dt=None):
         """
         run any cronjobs that deserve to be run at the current time.
@@ -213,11 +222,13 @@ class CronTab(object):
         for j in self.cronjobs:
             lr=j.last_ran
             if (lr is None and j.matchTime(dt)) or  \
-                   ((lr+_second_zero) != dt \
-                    and j.matchTime(dt)):
+                   ((lr is not None) and \
+                    (lr+_second_zero != dt) and \
+                    j.matchTime(dt)):
                 j.last_ran=dt
                 pid=os.fork()
                 if pid:
+                    self._children[pid]=1
                     continue
                 else:
                     newout=cStringIO.StringIO()
@@ -236,8 +247,12 @@ class CronTab(object):
                     newerr.flush()
                     sys.stdout=oldout
                     sys.stderr=olderr
-                    self.logger.out(newout.getvalue())
-                    self.logger.err(newerr.getvalue())
+                    outmsg=newout.getvalue()
+                    if outmsg:
+                        self.logger.out(outmsg, j)
+                    errmsg=newerr.getvalue()
+                    if errmsg:
+                        self.logger.err(errmsg, j)
                     sys.exit(error)
                         
         
