@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.24 2002/07/25 17:26:53 drew_csillag Exp $
-# Time-stamp: <2002-07-25 14:16:32 drew>
+# $Id: sw.conf.in,v 1.25 2002/07/25 18:20:07 drew_csillag Exp $
+# Time-stamp: <2002-07-29 13:56:02 drew>
 
 ########################################################################
 #
@@ -520,6 +520,22 @@ documentRoot = '@DOCROOT@'
 # that should be shown if the we send back a 404 Not Found response
 #
 # notFoundTemplate = None
+########################################################################
+# For the psp service (if enabled):
+#
+# If you want .html files to be handled by the PSP interpreter (instead of
+# say STML), add 'text/html' (and probably 'text/plain' also) 
+# brackets below (and should probably remove it/them from templateMimeTypes
+# also
+#
+# pspTemplateTypes = []
+#
+# Presuming that you want .psp files to be interpreted via URL request
+# (I'm guessing you do), set this to a true value from whence it will
+# effictively append 'application/x-psp-python-component' to the
+# interpretMimeTypes list (or you could do it yourself).
+#
+# pspTopLevelInterpret = 1
 
 ########################################################################
 # For the rewrite service: each rule specifies a replacement template
@@ -650,6 +666,10 @@ documentRoot = '@DOCROOT@'
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.25  2002/07/25 18:20:07  drew_csillag
+# made it so that if --with-runasroot was specified to configure, it
+# automatically will set user/groupToRunAs
+#
 # Revision 1.24  2002/07/25 17:26:53  drew_csillag
 # added docs for userToRunAs and groupToRunAs
 #
