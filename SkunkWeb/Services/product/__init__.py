@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2002/02/20 17:00:54 smulloni Exp $
-# Time-stamp: <02/02/21 01:55:36 smulloni>
+# $Id: __init__.py,v 1.3 2002/02/21 07:20:16 smulloni Exp $
+# Time-stamp: <02/02/21 18:26:40 smulloni>
 
 ########################################################################
 #  
@@ -35,15 +35,22 @@ arbitrary subset.
 The loader opens the MANIFEST file in each archive, looks for
 dependencies stated therein, and loads any products therein listed,
 raising an error for circular or missing dependencies.  For each load,
-it adds mount points to the MultiFS for the docroot and the python
-libs, if any.  Services specified in the MANIFEST are then imported.
+it adds mount points to the MultiFS for the docroot and, by means of
+an import hook in the vfs which permits python modules to be imported
+from the vfs, adds the libs (if any) to sys.path.  Services specified
+in the MANIFEST are then imported.
 
 The MANIFEST is essentially an init file for the product which
-integrates it into the SkunkWeb framework.  If it isn't present, the
-docroot and libs will be mounted at <docroot>/products/<product-name>
-and /products/lib/<product-name>, respectively; the latter will be
-added to the path of the VFSImporter (which itself will be installed
-if not present).
+integrates it into the SkunkWeb framework.  It must contain the
+product version, and can also contain product dependencies and
+services (python modules that use SkunkWeb hooks, to be imported at
+product load time).  See manifest.py for details.
+
+By default, a product's docroot will be mounted at
+products/<product-name>, relative to the SkunkWeb documentRoot.  This
+can be altered by modifying Configuration.defaultProductPath, which
+will affect all products, or by adding the product-name to the
+Configuration.productPaths mapping.
 
 This service will also contain a utility for creating products, creating
 the MANIFEST file, byte-compiling the python modules, and creating the
@@ -59,8 +66,6 @@ Cfg.mergeDefaults(productDirectory='products',
                   products='*',
                   defaultProductPath='products',
                   productPaths={},
-                  defaultProductLibdir='products',
-                  productLibdirs={}
                   )
 
 proddir=loader.product_directory()

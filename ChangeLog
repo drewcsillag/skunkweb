@@ -1,5 +1,10 @@
 2002-02-21  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/product/__init__.py, 
+	SkunkWeb/Services/product/loader.py (Product.__reallyload):
+	removed reference to defaultProductLibdir and kin; corrected
+	docstring some.
+
 	* SkunkWeb/SkunkWeb/bootloader.py.in (init): for restart,
 	uninstall the import hook.	
 

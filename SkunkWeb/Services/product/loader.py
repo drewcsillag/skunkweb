@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.4 2002/02/21 07:20:16 smulloni Exp $
-# Time-stamp: <02/02/21 10:07:04 smulloni>
+# $Id: loader.py,v 1.5 2002/02/21 18:10:47 smulloni Exp $
+# Time-stamp: <02/02/21 18:29:05 smulloni>
 
 ########################################################################
 #  
@@ -131,9 +131,6 @@ class Product:
 
     def __reallyload(self):
         docroot_mountpath=Cfg.productPaths.get(self.name)
-        lib_mountpath=Cfg.productLibdirs.get(self.name,
-                                             Cfg.defaultProductLibdir)
-
         havelocal=self.__fsclass==vfs.LocalFS
         if not docroot_mountpath:
             docroot_mountpath=normpath2('/'.join((Cfg.documentRoot,
@@ -148,16 +145,16 @@ class Product:
         else:
             newfs=self.__fsclass(self.file, root=self.docroot)
             libfs=self.__fsclass(self.file, root=self.libs)
-            # if the libfs is empty, don't bother mounting it 
+            # if the libfs is empty, don't bother installing it
             if libfs.listdir('/'):
-                #self.__targetfs.mount(libfs, lib_mountpath)
                 k=vfs.registerFS(libfs, self.name)
                 vfs.importer.install()
                 sys.path.append('vfs://<%s>/' % k)
         self.__targetfs.mount(newfs, docroot_mountpath)
 
-        # this will import services even if they are not contained in the product itself;
-        # I'm unclear at this point whether that is good or not
+        # this will import services even if they are not contained in
+        # the product itself; I'm unclear at this point whether that is
+        # good or not
         for service in self.services:
             __import__(service)
 
