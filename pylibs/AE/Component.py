@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.4 2001/08/27 18:29:21 drew_csillag Exp $
+# $Id: Component.py,v 1.5 2001/08/27 19:52:51 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -352,8 +352,9 @@ def _realRenderComponent( name, argDict, auxArgs, compType, srcModTime ):
 
     # normally this is equivalent to a pop, but if a component exception
     # was handled somewhere, we need to clean up the residual shit
+    ns_copy = namespace.copy( )
     del componentStack[ topOfComponentStack+1 : ]
-
+    namespace = ns_copy
     expiration = namespace.get('__expiration',
                                time.time()
                                + cfg.Configuration.defaultExpiryDuration )
@@ -384,6 +385,9 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.5  2001/08/27 19:52:51  drew_csillag
+# commented out more DEBUG statements
+#
 # Revision 1.4  2001/08/27 18:29:21  drew_csillag
 # * pylibs/AE/Component.py(_realRenderComponent): only tracks
 # time if debug flag is set
