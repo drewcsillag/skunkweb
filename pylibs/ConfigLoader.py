@@ -15,12 +15,12 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigLoader.py,v 1.7 2001/07/09 20:38:40 drew Exp $
+# $Id: ConfigLoader.py,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
 import os, sys, types
-import scope
+import scopeable as scope
 
 class ScopeableConfig(scope.Scopeable):
     # for backwards compatability. This layer
@@ -127,6 +127,10 @@ def loadConfig(codeObj, cfgModuleName):
 
 ########################################################################
 # $Log: ConfigLoader.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:26  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/09 20:38:40  drew
 # added licence comments
 #
