@@ -1,5 +1,12 @@
 2001-08-13  Drew Csillag  <drew@naxos.starmedia.net>
 
+	* configure.in, configure, docs/opman/opman.tex: no longer require
+	bash since nothing appears to use it.  Also, don't care whose
+	xargs we use -- removed GNU dependancy.  Cleaned up configure.in a
+	bit (mostly removed a bunch of commented out things).
+
+############################################################
+	
 	* 3.0 Beta 2 recut.
 
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
