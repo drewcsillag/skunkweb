@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:01 drew_csillag Exp $
+# $Id: __init__.py,v 1.2 2001/09/07 16:40:44 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:45 smulloni>
 ########################################################################
 
@@ -23,13 +23,22 @@ import SkunkWeb.ServiceRegistry
 SkunkWeb.ServiceRegistry.registerService("httpd")
 
 
-from SkunkWeb import Configuration
+from SkunkWeb import Configuration, Hooks
 from socket import getfqdn as _getfqdn
 Configuration.mergeDefaults(lookupHTTPRemoteHost=0,
                             HTTPKeepAliveTimeout=15,
                             HTTPListenPorts=['TCP::8080'],
                             ServerName=_getfqdn())
 
+class _hooker:
+    def __init__(self, handler, adder, ports):
+        self.adder=adder
+        self.handler=handler
+        self.ports=ports
+
+    def __call__(self, *a, **kw):
+        self.adder(self.handler, self.ports)
+    
 if Configuration.HTTPListenPorts:
     import requestHandler.requestHandler as rh
     import protocol as prot
@@ -38,13 +47,16 @@ if Configuration.HTTPListenPorts:
     httpProt.addHandlers(prot.DisembodiedHandler("GET"),
                          prot.DisembodiedHandler("HEAD"),
                          prot.PotentiallyBodaciousHandler("POST"))
-    rh.addRequestHandler(httpProt,
-                         Configuration.HTTPListenPorts)
-                         
-
+    Hooks.ServerStart.append(_hooker(httpProt,
+                                     rh.addRequestHandler,
+                                     Configuration.HTTPListenPorts))
+    
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2001/09/07 16:40:44  smulloni
+# improved handling of SERVER_NAME
+#
 # Revision 1.1.1.1  2001/08/05 15:00:01  drew_csillag
 # take 2 of import
 #
