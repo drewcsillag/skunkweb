@@ -1,0 +1,748 @@
+===================
+The SkunkWeb Manual
+===================
+
+-----------------------------------------
+Chapter 1: Setting Up And Using SkunkWeb
+-----------------------------------------
+
+:Author: Brian Olsen, et al.
+:Version: 0.1
+:Status: Draft
+
+.. contents:: Table Of Contents
+.. section-numbering::
+
+
+Introduction
+============
+
+This chapter discusses the installation and configuration of the SkunkWeb Application Server Software.
+
+
+Prerequisites
+=============
+
+Operating System Requirements
+-----------------------------
+
+SkunkWeb can be installed and used on any reasonable Unix-based system. SkunkWeb was successfully built and installed on Solaris, Linux, FreeBSD and Mac OS X. However, any UNIX system that supports the most recent versions of Python can support SkunkWeb.
+
+In terms of Windows compatibility, SkunkWeb will only work under Cygwin, since Windows cannot fork multiple processes.
+
+Hardware Requirements
+---------------------
+
+This is a rough area to pinpoint, because the choice of hardware must relfect the specific needs of a particular web application. Will it be a high-traffic web site? How much caching is going on?
+
+Here is a few general pointers:
+
+- Disk space: you might need a lot of disk space if you are caching a lot of data in SkunkWeb. It'd be best to figure the optimal amount of disk space needed when preparing your hardware. Since disk space is cheap, anyway though, this might not matter that much. Also, since you can share caches, for example, your choices might be even simpler.
+
+- Processors: SkunkWeb was developed with multi-processing in mind. If, given your situation, and the application you have on your hands, you can add multiple processors to your serving hardware. SkunkWeb will be able to fully utilize all the processors since specific SkunkWeb processes can be executed using different CPUs.
+
+
+Generally, it is up to the developer to decide what is the appropriate hardware for their situation. However, the above pointers refer to more production environments. If your hardware can run a Unix-based operating system, with a more recent version of Python, then it can run SkunkWeb.
+
+
+Software Requirements
+---------------------
+
+The requirements are:
+
+- Python 2.1.1 or later with the crypt module installed.
+- An ANSI C Compiler - many Unix-based machines come with GNU GCC. This compiler is sufficient.
+- mxDateTime - this is used for the caching mechanisms. This can be obtained at this address: http://www.egenix.com.
+
+Optional Modules:
+
+- the ``crypt`` module. If this isn't present, it will not be used at all.
+
+
+Optional Software:
+	
+	- Apache 1.3 or 2.0. Your Apache installation needs to have DSO support, if you plan to use mod_skunkweb to interface with SkunkWeb. When you configure Apache with the configure script, you can use the switch --enable-module=so::
+
+		cd /your/Apache/installation
+		./configure --enable-module=so
+	
+	If you run into some weirdness where Apache is not serving an index page or the such from the SkunkWeb server, (which might not happen really in most situations), it might be a good idea to have these switches in when you configure Apache for compilation::
+
+		--disable-module=dir
+		--disable-module=autoindex
+		
+		[TODO: Not clear]
+		
+	If you do plan to use Apache, it would be recommended that SkunkWeb run under the same user that Apache runs under. This would only apply to situations where Apache and SkunkWeb are on the same machine.
+
+
+	- Sudo. If you would like to run SkunkWeb under a different username other than the one SkunkWeb usually runs under, you will need sudo present on your system.
+
+
+
+Installation
+============
+
+Obtaining The SkunkWeb Software
+-------------------------------
+
+You can obtain the SkunkWeb software from two sources. You can a download the most recently cut version release it at:
+
+http://sourceforge.net/projects/skunkweb/
+
+and follow the "Download" link under "Latest File Releases." When you download the release, untar it with this command in your shell:
+
+tar -xzvf skunkweb-X.X.tar.gz
+
+where X.X is the version of SkunkWeb you downloaded.
+
+
+You can also get the latest CVS version by typing these two commands into your shell::
+
+	cvs -d:pserver:anonymous@cvs.skunkweb.sourceforge.net:/cvsroot/skunkweb login
+	cvs -z3 -d:pserver:anonymous@cvs.skunkweb.sourceforge.net:/cvsroot/skunkweb co skunkweb
+
+The password, when logging into the CVS server, is empty.
+
+This will create a directory in your current working directory called "skunkweb".
+
+
+
+Building The SkunkWeb Software
+------------------------------
+
+For most situations, the basic installation is all that is necessary. All you need to do is::
+
+	cd <SKUNKWEB_DIST>/
+	./configure
+	make
+	make install
+
+(Where ``<SKUNKWEB_DIST>`` is the name of the folder containing the SkunkWeb distribution.)
+
+At the completion of the installation, you can find the software in the directory ``/usr/local/skunk``.
+
+There are a list of configuration options available when using the "configure" script to customize your installation:
+
+--with-skunkweb
+	Installs SkunkWeb as part of this installation. The default is "yes". If you set it to "no" or use ``--without-skunkweb``, it will only install whatever is in the "pylibs" directory. (This might be deprecated and/or removed in future releases.)
+
+--with-python=path
+	Use this switch if you would like to use your custom installation of Python. The default is whatever it finds in the PYTHONPATH environment variable.
+
+--with-user=username
+	You can use this switch to install the SkunkWeb software under a different username, other than the one you are currently logged into.
+
+--with-group=group
+	You can specify a specific UNIX group that SkunkWeb can be installed under.
+
+--with-webdoc
+	SkunkWeb comes with sample content to demonstrate how to use the SkunkWeb software. The default is "yes".
+
+--with-services
+	If you would like to specify a custom list of SkunkWeb Services to install, you would use this switch. You would specify the SkunkWeb Services you wish to install, with a space between each one. Here is a list of valid SkunkWeb Services, provided by default:
+
+	- sessionHandler
+	- requestHandler
+	- remote
+	- ae_component
+	- remote_client
+	- aecgi
+	- httpd
+	- basicauth
+	- oracle
+	- mysql
+	- postgresql
+	- pars
+	- templating
+	- web
+	- fcgiprot
+	
+	By default, all SkunkWeb Services above are installed.
+	
+--with-sudo=path
+	Specify the path to a custom installation of sudo.
+	
+--without-mod_skunkweb
+	With this specified, the Apache module will not be built. By default, mod_skunkweb will be built.
+
+--with-apxs=path
+	This specifies the path to a custom installation of apxs, a tool for building Apache DSO modules.
+
+
+--prefix=path
+	The default installation path is /usr/local/skunk. Use this switch to specify a different installation path.
+
+[TODO: Awaiting new parameters]
+
+
+When the installation is complete, it is suggested (mainly for production environments) to use ``cron`` to load up the cache reaper. The cache reaper is a script that deletes expired caches periodically, as the cache will tend to build up over time. Add this to your ``crontab``::
+
+	0 0 * * * <SKUNKWEB_DIR>/util/cache_reaper.py -c /usr/local/skunk/cache
+
+
+Testing Your Installation
+-------------------------
+
+To ensure things are working smoothly, you need to check if the installation was completely successful. To check, first go into::
+
+	cd <SKUNKWEB_DIR>/bin/
+	
+and then::
+
+	./swmgr start
+	
+If everything is okay there, then you can proceed to your web browser to see the SkunkWeb demo::
+
+	http://your-host:8080
+	
+(where ``your-host`` is the host that SkunkWeb is on. If you get back an appropriate response, with the Skunk logo, then you have successfully installed SkunkWeb. You need to then breathe a sigh of relief.
+
+
+SkunkWeb HTTP Server
+--------------------
+
+SkunkWeb comes with a built-in HTTP server, which is useful for development purposes or where an Apache installation communicating with SkunkWeb is unnecessary. 
+
+The HTTP server is simple to setup, with a few parameters to get you up and going. 
+
+The HTTP Server is enabled by default.
+
+If you are installing a fresh copy of SkunkWeb, you might want to skip the compliation of ``mod_skunkweb``, if you plan to just use the SkunkWeb HTTP Server. To do this you would type this when you configure the software for installation::
+
+	./configure --without-mod_skunkweb
+	
+There are certain parameters available in SkunkWeb's configuration file, ``sw.conf``, which is available in ``<SKUNKWEB_DIR>/etc/sw.conf``. There are four parameters in particular of note:
+
+- ServerName: this is a string specifying the name of the server. This can be a domain name or an IP address.
+
+- lookupHTTPRemoteHost - if this is set to ``1``, the CGI environment variable ``HTTP_REMOTE_HOST`` will always be set, which will potentially involved a costly DNS lookup. The default is ``0``.
+
+- HTTPKeepAliveTimeout: This specifies how long a KeepAlive timeout should be between HTTP requests. The default is 15 seconds.
+
+- HTTPListenPorts: This is a list of ports that the HTTP service should listen on. The default is ``['TCP::8080']``. 
+
+
+
+mod_skunkweb
+------------
+
+If you have installed mod_skunkweb along with SkunkWeb, you will need to edit your httpd.conf file. You can use the sample httpd.conf file in the directory ``<SKUNKWEB_DIST>/mod_skunkweb/httpd_conf.stub``. (This file is in the original directory that you built the SkunkWeb software from.)
+
+The next sub-section goes through all the Apache directives and certain situations when using the Apache/SkunkWeb combination.
+
+For SkunkWeb, it uses the ``aecgi`` service to communicate with sources like mod_skunkweb. By default, SkunkWeb listens to requests from mod_skunkweb on port 9999. This can be changed by using the ``AecgiListenPorts`` parameter in ``sw.conf``. 
+
+
+Apache Configuration
+~~~~~~~~~~~~~~~~~~~~
+
+Below is a list of directives to place into your httpd.conf file. Each can be used within ``<Directory>``, ``<Location>`` and ``<VirtualHost>`` directives and the like.
+
+**LoadModule skunkweb_module <APACHE_MODULES_DIR>/mod_skunkweb.so**
+	This is a standard Apache directive that loads mod_skunkweb at startup of the server. You would put the path of your modules directory in place of ``<APACHE_MODULES_DIR>`` above.
+
+
+**SetHandler skunkweb-handler**
+	This Apache directive is used to set up a handler for requests. For example, if you want the server to send requests to the SkunkWeb server for every request it receives, you would use something like this in httpd.conf::
+
+		<Location />
+			SetHandler skunkweb-handler
+		</Location>
+		
+
+**SkunkWebSocketAddress**
+	This directive allows you to specify where the SkunkWeb server is accessible. You can either use Unix domain sockets for this or TCP sockets. If you are going to use TCP sockets, something like this would work, where the SkunkWeb server is on the same server as Apache::
+
+		SkunkWebSocketAddress localhost:9888
+		
+	SkunkWeb initially is setup, by default, to bind to port 9888, as specified in the ``AecgiListenPorts`` configuration parameter in ``sw.conf``. More information about this configuration parameter is available in the *Configuration > Server Options > Parameters For The aecgi Service* section, which will appear later in this chapter.
+
+
+**SkunkWebRetries**
+	This directive specifies how many retries Apache should try if it is having problems connecting to the SkunkWeb server. It will try to connect to another SkunkWeb server if one is specified in ``SkunkWebFailoverHosts``. For example, if you want Apache to retry three times, you would do something like this::
+
+		SkunkWebRetries 3
+		
+
+**SkunkWebFailoverHosts**
+	In the event the main SkunkWeb server (specified in ``SkunkWebSocketAddress``) is down, the server should try to connect to one of the randomly picked hosts in the list of hosts specified in this directive. You can specify either UNIX domain sockets or TCP sockets. For example:: 
+
+		SkunkWebFailoverHosts unixsocketaddr otherhost:port
+		
+		
+**SkunkWebConnectTimeout**
+	This directive specifies the number of milliseconds that Apache should wait before trying another server specified in ``SkunkWebFailoverHosts``. The default is 1000 (which equals one second). For example::
+
+		SkunkWebConnectTimeout 1000
+	
+		
+**SkunkWebErrorDoc**
+	If the SkunkWeb server is inaccessible to Apache, then the file specified in this directive will be accessed to be served to the user. The path is an absolute path from the root of the directory tree. For example, you can use something like this::
+
+		SkunkWebErrorDoc /usr/local/apache/htdocs/skunkweb_error.html
+		
+
+**SkunkWebErrorEmails**
+	This directive specifies a list of e-mail addresses that mod_skunkweb should send e-mails to. The e-mails contain information about errors that have occurred in mod_skunkweb. Each e-mail address is space-separated. For example::
+
+		SkunkWebErrorEmails brian@localhost brian@example.com
+		
+		
+**SkunkWebExpose**
+	This directive includes SkunkWeb information in the Server header of Apache. (Great way to plug SkunkWeb when the header is seen, like on Netcraft!!!) The default is ``On``. For example::
+
+		SkunkWebExpose On
+		
+
+Running Apache With Other CGIs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[TODO]
+
+
+swcgi
+-----
+
+The ``swcgi`` script (in ``<SKUNKWEB_DIR>/bin/swcgi``) is used to allow Apache (or possibly other web servers) to talk with SkunkWeb without using mod_skunkweb. This would be used specifically in cases where you're not allowed to install Apache modules, or things of that nature.
+
+A typical configuration would be to add the following to your httpd.conf::
+
+	ScriptAlias / <SKUNKWEB_DIR>/bin/swcgi/
+
+where ``<SKUNKWEB_DIR>`` is your SkunkWeb path. 
+
+You can place the ``swcgi`` script in another location, but it requires one module from the SkunkWeb distribution, namely the ``SocketScience`` module, which is in the "pylibs" directory of the SkunkWeb distribution.
+
+To really use it though, you should check out the top of the script and edit it to suit your needs. There are two variables of particular note in the ``swcgi`` script:
+
+**connectInfo**
+	You specify the location of the the SkunkWeb server by specifying a tuple as its value. For example, you can use one of these::
+
+		connectInfo = ('localhost', 9888)
+		
+		#or
+		
+		connectInfo = ('/tmp/skunksock')
+		
+
+**TIMEOUT**
+	This specifies how long the CGI script should wait to retrieve a connection to the SkunkWeb server. The default is ``0``, which means there is no timeout.
+
+
+
+Starting and Stopping The SkunkWeb Server
+-----------------------------------------
+
+To start, stop and restart the SkunkWeb Server, you would use the ``swmgr`` utility, which is in ``<SKUNKWEB_DIR>/bin``.
+
+The ``swmgr`` utility can take one of four arguments:
+
+**start**
+	Starts the SkunkWeb server if it is not already running. If there is a current SkunkWeb server running, you will see a error traceback in the shell that you are using ``swmgr`` in, which will say at the end of the traceback "Address already in use." (Meaning that a SkunkWeb Server instance has already bound to its default port, specifically, ``9888``)
+
+**restart**
+	This restarts a currently running SkunkWeb server. If the server is not running, you will get an error and traceback saying "SkunkWeb pidfile missing. Aborting ..." For those who live on the edge, and want a faster retart, you can use the -f flag with restart. This does not check for the existence of the pidfile. (This is new of version 3.4.)
+
+**stop**
+	This stops a running SkunkWeb server. Same thing happens like in restart if a SkunkWeb server process is not running. (And no, there is no -f switch for stop, unless there is enough demand for a faster stop.)
+
+**-r**
+	This flag allows one to start SkunkWeb up as root so it can bind to a low port.
+
+
+[TODO: More params to add]
+
+
+Configuration
+=============
+
+This section discusses the configuration of your SkunkWeb installation, through the use of the ``sw.conf`` file.
+
+
+sw.conf
+-------
+
+All configurations are handled in the ``<SKUNKWEB_DIR>/etc/sw.conf`` directory. This is the main file that contains all of your server configurations and your specific scopes that pertain to particular situations. 
+
+Each configuration parameter is either part of a SkunkWeb Service or a core parameter. Any new services added to SkunkWeb can be written to look for parameters in the ``sw.conf`` file (using the ``Configuration`` module. A short discussion about the ``Configuration`` module is included at the end of this section.)
+
+``sw.conf`` might look familiar in that it looks sort of like a Python script. It is. All syntax rules apply for ``sw.conf`` as it does with Python.
+
+	- # at the beginning of a line denotes a comment.
+	- [], {} and such are used to denote lists and dictionaries.
+	- Indentation does count here.
+
+An index of all the available parameters in a default SkunkWeb distribution are available in *Chapter 6: Parameter Index*. Also, all parameters specified in the index are discussed, in their respective chapters and sections where applicable.
+
+If your SkunkWeb server is running, and you make alterations to the sw.conf file, you need to restart the SkunkWeb server by using the "swmgr" utility::
+
+	swmgr restart
+	
+or::
+
+	swmgr -f restart
+
+for a fast restart.
+
+The sw.conf file also contains information about each parameter.
+
+Do not change the name of the configuration file. SkunkWeb looks for this file when it starts up. If you wish to separate the contents of the sw.conf file, you can use the "Include" directive to split up the configuration in different files::
+
+	Include("mysw.conf")
+
+You would put this directive into the sw.conf file.
+
+Finally, you can add which directories to add to sys.path, from which Python can search for modules. You might do something like this::
+
+	import sys
+	sys.path.append("/usr/local/skunk/sitelibs")
+	
+This will add the ``/usr/local/skunk/sitelibs`` directory to Python's search path.
+
+
+
+Configuring The Core SkunkWeb Server
+------------------------------------
+
+There are a number of parameters that are used to configure the operation of the core SkunkWeb server. These parameters apply to how the server operates, which packages to load up at server startup time etc. These configuration parameters allow you to fine-tune the way SkunkWeb operates internally.
+
+Since these are core server parameters, they are not *scopable*. (Scoping will be discussed in the next section.)
+
+
+Service Startup
+~~~~~~~~~~~~~~~
+
+There is a single parameter, entitled ``service``, which lists all the SkunkWeb Services that should be loaded up at startup time. Here is the original line that comes with the default distribution of SkunkWeb::
+
+			services = ['requestHandler', 'aecgi', 'ae_component', 'web', 'templating','remote','remote_client']
+
+Here, it specifies a number of services that are available to SkunkWeb at startup time.
+
+Note that the ``requestHandler`` service, the ``ae_component`` service, and the ``web`` service will be loaded at startup even if it is not specified in this parameter. They are just there for reference.
+
+If, for example, you are going to use a database with SkunkWeb, (such as PostgreSQL), you need to first specify it here so it will be loaded up at startup time::
+
+			services = ['requestHandler', 'aecgi', 'ae_component', 'web', 'templating','remote','remote_client', 'postgresql']
+
+Services, being special Python modules, can have parameters associated to it in ``sw.conf``. You will need to set those parameters within ``sw.conf`` as well as including the service name in the ``services`` list.
+
+
+Logs
+~~~~
+
+SkunkWeb keeps a number of logs about accesses, server starts and stops, errors, etc. The specific paths are specified in these ``sw.conf`` parameters:
+
+- accessLog: the access log logs user accesses to the SkunkWeb server.
+- errorLog: The error log keeps a log of all the errors (such as unhandled exceptions, tracebacks and the like.)
+- regularLog: This log keeps a track when the server has started and stopped.
+- debugLog: [TODO]
+
+each of these parameters equal to a filepath to where the log is stored. Most of them are, by default, in the ``<SKUNKWEB_DIR>/var/log/`` directory.
+
+There is also a ``stampEveryLine`` parameter which, if set to ``1``, will put a timestamp on every line in a multi-line log entry. If set to ``0``, it will only put it on the first line of a multi-line entry.
+
+Finally, the ``pidFile`` parameter specifies to the SkunkWeb server which file should hold the process ID value for the SkunkWeb/Python parent process. When stopping or restarting, using the ``swmgr`` utility it uses this file to know which process to kill when the server processes.
+
+
+Server Parameters
+~~~~~~~~~~~~~~~~~
+
+There are a number of parameters that control how the actual server behaves. Since SkunkWeb is a multi-process server, and not a multi-threaded server, the parameters to be discussed are related to how one would control server processes.
+
+The ``numProcs`` parameter specifies the maximum number of child processes should be open. This is a valid place to focus on if you are experiencing performance problems yet are not reaching full CPU utilization. ``numProcs`` represents how many child processes are open, but it also represents how many concurrent requests can be handled at once. The default is ``15``, meaning that 15 requests can be handled at once (remember that this is a multi-process, not multi-threaded server). Raising the number of processes available will allow more requests to be handled at once.
+
+The ``maxKillTime`` parameter is a rather simple one, but might be useful in certain circumstances. ``maxKillTime`` represents the number of seconds that a parent will wait before terminating a child process (a SIGTERM) before actually killing the child processes off with (SIGKILL) during a shutdown or restart. This can be used to let child processes finish handling requests before it is killed by the parent. The default is 5 seconds.
+
+The ``maxRequests`` parameter is used to specify the number of requests a child process can handle before it commits suicide. (When it commits suicide, the parent process will spawn a new child process). This is mainly used to prevent any runaway memory leaks from occurring (however, this might be only applicable if you are using C/C++ modules a lot, for example.) If you are not experiencing memory leaks, then it is safe to raise the amount of requests that a child process can accept. Also, if you raise the amount of requests a child process can handle, there will be less times that, for example, database connections, need to be teared down. The default is ``256``, but you can go crazy and set it to something higher.
+
+The ``pollPeriod`` is [TODO]
+
+Each of these parameters are relevant when tuning the server for performance. These performance considerations mentioned, plus others will be discussed further in the *Performance Considerations For SkunkWeb* section, later on in this chapter.
+
+
+Debugging
+~~~~~~~~~
+
+There are two parameters in ``sw.conf`` that allow a developer to modify Python modules and packages (maybe, particularly, packages and/or modules that a developer has written for a specific web application) and see the results instantly without having to restart the SkunkWeb server.
+
+Python keeps a reference of each imported module and package in the variable ``sys.modules``. When a developer imports one of his own packages onto a page, for example, that package is loaded into memory. If he needs to debug the specific module, he can make changes, but due to the fact that Python keeps memory of old changes, he will not be able to see those changes in his module immediately.
+
+Instead of restarting the SkunkWeb server, the developer can turn on the ``userModuleCleanup`` parameter in ``sw.conf``, by setting it to ``1``. This way, after every request, SkunkWeb goes through ``sys.modules`` and cleans out those modules that should be cleaned out. Any modules that are required to be in memory, however, are not flushed out.
+
+If the developer has certain modules and/or packages that he does not wish to be flushed out after every request, he can put into the ``userModuleCleanupIgnore`` list the full package name, so when SkunkWeb is ready to flush out modules and packages, it will ignore those modules and packages and dump the rest.
+
+This feature is not perfect; there is a possibility that it will leave a hanging reference in ``sys.modules``. This will particularly happen with this kind of import::
+	
+	from package import module
+	
+If you get strange errors related to this, it is best just to restart the server using::
+
+	./swmgr -f restart
+
+
+Scoping
+-------
+
+Certain configuration parameters can be "scopable", meaning that certain values can change depending on the particular situation they are in. These situations can be a different port, host, location etc. than the standard host.
+
+Not all parameters can be used in a scope; for this they must be used only outside a scope. Refer to *Chapter 6: Parameter Index* for more information.
+
+For those familiar with Apache, the discussion might sound familiar -- despite the fact that the syntax is different, the concepts are generally the same.
+
+To create a scope, you would use the ``Scope()`` directive in ``sw.conf``. ``Scope()`` contains all the other directives, which can be referred to as "matching" directives, which are used to match up when SkunkWeb receives a request.
+
+The most basic directives that can be placed in ``Scope()`` are below. They specifically apply to any type of protocol that you might implement with SkunkWeb (using the ``requestHandler`` service.)
+
+- ``Port()``: this will apply specific directives you specify if the incoming request is coming in from a specific port. This is only relevant for TCP connections. Also, this is only specific to SkunkWeb, not the web server.
+
+- ``IP()``: If the request's IP address matches the one you specify in this directive, the specific directives you specify will be applied for this specific IP address. This is only relevant for TCP connections.
+
+- ``UNIXPath()``: If the request is based on a UNIX socket, specific parameters specified in this directive will be applied.
+
+
+The below directives apply specifically for web applications:
+
+- ``Host()``: if the host name in the request matches what is specified in the the ``Host()`` directive, any specific directives you use within ``Host()`` apply for that host name only.
+
+- ``Location()``: this tests if a location specified in the URI begins with a specific string. If it does, specific parameters specified in ``Location()`` can be applied for a specific URI location.
+
+- ``File()``: this tests if a URI matches a regular expression. If so, all parameters specified will apply to the specific file.
+
+- ``ServerPort()``: This tests if the web server port equals a specific value. If so, specific parameters will apply for this web server port on the SkunkWeb server.
+
+When assignments are used outside of a scope, the parameter applies to everything. However, if there is a scope that contains a similar parameter, the scoped parameter takes precedence.
+
+
+For each directive, this form applies::
+	
+	Scope(Directive('valueToMatch', Directives(), Parameters))
+	
+When a value is matched in the section ``valueToMatch``, more directives are executed and a set of parameters are applied. 
+
+In this, whatever parameters set in the sub-directives take precedence over the parameters in the main directive.  
+
+Also, multiple directives can be specified within a scope::
+
+	Scope(Directive('value', parameter=1), Directive2('value', parameter=2))
+	
+
+Based on this, we show that we can embed any scoping directive within other directives, which allows us to granularly control a specific scope. With this, we can have tremendous fine-tuning power for specific web applications, for example, held on the same SkunkWeb server.
+
+
+Here is a few examples using the first set of scoping directives::
+
+	Scope(IP('192.168.0.1', documentRoot="/var/www/htdocs"))
+	
+This simple scope tells SkunkWeb to specify a new document root for SkunkWeb if the IP address is ``192.168.0.1``. 
+
+
+Here is another example where we embed another directive within the first directive, thus extending the requirements for matching::
+
+	Scope(IP('192.168.65.12', Port(9887, job=REMOTE_JOB)))
+	job=TEMPLATING_JOB
+	
+What we have above is a simple scope where, if the IP address of the request is ``192.168.65.12`` with the SkunkWeb port on ``9887``, then the job (the type of server acts likes) is REMOTE_JOB (meaning that, in this scope, it can accept connections from other SkunkWeb servers.) In all other instances (unless there is another scope like this), the SkunkWeb's main role is to do templating.
+
+To elaborate further, let us use some of the web directives to turn on basic authentication for a specific host and location::
+
+	Scope(Host('www.example.com', 
+    	       Location('/private',
+    	                basicAuthName='privileged zone',
+    	                basicAuthFile='<SKUNKWEB_DIR>/var/AUTHDB')))
+
+This tells us that if the user submits the URI ``http://www.example.com/private``, the SkunkWeb server will apply HTTP Basic Authentication to this location. The user will be prompted for a username and password if they need to continue.
+
+Here is a more complex example::
+
+	Scope(Port(9887,
+           job=REMOTE_JOB),
+      # define a virtual host
+      Host('*froggie.com',
+           # you can nest matchers when it makes sense to do so; 
+           # put them before the configuration variables you are
+           # scoping
+           ServerPort(8080,
+                      Location("/admin/",
+                               # turn on basic-auth password-protection
+                               authAuthorizer="auth.BasicAuth",
+                               authAuthorizerCtorArgs=('myrealm', 			'/home/skunk/skunkroot/var/authdb'),
+                               authActivated=1),
+                      documentRoot="/home/httpd/htdocs/froggie-admin",
+                      compileCacheRoot="/home/skunk/skunkroot/cache-froggie-admin",
+                      componentCacheRoot="/home/skunk/skunkroot/cache-froggie-admin"),
+           documentRoot="/home/httpd/htdocs/froggie.com",
+           # N.B.: whenever you scope the documentRoot, you must also
+           # scope these cache roots; otherwise, the caches
+           # will write over each other, which is not a good
+           # thing.
+           compileCacheRoot="/home/skunk/skunkroot/cache-froggie.com",
+           componentCacheRoot="/home/skunk/skunkroot/cache-froggie.com"))
+           
+
+Let us deconstruct this massive scope.
+
+1. If the request that is coming in to the SkunkWeb server is on port 9887, then the SkunkWeb server becomes a remote server for other SkunkWeb servers.
+
+2. If the host name of the request contains "froggie.com" (not the \*, which is a wildcard character meaning that anything can be in front of "froggie.com"), then a certain number of directives are executed:
+
+	- ServerPort: if the web server port is ``8080``, then execute a ``Location()`` directive. If the URI contains ``/admin/`` then turn on authentication. If the location match fails or not, set the ``documentRoot``, ``compileCacheRoot`` and ``componentCacheRoot`` parameters to different values than what is in the main sw.conf. 
+
+	- For all other situations, no authentication is used, and there are different values for ``documentRoot``, ``compileCacheRoot`` and ``componentCacheRoot``.
+
+
+
+Virtual Hosting
+---------------
+
+A discussion of virtual hosting is discussed, as to elaborate on using scoping in this very common situation. If you have jumped here and past the "Scoping" section, which is prior to this one, it would be a good idea to review that section first.
+
+Virtual Hosting with SkunkWeb is a relatively simple matter. Mostly what you do is use ``Scope()`` statements in the configuration file to affect the docuemnt root and where your cache files are stored. 
+
+For example: you want to serve both foo.com and bar.com sites. First you choose which is the "default" server, i.e. if you were to hit the server with just the IP address and no name, which you would get.
+
+
+In the below example, the "foo.com" would be the default server, whereas, the "bar.com" domain is scoped, from which the same parameters are different when the address line for the client has as its address, "bar.com"::
+
+	documentRoot = '<SKUNKWEB_DIR>/docroot/foo.com'
+	compileCacheRoot = '<SKUNKWEB_DIR>/cache/foo.com'
+
+	Scope(Host('bar.com',
+    			documentRoot = '<SKUNKWEB_DIR>/docroot/bar.com',
+    			compileCacheRoot = '<SKUNKWEB_DIR>/cache/bar.com'))
+
+
+It is good practice to set the document root, *as well as*, the caching parameters to something different for each virtual host. This will prevent any conflicts from occuring between different caches. For example, if "foo.com" had its caches in the same folder as "bar.com", you would get mysterious output on "foo.com".
+
+The most relevant caching parameters, which will be discussed in detail later in this chapter, are as follows:
+
+- compileCacheRoot
+- componentCacheRoot
+- failoverComponentCacheRoot
+
+These all specify directories of where to store specific caches.
+
+
+If you have ``numServers`` (how many child processes you have open) set to something other than zero, you should change failoverComponentCacheRoot (where caches go if a shared filesystem, like through NFS, fails) and failoverRetry (how many seconds before trying another SkunkWeb server) in the Scope() statement.
+
+
+``Include()``
+-------------
+
+The ``Include()`` directive in ``sw.conf`` allows an administrator to separate the contents of the ``sw.conf`` file into separate files, for easy administration. The use of the ``Include()`` directive is simple; you specify the full path to the separate configuration file::
+
+	Include("/usr/local/skunk/conf/my.conf")
+
+
+The ``Configuration`` object
+----------------------------
+
+[TODO: Err, check my facts here.]
+
+This section here is really a reference for developers, but it is here since it is related to configuration.
+
+All of the configuration values can be accessed through the ``Configuration`` object. Depending on scope, the value might change if the specified parameter you are calling is within a scope for a particular request the code is being processed is in. For example, we can change the ``componentCommentLevel`` parameter by doing this::
+
+	import Configuration as C
+	C.componentCommentLevel = 1
+	
+At the end of the request, the parameter is set to its original value.
+	
+The ``Configuration`` object has a method called ``mergeDefaults`` [TODO: That does something I don't know ... read or ask]
+
+Be aware that since ``Configuration`` can have scopable values, it is generally not a good idea to use parameters that are scoped if you plan to cache the page that contains the code to access the scoped parameters. Everything will be all screwy, if you know what I mean. 	
+
+
+
+
+Performance Considerations For SkunkWeb
+=======================================
+
+Tuning The Core Server
+----------------------
+
+There are a few things in SkunkWeb that you can tune for better performance.
+
+The core parameters discussed in an earlier are highly useful for tuning the server.
+
+1. Increase the number of ``numProcs`` if the server is reaching a performance plateau and SkunkWeb is not fully utilizing the CPU(s).
+
+2. Increase the number of ``maxRequests``, so there is less child process tear-down, and especially, less database connection tear-down. 
+
+
+Another is the memory compile cache (activated by the ``useCompileMemoryCache`` option in sw.conf). What this does is keep memory images of the on-disk compile cache so that it can reduce I/O and CPU utilization that would normally be used loading and deserializing the compiled forms of compiled things on disk (template, python code, etc.).
+
+
+Database Connection Tuning
+--------------------------
+
+Database connections are created lazily, and, as needed, are retained indefinitely. This means that over time, given enough requests, every process in your server will get its own connection to each database you define in this manner. This is perfectly acceptable in typical situations, even though it means that you may well not be fully utilizing your database connections, and that you can't reduce the number of those connections without also lowering the number of requests that can be processed at once, unfortunately coupling together two factors that are in principle unrelated.
+
+Luckily, this problem can usually be neglected, but if you really need to have fewer open database connections, you need a workaround. 
+
+One possibility is not to cache connections at all, but to compensate for the expense of creating them once per query by wrapping the requests in a data component and caching the results, so that actual database requests are infrequent. Not all data is amenable to being cached, however. An alternative is to use an additional dedicated SkunkWeb installation with a smaller number of active processes to make the actual database calls, and to access that server using SkunkWeb's remote component protocol. That way, a small number of database connections can be fully utilized, servicing any number of other application servers that need access to that data. This scenario is only likely to come about, mind you, if you have a rather hefty, industrial-scale application on your hands; even if you don't, however, you might find the ``remote`` and ``remote_client`` services useful for some other purpose.
+
+
+Caching
+-------
+
+The obvious question to ask is "when does the cached version expire?" Luckily, this has a simple answer. If you set the cache expiration in a component (either via the cache tag in an STML component, or by setting __expiration otherwise), it will expire according to that. If you don't say when the cache expires, it defaults to the value of the defaultExpiryDuration configuration variable (which defaults to 30 seconds). If you use the force or old component evaluation modes, it will follow those rules instead (see the STML Reference or the Developers Manual for details). 
+
+[TODO: show where the information would be instead.] [LOOK UP IN SW.CONF]
+
+
+Caching Architecture
+~~~~~~~~~~~~~~~~~~~~
+
+The caching architecture of SkunkWeb is fundamentally rather simple from the OS's point of view and luckily doesn't get that much more complicated when you get to the upper level details.
+
+For component output caching, which makes up the majority of the number of files in the cache directory, we take the output of the component and a hex string representation of the MD5 hash of the component arguments and write it to a temp file. We then rename it to the real file name. This is done so we don't have to worry about write atomicity and having the SkunkWeb load a half-written file, not to mention that this scheme works properly over NFS!
+
+An example: say we have a component whose path is /foo/bar/baz.comp and the argument hash is 0123456789ABCDEFFEDCBA9876543210. The temp file will be written into a file named /foo/bar/baz.comp/01/23/hostname_pid.countervalue.tmp and subsequently renamed (when writing is complete) to /foo/bar/baz.comp/01/23/0123456789ABCDEFFEDCBA9876543210.cache in the appropriate component cache directory. There is another file written for component output with the same name as the cache file, but replacing .cache with .key which contains a somewhat textual form of the component arguments suitable for use when doing cache clears (see section 10.1.3, page ). [TODO: New section here.]
+
+For compiled templates and compiled python code, there is no hash (and thus, no .key file), so the cache filename is path_to/templatenamec and the rest of the process is the same.
+
+[TODO: Maybe a little touch up here and there on the text here.]
+
+
+Sharing The Cache
+~~~~~~~~~~~~~~~~~
+
+Often, it is very desirable to share the component cache across application servers for performance, managability and synchronicity issues.
+
+The location of the component cache is a separate configuration variable (the ``componentCacheRoot`` configuration variable, which specifies the path to where cached components are stored). The component cache can be segmented easily among multiple file servers and the SkunkWeb can fail over to a local cache if the file server goes away unexpectedly (if the ``failoverComponentCacheRoot``, which specifies a local path if a shared filesystem becomes unavailable, ``numServers``, which specifies the number of shared file servers that the component cache will be on, and ``failoverRetry``, which specifies how many seconds SkunkWeb should wait before trying a file system again, are all set.)
+
+The component cache segmentation is done as follows. If the ``numServers`` configuration variable is set to something other than zero, a number of options are now effective. At the top of the component cache root (CCR), there will be *n* directories, where *n* is the number of servers, numbered 0..*n*-1. You can either mount your remote volumes there or have symbolic links to where they are actually mounted, or any number of similar options.
+
+When SkunkWeb goes to operate on a cached form of component output, it takes the last 16 bits of the MD5 hash that it computed, mods it by the number of file servers and operates on the cache entry under the directory numbered by the result of the mod operation. If an operation fails when operating on the component cache (other than the usual errors of files existing already or files not existing), SkunkWeb will fail over that servers portion of the component cache to the (presumably) local failover cache (specified by the failoverComponentCacheRoot configuration variable) for failoverRetry seconds. After failoverRetry seconds, it will again attempt to go back to using that servers' directory under the CCR.
+
+NOTE: The failoverComponentCacheRoot and failoverRetry options are ineffective if numServers is zero.
+
+To make this work over NFS, the filesystems must be soft mounted! 
+
+
+clearCache Parameter
+~~~~~~~~~~~~~~~~~~~~
+
+One word: don't use clearCache if you can avoid it, or it will slow down things a bit. Because of the way clearCache is implemented, what it has to do is examine every cached version of a component to see if it matches the arguments you passed (unless you set matchExact, in which case, don't worry, you won't have any problems), which if you have a large number of cached versions of a component can be exceedingly slow, in some cases I've seen, exceeding the documentTimeout.
+
+(If anyone can provide a version of clearCache that is fast and doesn't overly affect normal usage of the cache (read as: read operations), I would be greatly appreciative.)
+
+[TODO: We still don't know what this does!!!]
+
+Filesystem Tuning
+~~~~~~~~~~~~~~~~~
+
+Filesystem performance can play a dramatic role in the performance of the SkunkWeb server. If filesystem performance is slow, cache operations will be slow also.
+
+On Linux, the default filesystem settings seem to be just fine for the ext2 filesystem, but on other operating systems, the situation is a bit different.
+
+If you are using a UFS filesystem (which is typical on BSD and Solaris), you want to set the async and noatime options or cache write operations will be really slow (70ms vs .01ms). [TODO: More explanations needed.] At first, some may be uneasy about setting the async flag on a filesystem being wary of system crashes and filesystem corruption, but worry not. Because this is a cache, running mkfs at boot time on the cache filesystem should be an entirely satisfactory solution. Given the system will be a little sluggish at first, but as the cache fills up, speed will improve. Alternatively, if you are on Solaris (at least), you can turn on the logging option and that helps (cache writes go to about 20ms), but not quite as good as full async mode.
+
+Another option is to allocate a whole lot of swap space and put the cache in a tempfs filesystem. 
+
+
+Flushing The Cache
+~~~~~~~~~~~~~~~~~~
+
+Flushing the cache is usually a pretty simple matter. What you do is make a directory in the cache that won't be stepped on and move the other directories in the cache into the newly created directory. Then remove the new directory (which may take a bit of time depending on the size of the cache).

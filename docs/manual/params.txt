@@ -1,0 +1,449 @@
+===================
+The SkunkWeb Manual
+===================
+
+---------------
+Parameter Index
+---------------
+
+:Author: Brian Olsen, et al
+:Version: 0.1
+:Status: Draft
+
+.. contents:: Table Of Contents
+.. section-numbering::
+
+
+Introduction
+------------
+
+This index contains all the parameters available in SkunkWeb. It details each parameter for each service plus core parameters for the SkunkWeb server. Each item is also described in their respective chapters, where relevant.
+
+For those who require to make runtime changes to the configuration parameters, one can override them using the ``Configuration`` module::
+
+	import Configuration as C
+	C.commentComponentLevel = 1
+	
+	[TODO: check to make sure]
+	
+[TODO: Does this do a permanent change to to the config, until the server restarts?]
+
+A sample configuration is available in ``<SKUNKWEB_DIR>/etc/sw.conf``. The sw.conf file uses common Python conventions:
+
+	- Comments begin with a "#".
+	- A list is represented in a [].
+	- A dictionary is represented in a {}.
+	
+If your SkunkWeb server is running, and you make alterations to the sw.conf file, you need to restart the SkunkWeb server by using the "swmgr" utility::
+
+	swmgr restart
+	
+or::
+
+	swmgr -f restart
+
+for a fast restart.
+
+The sw.conf file also contains information about each parameter.
+
+Do not change the name of the configuration file. SkunkWeb looks for this file when it starts up. If you wish to separate the contents of the sw.conf file, you can use the "Include" directive to split up the configuration in different files::
+
+	Include("mysw.conf")
+
+You would put this directive into the sw.conf file.
+
+Finally, you can add which directories to add to sys.path, from which Python can search for modules. You might do something like this::
+
+	import sys
+	sys.path.append("/usr/local/skunk/sitelibs")
+	
+This will add the ``/usr/local/skunk/sitelibs`` directory to Python's search path.
+
+
+**Note:** Arguments that are not *scopable* (it cannot be used with the Scope() directive) are denoted with an [N] in their description.
+
+Core Parameters
+---------------
+
+**services**
+	[N] A list of services you wish to load at startup. The sample list looks like this:
+
+		services = ['requestHandler', 'aecgi', 'ae_component', 'web', 'templating','remote','remote_client']
+	    	
+	  The items in the list above are available by default and generally should be present in the list when the SkunkWeb Server starts up, if you plan to use SkunkWeb as a web application server. (remote and remote_client are not required though.) The different types of services available are specified in the chapter *SkunkWeb API > Services Abstract*.
+
+**accessLog**
+	The file path where the access log will be written. The default location is ``<SKUNKWEB_DIR>/var/log/access.log``.
+
+**errorLog**
+		The file path where the error log will be written. The default location is ``<SKUNKWEB_DIR>/var/log/error.log``.
+
+**regularLog**
+	The file path where the regular log will be written. The regular log is mainly used to log server starts and stops. The default location is ``<SKUNKWEB_DIR>/var/log/sw.log``.
+
+**debugLog**
+	The file path where the debug log will be written. The default location is ``<SKUNKWEB_DIR>/var/log/debug.log``. [TODO: initialDebugServices]
+
+**pidFile**
+	[N] The file path where a file will be written which will contain the parent process-id. The default location is ``<SKUNKWEB_DIR>/var/run/sw.pid``.
+
+**stampEveryLine**
+	This is used to tell SkunkWeb to put a timestamp/pid number for each line in a multi-line log. If this is set to ``1``, then every line will contain a timestamp/pid number. If it is set to ``0``, only the first line will contain a timestamp/pid number on it.
+
+**numProcs**
+	[N] The number of maximum child processes to have open at one time. This also represents the maximum number of concurrent page views that can be handled at one time (this can be skewed a bit if Apache sits in front of SkunkWeb.) The default maximum number of requests is 15.
+
+**maxKillTime**
+	[N] The number of seconds that the parent will wait after sending SIGTERM to the child processes before killing the child processes off with the SIGKILL signal during a shutdown or a restart. The default is 5 (seconds).
+
+**pollPeriod**
+	[N] You probably do not need to change this, but, this is the interval at which the parent looks for child process corpses that need to be buried and replace with new, living children. (Pretty brutal, isn't it?) The default is 5. [TODO: interval of what?]
+
+**maxRequests**
+	[N] The number of requests that a child server process will handle before committing suicide and having the parent to respawn a new child process. This is mainly to make sure we are not leaking memory, but it is safe to set it to something higher (and it encourages kids to live a little longer, appreciate life a little more.) The default is 256 requests.
+
+**userModuleCleanup**
+	[N] Useful for debugging situations. After every request, any non-SkunkWeb Python module will be flushed out when a page request is complete. This is good in most situations, however, there might be a chance where you will get a weird error due to the fact that there is still a hanging reference to a module in sys.modules after all of the user modules are cleaned out. These problems mostly occur with with the::
+
+		from package import module
+
+	form. If this does happen, you can restart the server with the "swmgr" utility, with the -f switch::
+
+		swmgr -f restart
+
+
+**userModuleCleanupIgnore**
+	[N] When using the userModuleCleanup option, there might be some modules that the module cleaner will remove that you do not wish to remove. This might happen when, for example, you have a certain variable that depends on a module that was cleaned up. When it happens, add the *complete* module name, including the package that it is in (for example: ``PyDO.mysqlconn``) to the parameters list and the module cleaner will not remove that module from memory. You can also specify whole packages for SkunkWeb to ignore when cleaning up (for example: ``xml`` or ``ConfigParser``.) The default is::
+
+		userModuleCleanupIgnore = []
+	
+	Meaning no modules have been defined. 
+
+
+AE_Component Service Parameters: Component And Cache Processing
+----------------------------------------------------------------
+
+**documentRoot**
+	The directory that is used to hold STML templates, Python code, images, message catalogs, components, etc. The default location is ``<SKUNKWEB_DIR>/docroot.`` If this is scoped, then you must also set the ``compileCacheRoot`` and ``componentCacheRoot``. Otherwise caches will overwrite each other from different scopes.
+
+**componentCommentLevel**
+	    Level of commenting to be inserted in HTML documents when components are entered/exited.
+
+    0. no commenting (default) 
+    1. only show component name in comments 
+    2. show component name and argument names 
+    3. show component name, argument names and values
+
+	The default is 0.
+	
+	[TODO: What is this really supposed to do?]
+
+
+**tagsGenerateXHTML**
+	If set to ``1``, HTML helper STML tags will generate XHTML compliant markup. The default is ``1``.
+
+Caching Parameters
+******************
+
+**compileCacheRoot**
+	The location on a disk where the compiled caches should reside. This should be a local filesystem. [TODO: As in what? No shared disks?] The default is in ``<SKUNKWEB_DIR>/cache``.
+
+**userCompileMemoryCache**
+	This allows you to store compiled caches in RAM as will as in disk. This increases the memory footprint a little, but allows you to reduce disk I/O and CPU utilization a bit.
+
+**componentCacheRoot**
+	The location of the component cache on disk. The default is ``<SKUNKWEB_DIR>/cache``.
+
+**failoverComponentCacheRoot, numServers, failoverRetry**
+	If using NFS or some other shared filesystem for the component cache, set numServers to the number of shared filesystems the the component cache will be on. Use failoverRetry to the number of seconds to wait before trying the filesystem again, if it could not get the component cache the first time (the filesystem should be soft-mounted.) The failoverComponentCacheRoot is used to specify a place to store caches on the local disk as a temporary replacement for the server that failed in the meantime. The default for numServers equals 0 (meaning no shared filesystems are used), the default for failoverComponentCacheRoot is ``<SKUNKWEB_DIR>/failoverCache`` and the default for ``failoverRetry`` is 30 (seconds).
+
+**defaultExpiryDuration**
+	If you call a component that never specifies a cache expiration (via <:cache:> tag), how long, in seconds, it will be cached.
+	
+**maxDeferStale**
+	When using the caching features, either in STML with the <:component:> tag or the <:datacomp:> tag, or through the AE.Component.callComponent() function in a Python script, each component function can accept for its ``cache`` argument the value of ``defer``. When ``cache='defer'`` is used, it shows the content from cache and then re-renders the page after the response has been sent. However, if the cached version is ``maxDeferStale`` seconds old, deferrment is not executed - the cache is just treated as ``cache='yes'``. 
+
+**DeferByDefault**
+	If this is set to ``1``, every component will be deferred (if the cache is timed out, all components will be refreshed after the final response is sent for that particular cached page.)
+
+**deferAdvance**
+	If you use for your components ``cache='defer'`` and the cache has expired, we would temporarily extend the time (in seconds) before it is refreshed. This way, while the first process is refreshing the cache while the other processes uses the old cache, for ``deferAdvance`` seconds. If ``deferAdvance`` is not set, all of the processes would be rushing to refresh the cache all at once.
+
+**fallbackToCache**
+	if you want to go back to a cached version of a component if an unhandled [TODO: ?] exception occurs when newly rendering an already cached component.
+
+Below is a list of command for ``clearCache``:
+
+**fgrepCommand**
+	The location of the ``fgrep`` utility. The default is ``/bin/fgrep``.
+
+**findCommand**
+	The location of the ``find`` utility. This must be GNU find. The default location is ``/usr/bin/find``.
+
+**sedCommand**
+	The location of the ``sed`` utility. The default is ``/bin/sed``.
+	
+**xargsCommand**
+	The location of the ``xargs`` utility. [TODO: ? on sw.conf] The default is ``/usr/bin/xargs``.
+
+
+Message Catalogs
+****************
+
+**DefaultLanguage**
+	If you are using a multi-lingual message catalog and you do not specify a language, the language you specify with this parameter will be used. Currently, SkunkWeb can use ``'eng'`` for English, ``'esp'`` for Spanish and ``'por'`` for Portuguese. The default is ``'eng'``.
+
+**strictMessageCatalogs**
+	If you want to have SkunkWeb to return a message saying that a requested message catalog message does not exist instead of raising an exception, set this to 0. The default is 1.
+
+	
+
+``templating`` Service Parameters: STML Tag Implementations
+-----------------------------------------------------------
+
+**errorTemplate**
+	[N] The path to the template in the docroot or in a parfile, dependent on scope that should ber shown if SkunkWeb reports an error of 500. The exception text will show up in an addtitional template variable entitled "ERROR_TEXT" (without the quotes). The default is None. [TODO: Is it or is it not scopable?]
+
+**notFoundTemplate**
+	[N] The path to the template in the docroot or in a parfile, dependent on the scope, that show the 404 error response. The default is None.
+
+**indexDocuments**
+	This is a list of document names that will be recognized as index documents. So, for example, if you go something like this: http://www.example.com/web/, it will search for the index document(s) in the web directory you specified in this parameter. The default is ['index.html'].
+
+**hideMimeTypes**
+	This parameter represents a list of MIME types of files (the MIME types information that SkunkWeb uses is in the file "<SKUNKDIR>/etc/mime.types") that should not be accessible in a normal web request. The default is::
+
+		[ "text/x-stml-component", "text/x-stml-python-component", "text/x-stml-data-component", "text/x-stml-python-data-component" ]
+
+**interpretMimeTypes**
+	A list of MIME types of files that should be rendered as templates when called via a web request. The default is ["text/html", "application/x-python"]
+
+**defaultIndexHtml**
+	The path to a template or other item to be used to show the directory if no index document is present (the index documents specified in indexDocuments). The default is None - this feature is disabled by default.
+
+**mimeTypesFile**
+	[N] The location of the mime.types file. Use this file to specify new file typesto be served from SkunkWeb. The file is essentially a copy of the mime.types file in the Apache distribution. The default location is ``<SKUNKWEB_DIR>/etc/mime.types``.
+
+**templateMimeTypes**
+	A list of MIME types that are considered templates. [TODO: Elaborate] The default is ``['text/html', 'text/plain']``.
+
+**defaultMimeType**
+	If the MIME type cannot be determined by examining the extension of the file, the specified MIME type in ``defaultMimeType`` should be returned. The default is ``'application/octet-stream'``.
+
+MailMethod = 'sendmail',
+MailHost = 'localhost',
+SendmailCommand = '/usr/lib/sendmail',
+FromAddress = "root@localhost"
+QmailInject = "/var/qmail/bin/qmail-inject"
+
+These parameters control how mail is sent from SkunkWeb. They are used
+by the sendmail function from templating.MailServices which in turn is used by the STML sendmail-tag.
+
+[TODO: Consider putting in the rest of the information about the MailServices in this description.]
+
+
+
+``aecgi`` Service Parameters: Protocol For Communication (mod_skunkweb, etc.)
+-----------------------------------------------------------------------------
+
+**AecgiListenPorts**
+	[N] List of ports that the SkunkWeb server will listen to, using the AECGI protocol (the protocol used by mod_skunkweb.) The list items should contain the form ``TCP:hostname:portnumber`` or ``UNIX:filepath:octal_socket_permissions``. The default is ['TCP:localhost:9999'].
+
+**FCGIListenPorts**
+	[N] List of ports that the SkunkWeb server will listen to, using the FastCGI protocol. The list items should contain the form ``TCP:hostname:portnumber`` or ``UNIX:filepath:octal_socket_permissions``. The default is ['TCP:localhost:9999'].
+
+
+``auth`` Service Parameters: Custom Authentication Schemes
+----------------------------------------------------------
+
+[TODO]
+
+``basicauth`` Service Parameters: HTTP Authentication Services
+--------------------------------------------------------------
+
+**basicAuthName**
+	The name that is shown in the popup box on the web browser when it asks the user to authenticate themselves. The default is None.
+
+**basicAuthFile**
+	The file used (this file can be created with the swpasswd tool) that is used to validate the authentication credentials given by the user. The default is None.
+
+If both items are None, no authentication can be done.
+
+
+``extcgi`` Service Parameters: Calling External CGIs From SkunkWeb
+------------------------------------------------------------------
+
+The ``extcgi`` is usually used in Scope() statements. This is where you would tell SkunkWeb where a CGI executable lives and where it shows up in the URI space.
+
+Below are the parameters used and then an example of its use.
+
+**CGIProgram**
+	This specifies the path to the CGI script you wish to have SkunkWeb execute. For example::
+
+		CGIProgram='/home/skunkweb/moin/wiki/cgi-bin/moin.cgi'
+	
+**CGIProgramBase**
+	If ``PATH_INFO`` is used in the CGI scripts operation, set this parameter to the same as the Location header.
+
+Example of use::
+
+	 Scope(Location('/moin/',
+       				# tell skunkweb it's a CGI job
+       				  job=CGI_JOB,               
+       
+       				# path to the CGI program
+				       CGIProgram='/home/skunkweb/moin/wiki/cgi-bin/moin.cgi',
+       
+      				# If the program uses PATH_INFO in it's operation, set this 				 			
+					# to the same as Location
+       
+       				CGIProgramBase='/moin/'))
+
+
+``httpd`` Service Parameters: Built-in HTTP Server
+--------------------------------------------------
+
+**ServerName**
+	This parameter specifies the name of the server. This can be a domain name or a IP Address.
+
+**lookupHTTPRemoteHost**
+	[N] If you set this to a true value, the CGI environmental variable HTTP_REMOTE_HOST will always be set, involving a potentially costly DNS lookup. If you don't want it, you can still use HTTP_REMOTE_ADDR and perform the lookup on demand. Default is 0 (no lookup and no HTTP_REMOTE_HOST variable in the environment). N.B. This only affects the httpd service, and has no bearing on environmental variables SkunkWeb receives from Apache or elsewhere. The default is 0.
+
+**HTTPKeepAliveTimeout**
+	[N] How long (in seconds) the HTTP KeepAlive timeout should be between HTTP requests. The default is 15 (seconds).
+
+**HTTPListenPorts**
+	[N] List of port(s) for the httpd service to listen on (using the same format as in the AecgiListenPorts socket is). Default is ['TCP::8080'].
+
+
+``requestHandler`` Service Parameters: Abstract Request Handling
+----------------------------------------------------------------
+
+**DocumentTimeout**
+	The time (in seconds) allowed for a request to complete before timing it out (an exception will be risen). The default is 30 (seconds.)
+
+**PostResponseTimeout**
+	The amount of time (in seconds) allowed for the PostRequest hooks to execute before timing out. The default is 20 (seconds).
+
+**job**
+	The function of the server, either as a remote server or as a template delivery server. The two parameters that can be used is TEMPLATING_JOB or REMOTE_JOB. This parameter must be set for SkunkWeb to function. Since this is scopable, you can assign different different ports or virtual hosts to either of the two different jobs.
+
+``rewrite`` Service Parameters: URL Rewriting Service
+------------------------------------------------------
+
+**rewriteRules**
+	[N] Each rule specified in this parameter's list specifies a replacement template to be used in modifying a portion of the CONNECTION.uri variable that is matched to a regular expression. Any named groups in a matched regular expression will be added to the CONNECTION.args variable if the ``rewriteMatchToArgs`` is true (which is by default). For example::
+		
+		rewriteRules = [(r'^/rewrite/(?P<real>.*?)\.html', r"/\1.html")]
+		
+	This converts the URI "``/rewrite/any_name.html``" to "``/any_name.html``" and ``CONNECTION.args["real"]`` will get the value ``any_name``. [TODO: Extracting args]
+
+**rewriteApplyAll**
+	By default, all of your rewrite rules will be applied, one by one. But if you want it to stop after the first match, set ``rewriteApplyAll`` to ``0``.
+
+**rewriteMatchToArgs**
+	If this is set to ``1``, then your specified named parameters in your rewrite rules will go into the CONNECTION.args dictionary.
+
+
+``userdir`` Service Parameters: User Directory Service
+-------------------------------------------------------
+
+**userDir**
+	This parameter turns on the ``userdir`` service. It is essential though that you put in "``userdir``" into the ``services`` parameter list to activate this function. This parameter defaults to ``1``.
+
+**userDirPath**
+	This is the path to append to the user's home directory for the userdir path. The default is ``public_html``. 
+
+
+``mysql`` Service Parameters: MySQL Connection Service
+------------------------------------------------------
+
+**MySQLConnectParams**
+	[N] Use this parameter if you plan to use the MySQL database server with SkunkWeb. You place in a dictionary a list of connection parameters to the database server. The default is {}. You can list a number of connection parameters like so:
+
+	MySQLConnectParams = {'torchsong' : {'host' : 'localhost', 'user' : 'lungfish', 'passwd' : 'aardvark', 'db'   : 'ostrich'}}
+
+	Where "torchsong" is the name to call when retrieving a connection object (Python DB-API compatible) with the MySQL.getConnection("connName") command.
+
+**MySQLRollback**
+	[N]If you are using transactional tables with MySQL, you can add a rollback to every request by making this parameter equal 1. The default is 0.
+
+**MySQLTestFunc**
+	[N]If you want a validation function to be performed every time a request is made for a connection from cache, specify it with this parameter. For example, you can use MySQL.SimpleQueryTest. [TODO: This needs more information to it.]
+
+
+``oracle`` Service Parameters: Oracle Connection Service
+--------------------------------------------------------
+
+**OracleConnectStrings**
+	[N] Use this parameter if you plan to use the Oracle database server with SkunkWeb. The default is {}. You place in a dictionary a list of connection parameters to the database server.
+
+**OracleProcedurePackageList**
+	Bah-humbug - [TODO: Needs a better explanation for this]
+
+
+[TODO: Is there anything special here, like with postgres?]
+
+
+``postgresql`` Service Parameters: PostgreSQL Connection Service
+----------------------------------------------------------------
+
+**PostgreSQLConnectParams**
+	[N] Use this parameter if you plan to use the PostgreSQL database server with SkunkWeb. The default is {}. You list the parameters like so:
+
+	PostgreSQLConnectParams = {'connName': 'host:database:username:password'}
+	
+
+``remote`` Service Parameters: Remote SkunkWeb Server Component Access Service
+------------------------------------------------------------------------------
+
+**RemoteListenPorts**
+	[N] The list of port(s) for the remote service to listen on. The list items should contain the form ``TCP:hostname:portnumber`` or ``UNIX:filepath:octal_socket_permissions``. The default is ['TCP:localhost:9887'].
+
+
+``remote_client`` Service Parameters: Client To Remote SkunkWeb Servers
+-----------------------------------------------------------------------
+
+[TODO]
+
+
+``sessionHandler`` Service Parameters: HTTP State Management
+------------------------------------------------------------
+
+**SessionTimeout**
+	When the session should time out. This is measured in seconds. Sessions which have timed out are ready for reaping. The default is 1800 seconds (or 30 minutes).
+
+**SessionReapInterval**
+	[N] Session reap interval, in seconds. When the reap interval has elapsed, the server may reap old sessions in the aftermath of its next request handling cycle. To turn off reaping (if more than one server is using the same session store, or if another process is performing reaping separately), set this to zero or a negative value. Default is 300 (5 minutes).
+
+**SessionStore**
+	The session store implementation class (full package name). This defaults to None, which, if the sessionHandler service is imported, will cause an error. To use sessionHandler, you must specify a session store implementation; e.g.::
+	
+		SessionStore='sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
+
+	Default is None; two SessionStore implementations are currently available, MySQLSessionStore.MySQLSessionStoreImpland FSSessionStore.FSSessionStoreImpl. SessionStore can be scoped by host, port, or ip; it should not be scoped by location.
+
+**SessionIDKey**
+	[N] The key under which the session is kept in the session store. Default is ``sessionID``. 
+
+**SessionHandler_XXHost**
+	[N] The parameters that specify the location of the database containing the session data. (These are not used for the filesystem store.) Replace "XX" with "PG" for PostgreSQL or "MySQL" for MySQL::
+
+		SessionHandler_MySQLHost  ='localhost' [N] 
+		SessionHandler_MySQLUser  ='sessionHandler' [N] 
+		SessionHandler_MySQLPass  ='sessionPass' [N] 
+		SessionHandler_MySQLDB    ='sessionStore' [N] 
+		SessionHandler_MySQLTable ='Sessions' [N] 
+		SessionHandler_MySQLIDColumn ='id' [N] 
+		SessionHandler_MySQLPickleColumn ='pickle' [N] 	
+		SessionHandler_MySQLTimestampColumn ='accessTime' [N] 
+
+
+``psp`` Service Parameters: Python Server Pages Connection
+----------------------------------------------------------
+
+**pspTemplateTypes**
+	If you want .html files to be handled by the PSP interpreter, instead of STML, add ``text/html`` (and possibly ``text/plain`` as well) to the parameter's list. The specified MIME types *must* be removed from the ``templateMimeTypes`` parameter, if they are contained in that list. The default is ``[]``.
+
+**pspTopLevelInterpret**
+	This is an easy way to add ``application/x-psp-python-component`` to the ``interpretMimeTypes`` parameter list. You can do this by yourself, but this way is easier. Possible inputs would be ``1`` or ``0``.

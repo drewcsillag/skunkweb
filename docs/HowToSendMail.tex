@@ -1,0 +1,199 @@
+\documentclass{article}
+\author{Frank Tegtmeyer, fte@pobox.com}
+\title{Sending Mail with SkunkWeb}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper describes the use of the mail services included in SkunkWeb.
+Sending mail seems to be easy but there are some technical and conventional
+requirements that should be fullfilled. The incredible amount of web services
+sending technically illegal mail or creating annoyances for users and mail
+administrators is unbelievable.
+
+You can do the world a favor by reading this document, following it's
+guidelines and thus avoiding all the trouble with mail services and
+people.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+
+\section{Social behaviour}
+
+\subsection{The SPAM problem}
+
+As you may know, SPAM is the most visible annoying thing regarding mail.
+Of course your intention ist to get and keep loyal site users, so you
+should do anything possible to avoid the slightest suspicion that your
+messages sent through SkunkWeb are SPAM.
+
+Here are some guidelines to keep your reputation of not being a spammer:
+
+\begin{itemize}
+  \item Always use ,,opt in''. Never use an address that comes from an
+        untrusted or unverified source. The \textbf{intention} of the
+	address owner to receive your mails \textbf{has to be verified}.
+	An exception
+	are mails that are technically ore procedural required in the
+	case that there is already a relationship between the user and
+	you.
+
+	A short note here regarding opt-in: Some people, espacially those
+	belonging to the ,,direct marketing guild'', use the term ,,double
+	opt-in''. That's simply nonsense~- either the user opts in (with
+	verification) or not. Don't trust anyone using the term double
+	opt-in, most likely it's a spammer (of course this will be denied
+	by him).
+  \item Never trade addresses - not by providing them to others, not by
+	accepting them from others.
+  \item Always respect the users wish to not longer receive your mails.
+        Provide a way for them to unsubscribe without your manual
+	intervention and immediately.
+  \item Handle complaints manually, not by an automated answer.
+  \item Make your mails identifyable as coming from you. Possibly
+        provide a reference on the web where the user may check the
+	authenticity of your mail.
+  \item Provide a contact address for complaints. Mails coming in at
+        that address have to be handled of course.
+  \item Handle bounces (non deliverable mails) - you should unsubscribe
+        addresses, that generate bounces everytime, after a while.
+\end{itemize}
+
+\subsection{Privacy and style}
+
+Even in cases where the mail is not SPAM, people easyly may get annoyed by it.
+Always remember that your mails require attention and time of the receiver.
+This time and attention is valuable, so don't waste it!
+
+\begin{itemize}
+  \item Use a good subject line. It's the key to users attention. It
+        should give a summary of what the user has to expect from this mail.
+  \item Use ,,inverse writing'' style - start with a summary and then
+        give the details for interested users (see Nielsen).
+  \item Use clear and concise language. Make your intention for sending
+        this mail clear and, if possible, the mails value for the receiver.
+	In any case there should be a value for the receiver or you will
+	be recognized as an annoying factor.
+  \item Provide a privacy statement. Explain what the users email address
+        is used for and how it will be handled. Of course you must keep
+	yourself bound to this statement. Never trade addresses.
+  \item In case of HTML mails don't include web bugs. People don't like
+        to be tracked. If you need such data, provide a way to get it from
+	the users with their agreement. In general HTML mails should be
+	avoided, they hurt security/privacy aware users and those with
+	technically limited equipment (for example PDAs). Users that read
+	mail offline will not get objects that are provided online
+	anyway.
+  \item Use an existing address as envelope sender\footnote{envelope senders
+        are explained later}.
+  \item In case of bounces make the user aware of it in your web
+        application. There may be a problem with its mail provider that
+	the user should know about.
+\end{itemize}
+
+The usability expert Jakob Nielsen wrote about newsletters in his
+,,alertbox''. This provides some valuable
+insights into peoples behaviour and best practices for sending mail.
+You can find the alertbox issue at\\
+\texttt{http://www.useit.com/alertbox/20020930.html}.
+
+\subsection{Technical correctness}
+
+The number of technical incorrect implemented mailservices within web
+applications is frustrating and it seems it gets worse with every new one.
+
+Typically the ones that run these services don't know about it or worse,
+they don't care. It's very frustrating for mail administrators at the
+receiving sites to handle such situations.
+
+In many cases the offending
+site is completely blocked, thus loosing the possibility to send any
+mail to this mailserver again. Possibly the bad site is also reported
+to some databases that collect information about such behaviour and
+provide more administrators the possibility to block the site too.
+
+It may be very hard to remove such database entries after they are created.
+Once the services reputation is damaged, it takes a long time to improve
+it again.
+
+While Python and SkunkWeb save you from some errors that are common,
+they still require you to put attention to some others.
+
+Here are some errors that SkunkWeb/Python avoid:
+
+\begin{itemize}
+  \item bare linefeeds (see http://cr.yp.to/docs/smtplf.html for more
+        information)
+  \item missing Date: header
+  \item missing, not required but very useful, message id
+  \item MIME encoding for ASCII (not a problem but not necessary)
+  \item 8bit data without proper MIME headers
+  \item sending with empty envelope sender
+\end{itemize}
+
+Here are some problems that you have to avoid yourself:
+
+\begin{itemize}
+  \item sending with invalid envelope sender\\
+        SkunkWeb uses the FromAddress if no other envelope sender
+	is given. The FromAddress is possibly taken from the default
+	value that is set in the sw.conf file or from the MailService module
+	itself. The default value is ,,root@localhost'' which is not
+	a valid envelope sender. You \textbf{have to} change this
+	default value to a reachable address that is under your control.
+  \item encoding of multipart messages\\
+        currently this is only supported via the ,,raw'' parameter
+  \item encoding of character sets besides us-ascii and iso-8859-1
+        is not supported (except through the ,,raw'' parameter)\\
+        Because of compatibility reasons the email module is not
+	used by SkunkWeb. The current limitations stem from the use
+	of the rfc822, mimetools and mimify modules.
+  \item use of invalid recipient addresses\\
+        SkunkWeb does some basic syntax checks for the recipient addresses
+	but this is a kind of ,,last fallback''. Always use valid,
+	verified addresses.
+  \item sending to addresses that do not or no longer exist\\
+        Always ensure that you handle bounces, either by hand or, much
+	better, automated. Addresses that are not rechable for a longer
+	period must be removed from your database. If possible, the
+	user should be made aware of that fact inside the web application.
+\end{itemize}
+
+
+\section{Usage patterns}
+\subsection{Administrative mails}
+\subsection{Newsletters}
+\subsection{Feedback}
+\subsection{,,Send to a Friend''}
+
+\section{Sanity checks before sending}
+
+\section{The sendmail function}
+\subsection{Basic parameters}
+\subsection{Extended parameters}
+\subsection{Exceptions}
+
+\section{The sendmail tag in STML}
+\subsection{Parameters}
+\subsection{Formatting}
+
+\section{Self formatted mails (raw parameter)}
+\subsection{Preparation with email module}
+\subsection{Required headers}
+\subsection{Sending attachments}
+
+\section{Handling bounces}
+\subsection{Qmail}
+\subsection{Postfix}
+\subsection{Sendmail}
+\subsection{Exim}
+\subsection{Manual handling}
+
+\section{Example for a feedback form}
+\subsection{STML}
+\subsection{Python}
+
+\end{document}
