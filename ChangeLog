@@ -1,3 +1,8 @@
+2003-05-06    <drew@loki.sai-office>
+
+	* docs/opman/opman.tex: added Frank's MailServices update and made
+	a few other changes.
+
 2003-05-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/SkunkExcept.py (SkunkSyntaxError.format): stopped

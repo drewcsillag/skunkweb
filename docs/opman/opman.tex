@@ -313,7 +313,7 @@ Scope(Host(`www.foo.com',
 \textbf{Note:} Arguments that are not \emph{scopable} are denoted with a 
 \nonscope\ in their description.
 
-Core Parameters:
+\subsubsection{Core Parameters}
 \begin{argdesc}
 \item[services] \nonscope A list of services you want to load
 \item[accessLog] File path where the access log will be written.
@@ -361,7 +361,7 @@ Default is 0.
 
 
 
-Parameters for the \texttt{ae_component} service:
+\subsubsection{The \texttt{ae_component} service}
 \begin{argdesc}
 \item[documentRoot]
 The directory that is used to hold templates, images, msgcats, comps,
@@ -413,7 +413,7 @@ code in the compile cache files.
 
 
 
-Parameters for the \texttt{aecgi} service:
+\subsubsection{The \texttt{aecgi} Service}
 \begin{argdesc}
 \item[AecgiListenPorts] \nonscope
 List of ports (specified as string(s) of either
@@ -424,7 +424,7 @@ by \texttt{mod\_skunkweb}) connections .
 Default is \texttt{['TCP:localhost:9888']}.
 \end{argdesc}
 
-Parameters for the \texttt{fcgiprot} service:
+\subsubsection{The \texttt{fcgiprot} service}
 \begin{argdesc}
 \item[FCGIListenPorts] \nonscope
 List of ports (specified as string(s) of either
@@ -435,27 +435,27 @@ Default is \texttt{['TCP:localhost:9999']}.
 \end{argdesc}
 
 
-Parameters for the \texttt{pars} service:
-\begin{argdesc}
-\item[parFiles] List of par files that should be used in lieu of the
-docroot.  Defaults to \texttt{[]}.
-\item[parFallthrough] Boolean specifying that we should fall through
-to the \texttt{documentRoot} if a file we're looking for doesn't exist
-in the current list of parfiles.  Default is 1.
-\end{argdesc}
+%Parameters for the \texttt{pars} service:
+%\begin{argdesc}
+%\item[parFiles] List of par files that should be used in lieu of the
+%docroot.  Defaults to \texttt{[]}.
+%\item[parFallthrough] Boolean specifying that we should fall through
+%to the \texttt{documentRoot} if a file we're looking for doesn't exist
+%in the current list of parfiles.  Default is 1.
+%\end{argdesc}
 
 
 
-Parameters for the \texttt{basicauth} service:
-\begin{argdesc}
-\item[basicAuthName] The name showed in the popup box where the user is asked to authenticate themselves.  Default is \texttt{None}.
-\item[basicAuthFile] The file (created using the \texttt{swpasswd} tool) that is used to validate the authentication credentials given by the user.  Default is \texttt{None}.
-\end{argdesc}
-If both of these are \texttt{None}, no authentication is done.
+%Parameters for the \texttt{basicauth} service:
+%\begin{argdesc}
+%\item[basicAuthName] The name showed in the popup box where the user is asked to authenticate themselves.  Default is \texttt{None}.
+%\item[basicAuthFile] The file (created using the \texttt{swpasswd} tool) that is used to validate the authentication credentials given by the user.  Default is \texttt{None}.
+%\end{argdesc}
+%If both of these are \texttt{None}, no authentication is done.
 
 
 
-Parameters for the \texttt{httpd} service:
+\subsubsection{The \texttt{httpd} Service}
 \begin{argdesc}
 \item[lookupHTTPRemoteHost] \nonscope
 If you set this to a true value, the CGI environmental variable
@@ -478,7 +478,7 @@ Default is \texttt{['TCP::8080']}.
 
 
 
-Parameters for the \texttt{requestHandler} service.
+\subsubsection{The \texttt{requestHandler} Service}
 \begin{argdesc}
 \item[DocumentTimeout]
 The time (in seconds) allowed for a request to complete before timing
@@ -499,7 +499,7 @@ For more information about job strings, see the developer's manual.
 
 
 
-Parameters for the \texttt{mysql} service:
+\subsubsection{The \texttt{mysql} Service}
 \begin{argdesc}
 \item[MySQLConnectParams] \nonscope
 To use cached connections with the pylibs/MySQL module set this to
@@ -508,7 +508,7 @@ Default is \texttt{\{\}}.
 \end{argdesc}
 
 
-Parameters for the \texttt{oracle} service.
+\subsubsection{he \texttt{oracle} Service}
 \begin{argdesc}
 \item[OracleConnectStrings]  \nonscope
 To use cached connections with the pylibs/Oracle module set this to
@@ -522,7 +522,7 @@ matches that used in OracleConnectStrings.
 Default is \texttt{\{\}}.
 \end{argdesc}
 
-Parameters for the \texttt{postgresql} service.
+\subsubsection{The \texttt{postgresql} Service}
 \begin{argdesc}
 \item[PostgreSQLConnectParams] \nonscope
 To use cached connections with the pylibs/PostgreSql module set this to
@@ -532,7 +532,7 @@ Default is \texttt{\{\}}.
 
 
 
-Parameter for the \texttt{remote} service.
+\subsubsection{The \texttt{remote} Service}
 \begin{argdesc}
 \item[RemoteListenPorts] \nonscope
 List of port(s) for the remote service to listen on (specified in the same
@@ -542,7 +542,7 @@ Default is \texttt{['TCP:localhost:9887']}.
 
 
 
-Parameters for the \texttt{sessionHandler} service.
+\subsubsection{The \texttt{sessionHandler} Service}
 \begin{argdesc}
 \item[SessionTimeout] 
 The session timeout, in seconds.  Sessions which have seen no action
@@ -588,7 +588,7 @@ of the session table and its columns and the MySQL host, user and password.
 
 
 
-Parameters for the \texttt{templating} service.
+\subsubsection{The \texttt{templating} Service}
 \begin{argdesc}
 \item[errorTemplate] \nonscope
 path to a template in the docroot (or parfile), dependent on scope
@@ -623,22 +623,73 @@ Path to a template (or other item) to be used for a directory if no
 index document is present (\'al\`a \texttt{indexDocuments}).  Defaults to \texttt{None} --- thus this feature is disabled by default.
 \end{argdesc}
 
-For the sendmail tag, how to actually send it.
-If MailMethod == 'sendmail', it will call the sendmail program to do
-it (this is the default).  If you set it to 'relay', it will send the
-mail via SMTP to the host specified by the MailHost config variable
-(which defaults to localhost).  If using the 'sendmail' MailMethod,
-the pragram that is run comes from SendmailCommand.  When no from
-address is specified in the call to the sendmail tag (or it's
-corresponding function), the address FromAddress is used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Parameters for the \texttt{MailServices} service:
+The following parameters control how mail is sent from SkunkWeb. They are used
+by the \texttt{sendmail} function from \texttt{templating.MailServices}
+which in turn is used by the \texttt{sendmail}-tag.
+
 \begin{argdesc}
-\item[MailMethod] = 'sendmail',
-\item[MailHost] = 'localhost',
-\item[SendmailCommand] = 'sendmail -t',
-\item[FromAddress] = "root@localhost"
+\item[MailMethod] The method by which to send the mail.  The default value is
+\texttt{'sendmail'}.
+
+Possible values for MailMethod:
+\begin{description}
+\item[sendmail] ~\\ 
+    This is the standard value for MailMethod. The
+    mail is sent to the program configured by
+    \texttt{SendmailCommand}. It should be sendmail or a program with
+    similar functionality. The sendmail function opens a pipe to the
+    configured command and catches it's stderr output.  The envelope
+    sender is set by using the parameter \texttt{-f} and the
+    (envelope-) receivers are given on the commandline.
+\item[qmail] ~\\
+    This value is used for delivering mail through qmail. The mail is
+    sent to the program configured by \texttt{QmailInject}. It should
+    be the qmail program qmail-inject or new-inject from
+    D.J.~Bernsteins mess822 package. The sendmail function opens a
+    pipe to the configured command and catches it's stderr output.
+    The envelope sender is set by using the parameter \texttt{-f} and
+    the (envelope-) receivers are given on the commandline.\\ You may
+    notice that this sounds very similar to the description for the
+    value \texttt{sendmail}~- that's absolutely right. At the moment
+    there is no real difference. It is planned to support per receiver
+    and per message VERP (see the qmail homepage for details). When
+    this is implemented, the both methods will be different.
+\item[relay] ~\\
+    This value sets the MailService so that mail is delivered through
+    SMTP to a Relay-Host (also called SmartHost sometimes). The
+    RelayHost is configured by the parameter \texttt{MailHost}. SMTP
+    authentication or TLS are not supported.
+\end{description}
+\item[MailHost] If using the \texttt{relay} mail method the relay host to send it to.  Default is \texttt{'localhost'}.
+\item[SendmailCommand] If using the \texttt{sendmail} mail method, the
+path to the sendmail (or sendmail compatible) program.  Defaults to
+\texttt{'/usr/lib/sendmail'}.
+\item[FromAddress] 
+The fallback sender (used in
+the \texttt{From:} header and as envelope~sender) if there is no sender given
+in the call to the \texttt{sendmail} function. The \texttt{sendmail} function 
+\textbf{does not}
+accept an empty envelope~sender~- these are used for bounces and it's 
+not
+likely that a web application has to send bounces.\\
+\textbf{Please note:} A major annoyance to mail administrators is the 
+use
+of invalid envelope~senders. Many of them block sites generally if they
+are lazy/stupid regarding envelope~senders or they do intensive checks 
+on
+them. So it's not only good behaviour to set a valid envelope sender,
+it's also in your own interest to do so. The fallback is your defense
+against lazy programming, so use it.  Defaults to \texttt{"root@localhost"}.
+\item[QmailInject] If using the \texttt{qmail} mail method, the path
+to the injector program.  Defaults to
+\texttt{'/var/qmail/bin/qmail-inject'}.
 \end{argdesc}
 
-Parameters for the \texttt{userdir} service.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{The \texttt{userdir} Service}
 \begin{argdesc}
 \item[userDir] Whether to enable the \texttt{userdir} functionality.  Default
 is 1.
@@ -695,15 +746,15 @@ designed for legibility; it is not suited for the transport of privileged data
 across the internet.  A secure remote protocol is planned for a future release.
 
 
-\section{\texttt{pars}}
-
-The \texttt{pars} service is present to allow you to maintain the
-docroot \'al\`a java-style/\texttt{CLASSPATH}, sorta.  It allows you
-to store items that would normally be required to be in the docroot,
-in special archive files called par files.  So instead of just looking
-in the docroot for docroot items, it first looks in the par files
-specified in th \texttt{parFiles} configuration variable and only
-then, if \texttt{parFallthrough} is specified, look in the docroot.
+%\section{\texttt{pars}}
+%
+%The \texttt{pars} service is present to allow you to maintain the
+%docroot \'al\`a java-style/\texttt{CLASSPATH}, sorta.  It allows you
+%to store items that would normally be required to be in the docroot,
+%in special archive files called par files.  So instead of just looking
+%in the docroot for docroot items, it first looks in the par files
+%specified in th \texttt{parFiles} configuration variable and only
+%then, if \texttt{parFallthrough} is specified, look in the docroot.
 
 \section{\texttt{sessionHandler}}
 %%%FIXME
