@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <01/12/31 12:49:47 smulloni>
+# $Id: pathutil.py,v 1.1 2002/01/02 06:39:24 smulloni Exp $
+# Time-stamp: <02/01/22 12:36:24 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -91,6 +91,6 @@ class Archive:
         return self.paths.has_key(_adjust_user_path(path))
 
     def listdir(self, path):
-        return listdir(path, self.archive.paths.keys())
+        return listdir(path, self.paths.keys())
 
     
