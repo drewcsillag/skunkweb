@@ -1,0 +1,23 @@
+Style Guide For SkunkWeb ReST Documentation.
+
+==========
+Main Title
+==========
+
+Section Title
+=============
+
+Sub-section Title
+-----------------
+
+Sub-sub Section Title
+~~~~~~~~~~~~~~~~~~~~~
+
+Directory paths, Python code and shell code in a sentence should look ``like this``.
+
+Directory paths, Python code and shell code should always be in backticks or like this::
+
+    a = 1
+    ./configure
+    /usr/local/skunk
+
