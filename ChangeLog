@@ -1,3 +1,7 @@
+2001-10-28  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/AE/Component.py: Ok, finally got caching working right
+
 2001-10-24  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* ACKS: added Stephen Coursen
