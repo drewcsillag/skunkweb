@@ -13,8 +13,9 @@ TEXINPUTS=$(TOPDIR)/paper-$(PAPER):$(TOPDIR)/texinputs:
 PYTHON=	   python
 #WEBCHECKER=$(PYTHON) $(TOPDIR)/../Tools/webchecker/webchecker.py
 MKHOWTO=   $(TOOLSDIR)/mkhowto --about $(TOPDIR)/html/stdabout.dat \
-		--address $(PYTHONDOCS) --up-link ../index.html \
+	        --up-link ../index.html \
 		--style style.css
+#		--address $(PYTHONDOCS) 
 MKHTML=	   $(MKHOWTO) --html -i .
 
 #BUILDINDEX=$(TOOLSDIR)/buildindex.py
@@ -23,6 +24,7 @@ PYTHONDOCS='See <i><a href="about.html">About this document...</a></i> for infor
 HTMLBASE=  file:`pwd`
 
 
+DOCS = devel opman stmlrefer PyDO
 INDEXFILES=devel/devel.html
 
 COMMONPERL= $(TOPDIR)/l2hinit.perl
@@ -54,7 +56,20 @@ PyDO/PyDO.html: ../PyDO/PyDO.tex
 	$(MKHTML) $(TOPDIR)/PyDO/PyDO.tex
 
 clean:
-	echo
+	-rm -rf PyDO opman devel stmlrefer
+	-for i in aux dvi how idx ilg ind l2h log tar.gz toc;\
+	do \
+		for j in $(DOCS);\
+		do \
+			rm -f $$j.$$i;\
+		done;\
+	done
+
+	-for i in $(DOCS);\
+	do\
+		rm mod$$i.ind;\
+	done
+	-rm style.css intlabels.pl index.dat
 
 distclean realclean clobber: clean
 	rm -rf index.html modindex.html acks.html
