@@ -25,7 +25,7 @@ UNDEF=_undef()
 class Field(object):
     def __init__(self,
                  name,
-                 description,
+                 description="",
                  default=None,
                  multiple=0,
                  setable=1):
@@ -128,7 +128,7 @@ class CompositeField(Field):
 
     def __init__(self,
                  name,
-                 description,
+                 description="",
                  default=None,
                  multiple=1,
                  setable=1,
@@ -191,7 +191,7 @@ class DomainField(Field):
     def __init__(self,
                  name,
                  domain,
-                 description,
+                 description="",
                  default=None,
                  multiple=0,
                  setable=1,

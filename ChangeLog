@@ -1,3 +1,9 @@
+2003-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/formlib/form.py (Field.__init__): made description
+	an optional constructor parameter (for DomainField and
+	CompositeField, too).
+
 2003-05-14    <drew@loki.sai-office>
 
 	* SkunkWeb/swpython.py.in: fixed it so that __name__ == '__main__' 
