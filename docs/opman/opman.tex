@@ -254,6 +254,10 @@ requires the \texttt{web} service.
 \item[templating] Hooks together the \texttt{web} and \texttt{ae_component}
 services, in addition to adding a few tags.
 
+\item[userdir] Make it so requests under the uri
+\texttt{~/}\emph{user}\texttt{/}\emph{rest}, will go to the directory
+\emph{users\_home}\texttt{/public_html/}\emph{rest}.
+
 %\item[vhost] Simplifies virtual hosting with SkunkWeb.
 
 \item[web] Service to manage web requests and setup the
@@ -631,7 +635,13 @@ corresponding function), the address FromAddress is used.
 \item[FromAddress] = "root@localhost"
 \end{argdesc}
 
-
+Parameters for the \texttt{userdir} service.
+\begin{argdesc}
+\item[userDir] Whether to enable the \texttt{userdir} functionality.  Default
+is 1.
+\item[userDirPath] What directory name to append to the users home directory
+when utilizing this service.  Default is \texttt{'public_html'}.
+\end{argdesc}
 
 \chapter{Service Details}
 

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Handler.py,v 1.11 2001/07/29 15:44:54 drew Exp $
+#$Id: Handler.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
 
 import AE.Cache
 import AE.Component
@@ -57,9 +57,9 @@ def _handleException(connObj):
     connObj.responseHeaders['Content-Type'] = 'text/plain'
     return connObj.response()
 
-def _pathSlashRedirect(connObj, uri):
+def _pathSlashRedirect(connObj):
     connObj.responseHeaders['Location'] = (
-        "http://%s%s/" % (connObj.requestHeaders['Host'], uri))
+        "http://%s%s/" % (connObj.requestHeaders['Host'], connObj.realUri))
     connObj.setStatus(301) # redirect
     return connObj.response()
 
@@ -75,9 +75,12 @@ def requestHandler(connObj, sessionDict):
     
     if stat.S_ISDIR(st[stat.ST_MODE]): # if a directory fix uri as appropriate
         DEBUG(TEMPLATING, "%s is a directory" % uri)
-        if uri[-1] != '/':
+        if not uri:
+            DEBUG(TEMPLATING, "no uri, / redirecting")
+            return _pathSlashRedirect(connObj)
+        elif uri[-1] != '/':
             DEBUG(TEMPLATING, "doesn't end in / redirecting")
-            return _pathSlashRedirect(connObj, uri)
+            return _pathSlashRedirect(connObj)
         else:
             DEBUG(TEMPLATING, "looping over indexDocuments")
             for i in Configuration.indexDocuments:

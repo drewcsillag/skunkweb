@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTCompilerUtil.py,v 1.26 2001/07/09 20:38:41 drew Exp $
+# $Id: DTCompilerUtil.py,v 1.1.1.1 2001/08/05 15:00:49 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 
@@ -87,6 +87,11 @@ class Output:
 
     def write(self, indent, s):
         self.textlist.append((' '*indent) + s)
+
+    def writemultiline(self, indent, s):
+        it = ' '*indent
+        for i in s.split('\n'):
+            self.textlist.append(it + i)
 
     def getText(self):
         return string.join(self.textlist,'\n')+'\n'
@@ -189,6 +194,10 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:49  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.26  2001/07/09 20:38:41  drew
 # added licence comments
 #

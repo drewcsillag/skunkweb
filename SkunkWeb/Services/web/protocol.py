@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.2 2001/08/28 11:38:47 drew_csillag Exp $
+# $Id: protocol.py,v 1.3 2001/09/04 19:12:57 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -111,7 +111,7 @@ class HTTPConnection:
         self.responseCookie = Cookie.SimpleCookie()        
 
     def _initURI(self, env):
-        self.uri=env.get('SCRIPT_NAME', '') + env.get('PATH_INFO', '')
+        self.uri=self.realUri = env.get('SCRIPT_NAME', '') + env.get('PATH_INFO', '')
 
     def setContentType(self, type):
         self.responseHeaders['Content-Type'] = type
@@ -322,6 +322,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.3  2001/09/04 19:12:57  smulloni
+# integrated scopeable package into SkunkWeb.
+#
 # Revision 1.2  2001/08/28 11:38:47  drew_csillag
 # now uses normheader
 #

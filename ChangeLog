@@ -1,3 +1,30 @@
+2001-09-21  Drew Csillag  <drew@starmedia.net>
+
+	* configure.in, SkunkWeb/configure.in: added userdir to help and
+	default list of services
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection._initURI): now
+	creates self.realUri so that we know what is actually requested in
+	the event we screw with self.uri later.
+	
+	* SkunkWeb/Services/templating/Handler.py (_pathSlashRedirect): no
+	longer requires the uri since it can fetch it from the connection
+	anyway.  Now uses realUri (not any munged one we might have
+	replaced uri with) since we want the redirect to be relative to
+	the one the browser requested, not the one we've screwed with
+
+	* SkunkWeb/Services/userdir.py: added new userdir service
+
+	* pylibs/DT/DTTags.py (CallTag.genCode): now uses new writemultiline
+	method so user doesn't need to now reall current indentation level
+
+	* pylibs/DT/DTCompilerUtil.py (Output.writemultiline): added to
+	write multiple lines at current indentation.
+
+2001-09-20  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* 3.1beta1 release cut
+
 2001-09-18  Drew Csillag  <drew@starmedia.net>
 
 	* pylibs/scopable/_scope.c (Scopeable_saveMash): fixed refcounting
