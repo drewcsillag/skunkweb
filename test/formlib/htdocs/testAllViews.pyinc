@@ -4,18 +4,45 @@ psswdFld = PasswordField('password', description="Password", size="40", maxlengt
 txtFld = TextField('textfield', description="Textfield", size="40", maxlength="39")
 btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="40", maxlength="39", value="Click Me")
 fileFld = FileField('file', description="FileField", size="40")
-hdnFld = HiddenField('hidden', description="HiddenField", value="Hidden am I")
+hdnFld = HiddenField('hidden', description="HiddenField", default="default", value="Hidden am I")
 imgFld = ImageField('image', description="ImageField", src="http://skunkweb.sourceforge.net/images/skunkWEB1_04.gif")
 btnFld = ButtonField("content", 'button', 'ButtonField', default='default') 
-txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value") 
+txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value", value="don't show") 
+
+selFld = SelectField('select', 
+                     ['singlestring', ('Non grouped value', 'non_grouped_value' ), ('Default', 'default'), 
+                      ('Sublist of single strings', ['1', '2' ,'3']),
+                      ('Sublist of tuples', [('One','1'),('Two','2'),('Three','3')])
+                     ],
+                     'SelectField', default='default', multiple=1)
+
+checkboxGrpFld = ButtonGroupField('checkboxgroup', 
+                                  ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
+                                  'ButtonGroupField as Checkbox', 'default', multiple=1)  
+
+radioGrpFld = ButtonGroupField('radiogroup', 
+                               ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
+                               'ButtonGroupField as Radio', 'default', multiple=0)
 
 sbmtFld = SubmitField("submit", description="SubmitField")
  
-fields = [psswdFld, txtFld, btnIptFld, fileFld, hdnFld, imgFld, btnFld, txtAreaFld, sbmtFld]
+fields = [psswdFld, txtFld, btnIptFld, fileFld, hdnFld, imgFld, btnFld, txtAreaFld, selFld, checkboxGrpFld, radioGrpFld, sbmtFld]
 
 def validate(form):
     pass
 
 form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate])
+
+import ecs
+if CONNECTION.method == "POST":
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  Values were:")
+        for fld in form.fields:
+            print "%s -> %s:%s" % (fld.description, fld.name, fld.value)
+            print ecs.Br()
+        print ecs.Hr()
 
 print form.getView()    
