@@ -1,7 +1,7 @@
 2002-01-21  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Makefile (DEMO_FILES, DEMO_DIRS): fix so that the image
-	gallery gets installed.
+	* SkunkWeb/Makefile.in (DEMO_FILES, DEMO_DIRS): fix so that the
+	image gallery gets installed.
 
 	* SkunkWeb/sample_webdocs/demo/gallery/index.html: moved
 	index.html to index.inc; index.html now just consists of an

@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.5 2001/11/11 22:10:09 smulloni Exp $
+# $Id: Makefile.in,v 1.6 2001/11/14 05:38:54 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -64,8 +64,9 @@ WEBDOC 		= @WEBDOC@
 INSTALL		= @INSTALL@ -o $(owner) -g $(group)
 INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
-DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp index.html
-DEMO_DIRS=geeknews geeknews/dcomps
+DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp index.html gallery/bros1.jpg gallery/comp gallery/comp/list_thumbnails.dcmp gallery/comp/nailsize.pydcmp gallery/comp/pager.pydcmp gallery/comp/thumbnail.pydcmp gallery/comp/listing.pydcmp gallery/bros10.jpg gallery/bros2.jpg gallery/bros3.jpg gallery/bros4.jpg gallery/bros5.jpg gallery/bros6.jpg gallery/bros7.jpggallery/bros8.jpg gallery/bros9.jpg gallery/index.html gallery/thumbnail.py gallery/index.inc
+
+DEMO_DIRS=geeknews geeknews/dcomps gallery gallery/comp
 
 default:	build
 
@@ -158,6 +159,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.6  2001/11/14 05:38:54  smulloni
+# fixed nasty bug that broke install
+#
 # Revision 1.5  2001/11/11 22:10:09  smulloni
 # changes to configuration to enable more flexible installation.
 #
