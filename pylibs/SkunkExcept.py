@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SkunkExcept.py,v 1.2 2001/08/09 16:10:39 smulloni Exp $
+# $Id: SkunkExcept.py,v 1.3 2003/05/01 20:45:57 drew_csillag Exp $
 
 """
 This module provides a set of exception classes for use in
@@ -168,17 +168,17 @@ class SkunkSyntaxError ( SkunkCustomError ):
 
         lineno, offset, line = self._exc.lineno, self._exc.offset, \
                                self._exc.text
-
+        err=[]
         if not lineno and not offset and not line:
             # This is a f#$#ed up syntax error
-            err = ErrorHandler._error
-            err = err + 'Syntax error in file %s\n' % self._filename
-            err = err + 'Error: %s\n' % str ( self._exc )
-            err = err + 'Unfortunately, due to Python compiler limitations' \
-                        ' context is not available\n' 
-            err = err + ErrorHandler._close
+            err=[ErrorHandler._error,
+                 'Syntax error in file %s\n' % self._filename,
+                 'Error: %s\n' % str ( self._exc ),
+                 'Unfortunately, due to Python compiler limitations' \
+                 ' context is not available\n', 
+                 ErrorHandler._close]
 
-            return err
+            return ''.join(err)
 
         lineno = lineno - 1
 
@@ -196,17 +196,18 @@ class SkunkSyntaxError ( SkunkCustomError ):
         after = lines[lineno+1:end + 1]
 
         # Generate the error
-        err = ErrorHandler._error
+        err=[ErrorHandler._error]
 
         if self._desc:
-            err = err + self._desc + '\n'
+            err.append('%s\n' % self._desc)
 
-        err = err + 'Syntax error in file %s, line %d, context:\n' % \
-                 (self._filename, lineno + 1)
-        err = err + string.join ( before, '\n' ) + '\n'
-        err = err + line
-        err = err + '-' * (offset - 1) + '^\n'
-        err = err + string.join ( after, '\n' ) + '\n'
-        err = err + ErrorHandler._close
+        err.append('Syntax error in file %s, line %d, context:\n' % \
+                   (self._filename, lineno + 1))
+        err.append(''.join(['%s\n' % x for x in before]))
+        if line:
+            err.append(line)
+        err.append('-' * (offset - 1) + '^\n')
+        err.append(''.join(['%s\n' % x for x in after])) 
+        err.append(ErrorHandler._close)
 
-        return err
+        return ''.join(err)
