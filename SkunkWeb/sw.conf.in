@@ -20,10 +20,6 @@
 # Time-stamp: <01/05/07 13:57:33 smulloni>
 
 ########################################################################
-# not meaningfully modifiable post installation; don't put it here.
-# SkunkRoot = '@prefix@'
-
-########################################################################
 # First, discuss parameters that must be specified at the top level;
 # then, discuss scoping;
 # then discuss variables that can be defined inside a scope.
@@ -73,6 +69,19 @@
 # basicauth               -- service that provides basic authentication to
 #                            locations configured to use it.  Requires
 #                            web.
+#
+# pars                    -- allows you to serve your docroot out of
+#                            par files instead or in addition to the docroot
+#
+# oracle                  -- preloads the Oracle pylib and allows for
+#                            connection and stored procedure signature
+#                            caching
+#
+# postgresql              -- preloads the PostgreSql pylib and allows for
+#                            connection caching
+#
+# mysql                   -- preloads the MySQL pylib and allows for
+#                            connection caching
 
 services = ['requestHandler',
             'aecgi',
@@ -83,7 +92,10 @@ services = ['requestHandler',
             'remote_client',
             'httpd']
 
-# ADD DISCUSSION HERE ***
+########################################################################
+# For extra performance, we can store the compiled forms of things in memory
+# in addition to the disk.  This does increase the memory footprint a bit
+# but not too much, and reduces the disk IO a bit.
 useCompileMemoryCache = 1
 
 ########################################################################
@@ -98,19 +110,20 @@ useCompileMemoryCache = 1
 # not be updated to reflect those changes!  To determine the
 # what services are being debugged at runtime, use
 # SkunkWeb.ServiceRegistry.getDebugServices().
-initialDebugServices=['requestHandler',
-                      'aecgi',
-                      'weird',
-                      'templating',
-                      'sessionHandler',
-                      'web',
-                      'core',
-                      'component',
-                      'vhost',
-                      'basicauth',
-                      'user',
-                      'remote',
-                      'remote_client']
+initialDebugServices=[]
+#'requestHandler',
+#                      'aecgi',
+#                      'weird',
+#                      'templating',
+#                      'sessionHandler',
+#                      'web',
+#                      'core',
+#                      'component',
+#                      'vhost',
+#                      'basicauth',
+#                      'user',
+#                      'remote',
+#                      'remote_client']
 
 
 ########################################################################
@@ -411,14 +424,6 @@ userModuleCleanup = 1
 #
 # parFallthrough = 1
 
-########################################################################
-# AT LEAST THE BELOW NEED TO BE DOCUMENTED HERE.
-# *** TO BE DONE!!! ***
-# These are in no
-# particular order:
-#
-# 
-
 
 ########################################################################
 # FOR THE  sessionHandler SERVICE:
@@ -469,16 +474,31 @@ userModuleCleanup = 1
 # END sessionHandler CONFIG
 ########################################################################
 
-### mysql/__init__.py
-#    MySQLConnectParams = {},
+########################################################################
+# To use cached connections with the pylibs/MySQL module set this to
+# a dictionary of 'name': 'connection_string' pairs
+#
+# MySQLConnectParams = {}
 
-### oracle/__init__.py
-#    OracleConnectStrings = {},
-#    OracleProcedurePackageLists = {}
+########################################################################
+# To use cached connections with the pylibs/Oracle module set this to
+# a dictionary of 'name': 'connection_string' pairs
+#
+# OracleConnectStrings = {}
 
-### postgresql/__init__.py
-#    PostgreSQLConnectParams = {},
+########################################################################
+# To speed up the use of stored procedures (saves one query per sp fetch)
+# we can preload the procedure signatures ahead of time.
+# Set to a dictionary of 'name': ['list', 'of', 'packagenames'] where name
+# matches that used in OracleConnectStrings
+#
+# OracleProcedurePackageLists = {}
 
+########################################################################
+# To use cached connections with the pylibs/PostgreSql module set this to
+# a dictionary of 'name': 'connection_string' pairs
+#
+# PostgreSQLConnectParams = {}
 
 ########################################################################
 # $Log: sw.conf.in,v $
