@@ -1,5 +1,8 @@
 2001-08-10  Drew Csillag  <drew@starmedia.net>
 
+	* pylibs/PyDO/oracleconn.py: now correctly uses the Oracle module
+	instead of the now-defunct SQL module
+
 	* SkunkWeb/sample_webdocs/index.html, SkunkWeb/sample_webdocs/demo/index.html: 
 	put a link to the demo page and made a demo page.  Hopefully will
 	have more demos soon... hint... hint...
