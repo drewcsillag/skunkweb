@@ -1,16 +1,44 @@
-If you are going to use oracle, you need the DCOracle and Oracle
-pacakges the Oracle package is available in the skunk package tarball
-under skunk/pylibs.  DCOracle is available from the zope.org site at:
+What is PyDO?
+
+PyDO is a Object-Relational database access tool. Unlike many other
+O-R database access tools, PyDO:
+
+    * doesn't constrain your schema to what it thinks databases should
+      look like
+    * if you need/want to override the way it does it's work, it's not
+      a major surgical effort
+    * has tools that will, given a database connection (for Oracle and
+      PostgreSQL anyway) can do a lot of the work for you in writing
+      your data classes.
+    * like any good tool, makes the easy stuff a no-brainer and makes
+      the harder things easier too.
+    * works with more than one database (currently Oracle, PostgreSQL
+      and MySQL, but others are definitely possible)
+    * is easy to figure out how it works and when it does things so
+      that you won't piss off your DB admin
+
+If you are going to use oracle, you need the DCOracle pacakge
+available from the zope.org site at:
     http://www.zope.org/Products/DCOracle
 
 If you are going to use PostgreSQL, build and install the Python
 interface located in it the PostgreSQL build tree under the
-src/interfaces/python directory.
+src/interfaces/python directory.  You'll also need the mxBase Python
+package (you probably have it anyway since the pgdb.py shipped with 
+PostgreSQL needs it)
+Get it at:
+    http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
 
 If you are going to use MySQL, get, build and install the Python MySQL
-module.
+module.  The MySQL stuff hasn't been extensively tested, so you may
+have problems!  Let me know though and we'll remedy that.
 
 Files of Note:
+    PyDBI.py      - the database code loader thing
+    PyDO.py       - the main module
+    postconn.py   - the PostgreSQL driver
+    oracleconn.py - the Oracle driver
+    mysqlconn.py  - the MySQL driver
     overview      - An overview of PyDO and why it's cool
     example       - a walk through example on how to write PyDO objects
     doc           - a bit more granular detail on PyDO stuff
