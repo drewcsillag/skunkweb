@@ -8,11 +8,12 @@ import ecs
 forms=[ViewableForm('page1',
                     method="POST",
                     fields=[HiddenField(stateVar),
-                            TextField('item', 'Item', required=1),
+                            TextField('item', 'Item', required="please specify an item"),
                              ButtonField(name=flowactionVar,
                                          content='Find Item...',
                                          default='PUSH.finditem',
-                                         setable=0),
+                                         setable=0,
+                                         type="submit"),
                             SubmitField('_submit',
                                         default='Submit')],
                     processors=[process_store]),
@@ -59,10 +60,10 @@ dispatcher=FormDispatcher(statemgr,
 
 curform=dispatcher.dispatch(CONNECTION.args, globals())
 state=dispatcher.statemgr.state
-print ecs.H5('state:')
-print ecs.Pre(pprint.pformat(state))
-print ecs.Pre(pprint.pformat(dispatcher.statemgr.stack))
-print ecs.Pre(UNDEF)
+##print ecs.H5('state:')
+##print ecs.Pre(pprint.pformat(state))
+##print ecs.Pre(pprint.pformat(dispatcher.statemgr.stack))
+##print ecs.Pre(CONNECTION.args)
 
 if curform:
     print

@@ -1,3 +1,14 @@
+2002-12-02    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/state.py (InPageStateManager.__init__): stack
+	is now just an ordinary list.
+
+	* test/formlib/htdocs/testDispatch3.pyinc: popping and pushing now work,
+	albeit awkwardly.
+
+	* test/sitelibs/formlibtest/testDispatch3.py: sitelib for dispatcher 
+	test.
+
 2002-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/formlib/views.py: wrapped some long

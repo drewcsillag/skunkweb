@@ -66,13 +66,19 @@ class PushyFlowManager(object):
         return self.forms[0]
 
     def next(self, form, state, argdict, ns):
+##        print "<h2>in next()</h2>"
+##        print argdict
+##        print form.name
         if form.name=='confirm':
-            if form.fields['confirm']=='0':
+            if argdict['confirm']=='0':
+##                print "<h6>returning a goto</h6>"
                 return Goto(self.forms[0].name)
+##            print "<h6>ending it all</h6>"
             return Goto(None)
-        actionCode=form.fields.get(flowactionVar)
+        actionCode=argdict.get(flowactionVar)
         if actionCode:
-            actionCode=actionCode.value
+            
+##            print "actioncode: %s " % actionCode
             match=actionRE.match(actionCode)
             if not match:
                 raise "YOU ARE A SCREWBALL"
@@ -83,9 +89,10 @@ class PushyFlowManager(object):
                 return Goto(f)
             else:
                 f=state.peek_form()
-                print [(k, v.value) for k, v in f.fields.to_dict().items()]
+##                print [(k, str(v.value), v.default) for k, v in f.fields.to_dict().items()]
                 return Pop()
         else:
+##            print "<b>in Goto confirm</b>"
             return Goto('confirm')
 
 

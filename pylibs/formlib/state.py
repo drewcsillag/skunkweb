@@ -1,8 +1,6 @@
 import base64
 import cPickle
 import md5
-from containers.fieldcontainer import FieldContainer
-from form import _getname
 
 class InvalidStateException(Exception): pass
 
@@ -20,8 +18,7 @@ class InPageStateManager:
     def __init__(self,
                  nonce,
                  stateEncryptor=None):
-        self.stack = FieldContainer(fieldmapper=_getname,
-                                    storelists=0)
+        self.stack = [] 
         self.state = {}
         self.nonce=nonce
         self.formname=None

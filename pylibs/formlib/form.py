@@ -19,9 +19,18 @@
 from containers import FieldContainer
 from hooks import Hook
 
-__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError', 'CompositeField', 'FieldProxy']
+__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError',
+         'CompositeField', 'FieldProxy']
 
-UNDEF=object()
+class _undef(object):
+
+    def __str__(self):
+        return "UNDEF"
+
+    def __repr__(self):
+        return "<UNDEF>"
+    
+UNDEF=_undef()
 
 # used to delimit the composed name of CompositeField components
 COMPOSITE_FIELD_DELIMITER="_"
@@ -55,7 +64,7 @@ class Field(object):
     default=property(_get_default, _set_default)
         
     def _get_value(self):
-        if self.__value is not UNDEF:
+        if not isinstance(self.__value, _undef):
             return self.__value
         else:
             return self.default
