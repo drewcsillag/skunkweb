@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/06 01:58:47 smulloni>
+# Time-stamp: <02/02/19 11:43:45 smulloni>
 
 ########################################################################
 #  
@@ -41,13 +41,15 @@ MST_MTIME=2
 MST_CTIME=3
 
 class VFSException(exceptions.Exception): pass
+class FileNotFoundException(VFSException): pass
+class NotWriteableException(VFSException): pass
 
 def move(fs, path, newpath, newfs=None):
     if not newfs:
         fs.rename(path, newpath)
     else:
         if not fs.exists(path):
-            raise VFSException, "no such file or directory: %s" % path
+            raise FileNotFoundException, path
         if fs.isdir(path):
             _movedir(fs, path, newpath, newfs)
         else:
@@ -87,6 +89,17 @@ class FS:
     abstraction layer (common file model) for file systems, with those features
     needed by SkunkWeb in particular.
     """
+    def isWriteable(self):
+        """
+        returns whether the fs supports write operations;
+        says nothing about whether a write is permitted
+        for a particular path
+        """
+        
+        if hasattr(self.__class__, 'writeable'):
+            return self.__class__.writeable
+        else:
+            return None
 
     def ministat(self, path):
         raise NotImplementedError
@@ -242,6 +255,8 @@ class PathPropertyStore:
     
 class LocalFS(FS):
 
+    writeable=1
+
     def __init__(self, root='/', followSymlinks=0):
         self.root=root
         self.followSymlinks=followSymlinks
@@ -257,6 +272,8 @@ class LocalFS(FS):
             else:
                 return os.lstat(realpath)[6:10]
         except os.error, oyVeh:
+            if oyVeh.errno==2:
+                raise FileNotFoundException, path
             raise VFSException, "[Errno %d] %s: %s" % (oyVeh.errno,
                                                        oyVeh.strerror,
                                                        oyVeh.filename)
@@ -384,7 +401,7 @@ class MultiFS(FS):
                 continue
         # file not found; fs and ministatinfo should both be None
         if None==ministatinfo and strict:
-            raise VFSException, "file or directory not found: %s" % path
+            raise FileNotFoundException, path
         else:
             return found, fs, translatedPath, ministatinfo
     
@@ -432,18 +449,21 @@ class MultiFS(FS):
         # file was not found
         if mode=='r':
             # file should have existed, raise
-            raise VFSException, "file not found: %s" % path
+            raise FileNotFoundException, path
         # append or write mode; find a suitable fs
         for tmp in self.mounts[found]:
             try:
                 return tmp.open(path, mode)
             except:
                 continue
-        raise VFSException, "cannot open file: %s with mode: %s" % (path, mode)
+        raise NotWriteableException, "cannot open file: %s with mode: %s" % (path, mode)
 
 
 ########################################################################
 # $Log$
+# Revision 1.8  2002/02/19 17:17:49  smulloni
+# vfs improvements; documentation typo fix.
+#
 # Revision 1.7  2002/02/06 07:04:20  smulloni
 # added PathPropertyStore.acquireWithAncestor().
 #

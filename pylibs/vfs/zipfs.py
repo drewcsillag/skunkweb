@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/01/07 17:32:22 smulloni>
+# Time-stamp: <02/02/19 11:42:05 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -20,27 +20,30 @@
 ########################################################################
 
 import zipfile
-from vfs import FS, VFSException
+from vfs import FS, VFSException, FileNotFoundException, NotWriteableException
 from rosio import RO_StringIO
 import time
 import os
 import pathutil
 
 class ZipFS(FS):
+
+    writeable=0
     
-    def __init__(self, zippath, prefix='/'):
+    def __init__(self, zippath, root='/', prefix='/'):
         if not zipfile.is_zipfile(zippath):
             raise zipfile.BadZipfile, "not a zip file: %s" % zippath
         self.zpath=os.path.abspath(zippath)
         self.__zfile=zipfile.ZipFile(zippath, mode='r')
-        self.__archive=pathutil.Archive(prefix)
+        self.__archive=pathutil.Archive(root, prefix)
         self.prefix=prefix
+        self.root=root
         self.__archive.savePaths(self.__zfile.namelist())
 
     def ministat(self, path):
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted): 
-            raise VFSException, "no such file or directory: %s" % path
+            raise FileNotFoundException, path
         realname=self.__archive.paths[adjusted]
         if realname==None:
             arcstat=os.stat(self.zpath)[7:]
@@ -52,9 +55,9 @@ class ZipFS(FS):
     def open(self, path, mode='r'):
         adjusted=pathutil._adjust_user_path(path)
         if mode<>'r':
-            raise VFSException, "unsupported file open mode"
+            raise NotWriteableException, "unsupported file open mode: %s" % mode
         if not self.__archive.paths.has_key(adjusted):
-            raise VFSException, "no such file or directory: %s" % path
+            raise FileNotFoundException, path
         realname=self.__archive.paths[adjusted]
         if realname!=None:
             return RO_StringIO(adjusted,
@@ -71,7 +74,7 @@ class ZipFS(FS):
     def isdir(self, path):
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise VFSException, "no such file or directory: %s" % path
+            raise FileNotFoundException, path
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 1
@@ -85,7 +88,7 @@ class ZipFS(FS):
     def isfile(self, path):
         adjusted=pathutil._adjust_user_path(path)
         if not self.__archive.paths.has_key(adjusted):
-            raise VFSException, "no such file or directory: %s" % path
+            raise FileNotFoundException, path
         realname=self.__archive.paths[adjusted]
         if realname==None:
             return 0
@@ -95,6 +98,9 @@ class ZipFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.5  2002/02/19 17:17:49  smulloni
+# vfs improvements; documentation typo fix.
+#
 # Revision 1.4  2002/01/10 02:34:18  smulloni
 # vfs tweaks
 #

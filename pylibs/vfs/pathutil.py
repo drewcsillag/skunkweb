@@ -1,5 +1,5 @@
-# $Id: pathutil.py,v 1.1 2002/01/02 06:39:24 smulloni Exp $
-# Time-stamp: <02/01/22 12:36:24 smulloni>
+# $Id: pathutil.py,v 1.2 2002/01/22 17:42:18 smulloni Exp $
+# Time-stamp: <02/02/19 11:58:53 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -20,6 +20,10 @@
 ########################################################################
 
 import os.path, re, sys
+try:
+    from skunklib import normpath
+except ImportError:
+    normpath=os.path.normpath
 
 _adjust_pattern=re.compile('//*$')
 _double_slash_pattern=re.compile('//*')
@@ -75,12 +79,18 @@ class Archive:
     in managing an archive file
     """
 
-    def __init__(self, prefix='/'):
+    def __init__(self, root='/', prefix='/'):
+        self.root=root
         self.prefix=prefix
+
+    def _resolvepath(self, path):
+        return normpath('%s/%s' % (self.root, path))
         
     def savePaths(self, namelist):
         self.paths={}
-        for name in namelist:
+        rootlen=len(self.root)
+        nl=[x[rootlen:] for x in namelist if x.startswith(self.root)]
+        for name in nl:
             adjusted=_adjust_user_path(os.path.join(self.prefix, name))
             self.paths[adjusted]=name
         implied=impliedPaths(self.paths.keys())

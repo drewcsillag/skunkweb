@@ -1,5 +1,5 @@
-# $Id: tarfs.py,v 1.1 2002/01/23 15:30:00 drew_csillag Exp $
-# Time-stamp: <2002-01-23 10:38:23 drew>
+# $Id: tarfs.py,v 1.2 2002/01/23 15:40:32 drew_csillag Exp $
+# Time-stamp: <02/02/19 11:43:12 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Andrew Csillag <drew_csillag@yahoo.com>
@@ -33,13 +33,14 @@ def bslog(msg):
         pass
     
 class TarFS(FS):
-    def __init__(self, path, prefix='/'):
+    def __init__(self, path, root='/', prefix='/'):
         bslog('HELLO!!')
         self.path=os.path.abspath(path)
         self._contents={} #filled by _readTar
         self._filelist=[] #filled by _readTar
         self._readTar()
-        self.__archive=pathutil.Archive(prefix)
+        self.__archive=pathutil.Archive(root, prefix)
+	self.root=root
         self.prefix=prefix
         self.__archive.savePaths(self._filelist)
         bslog(str(self._filelist))

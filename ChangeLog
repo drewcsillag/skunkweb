@@ -1,3 +1,26 @@
+2002-02-19  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/tarfs.py (TarFS.__init__): support for root
+	parameter. 
+
+	* pylibs/vfs/zipfs.py (ZipFS.__init__): support for root
+	parameter. 
+
+	* pylibs/vfs/vfs.py (FileNotFoundException,
+	NotWriteableException): some new VFSException subclasses.	
+	(FS.isWriteable): FS implementations can now declare whether
+	they are writeable.  This is most useful in the cases when they
+	aren't, as an fs being writeable doesn't mean that a particular
+	write operation is possible.
+
+	* pylibs/vfs/pathutil.py (Archive): added support for "root"
+	parameter. 
+
+2002-02-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:args:>}}):
+	another LaTeX typo, grrr.
+
 2002-02-17  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:args:>}}): forgot 
