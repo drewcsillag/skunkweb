@@ -1,3 +1,20 @@
+2003-03-31    <drew@loki.sai-office>
+
+	* SkunkWeb/Services/httpd/protocol.py (HTTPMethodRequestParser._getEnv):
+	made it so that it now adds all HTTP headers to the environment, not
+	just the ones we thought of.
+
+2003-03-28    <drew@loki.sai-office>
+
+	* pylibs/PyDO/sapdbgenscript.py: supports autoincrement fields and
+	unique fields that aren't necessarily pk's
+
+	* pylibs/PyDO/sapdbconn.py: supports autoincrement fields and
+	supports the SYSDATE stuff and in general better date handling.
+	Unicode support.
+
+	* pylibs/PyDO/operators.py: changes to support unicode
+
 2003-03-21  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/templating/UrlBuilder.py (image): found and
