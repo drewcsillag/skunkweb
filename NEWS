@@ -1,5 +1,8 @@
 Changes in 3.2.4
 ========================================
+* Now converts non-native line-endings in exprs to the native line
+  ending so that when editing templates on non-unix machines,
+  expressions will work properly
 * auth service fix when using multiple auth schemes simultaneously --
   BACKWARD INCOMPATIBLE CHANGE AHEAD---
   If you customized the login/logout pages copied from the auth

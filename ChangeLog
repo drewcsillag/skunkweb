@@ -1,3 +1,8 @@
+2002-06-28  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/DT/DTCompilerUtil.py: made so that all exprs get the line
+	endings converted to the native line ending.
+
 2002-06-28  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/userdir.py (doUserDirPre): now fixed so
