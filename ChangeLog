@@ -1,3 +1,17 @@
+2001-11-18  Jacob Smullyan  <smulloni@skunk.org>
+
+	* skunkweb.spec: added spec for RPM.  probably doesn't work yet (I won't know
+	until I make changes to the Makefiles to make the rpm use RPM_BUILD_ROOT, as
+	don't feel like clobbering my installation!).
+
+2001-11-17  Jacob Smullyan  <smulloni@skunk.org>
+
+	* pylibs/AE/Executables.py (executableByTypes): added new mime types.
+
+	* pylibs/AE/mime.types: created new mime types, text/x-stml-include
+	and text/x-stml-python-include, for the file extensions inc and pyinc,
+	rather than clumping.them together with comp and pycomp.
+
 2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/mime.types: added inc and pyinc extensions.

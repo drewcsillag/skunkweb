@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.4 2001/10/25 01:27:25 drew_csillag Exp $
+#$Id: Executables.py,v 1.5 2001/10/28 18:49:38 drew_csillag Exp $
 import sys
 import cStringIO
 import copy
@@ -147,11 +147,13 @@ executableByTypes = {
     ("text/x-stml-component",             DT_INCLUDE) : STMLExecutable,
     ("text/x-stml-component",             DT_REGULAR) : STMLExecutable,
     ("text/x-stml-data-component",        DT_DATA)    : STMLExecutable,
+    ("text/x-stml-include",               DT_INCLUDE) : STMLExecutable,
 
     ("application/x-python",              DT_INCLUDE) : PythonExecutable,
     ("application/x-python",              DT_REGULAR) : PythonExecutable,
     ("text/x-stml-python-component",      DT_REGULAR) : PythonExecutable,
     ("text/x-stml-python-data-component", DT_DATA)    : PythonExecutable,
+    ("text/x-stml-python-include",        DT_INCLUDE) : PythonExecutable,
     }
 
 def initTemplateMimeTypes():
