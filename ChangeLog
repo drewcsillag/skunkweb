@@ -1,5 +1,8 @@
 2001-10-28  Andrew Csillag  <drew@localhost.localdomain>
 
+	* pylibs/AE/Executables.py(STMLExecutable.mergeNamespaces): fixed
+	so handles **kw signatures properly
+
 	* pylibs/AE/Component.py: Ok, finally got caching working right
 
 2001-10-24  Drew Csillag  <drew@naxos.starmedia.net>

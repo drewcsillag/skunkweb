@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.3 2001/09/24 16:11:05 drew_csillag Exp $
+#$Id: Executables.py,v 1.4 2001/10/25 01:27:25 drew_csillag Exp $
 import sys
 import cStringIO
 import copy
@@ -116,7 +116,7 @@ class STMLExecutable:
                     del argDict[arg]
 
             if sig[_SIG_SPILLOVER]:
-                namespace[sig[_SIG_SPILLOVER]] = argDict[v]
+                namespace[sig[_SIG_SPILLOVER]] = argDict
             elif argDict:
                 raise SkunkStandardError, (
                     "component %s: extra arguments encountered: %s" %
