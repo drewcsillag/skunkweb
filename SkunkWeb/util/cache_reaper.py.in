@@ -75,7 +75,10 @@ def walk_func((dodel, deadtime), dirname, filelist):
 
                     # Get rid of the filename in the list, to prevent os.walk()
                     # from breaking
-                    del filelist[filelist.index(f)]
+                    try:
+                        del filelist[filelist.index(f)]
+                    except ValueError:
+                        pass
 
 try:
     args = conf.parse(sys.argv[1:])
