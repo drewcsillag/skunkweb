@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.2 2001/08/27 18:09:25 drew_csillag Exp $
+#$Id: Cache.py,v 1.3 2001/08/27 19:52:51 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -259,7 +259,9 @@ def _getCompileCache( name, srcModTime, version ):
 
 #### basically, some insurance that we don't escape a given root
 
-_normpath = os.path.normpath
+#_normpath = os.path.normpath
+import skunklib._normpath
+_normpath = skunklib.normpath
 
 def _fixPath( root, path ):
     return '%s/%s' % (root, _normpath(path)) 
@@ -496,6 +498,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.3  2001/08/27 19:52:51  drew_csillag
+# commented out more DEBUG statements
+#
 # Revision 1.2  2001/08/27 18:09:25  drew_csillag
 # performance tweaks
 #
