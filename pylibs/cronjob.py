@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/06/03 09:40:37 smulloni>
-# $Id: cronjob.py,v 1.1 2003/06/03 13:24:28 smulloni Exp $
+# Time-stamp: <03/06/03 10:07:45 smulloni>
+# $Id: cronjob.py,v 1.2 2003/06/03 13:50:54 smulloni Exp $
 
 """
 a simple cron implementation.  
@@ -356,4 +356,4 @@ __all__=['CronJob',
          'CronTab',
          'CronLogger',
          'StreamLogger',
-         'parse_spec']
+         'parse_cron']
