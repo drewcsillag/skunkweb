@@ -1,3 +1,11 @@
+2002-10-02  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/xmlrpchandler.py (XMLRPCServer._multicall): added
+	system.multicall ("boxcarring") support; reworked the dispatching
+	mechanism; now use standard fault codes; added workaround for
+	pydoc bugs in pydoc.TextDoc.docroutine in dealing with lambdas
+	(when and if pydoc is fixed, this code will stop working correctly).
+
 2002-09-30  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/SkunkWeb/constants.py (SERVER_PORT),
