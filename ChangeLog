@@ -1,3 +1,10 @@
+2001-08-12  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* configure, configure.in, SkunkWeb/Makefile.in,
+	SkunkWeb/Services/Makefile.in, SkunkWeb/mod_skunkweb/Makefile.in,
+	pylibs/Makefile.in: Now no longer require GNU install.  Remove all
+	places where it was called with -D
+
 2001-08-11  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* docs/stmlrefer/stmlrefer.tex: added doc about the new as

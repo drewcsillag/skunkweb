@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-09 23:14:11 drew> 
-#   $Id: TODO,v 1.5 2001/08/10 03:14:54 drew_csillag Exp $
+#   Time-stamp: <2001-08-12 12:47:36 drew> 
+#   $Id: TODO,v 1.6 2001/08/10 17:15:37 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -22,23 +22,18 @@ Do Quick release
 
 SkunkWeb 3.0
 ------------------------------
-* make so if there are permissions problems in the docroot it gives a more
-  descriptive error message.
+
 * fix msg on swmgr start
 /usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration
   def reload(self):
-* fix devel doc -- remove config stuff, api only
-* finish rewrite of the operations manual
-* security audit on rcc code
 
+Future stuff
+------------------------------
 ? build docs and include in dist as opposed to building during build
   or distribute docs separately (as Python does)
 ? fix so templating will fully work properly (other svcs too (e.g. oracle)) 
   if web isn't there and remcompsvr is
-
-
-Future stuff
-------------------------------
+* fix devel doc -- remove config stuff, api only
 * separate PyDO release
 * separate pargen release
 * separate DT release
@@ -47,14 +42,13 @@ Future stuff
 * real PyDO doc
 * real static doc
 * profile, profile and profile some more.
-* a python server pages implementation (I've got a really cheesy one,
+* a PSP (python server pages implementation) (I've got a really cheesy one,
   but I've got to imagine there's more to it than that).
 * tags which make javascript easier to live with
 * precompiled .par files
 * allow site-libs to be in .par files
 * other uses for swpython
 
-From Jacob's list:
 * an XML-RPC component handler;
     Drew:
     > Do you mean to effectively have a standard mapping from XML-RPC to the
@@ -108,6 +102,12 @@ N add a superteam service
 
 DONE
 ------------------------------
+X Remove GNU Install dependancy
+X security audit on rcc code -- ok, I was paranoid.  It was way to easy to
+  audit since there is beautifully not much there.
+X make so if there are permissions problems in the docroot it gives a more
+  descriptive error message.  ok, it already did give a good error... oops!
+X finish rewrite of the operations manual - good enough for release anyway
 X way to determine whether call to callComponent actually rendered the 
   component or it was just fetched from cache.  (expired and rendered flags)
 X get release stuff figured out (tag, build doc, build tarball) and working
