@@ -1,5 +1,5 @@
-#   Time-stamp: <02/03/31 19:00:59 smulloni> 
-#   $Id: TODO,v 1.37 2002/02/23 07:46:56 smulloni Exp $
+#   Time-stamp: <02/05/10 12:21:30 smulloni> 
+#   $Id: TODO,v 1.38 2002/04/01 00:40:13 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -70,26 +70,29 @@ SkunkWeb 3.3
 
 * testing framework built using product service (so client scripts 
   can know the location of server-side components they call)
-* DAV support built on httpd
+? DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
 * convert from using Makefile.pre.in to using distutils to build
   and install our C modules 
 * support for running python cgis persistently, for running viewcvs, 
   mailman scripts, etc.
 * make PyDO separate release use distutils also for install
-* dynamic scoping: to implement things like "if a url matches
+? dynamic scoping: to implement things like "if a url matches
   r'/~(\w)/(.*)', make Configuration.documentRootFS be
   LocalFS(os.path.expanduser('~%s') % username)" 
-* a rewrite service or builtin facility) that makes url rewriting
+X a rewrite service or builtin facility) that makes url rewriting
   possible without writing a service, permits multiple rewriting
   schemes to coexist without hook function order being an issue, and
   works with scoping (perhaps a Rewrite directive for sw.conf?)
 ? ZODB FS implementation.
-* sessionHandler's FSSessionStore rewritten to use VFS.
-* an authorization service that supports cookie, basic, digest,
+? sessionHandler's FSSessionStore rewritten to use VFS.
+X an authorization service that supports cookie, basic, digest,
   and pluggable authorization stores.
 ? image handling service, built on basis of mime-type-specific handlers
-
+* reintroduce hot-debugging as an optional configuration dependency;
+  write extension module using Pyrex?
+* Xitami adapter for SkunkWeb
+* rewrite enhancements
 
 Future stuff
 ------------------------------

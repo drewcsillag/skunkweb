@@ -7,7 +7,7 @@ Changes in 3.2.1 (not yet released)
 * DateTime objects can now be used as arguments to cacheable components
 * rewrite fixes and feature additions
 * usual array of general bug fixes
-* mod_skunkweb now properly reports it's existence in the Server header
+* mod_skunkweb now properly reports its existence in the Server header
 
 Changes in 3.2 beta 3
 ========================================
