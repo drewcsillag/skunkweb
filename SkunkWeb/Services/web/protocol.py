@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.17 2002/12/05 04:13:59 smulloni Exp $
-# Time-stamp: <03/03/11 17:39:05 smulloni>
+# $Id: protocol.py,v 1.18 2003/03/11 23:07:37 smulloni Exp $
+# Time-stamp: <03/03/20 16:01:11 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -151,7 +151,10 @@ class HTTPConnection:
     def _initCookies(self):
         self.requestCookie = Cookie.SimpleCookie()
         if self.requestHeaders.has_key('Cookie'):
-            self.requestCookie.load(self.requestHeaders['Cookie'])
+            try:
+                self.requestCookie.load(self.requestHeaders['Cookie'])
+            except Cookie.CookieError:
+                logException()
         self.responseCookie = Cookie.SimpleCookie()        
 
     def _initURI(self, env):

@@ -1,3 +1,11 @@
+2003-03-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection._initCookies):
+	tolerate bad cookies by silently swallowing errors in cookie
+	loading.  Very occasionally, someone has a cookie that will make
+	Cookie.py barf when it tries to load it; this prevents an entire
+	site going down for that unfortunate individual.
+
 2003-03-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/usertracking.py: More comments (this
