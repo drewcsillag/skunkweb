@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.6 2001/10/25 01:27:53 drew_csillag Exp $
+# $Id: Component.py,v 1.7 2001/10/28 17:35:09 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -336,8 +336,15 @@ def _realRenderComponent( name, argDict, auxArgs, compType, srcModTime ):
 
     namespace = executable.mergeNamespaces( namespace, argDict, auxArgs )
 
-    componentStack.append( ComponentStackFrame(
-        name, namespace, executable, argDict, auxArgs, compType ) )
+    newFrame = ComponentStackFrame(name, namespace, executable, argDict,
+                                   auxArgs, compType ) 
+
+    #DEBUG(COMPONENT, "len stack = %d  top = %d" % (len(componentStack),
+    #      topOfComponentStack))
+    if len(componentStack) <= ( topOfComponentStack + 1):
+        componentStack.append(newFrame)
+    else:
+        componentStack[topOfComponentStack+1:] = [newFrame]
 
     try:
         if DEBUGIT(COMPONENT_TIMES):
@@ -385,6 +392,9 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.7  2001/10/28 17:35:09  drew_csillag
+# finally got the caching bug fixed for good
+#
 # Revision 1.6  2001/10/25 01:27:53  drew_csillag
 # fixed so expiration actually works properly
 #
