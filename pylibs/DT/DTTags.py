@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: DTTags.py,v 1.8 2003/04/07 16:32:09 smulloni Exp $
+# $Id: DTTags.py,v 1.9 2003/05/01 20:45:59 drew_csillag Exp $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 
@@ -609,14 +609,22 @@ class HaltTag(DTTag):
         DTExcept.raiseHalt ( codeout, indent ) 
 
 class SpoolTag(DTTag):
+    _attend_to_comments = 0
+    
     def __init__(self):
         DTTag.__init__(self, 'spool', isempty = 0)
 
     def genCode ( self, indent, codeout, tagreg, node, meta):
         tag = node.children[0]
         DTCompilerUtil.tagDebug(indent, codeout, tag)
-        pargs = args = DTUtil.tagCall(tag, ['name'])
+        tagargs=['name']
+        if self._attend_to_comments:
+            tagargs.append(('comments', 0))
+        pargs = args = DTUtil.tagCall(tag, tagargs)
         args = DTCompilerUtil.pyifyArgs(tag, args)
+        if self._attend_to_comments:
+            self._testCommentLevel(indent, codeout, args['comments'])
+            stuff=self._pushCommentLevel(indent, codeout, args['comments'])        
         name = DTCompilerUtil.checkName(tag, 'name', args['name'],
                                         pargs['name'])
         
@@ -628,7 +636,17 @@ class SpoolTag(DTTag):
         codeout.write(indent, '%s = __h.OUTPUT.getvalue()' % name)
         codeout.write(indent, '__h.OUTPUT = %s' % oldout)
         codeout.write(indent, 'del %s' % oldout)
+        if self._attend_to_comments:
+            self._popCommentLevel(indent, codeout, *stuff)
 
+    def _pushCommentLevel(self, indent, codeout, val):
+        pass
+    
+    def _popCommentLevel(self, indent, codeout, *args):
+        pass
+
+    def _testCommentLevel(self, indent, codeout, commentLevel):
+        pass
 
 _splitter=re.compile(r', ?')
 
@@ -695,6 +713,9 @@ class DocTag ( GenericCommentTag ):
 
 ########################################################################
 # $Log: DTTags.py,v $
+# Revision 1.9  2003/05/01 20:45:59  drew_csillag
+# Changed license text
+#
 # Revision 1.8  2003/04/07 16:32:09  smulloni
 # the import tag now accepts comma-separated items.
 #
