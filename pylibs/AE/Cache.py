@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.8 2002/02/13 18:36:19 drew_csillag Exp $
+#$Id: Cache.py,v 1.9 2002/04/09 21:27:34 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -25,7 +25,6 @@ import cPickle
 import os
 import errno
 import socket
-import string
 import sys
 import commands
 import stat
@@ -379,7 +378,7 @@ def _storeCachedComponent( path, value, svr ):
                                  1))
         os.chmod( path, NORMAL_MODE )
     except IOError, val:
-        DEBUG(CACHE, "error storing component", val)
+        DEBUG(CACHE, "error storing component %s" % val)
         if val != errno.ENOENT:
             _serverFailover[ svr ] = time.time() + Configuration.failoverRetry
 
@@ -428,7 +427,7 @@ def _genCachedComponentPath( name, argDict ):
     name = _fixPath('', name)
     md5, fullkey = cacheKey.cachekey.genCacheKey( d )
     if Configuration.numServers:
-        serverNo = string.atoi(md5[-4:], 16) % Configuration.numServers
+        serverNo = int(md5[-4:], 16) % Configuration.numServers
 
         if _serverFailover.get(serverNo, 0) == 0:
             return "%s/%s/%s/%s/%s/%s.cache" % (
@@ -519,6 +518,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.9  2002/04/09 21:27:34  smulloni
+# fix from Stephen Coursen for cache bug
+#
 # Revision 1.8  2002/02/13 18:36:19  drew_csillag
 # fixed typo error
 #
