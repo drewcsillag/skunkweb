@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: CodeSources.py,v 1.7 2001/07/09 20:38:41 drew Exp $
+# $Id: CodeSources.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
 # Time-stamp: <01/04/10 14:19:30 smulloni>
 ########################################################################
 
@@ -47,10 +47,15 @@ def clearSources (*args):
     "Gets called after each request is done"
     sources.clear()
 
-def updatecache(filename):
+def updatecache(filename, updcache=linecache.updatecache):
     # XXX Important - do not move to the top of the file, it will
     # get unloaded on restart then!!!
-    import sys
+    try:
+        import sys
+    except: #basically, we're in reload and our namespace is kinda trashed
+        return updcache(filename)
+        
+    #import sys
     import os
     from stat import ST_MTIME, ST_SIZE
     
