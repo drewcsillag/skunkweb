@@ -1,5 +1,6 @@
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
+#                     Drew Csillag <drew_csillag@yahoo.com>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -15,6 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
+
 from containers import FieldContainer
 from form import Field, DomainField, Form, FormError, \
      _getname, CompositeField, _defaultValueComposer
