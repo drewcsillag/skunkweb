@@ -46,7 +46,7 @@ def _fix(dict):
         else:
             nd["PATH_INFO"] = ''
         
-        if pb[-1] == '/':
+        if pb and pb[-1] == '/':
             nd["SCRIPT_NAME"] = pb[:-1]
         else:
             nd["SCRIPT_NAME"] = pb
@@ -102,7 +102,8 @@ def _processRequest(conn, sessionDict):
             os.execle(*args)
         except:
             logException()
-            DEBUG(EXTCGI, "I'm still here! killing self")
+            os.write(kid_stderr, "exception executing CGI : %s %s" % (sys.exc_info()[0], sys.exc_info()[1]))
+            DEBUG(EXTCGI, "I'm still here! killing self");
             os.kill(os.getpid(), 9)
 
 def _doCGI(conn, pid, stdin,
@@ -158,7 +159,8 @@ def _handleParentSide(pid, stdin, stdout, stderr, stdindata):
                 status = os.waitpid(pid, os.WNOHANG)[1]
                 DEBUG(EXTCGI, "status was %s" % repr(status))
                 if os.WIFSIGNALED(status): # if process has died abnormally
-                    raise "CGIError", "cgi died by signal"
+                    raise "CGIError", (
+                        "cgi died by signal: %s" % ''.join(stderrl))
                 if os.WIFEXITED(status):
                     exitStatus = os.WEXITSTATUS(status)
                     if exitStatus:# or stderrl:
