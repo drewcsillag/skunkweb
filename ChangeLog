@@ -1,3 +1,7 @@
+2001-08-16  Drew Csillag  <drew@starmedia.net>
+
+	* pylibs/PyDO: cutting PYDO_1_0_1 tag and release
+
 2001-08-15  Drew Csillag  <drew@starmedia.net>
 
 	* docs/opman/opman.tex: no longer require gnu xargs and gnu find
