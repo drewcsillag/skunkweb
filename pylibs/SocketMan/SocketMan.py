@@ -19,7 +19,8 @@ import cStringIO
 import traceback
 import os
 import stat
-    
+import time
+
 class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
     def __init__(self, maxRequests=None, *args, **kw):
         self.maxRequests = maxRequests
@@ -144,7 +145,16 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
             s.setblocking(0)
             # Make sure the socket will be closed on exec
             fcntl.fcntl(s.fileno(), FCNTL.F_SETFD, 1)
-            s.bind(addrspec[1])
+            retrycount = 5 # mayhap it's not quite dead, so we retry a few times
+            while retrycount:
+                try:
+                    s.bind(addrspec[1])
+                except:
+                    retrycount = retrycount - 1
+                    if retrycount == 0:
+                        raise
+                    time.sleep(1)
+                    
             if len(addrspec) == 3:
                 os.chmod(addrspec[1], addrspec[2])
             s.listen(5)
