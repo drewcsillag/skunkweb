@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: extcgi.py,v 1.4 2002/07/11 21:45:10 drew_csillag Exp $
+# $Id: extcgi.py,v 1.5 2002/07/15 14:14:16 drew_csillag Exp $
 # Time-stamp: <01/05/04 17:32:39 smulloni>
 ########################################################################
 
@@ -32,7 +32,7 @@ EXTCGI=ServiceRegistry.EXTCGI
 
 Configuration.mergeDefaults(CGIProgram = None,
                             CGIProgramArgs = (),
-                            CGIProgramBase = None)
+                            CGIProgramBase = '')
 
 def _fix(dict): #fixup the environment variables
     nd = {}
@@ -162,7 +162,8 @@ def _handleParentSide(pid, stdin, stdout, stderr, stdindata):
 
             if os.WIFSIGNALED(status): # if process has died abnormally
                 raise "CGIError", (
-                    "cgi died by signal: %s" % ''.join(stderrl))
+                    "cgi died by signal %s: %s" % (os.WTERMSIG(status),
+                                                   ''.join(stderrl)))
 
             if os.WIFEXITED(status): # if exited via exit()
                 exitStatus = os.WEXITSTATUS(status)
