@@ -141,18 +141,6 @@ def mungeConnection(*args, **kw):
     HTTPConnection.getSessionID=getSessionID
 
 ####################################################################
-# hook for InitRequest
-
-def untouch(data, sessionDict):
-    DEBUG(SESSIONHANDLER, "in untouch()")
-    conn=sessionDict.get(CONNECTION)
-    if conn:
-        session=conn.getSession(0)
-        if session:
-            session.touched=None
-
-
-####################################################################
 # hook for PostRequest
 
 def saveSession(requestData, sessionDict):

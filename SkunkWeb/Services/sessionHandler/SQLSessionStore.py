@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SQLSessionStore.py,v 1.2 2003/05/01 20:45:54 drew_csillag Exp $
+# $Id: SQLSessionStore.py,v 1.3 2003/07/18 18:28:26 smulloni Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
@@ -20,7 +20,7 @@ import time
 # abstract session store implementation that uses a SQL database.
 
 class AbstractSQLSessionStore(Session.SessionStore): 
-    '''
+    """
 
     an implementation of a session store which is backed with a common
     or garden variety SQL database which supports blobs.  The table
@@ -66,7 +66,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
 
     * implement getConnection(), return a database connection object.
 
-    '''
+    """
 
     getPickleSQL="SELECT %(gherkin)s, %(timeCol)s FROM %(table)s WHERE %(idCol)s='%(id)s'"
 

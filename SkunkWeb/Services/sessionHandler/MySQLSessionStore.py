@@ -5,17 +5,17 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/05/19 09:37:50 smulloni>
+# Time-stamp: <03/07/18 15:05:26 smulloni>
 
 ########################################################################
 # a MySQL implementation
 
 import MySQLdb
-from sessionHandler.SQLSessionStore import AbstractSQLSessionStore, reap_main
+from sessionHandler.SQLSessionStore import AbstractSQLSessionStore
 from SkunkWeb import Configuration
 import MySQL
-import sys
-import getopt
+
+
 
 class Store(AbstractSQLSessionStore):
 

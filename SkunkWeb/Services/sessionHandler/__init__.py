@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.7 2003/05/01 20:45:54 drew_csillag Exp $
+# $Id: __init__.py,v 1.8 2003/07/18 18:28:26 smulloni Exp $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package
@@ -50,17 +50,12 @@ def __initConfig():
 
 def __initSession():
     import SkunkWeb.Configuration as Configuration
-##    if not Configuration.SessionStore:
-##        import SkunkWeb.LogObj as lo
-##        lo.LOG("no sessionStore defined: cannot load sessionHandler service")
-##    else:
     import Session
     import SkunkWeb.constants as skc
     import SkunkWeb.Hooks as hk
     import requestHandler.requestHandler as rr
     hk.ServerStart.append(Session.mungeConnection)
     allweb="%s*" % skc.WEB_JOB
-#    rr.InitRequest.addFunction(Session.untouch, allweb)
     rr.PostRequest.addFunction(Session.saveSession, allweb)
 
 ########################################################################
