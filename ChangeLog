@@ -1,5 +1,8 @@
 2002-07-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* SkunkWeb/Services/extcgi.py: fixed so it changes to the
+	directory of the cgi program
+
 	* SkunkWeb/SkunkWeb/constants.py: added CGI_JOB
 
 	* SkunkWeb/Services/extcgi.py: added external CGI runner
