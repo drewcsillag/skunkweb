@@ -1,5 +1,11 @@
 2003-05-08    <drew@loki.sai-office>
 
+	* SkunkWeb/util/precompile.py.in (func): now continues if a
+	compilation fails
+
+	* SkunkWeb/swpython.py.in (SkunkWebPath): now ignores sigchild by
+	default like regular python does
+
 	* configure.in: now fails and exits if python is not found
 
 	* SkunkWeb/SkunkWeb/Server.py (addService): fix for HP/UX because it 
