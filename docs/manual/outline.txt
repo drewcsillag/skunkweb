@@ -28,26 +28,24 @@ Chapter 1: Installation And Configuration
             - Running Apache With Other CGIs 
         * swcgi
 
-Chapter 2: Performance
-======================
-
-    - Introduction
-    - Tuning The Core Server
-    - Persistent Connection Tuning (Database Server Connections)
-    - Caching
-        * How The Cache Is Managed
-        * Creating Cache Stores (this is a bit of a bundling of concepts, no?)
-        * Sharing The Cache
-        * Filesystem Tuning
-        * Flushing The Cache
     
-Chapter 3: SkunkWeb Fundamentals
+Chapter 2: SkunkWeb Fundamentals
 ================================
 
     - Introduction
     - Using Components
    
-    (This is vague right now.)
+    (This is vague right now; I think it should be of a tutorial
+     nature and introduce STML as well as Python components.  A very
+     simple example application wouldn't be out of place here.)
+  
+
+Chapter 3: STML Reference
+===============
+
+[This is basically an update of the earlier STML manual.  However,
+since the previous chapter will be introductory, it can less chatty
+than it is now.]
     
 Chapter 4: SkunkWeb API
 =======================
@@ -92,21 +90,12 @@ Chapter 4: SkunkWeb API
             - PostgreSQL 
             - Oracle 
         * Retrieving A Database Connection 
-        
-        
-Chapter 5: Optional Services
-============================
-        
-    - Remote SkunkWeb Server Service
-    - URL Rewriting Service 
-    - Product Service
+    - Other Services
+        * Remote Components
+        * URL Rewriting 
+        * Products
 
-Chapter 6: STML
-===============
-
-[This is basically an update of the earlier STML manual. Nothing of Note.]
-
-Chapter 7: SkunkWeb Internals
+Chapter 5: SkunkWeb Internals
 =============================
 
     - Server Startup
@@ -117,9 +106,22 @@ Chapter 7: SkunkWeb Internals
     - Configuration
     - Caching System
     
-Chapter 8: Extending SkunkWeb
+Chapter 6: Extending SkunkWeb
 =============================
 
     - Creating STML Tags
     - Creating Services
     - Adding A Template Type
+
+Chapter 7: Performance Tuning
+======================
+
+    - Introduction
+    - Tuning The Core Server
+    - Persistent Connection Tuning (Database Server Connections)
+    - Caching
+        * How The Cache Is Managed
+        * Creating Cache Stores (this is a bit of a bundling of concepts, no?)
+        * Sharing The Cache
+        * Filesystem Tuning
+        * Flushing The Cache
