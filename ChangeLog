@@ -1,5 +1,22 @@
 2003-05-02    <drew@loki.sai-office>
 
+	* README: removed license interpretation paragraph copied from -ack-
+	Perl
+
+	* SkunkWeb/Makefile.in: fix for swpython.c, installs precompile.py
+	
+	* SkunkWeb/precompile.py.in: added
+	
+	* SkunkWeb/configure: regenerated
+	
+	* SkunkWeb/configure.in: added stuff for util/precompile.py
+	
+	* SkunkWeb/swpython.c.in: added and fixed
+
+	* SkunkWeb/swpython.c: removed, added wrong file
+	
+	* SkunkWeb/swpython.py.in (else): fixed sys.argv handling
+
 	* SkunkWeb/Services/requestHandler/requestHandler.py (_canRead): added
 	try block to ignore a socket error so it doesn't get logged.
 
