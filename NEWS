@@ -1,5 +1,7 @@
 Changes in 3.3
 ========================================
+* Prebuilt documentation is now included in the distribution (HTML and
+  paper-formats in letter dimensions)
 * now can have skunkweb started as root (can set who you actually want
   it to run as) so you can bind to low ports
 * new extcgi service so you can run CGI's from SkunkWeb!
