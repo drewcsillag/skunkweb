@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py,v 1.9 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: protocol.py,v 1.10 2003/06/07 20:50:06 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -17,6 +17,7 @@ from SkunkWeb import Configuration, constants
 import exceptions
 import re
 import socket
+from urllib import unquote
 
 ##NEW
 import rfc822
@@ -197,7 +198,7 @@ class HTTPMethodRequestParser:
               #'AUTH_TYPE' : '',
               # this may need to be fudged later too
               # (for index documents, for instance)
-              'SCRIPT_NAME' : match.group('path'), 
+              'SCRIPT_NAME' : unquote(match.group('path')), 
               'QUERY_STRING' : match.group('query') or '',
               'REMOTE_ADDR' : peeraddress,
               'REMOTE_PORT' : peerport }

@@ -1,5 +1,8 @@
 2003-09-07  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/httpd/protocol.py
+	(HTTPMethodRequestParser._getEnv): now unquote the path.
+
 	* SkunkWeb/Services/web/__init__.py (__initHooks): added http 
 	logging function to PostRequest hook.
 
