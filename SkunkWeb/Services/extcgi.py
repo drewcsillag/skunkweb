@@ -34,7 +34,7 @@ Configuration.mergeDefaults(CGIProgram = None,
                             CGIProgramArgs = (),
                             CGIProgramBase = None)
 
-def _fix(dict):
+def _fix(dict): #fixup the environment variables
     nd = {}
     for k,v in dict.items():
         nd[str(k)] = str(v)
@@ -54,7 +54,6 @@ def _fix(dict):
 
 def _dispenv(env):
     s = []
-#    for i in ['SCRIPT_NAME', 'REQUEST_URI', 'PATH_INFO']:
     for i in env:
         if env.has_key(i):
             s.append('%s: %s' % (i,env[i]))
@@ -67,49 +66,55 @@ def _processRequest(conn, sessionDict):
     parent_to_kid_stdout, kid_stdout = os.pipe()
     parent_to_kid_stderr, kid_stderr = os.pipe()
     pid = os.fork()
-    if pid: #ok I'm the parent
-        DEBUG(EXTCGI, 'child pid is %d' % pid)
-        #close kid sides
-        os.close(kid_stdin)
-        os.close(kid_stdout)
-        os.close(kid_stderr)
+    try:
+        if pid: #ok I'm the parent
+            DEBUG(EXTCGI, 'child pid is %d' % pid)
+            #close kid sides
+            os.close(kid_stdin)
+            os.close(kid_stdout)
+            os.close(kid_stderr)
 
-        stdin = conn._stdin
-        if stdin:
-            os.write(parent_to_kid_stdin, stdin)
+            stdin = conn._stdin
 
-        return _doCGI(conn, pid, parent_to_kid_stdin,
-                      parent_to_kid_stdout,
-                      parent_to_kid_stderr, stdin)
-        
-    else: #I'm the kid
-        #close parent side of pipes
-        os.close(parent_to_kid_stdin)
-        os.close(parent_to_kid_stdout)
-        os.close(parent_to_kid_stderr)
-        #dup kid sides to my stdin/out/err
-        os.dup2(kid_stdin, 0)
-        os.dup2(kid_stdout, 1)
-        os.dup2(kid_stderr, 2)
-        env = _fix(conn.env)
-        if DEBUGIT(EXTCGI):
-            DEBUG(EXTCGI, "environment is %s" % _dispenv(env))
-        prog = Configuration.CGIProgram
-        args = ( (prog,) + (prog,) +
-                 Configuration.CGIProgramArgs +(env,))
-        #DEBUG(EXTCGI, 'args is %s' % repr(args))
-        try:
+            return _doCGI(conn, pid, parent_to_kid_stdin,
+                          parent_to_kid_stdout,
+                          parent_to_kid_stderr, stdin)
+
+        else: #I'm the kid
+            #close parent side of pipes
+            os.close(parent_to_kid_stdin)
+            os.close(parent_to_kid_stdout)
+            os.close(parent_to_kid_stderr)
+            #dup kid sides to my stdin/out/err
+            os.dup2(kid_stdin, 0)
+            os.dup2(kid_stdout, 1)
+            os.dup2(kid_stderr, 2)
+            env = _fix(conn.env)
+            if DEBUGIT(EXTCGI):
+                DEBUG(EXTCGI, "environment is %s" % _dispenv(env))
+            prog = Configuration.CGIProgram
+            args = ( (prog,) + (prog,) +
+                     Configuration.CGIProgramArgs +(env,))
+            #DEBUG(EXTCGI, 'args is %s' % repr(args))
             os.execle(*args)
-        except:
+    except:
+        if pid == 0: #I'm the kid
             logException()
-            os.write(kid_stderr, "exception executing CGI : %s %s" % (sys.exc_info()[0], sys.exc_info()[1]))
+            #give the parent some info as to why I died
+            os.write(kid_stderr, "exception executing CGI : %s %s" % (
+                sys.exc_info()[0], sys.exc_info()[1]))
             DEBUG(EXTCGI, "I'm still here! killing self");
             os.kill(os.getpid(), 9)
 
-def _doCGI(conn, pid, stdin,
-           stdout,
-           stderr, stdindata):
+        else: #I'm the parent
+            e, t, tb = sys.exc_info()
+            try:
+                os.kill(pid, 9) # we screwed up, kill kid
+            except: #in event that it's already dead, that's ok too
+                pass
+            raise e, t, tb
 
+def _doCGI(conn, pid, stdin, stdout, stderr, stdindata):
     text = _handleParentSide(pid, stdin, stdout, stderr, stdindata)
     f = cStringIO.StringIO(text)
     respp = rfc822.Message(f)
@@ -120,61 +125,46 @@ def _doCGI(conn, pid, stdin,
 def _handleParentSide(pid, stdin, stdout, stderr, stdindata):
     stderrl = []
     stdoutl = []
-    try:
-        while 1:
-            #DEBUG(EXTCGI, "in while")
+    while 1:
+        if stdindata: #if anything left to write to the CGI
+            inlist = [stdin]
+        else:
+            inlist = []
+        r, w, e = select.select([stdout, stderr], inlist, [], 1)
+
+        if stdout in r:
+            rbytes = os.read(stdout, 1024)
+            if not rbytes:
+                r.remove(stdout)
+            stdoutl.append(rbytes)
+
+        if stderr in r:
+            rbytes = os.read(stderr, 1024)
+            if not rbytes:
+                r.remove(stderr)
+            stderrl.append(rbytes)
+
+        if stdin in w:
             if stdindata:
-                inlist = [stdin]
-            else:
-                inlist = []
-            r, w, e = select.select([stdout, stderr], inlist, [], 1)
-    
-            #DEBUG(EXTCGI, "rwe= %s %s %s" % (r,w,e))
-            #DEBUG(EXTCGI, "IOE= %s %s %s" % (stdin, stdout, stderr))
-            if stdout in r:
-                #DEBUG(EXTCGI, 'attempting to read 1024 bytes from stdout')
-                rbytes = os.read(stdout, 1024)
-                if not rbytes:
-                    r.remove(stdout)
-                stdoutl.append(rbytes)
-                #DEBUG(EXTCGI, 'got %s bytes' % len(rbytes))
-    
-            if stderr in r:
-                #DEBUG(EXTCGI, 'attempting to read 1024 bytes from stderr')
-                rbytes = os.read(stderr, 1024)
-                if not rbytes:
-                    r.remove(stderr)
-                stderrl.append(rbytes)
-                #DEBUG(EXTCGI, 'got %s bytes -- %s' % (len(rbytes), rbytes))
-    
-            if stdin in w:
-                if stdindata:
-                    #DEBUG(EXTCGI, 'attempting to write %d bytes to stdin')
-                    l = os.write(stdin, stdindata)
-                    stdindata = stdindata[l:]
-                    #DEBUG(EXTCGI, 'wrote %d bytes' % l)
+                l = os.write(stdin, stdindata)
+                stdindata = stdindata[l:]
 
-            if not r and not w: #no pipes active, is child alive
-                #check on process health
-                status = os.waitpid(pid, os.WNOHANG)[1]
-                DEBUG(EXTCGI, "status was %s" % repr(status))
-                if os.WIFSIGNALED(status): # if process has died abnormally
-                    raise "CGIError", (
-                        "cgi died by signal: %s" % ''.join(stderrl))
-                if os.WIFEXITED(status):
-                    exitStatus = os.WEXITSTATUS(status)
-                    if exitStatus:# or stderrl:
-                        raise "CGIError", ''.join(stderrl)
-                    DEBUG(EXTCGI, 'cgi exited ?normally? %d %d' % (status, exitStatus))
-                    return ''.join(stdoutl)
+        if not r and not w: #no pipes active, is child alive
+            #check on process health
+            status = os.waitpid(pid, os.WNOHANG)[1]
+            #DEBUG(EXTCGI, "status was %s" % repr(status))
 
-    except:
-        e, t, tb = sys.exc_info()
-        try:
-            os.kill(pid, 9) # we screwed up, kill kid
-        except:
-            pass
-        raise e, t, tb
+            if os.WIFSIGNALED(status): # if process has died abnormally
+                raise "CGIError", (
+                    "cgi died by signal: %s" % ''.join(stderrl))
+
+            if os.WIFEXITED(status): # if exited via exit()
+                exitStatus = os.WEXITSTATUS(status)
+                if exitStatus:# or stderrl:
+                    raise "CGIError", ''.join(stderrl)
+                DEBUG(EXTCGI, 'cgi exited normally %d %d' % (
+                    status, exitStatus))
+                return ''.join(stdoutl)
                 
 def __initHooks():
     import web.protocol
