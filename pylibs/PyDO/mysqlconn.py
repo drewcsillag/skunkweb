@@ -37,7 +37,7 @@ class PyDOMySQL:
 
     def __unpackConnectArgs(self, connectArgs):
         if type(connectArgs) in (types.StringType, types.UnicodeType):
-            fields='host', 'db', 'user', 'passwd'
+            fields='host', 'db', 'user', 'passwd', 'cacheUser'
             d={}
             for k, v in zip(fields, connectArgs.split(':')):
                 d[k]=v
