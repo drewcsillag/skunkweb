@@ -1,3 +1,25 @@
+2003-09-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/__init__.py (__initHooks): added http 
+	logging function to PostRequest hook.
+
+	* SkunkWeb/Services/templating/Handler.py (requestHandler):
+	commenting out debug statements inside for loop.
+
+	* SkunkWeb/sw.conf.in: fix for logfile paths, and added http
+	access log.
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.__init__):
+	added a "_rawOutput" attribute to CONNECTION, to support http
+	logging; (_accesslog): added hook function for CLF http access
+	logging, based on patch by Jeroen van Dongen. 
+
+	* SkunkWeb/SkunkWeb/confvars.py.in (DEFAULT_HTTP_ACCESS_LOG),
+	SkunkWeb/SkunkWeb/LogObj.py: support for separate http access log.
+
+	* pylibs/Logger.py (HTTP_ACCESS): CLF HTTP access logging, based
+	on a patch from Jeroen van Dongen.
+
 2003-08-27  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/manual/instConfig.txt: some little changes.

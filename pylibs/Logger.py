@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Logger.py,v 1.8 2003/05/01 20:45:57 drew_csillag Exp $
+# $Id: Logger.py,v 1.9 2003/05/02 17:37:48 smulloni Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -18,6 +18,7 @@ class _configStub:
         self.errorLog=None
         self.regularLog=None
         self.accessLog=None
+        self.httpAccessLog=None
         self.stampEveryLine=1
         self.logDateFormat='%a, %d %b %Y %H:%M:%S GMT'
 #        self.debugFlags=0
@@ -55,7 +56,7 @@ def _stamp(logStamp, msg):
         return ('%s%s\n' % (logStamp, msg))
 
 
-def _doMsg(filename, msg, kind=0, prefix=''):
+def _doMsg(filename, msg, kind=0, prefix='', preStamped=0):
     if filename:
         if type(filename)==types.FileType:
             file=filename
@@ -66,15 +67,18 @@ def _doMsg(filename, msg, kind=0, prefix=''):
             _logFiles[filename]=file
         if file:
             source=getSourceFromKind(kind)
-            stamp=_logStamp % _fmtDate()
-            if source and prefix:
-                stamp2="%s %s %s " % (stamp, source, prefix)
-            elif source:
-                stamp2="%s %s " % (stamp, source)
-            elif prefix:
-                stamp2= "%s %s " % (stamp, prefix)
+            if preStamped:
+                stamp2=''
             else:
-                stamp2="%s " % stamp
+                stamp=_logStamp % _fmtDate()
+                if source and prefix:
+                    stamp2="%s %s %s " % (stamp, source, prefix)
+                elif source:
+                    stamp2="%s %s " % (stamp, source)
+                elif prefix:
+                    stamp2= "%s %s " % (stamp, prefix)
+                else:
+                    stamp2="%s " % stamp
             for line in _stamp(stamp2, msg.strip()):
                 file.write(line)
             file.flush()
@@ -108,6 +112,24 @@ def ERROR(msg):
 def ACCESS(msg):
     _doMsg(config.accessLog, msg)
 
+def HTTP_ACCESS(remote,
+                request,
+                status=200,
+                length=0,
+                rfc_user="-",
+                auth_user="-"):
+    stamp=_fmtDate()
+    msg="%s %s %s [%s] \"%s\" %s %s" % (remote,
+                                        rfc_user,
+                                        auth_user,
+                                        stamp,
+                                        request,
+                                        status,
+                                        length)
+    _doMsg(config.httpAccessLog,
+           msg,
+           preStamped=1)
+    
 def logException():
     exc_info=sys.exc_info()
     if exc_info:

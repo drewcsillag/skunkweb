@@ -1,5 +1,5 @@
-# Time-stamp: <03/08/11 20:33:51 smulloni>
-# $Id: Handler.py,v 1.10 2003/05/02 17:20:29 drew_csillag Exp $
+# Time-stamp: <03/09/07 20:07:14 smulloni>
+# $Id: Handler.py,v 1.11 2003/08/12 00:48:27 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -84,14 +84,15 @@ def requestHandler(connObj, sessionDict):
             DEBUG(TEMPLATING, "looping over indexDocuments")
             for i in Configuration.indexDocuments:
                 s = "%s%s" % (uri, i)         
-                DEBUG(TEMPLATING, "trying %s" % i)
+                #DEBUG(TEMPLATING, "trying %s" % i)
                 fixed=fixPath(Configuration.documentRoot, s)
 
                 try:
                     st = None
                     st = fs.ministat(fixed)
                 except:
-                    DEBUG(TEMPLATING, "nope")
+                    #DEBUG(TEMPLATING, "nope")
+                    pass
                 else:
                     DEBUG(TEMPLATING, "Bingo!")
                     connObj.statInfo = st

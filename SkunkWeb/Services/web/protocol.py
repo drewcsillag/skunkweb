@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.24 2003/07/18 18:25:51 smulloni Exp $
-# Time-stamp: <03/08/16 22:12:21 smulloni>
+# $Id: protocol.py,v 1.25 2003/08/17 02:17:16 smulloni Exp $
+# Time-stamp: <03/09/07 20:14:44 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -11,7 +11,7 @@
 ########################################################################
 
 from SkunkExcept import SkunkCriticalError
-from SkunkWeb.LogObj import DEBUG, logException
+from SkunkWeb.LogObj import DEBUG, HTTP_ACCESS, logException
 from SkunkWeb.ServiceRegistry import WEB
 from SkunkWeb import Configuration, ConfigAdditives, constants
 from requestHandler.protocol import Protocol, PreemptiveResponse
@@ -57,6 +57,7 @@ class HTTPConnection:
         self.env = requestData['environ']
         self._requestDict=requestData
         self._status=200
+        self._rawOutput=''
         self._stdin = requestData['stdin']
         self._initURI(self.env)
         self._initArgs(requestData)
@@ -202,6 +203,8 @@ class HTTPConnection:
                     ren = lro - 1
                 self.responseHeaders['Content-Range']='bytes %d-%d/%d' % (
                     rst, ren, lro)
+        # store the raw output (for logging purposes)
+        self._rawOutput=rawOutput
         if not self.responseHeaders.has_key('Content-Length'):
             self.responseHeaders['Content-Length'] = len(rawOutput)
         if self.responseCookie.keys():
@@ -211,7 +214,7 @@ class HTTPConnection:
         if self.method in headersOnlyMethods or self._status in headersOnlyStatuses:
             return headers+"\r\n"
         else:
-            return headers + "\r\n" + rawOutput
+            return "%s\r\n%s" % (headers, rawOutput)
     
     def setStatus(self, status):
         try:
@@ -422,4 +425,17 @@ def _compressit(txt):
     retval = outt.getvalue()
     time.time=oldtime
     return retval
+    
+def _accesslog(requestData, sessionDict):
+    if Configuration.HttpLoggingOn:
+        conn=sessionDict.get(constants.CONNECTION)
+        if conn:
+            # very tolerant of env being screwed up
+            HTTP_ACCESS(remote=conn.env.get('REMOTE_ADDR', '-'),
+                        request="%s %s %s" % (conn.method,
+                                              conn.uri,
+                                              conn.env.get('SERVER_PROTOCOL', '-')),
+                        status=conn._status,
+                        length=len(conn._rawOutput),
+                        auth_user=conn.env.get('REMOTE_USER', '-'))
     

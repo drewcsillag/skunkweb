@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: LogObj.py,v 1.4 2003/05/01 20:45:55 drew_csillag Exp $
+#$Id: LogObj.py,v 1.5 2003/05/02 17:38:18 smulloni Exp $
 ########################################################################
 
 """
@@ -52,6 +52,7 @@ Configuration.mergeDefaults(
     errorLog =   confvars.DEFAULT_ERROR_LOG,
     regularLog = confvars.DEFAULT_REGULAR_LOG,
     debugLog =   confvars.DEFAULT_DEBUG_LOG,
+    httpAccessLog = confvars.DEFAULT_HTTP_ACCESS_LOG,
     stampEveryLine = 1,
     logDateFormat = '%a, %d %b %Y %H:%M:%S GMT',
     initialDebugServices=[]
@@ -74,12 +75,12 @@ Hooks.ChildStart.append(Logger.initLogStamp)
  WARN,
  ERROR,
  ACCESS,
+ HTTP_ACCESS,
  logException)=(Logger.DEBUGIT,
                 Logger.DEBUG,
                 Logger.LOG,
                 Logger.WARN,
                 Logger.ERROR,
                 Logger.ACCESS,
+                Logger.HTTP_ACCESS,
                 Logger.logException)
-
-
