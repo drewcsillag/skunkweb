@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.19 2003/03/20 21:04:11 smulloni Exp $
-# Time-stamp: <03/03/20 16:01:11 smulloni>
+# $Id: protocol.py,v 1.20 2003/05/01 20:45:55 drew_csillag Exp $
+# Time-stamp: <2003-05-02 12:13:13 drew>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -27,7 +27,17 @@ import types
 import browser
 from SkunkWeb.Hooks import KeyedHook
 import argextract
+import base64
+import md5
+try:
+    import gzip
+except:
+    pass
 
+Configuration.mergeDefaults(
+    textCompression=0,
+    generateEtagHeader=1,
+    )
 headersOnlyMethods=['HEAD'] 
 headersOnlyStatuses=[100, 101, 102, 204, 304]
 
@@ -154,7 +164,21 @@ class HTTPConnection:
         self.responseHeaders['Content-Type'] = type
         
     def response(self):
-        rawOutput, headers = self._output.getvalue(), ''
+        rawOutput = self._output.getvalue()
+        headers = ''
+        
+        if Configuration.textCompression:
+            ae = self.requestHeaders.get('accept-encoding', '').split(',')
+            for i in ('gzip', 'x-gzip'):
+                if (i in ae
+                    and self.responseHeaders['content-type'][:5] == 'text/'):
+                    rawOutput = _compressit(rawOutput)
+                    self.responseHeaders['Content-Encoding'] = i
+                    break
+
+        if Configuration.generateEtagHeader:
+            etagval = base64.encodestring(md5.new(rawOutput).digest())[:-1]
+            self.responseHeaders['etag'] = etagval
         if not self.responseHeaders.has_key('Content-Length'):
             self.responseHeaders['Content-Length'] = len(rawOutput)
         if self.responseCookie.keys():
@@ -225,7 +249,7 @@ class HeaderDict:
         return self._d.has_key(k)
 
     def get(self, k, default=None):
-        return self._d.get(k, default)
+        return self._d.get(self._fixHeader(k), default)
 
     def items(self):
         return self._d.items()
@@ -365,3 +389,15 @@ def _cleanupConfig(requestData, sessionDict):
         Configuration.scope({constants.UNIXPATH : sessionDict[constants.UNIXPATH]})
     #Configuration.saveMash()
 
+def _compressit(txt):
+    # have to screw with time so it doesn't wind up in the gzipped thing
+    oldtime = time.time
+    time.time = lambda x=0:0
+    outt = cStringIO.StringIO()
+    outf = gzip.GzipFile(fileobj=outt, mode='wb')
+    outf.write(txt)
+    outf.close()
+    retval = outt.getvalue()
+    time.time=oldtime
+    return retval
+    
