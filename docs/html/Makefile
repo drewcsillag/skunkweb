@@ -43,7 +43,6 @@ devel: devel/devel.html
 # The index.html target is at the end since it screws up font-lock.
 
 devel/devel.html:  ../devel/devel.tex ../devel/ae.tex
-	cp ../devel/devel.bib .
 	$(MKHTML) $(TOPDIR)/devel/devel.tex
 
 stmlrefer/stmlrefer.html: ../stmlrefer/stmlrefer.tex
