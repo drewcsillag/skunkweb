@@ -1,20 +1,22 @@
+
 2002-04-29  Andrew Csillag  <drew@localhost.localdomain>
 
-	* SkunkWeb/sw.conf.in: removed part where you specified the password 
-	slot for the PlainSessionAuth authorizer since we don't do that
-	anymore.
+	* SkunkWeb/sw.conf.in: removed part where you specified the
+	password slot for the PlainSessionAuth authorizer since we don't
+	do that anymore.
 
 	* SkunkWeb/Services/auth/__init__.py: added more documentation in
-	the comment describing authorizer objects as well as did a few 
+	the comment describing authorizer objects as well as did a few
 	grammar/spelling/capitalization fixes.
 
-	The SessionAuthBase also no longer stores the password in the 
-	session.  That was pretty stupid.  If somebody actually wants that, 
-	they can do it themselves.
+	The SessionAuthBase also no longer stores the password in the
+	session.  That was pretty stupid.  If somebody actually wants
+	that, they can do it themselves.
 
 	* SkunkWeb/sw.conf.in: removed cookieauth stuff, added auth stuff
 
-	* configure, configure.in: removed cookieauth stuff, added auth stuff
+	* configure, configure.in: removed cookieauth stuff, added auth
+	stuff
 	
 	* SkunkWeb/configure, SkunkWeb/configure.in: removed cookieauth 
 	stuff, added auth stuff
@@ -22,13 +24,15 @@
 	* SkunkWeb/Services/auth/{login.html,__init__.py,logout.html}:
 	added new auth service
 
-	* SkunkWeb/Services/cookieauth: whole directory removed.  Superceded 
-	by new auth service which is now the swiss army knife of web
-	authentication.
+	* SkunkWeb/Services/cookieauth: whole directory removed.
+	Superceded by new auth service which is now the swiss army knife
+	of web authentication.
 
 2002-04-27  Andrew Csillag  <drew@localhost.localdomain>
 
-	* SkunkWeb/Services/cookieauth/__init__.py: cleaned up so that you can provide arbitrary authenticator info that only somewhat cookie related???
+	* SkunkWeb/Services/cookieauth/__init__.py: cleaned up so that you
+	can provide arbitrary authenticator info that only somewhat cookie
+	related???
 
 2002-04-27  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -37,27 +41,33 @@
 
 	* FAQ: updated.
 
-	* SkunkWeb/Services/rewrite.py (__getcompiled): now compile regexes
-	in Configuration.rewriteRules, if they aren't already
+	* SkunkWeb/Services/rewrite.py (__getcompiled): now compile
+	regexes in Configuration.rewriteRules, if they aren't already
 	compiled. (DynamicRewriter, Redirect): extended service so it can
 	perform take functions as replacements, as in re.sub, and, with
-	DynamicRewriter, have access to the connection and sessionDict.
-	A Redirect class added as example and trial run.
+	DynamicRewriter, have access to the connection and sessionDict.  A
+	Redirect class added as example and trial run.
 
 2002-04-26  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/AE/cacheKey/cachekey.c(encodeSingle): now will encode
-	DateTime objects so they can be part of a cache key, and improved the 
-	error message raised when an object that cannot be used for a cache
-	key component is used.
+	DateTime objects so they can be part of a cache key, and improved
+	the error message raised when an object that cannot be used for a
+	cache key component is used.
 
+2002-04-26  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/AE/Executables.py (STMLExecutable.mergeNamespaces): now
+	correctly raises exception (was missing parens around tuple).
+	
 2002-04-24  Andrew Csillag  <drew@localhost.localdomain>
 
-	* SkunkWeb/mod_skunkweb/Makefile.in: fixes so that it works with both 
-	Apache 1 and Apache 2
+	* SkunkWeb/mod_skunkweb/Makefile.in: fixes so that it works with
+	both Apache 1 and Apache 2
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: now handles Apache 2!
 
+>>>>>>> 1.166
 2002-04-19  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/postconn.py: A number of changes with regard to how
@@ -66,8 +76,8 @@
 
 2002-04-18  Andrew Csillag  <drew@localhost.localdomain>
 
-	* SkunkWeb/Services/cookieauth/login.html: now handles invalid login 
-	properly w.r.t. original query args.
+	* SkunkWeb/Services/cookieauth/login.html: now handles invalid
+	login properly w.r.t. original query args.
 
 	* pylibs/PyDO/pgenscript.py: applied clean up patch from Greg
 	Brauer
@@ -97,18 +107,19 @@
 
 2002-04-13  Andrew Csillag  <drew@thoughttrack.com>
 
-	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: first shot towards Apache 2
-	compatibility.  Doesn't compile for it yet, but it's getting there.
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: first shot towards Apache
+	2 compatibility.  Doesn't compile for it yet, but it's getting
+	there.
 
 	* pylibs/PyDO/PyDO.py: fixed bug in scatterFetchPost when got no
 	results back from the query.  Thanks to Karl Putland
-	<kperacles@yahoo.com>. 
+	<kperacles@yahoo.com>.
 
 2002-04-09  Jacob Smullyan  <jsmullyan@wnyc.org>
 
-	* pylibs/AE/Cache.py (CachedComponent.__init__): stale was
-	being set to precisely the wrong value; thanks to Stephen Coursen
-	for catching this (*immediately* after the release of 3.2!)
+	* pylibs/AE/Cache.py (CachedComponent.__init__): stale was being
+	set to precisely the wrong value; thanks to Stephen Coursen for
+	catching this (*immediately* after the release of 3.2!)
 
 2002-04-09  Andrew Csillag  <drew@yahoo.com>
 
@@ -163,11 +174,12 @@
 
 2002-03-18  Andrew Csillag  <drew@localhost.localdomain>
 
-	* SkunkWeb/sample_webdocs/demo/geeknews/newsvac.comp, dcomps/newsvac.pydcmp:
-	added
+	* SkunkWeb/sample_webdocs/demo/geeknews/newsvac.comp,
+	dcomps/newsvac.pydcmp: added
 
-	* SkunkWeb/sample_webdocs/demo/geeknews/index.html, dcomps/newsforge.pydcmp:
-	fixes now that newsforge and linux.com have changed a bit	
+	* SkunkWeb/sample_webdocs/demo/geeknews/index.html,
+	dcomps/newsforge.pydcmp: fixes now that newsforge and linux.com
+	have changed a bit
 
 2002-03-03  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -190,8 +202,9 @@
 	* SkunkWeb/Services/product/manifest.py (write_manifest): some api 
 	modifications for productmaker.py.
 
-	* SkunkWeb/Services/product/productmaker.py: so far, just a function that 
-	builds a product archive; script and wizard still incomplete.
+	* SkunkWeb/Services/product/productmaker.py: so far, just a
+	function that builds a product archive; script and wizard still
+	incomplete.
 
 2002-02-22  Jacob Smullyan  <smulloni@smullyan.org>
 
