@@ -1,3 +1,8 @@
+2002-05-07  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: fixed skunkweb_handler so it 
+	should behave properly w.r.t. VirtualHosts.
+
 2002-05-06  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/AE/ComponentTag.py (ComponentTag.genCode,
