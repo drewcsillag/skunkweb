@@ -1,3 +1,7 @@
+2004-05-12  Drew Csillag  <drew_csillag@yahoo.com>
+
+	* SkunkWeb/util/precompile.py.in: now compiles message catalogs too
+
 2004-04-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/DT/DTLexer.py (findTags): now allows files to end
