@@ -33,6 +33,8 @@
 
 	* pylibs/AE/Cache.py: performance tweaks
 
+	* The beginning of the "Great Profiling"
+	
 2001-08-25  Drew Csillag  <drew@starmedia.net>
 
 	* faq2html.py: added.  Converts FAQ to a form usable by the
