@@ -1,3 +1,8 @@
+2003-05-14    <drew@loki.sai-office>
+
+	* SkunkWeb/swpython.py.in: fixed it so that __name__ == '__main__' 
+	in python scripts
+
 2003-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/containers/fieldcontainer.py: corrected incorrect
