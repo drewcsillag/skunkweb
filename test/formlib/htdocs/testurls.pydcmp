@@ -3,7 +3,7 @@ import os
 import AE.Component
 import SkunkWeb.Configuration
 
-testRE=re.compile(r'test(\d*)\.html')
+testRE=re.compile(r'^test(\d*)\.html$')
 
 def getTestUrls(fs, directory):
     m=[testRE.match(x) for x in fs.listdir(directory)]
