@@ -1,3 +1,20 @@
+2002-05-02  Andrew Csillag  <drew@localhost.localdomain>
+
+	* FAQ: added entry about path info
+
+	* SkunkWeb/Services/web/protocol.py(HTTPConnection._initArgs):
+	made it so that:
+
+	1) empty form arguments are passed through.  Previously, they were
+	   dropped, but it generally wasn't a problem since you usually
+	   used <:args:> or CONN.args.get(foo), but occasionally it was
+	   confusing.
+	
+	2) on a POST request, we now also gather what would usually be GET
+	   arguments also (say your form action is /foo/bar.html?baz=fred
+	   and it was a POST, you'll now get the baz argument (set to
+	   fred, of course))
+
 2002-05-01  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/rewrite.py (_dorewrite): fixed typo.
