@@ -1,5 +1,5 @@
-#   Time-stamp: <02/01/15 20:52:37 smulloni> 
-#   $Id: TODO,v 1.24 2002/01/10 15:10:28 drew_csillag Exp $
+#   Time-stamp: <02/01/16 13:51:49 smulloni> 
+#   $Id: TODO,v 1.25 2002/01/16 01:53:17 smulloni Exp $
 
 
 * - TODO
@@ -33,8 +33,9 @@ NEW CODING:
 
 * pluggable mime-type handlers
 ? image handling service, built on basis of above
-* tweak makefiles (for RPM_BUILD_ROOT)
+* tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
+? product service and product packaging utility
 
 --- 
 
