@@ -7,7 +7,12 @@ Changes in 3.3
   it to run as) so you can bind to low ports
 * new extcgi service so you can run CGI's from SkunkWeb!
 * new pycgi service for running Python CGI's in process -- still in
-  alpha testing mode.
+  alpha.
+* vfs.FS has new method, split_extra(), that finds extra path info;
+  the rewrite service has a new DynamicRewriter subclass,
+  ExtraPathFinder, which takes advantage of it (although a simple
+  rewrite rule is still more efficient to use when possible -- see the
+  FAQ).
 * fixed userModuleCleanup bugs when using MySQL service and/or used
   <:img:> tag with PIL installed.
 * pydo/mysql now supports connection caching using the mysql service.
