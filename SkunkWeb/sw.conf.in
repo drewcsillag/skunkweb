@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.29 2003/04/03 17:51:24 smulloni Exp $
-# Time-stamp: <03/03/14 09:41:53 smulloni>
+# $Id: sw.conf.in,v 1.30 2003/05/01 20:45:52 drew_csillag Exp $
+# Time-stamp: <2003-05-02 12:01:47 drew>
 
 ########################################################################
 #
@@ -118,6 +118,19 @@ useCompileMemoryCache = 1
 # SkunkWeb.ServiceRegistry.getDebugServices().
 initialDebugServices=[]
 
+########################################################################
+# For the web service
+# if request method is POST, but has a GET-like query string,
+# CONNECTION.args will contain both sets of arguments
+# mergeQueryStringWithPostData=1
+#
+# if set to a true value, skunkweb will attempt to use gzip compression
+# on text/* mime type bodies
+# textCompression=0
+#
+# if set to a true value, skunkweb will generate ETag headers for everything
+# it serves up
+# generateEtagHeader=1
 
 ########################################################################
 # For httpd service ONLY: 
