@@ -1,3 +1,9 @@
+2002-07-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/SkunkWeb/constants.py: added CGI_JOB
+
+	* SkunkWeb/Services/extcgi.py: added external CGI runner
+
 2002-07-10  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* pylibs/MySQL/__init__.py: finally fixed so that using the mysql

@@ -1,5 +1,6 @@
 Changes in 3.2.4
 ========================================
+* new extcgi service so you can run CGI's from SkunkWeb!
 * fixed userModuleCleanup bugs when using MySQL service
 * pydo/mysql now supports connection caching using the mysql service.
 * PyDO documentation updates
