@@ -1,3 +1,9 @@
+2004-01-15  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* pylibs/AE/Cache.py (_mcCompileFunc): fix for Windows line
+	returns and message catalogs (as is already done for templates and
+	python code).
+
 2004-01-12  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/skunk/date/format.py (HTTPDate): adding (replacing

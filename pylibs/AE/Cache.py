@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.23 2003/08/13 02:34:48 smulloni Exp $
+#$Id: Cache.py,v 1.24 2004/01/11 03:56:30 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -182,7 +182,7 @@ def _mcMakeCat(data, name):
         return MsgCatalog.MessageCatalog(data, name)
 
 def _mcCompileFunc(name, data):
-    data = eval(data,{'__builtin__': {}} , {})
+    data = eval('\n'.join(data.split('\r\n')),{'__builtin__': {}} , {})
     return _mcMakeCat(data, name)
 
 def _mcReconstituteFunc(data):
