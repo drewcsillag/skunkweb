@@ -4,6 +4,8 @@
 	and several import problems
 
 2001-08-08  Drew Csillag  <drew@naxos.starmedia.net>
+	
+	* docs/opman/opman.tex: mucho updatos
 
 	* configure, configure.in: no longer "require" GNU make since we
 	don't actually use any GNU specific features (afaik).
