@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: userdir.py,v 1.4 2001/10/11 22:08:55 smulloni Exp $
+# $Id: userdir.py,v 1.5 2001/11/02 17:48:17 smulloni Exp $
 ########################################################################
 
 import pwd
@@ -55,13 +55,14 @@ def doUserDirPre(connection, sessionDict):
         newdocroot = info[5] + '/' + Configuration.userDirPath
         sessionDict['UserDir'] = 1
         sessionDict['UserDirDocRoot'] = Configuration.documentRoot
-        #sessionDict['UserDirURI'] = connection.uri
         sessionDict['UserDirCC'] = Configuration.compileCacheRoot
 
-        Configuration.documentRoot = newdocroot
-        connection.uri = rest_of_path 
-        Configuration.compileCacheRoot = Configuration.compileCacheRoot + \
-                                         '/~%s/' % uname
+        cacheroot="%s/~%s/" % (Configuration.compileCacheRoot, uname)
+        connection.uri = rest_of_path
+        # this will clean itself up when the Configuration is trimmed
+        Configuration.push({'documentRoot' : newdocroot,
+                            'compileCacheRoot' : cacheroot,
+                            'componentCacheRoot' : cacheroot})
         return
         
         
@@ -69,17 +70,10 @@ def doUserDirPost(requestData, sessionDict):
     """
     hook for requestHandler.requestHandler.CleanupRequest
     """
-    if not Configuration.userDir:
-        return
-    if not sessionDict.has_key('UserDir'):
-        return
-    if not sessionDict['UserDir']:
-        return
-
-    Configuration.documentRoot = sessionDict['UserDirDocRoot']
-    Configuration.compileCacheRoot = sessionDict['UserDirCC']
-    del sessionDict['UserDirCC'], sessionDict['UserDirDocRoot']
-    del sessionDict['UserDir']
+    if Configuration.userDir:
+        for k in ('UserDir', 'UserDirCC', 'UserDirDocRoot'):
+            if sessionDict.has_key(k):
+                del sessionDict[k]
 
 def __initHooks():
     import web.protocol as wp

@@ -1,3 +1,10 @@
+2002-06-28  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/userdir.py (doUserDirPre): now fixed so
+	the Configuration object will clean itself up correctly;
+	previously, use of userdir was incompatible with scoping the
+	documentRoot. 
+
 2002-06-27  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* pylibs/Logger.py: the logger now handles some really bizarre
