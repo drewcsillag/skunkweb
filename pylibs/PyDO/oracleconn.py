@@ -33,10 +33,13 @@ class PyDOOracle:
     """PyDBI - PyDO oracle driver"""
     def __init__(self, connectString):
         self.connectString = connectString
-        realConn, self.verbose = self._parseConnectString(connectString)
+        realConn, self.useOracleMod, self.verbose = self._parseConnectString(
+            connectString)
         self.realConn = realConn
-        self.conn = Oracle.getConnection(realConn)
-        #self.conn = DCOracle.Connect(realConn)
+        if self.useOracleMod:
+            self.conn = Oracle.getConnection(realConn)
+        else:
+            self.conn = DCOracle.Connect(realConn)
         self.bvcount = 0
         oraConns.append(self.conn)
         self.bindVariables = 1
@@ -45,10 +48,17 @@ class PyDOOracle:
         
     def _parseConnectString(self, s):
         bits = string.split(s, '|')
+        verbose = 0
+        useOracleMod = 0
         if len(bits) == 1:
-            return bits[0], 0
+            return bits[0], 0, 0
         else:
-            return bits[0], 1
+            if bits[1] == 'cache':
+                useOracleMod = 1
+                bits = bits[1:]
+            if len(bits) > 0 and bits[1] == 'verbose':
+                verbose = 1
+            return bits[0], useOracleMod, verbose
 
     def getConnection(self):
         return self.conn
@@ -154,7 +164,10 @@ class PyDOOracle:
         return val
 
     def getProcedure(self, procName):
-        return Oracle.getProcedure(self.realConn, procName)
+        if self.useOracleMod:
+            return Oracle.getProcedure(self.realConn, procName)
+        else:
+            return getattr(self.getCursor().procedures, procName)
 
     def getCursor(self):
         return self.conn.cursor()

@@ -41,12 +41,24 @@ class PyDOPostgreSQL:
         connectArgs = string.split(connectArgs,':')
         if connectArgs and connectArgs[-1] == 'verbose':
             self.verbose = 1
+            connectArgs = connectArgs[:-1]
+            #connectArgs = string.join(connectArgs[:-1], ':')
+        else:
+            #connectArgs = string.join(connectArgs, ':')
+            self.verbose=0
+        if connectArgs and connectArgs[-1] == 'cache':
+            self.useCacheMod = 1
             connectArgs = string.join(connectArgs[:-1], ':')
         else:
             connectArgs = string.join(connectArgs, ':')
-            self.verbose=0
+            self.useCacheMod =0
+        
         self.connectArgs = connectArgs
-        self.conn = pgdb.connect(connectArgs)
+        if self.useCacheMod:
+            import PostgreSql
+            PostgreSql.getConnection(connectArgs)
+        else:
+            self.conn = pgdb.connect(connectArgs)
         self.bindVariables = 0
 
     def getConnection(self):

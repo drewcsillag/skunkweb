@@ -1,3 +1,35 @@
+Connect Strings
+------------------------------
+When calling PyDO.PyDBI.DBIInitAlias, you have to specify a connect
+string.  If you are using PyDO from within the SkunkWeb server, use
+the caching versions of the connect strings so that connections get
+rolled back properly in the event of an error.  Obviously, if you 
+dont have the pylib modules required for the caching versions, use
+the direct methods.
+
+For Oracle, they take one of two forms (either can optionally have '|verbose'
+appended to them to log the sql executed by the connection):
+   pydo:oracle:user|cache      -- uses the connection caching of the Oracle
+                                  pylib that is used by the oracle SkunkWeb
+                                  service
+or
+   pydo:oracle:user/pw@host    -- use DCOracle directly
+
+For PostgreSQL, they also take one of two forms (either can optionally
+have ':verbose' appended to them to log the sql executed by the
+connection):
+   pydo:postgresql:user|cache  -- uses the connection caching of the
+                                  PostgreSql pylib that is used by the
+                                  postgresql SkunkWeb service
+or
+   pydo:postgresql:normal_postgresql_connstr -- use pgdb directly
+
+For MySQL, which hasn't been tested all that much, only the non-caching
+version is currently available.  If there is demand I can do it, I just
+don't have mysql installed anywhere convienient for me to test.
+
+    pydo:mysql:normal_mysql_connect_string
+
 Inheritance Semantics
 ------------------------------
 
