@@ -1,5 +1,5 @@
-# Time-stamp: <02/12/03 12:24:34 smulloni>
-# $Id: dispatcher.py,v 1.7 2002/11/26 20:52:46 smulloni Exp $
+# Time-stamp: <02/12/05 15:39:33 smulloni>
+# $Id: dispatcher.py,v 1.8 2002/12/03 18:13:09 smulloni Exp $
 
 from containers.fieldcontainer import FieldContainer
 from form import _getname
@@ -13,7 +13,9 @@ class Goto:
                  state,
                  argdict,
                  formdict,
-                 ns={}):
+                 ns=None):
+        if ns is None:
+            ns={}
         form.submit(argdict)
         if form.errors:
             return form
@@ -28,7 +30,9 @@ class Pop:
                  state,
                  argdict,
                  formdict,
-                 ns={}):
+                 ns=None):
+        if ns is None:
+            ns={}
         form.submit(argdict)
         if form.errors:
             return form
@@ -51,7 +55,9 @@ class Push:
                  state,
                  argdict,
                  formdict,
-                 ns):
+                 ns=None):
+        if ns is None:
+            ns={}
         if self.valid:
             form.submit(argdict)
             if form.errors:

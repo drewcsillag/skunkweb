@@ -1,5 +1,7 @@
 2002-12-05  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/formlib/dispatcher.py: more default value gotchas.
+
 	* pylibs/xmlutils.py (XMLElement.walk): added walk() method to
 	XMLElement. 
 	(XMLElement.walk): fixed to actually do something.
