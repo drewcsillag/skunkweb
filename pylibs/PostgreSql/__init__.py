@@ -63,7 +63,13 @@ def getConnection(connUser):
     
     if not _connections.has_key(connectParams):
         try:
-            _connections[connectParams] = pgdb.connect(connectParams)
+            connectArgs = string.split(connectParams,':')
+            host = None
+            if connectArgs[0]:
+                if '|' in connectArgs[0]: #if specified port
+                    host = connectArgs[0].replace('|', ':')
+            _connections[connectParams] = pgdb.connect(connectParams,
+                                                       host = host)
         except pgdb.Error:
             # XXX Do not raise the conenct string! The trace may be seen
             # by users!!!
