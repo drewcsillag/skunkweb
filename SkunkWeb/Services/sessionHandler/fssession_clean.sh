@@ -6,7 +6,8 @@ function usage
     echo "usage: `basename $0` [-t expiration] <session_directory>"
     echo
     echo "   a script that purges expired session files from a"
-    echo "   SkunkWeb session directory.  The expiration parameter"
+    echo "   SkunkWeb session directory (of either the FSSessionDir"
+    echo "   or AECache type).  The expiration parameter"
     echo "   is measured in minutes, and defaults to thirty."
     exit 1
 }
@@ -32,4 +33,5 @@ then
    usage
 
 find $SESSIONDIR -type f -amin +$EXPIRATION -a -exec rm {} \;
-
+# remove empty sub-directories
+find $SESSIONDIR -type d -empty -mindepth 1 -depth -exec rmdir {} \;

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.17 2003/05/07 18:06:37 drew_csillag Exp $
+#$Id: Cache.py,v 1.18 2003/06/11 17:47:01 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -55,7 +55,8 @@ Configuration.mergeDefaults(
     fgrepCommand = '/bin/fgrep',
     runOutOfCache = 0,
     dontCacheSource = 0,
-    noTagDebug = 0,    
+    noTagDebug = 0,
+    writeKeyFiles=0,
 )
 #/config
 
@@ -116,7 +117,8 @@ def putCachedComponent( name, argDict, out, cache_exp_time ):
         'full_key': fullKey,
         }, svr )
     # write .key file
-    _storeCachedComponentKey( path, fullKey, svr )
+    if Configuration.writeKeyFiles:
+        _storeCachedComponentKey( path, fullKey, svr )
     
 def extendDeferredCachedComponent( name, argDict ):
     if Configuration.componentCacheRoot is None:
@@ -394,7 +396,7 @@ def _storeCachedComponent( path, value, svr ):
                    cPickle.dumps((value,
                                   COMPONENT_CACHEFILE_VERSION),
                                  1))
-        os.chmod( path, NORMAL_MODE )
+        #os.chmod( path, NORMAL_MODE )
     except IOError, val:
         DEBUG(CACHE, "error storing component %s" % val)
         if val != errno.ENOENT:
@@ -471,7 +473,7 @@ def _expireCacheFile( path ):
         dict, vsn = cPickle.load( open( path ) )
         dict ['exp_time'] = -1
         _writeDisk( path, cPickle.dumps( (dict,vsn), 1 ))
-        os.chmod( path, EXPIRED_MODE )
+        #os.chmod( path, EXPIRED_MODE )
     except:
         pass
 
@@ -534,80 +536,3 @@ def clearCache( name, arguments, matchExact = None ):
         for i in out:
             _expireCacheFile( i )
 
-########################################################################
-# $Log: Cache.py,v $
-# Revision 1.17  2003/05/07 18:06:37  drew_csillag
-# added noTagDebug
-#
-# Revision 1.16  2003/05/01 20:45:58  drew_csillag
-# Changed license text
-#
-# Revision 1.15  2003/04/19 14:19:35  smulloni
-# changes for scopeable
-#
-# Revision 1.14  2003/04/03 15:12:50  drew_csillag
-# dded runOutOfCache and dontCacheSource
-# 	options
-#
-# Revision 1.13  2003/01/13 17:56:22  smulloni
-# fixed typo in writeCompileCache.
-#
-# Revision 1.12  2002/11/08 21:18:07  smulloni
-# damn, left out an import.
-#
-# Revision 1.11  2002/11/08 21:16:20  smulloni
-# Fix for relative paths for specifying message catalogs; added Input to
-# ecs (had been left out due to typo).
-#
-# Revision 1.10  2002/06/18 15:08:19  drew_csillag
-# fixed a DEBUG msg pointed out by pychecker and changed a string.atoi to int()
-#
-# Revision 1.9  2002/04/09 21:27:34  smulloni
-# fix from Stephen Coursen for cache bug
-#
-# Revision 1.8  2002/02/13 18:36:19  drew_csillag
-# fixed typo error
-#
-# Revision 1.7  2002/02/07 07:18:41  smulloni
-# documentRootFS is now a single instance.
-#
-# Revision 1.6  2002/01/27 03:10:44  smulloni
-# moving in the direction of getting rid of Configuration.DocumentRoot!
-#
-# Revision 1.5  2001/12/02 20:57:50  smulloni
-# First fold of work done in September (!) on dev3_2 branch into trunk:
-# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
-# to templating's <:img:> tag.
-#
-# Revision 1.4.2.1  2001/09/19 05:07:15  smulloni
-# first code using vfs
-#
-# Revision 1.4  2001/08/28 11:38:07  drew_csillag
-# now uses skunklib.normpath
-#
-# Revision 1.3  2001/08/27 19:52:51  drew_csillag
-# commented out more DEBUG statements
-#
-# Revision 1.2  2001/08/27 18:09:25  drew_csillag
-# performance tweaks
-#
-# Revision 1.1.1.1  2001/08/05 15:00:43  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.18  2001/07/29 15:46:16  drew
-# altered memory caching so that the compileCacheRoot is part of the memory cache key
-#
-# Revision 1.17  2001/07/09 20:38:41  drew
-# added licence comments
-#
-# Revision 1.16  2001/04/16 17:53:02  smullyan
-# some long lines split; bug in Server.py fixed (reference to deleted
-# Configuration module on reload); logging of multiline messages can now
-# configurably have or not have a log stamp on every line.
-#
-# Revision 1.15  2001/04/10 22:48:33  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#            

@@ -26,7 +26,19 @@ class Store(SessionStore):
                                     data,
                                     time.time()+C.SessionTimeout)
     def delete(self):
-        AE.Cache.clearCache(self.componentPath(), {}, 1)
+        #AE.Cache.clearCache(self.componentPath(), {}, 1)
+        cachepath, srv, fk=AE.Cache._genCachedComponentPath(self.componentPath(), {})
+        # there may be a key file.
+        keypath=cachepath[:-5]+'key'
+        for f in cachepath, keypath:
+            try:
+                os.unlink(f)
+            except OSError, e:
+                if e.errno==errno.ENOENT:
+                    pass
+                else:
+                    raise
+
 
     def touch(self):
         cachepath, srv, fk=AE.Cache._genCachedComponentPath(self.componentPath(), {})

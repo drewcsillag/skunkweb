@@ -1,3 +1,16 @@
+2003-07-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/fssession_clean.sh: session
+	cleaner script made to work nicely with AE Cache sessions.
+
+	* SkunkWeb/Services/sessionHandler/AECacheSessionStore.py
+	(Store.delete): now delete the session file rather than "expiring"
+	it.
+
+	* pylibs/AE/Cache.py: added "writeKeyFile" configuration
+	parameter; writing of key files is now optional.  Also, stopped
+	the chmod-ing of cache files.
+
 2003-07-21  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in: updated sessionHandler documentation.

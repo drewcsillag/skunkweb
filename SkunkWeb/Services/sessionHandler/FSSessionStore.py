@@ -1,5 +1,5 @@
-# Time-stamp: <03/07/19 13:09:47 smulloni>
-# $Id: FSSessionStore.py,v 1.6 2003/07/18 19:56:18 smulloni Exp $
+# Time-stamp: <03/07/21 09:49:32 smulloni>
+# $Id: FSSessionStore.py,v 1.7 2003/07/19 17:10:51 smulloni Exp $
 #  Copyright (C) 2001, 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General
@@ -75,7 +75,6 @@ class Store(SessionStore):
     
     def save(self, data):
         self.__setPickle(data)
-#        self._checkReap()
 
     def __setPickle(self, data):
         f=open(self._picklepath, 'w')
