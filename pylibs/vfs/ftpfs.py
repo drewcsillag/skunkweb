@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.6 2002/10/22 03:01:59 smulloni Exp $
-# Time-stamp: <02/10/22 16:54:52 smulloni>
+# $Id: ftpfs.py,v 1.7 2002/10/22 21:26:11 smulloni Exp $
+# Time-stamp: <02/10/31 13:50:09 smulloni>
 
 ########################################################################
 #  
@@ -169,7 +169,7 @@ if _have22:
                     self.login(self.user,
                                self.passwd,
                                self.acct)
-                except (socket.error, IOError):
+                except (ftplib.Error, socket.error, IOError, EOFError):
                     self.connect(self.host, self.port)
                     self.login(self.user,
                                self.passwd,
