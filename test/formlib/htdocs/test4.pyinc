@@ -1,0 +1,68 @@
+from formlib import *
+
+
+# This test will simulate submission of an internationalizable address profile
+usernmfld = TextField('username', description="Username", size="40", maxlength="39") 
+passwordfld = PasswordField('password', description="Password", size="40", maxlength="39")
+
+# hidden cookie to track client side list of visited programs
+visitedfld =  HiddenField('visited', value="Resident Evil,The Hudsucker Proxy,Wizard of Oz")
+
+#regular address info
+firstnmfld = TextField('firstname', description="First Name", size="40") 
+lastnmfld = TextField('lastname', description="Last Name", size="40")
+statefld =  SelectField('state', [('NY', 'New York'), ('CT', 'Connecticut'), ('NJ', 'New Jersey')],
+                      description='Your State', multiple=0,  size=1)
+provincefld = TextField('province', description="Province (if outside US)", size="40")
+countryfld =  SelectField('country', [('Canada', 'CN'), ('Mexico', 'MX'),('United States', 'US')],
+                      description='Your Country', default='US', multiple=0,  size=1)
+postalfld = TextField('postal', description="Postal Code", size="40")
+subfld = SubmitField(value="Submit")
+
+
+fields=[usernmfld, passwordfld, visitedfld, firstnmfld, lastnmfld, statefld, provincefld, countryfld, postalfld, subfld]
+
+def validate(form):
+    errors={}
+    usnm = form.fields['username']
+    psswd = form.fields['password']
+    cntry = form.fields['country']
+    prov = form.fields['province']
+
+    if not usnm.value:
+        errors[usnm] = 'Please enter a valid username to submit changes.'
+    if not psswd.value:
+        errors[psswd] = 'Please enter a valid password to submit changes.'
+
+    if cntry.value != "US":
+        if not prov.value:
+            errors[prov]="Please enter a province for non-US residents."
+
+    if errors:
+        errors[form]='There were errors with your submission.'
+
+    return errors
+
+
+form=ViewableForm(name="test4",
+                  method="POST",
+                  fields=fields,
+                  validators=[validate])
+
+import ecs
+if CONNECTION.method=='POST':
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  Please continue with your visit to the site.")
+        dispStr = "Remember to look at your visited locations: %s"
+        vstd = form.fields['visited']
+        print ecs.P(dispStr % (vstd.value))
+else:
+    print
+    print ecs.H3("Your address information, please.")
+    print
+
+print
+print form.getView()
