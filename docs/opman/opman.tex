@@ -205,9 +205,10 @@ pidfile missing. Aborting...''
 
 \section{Services}
 There are a plethora of services available that....
-%JACOB
+%DREW -- what do you want to say here as a general introduction, given 
+% that this is an operations manual and not a developers' manual?
 \begin{argdesc}
-\item[ae_component] A service used by remote and templating that
+\item[ae_component] A service used by \texttt{remote} and \texttt{templating} that
 initializes the AE component facilities.  This service, coupled with
 the \texttt{web}, \texttt{requestHandler} and \texttt{templating}
 services is what really makes the server tick.
@@ -219,7 +220,7 @@ SkunkWeb connectivity.
 \item[basicauth]  Allows for doing HTTP basic authentication \doref{swpasswd}.
 
 \item[httpd] Makes it so SkunkWeb can handle HTTP requests directly,
-without the use of Apache.
+without the use of Apache.  Requires the \texttt{web} service.
 
 \item[mysql] Service to cache MySQL connections
 \doref{databaseservices}.
@@ -234,16 +235,18 @@ the docroot to be stored in parfile archives \doref{pardotpy}.
 \doref{databaseservices}.
 
 \item[remote] Allows SkunkWeb to serve remote component requests
-\doref{remotecomponents}.
+\doref{remotecomponents}; requires the \texttt{requestHandler} 
+and \texttt{ae_component} services.
 
 \item[remote_client] Allows SkunkWeb to make remote component requests
-\doref{remotecomponents}
+\doref{remotecomponents}; requires the \texttt{templating} service.
 
 \item[requestHandler]  Adds a request handling framework, built on top
 of by some of the other services.
 
 \item[sessionHandler]  Handles the persistence of user session data in
-a MySQL database.
+a MySQL database, the local filesystem, or other user-defined data store; 
+requires the \texttt{web} service.
 
 \item[templating] Hooks together the \texttt{web} and \texttt{ae_component}
 services, in addition to adding a few tags.
@@ -251,7 +254,7 @@ services, in addition to adding a few tags.
 %\item[vhost] Simplifies virtual hosting with SkunkWeb.
 
 \item[web] Service to manage web requests and setup the
-\texttt{CONNECTION} object.
+\texttt{CONNECTION} object; requires the \texttt{requestHandler} service.
 \end{argdesc}
 
 \section{Configuration Options}
@@ -305,7 +308,7 @@ Scope(Host(`www.foo.com',
 \end{verbatim}	
 
 \subsection{The Options}
-\textbf{Note:} Arguments that are \emph{scopable} are denoted with a 
+\textbf{Note:} Arguments that are not \emph{scopable} are denoted with a 
 \nonscope\ in their description.
 
 Core Parameters:
@@ -470,7 +473,12 @@ The amount of time (in seconds) allowed for the PostRequest hooks to
 execute before timing them out.
 Default is 20.
 \item[job] 
-%%%JACOB--FIXME
+The job that the server should perform.  TEMPLATING_JOB and REMOTE_JOB 
+are likely to the only ones you need to specify among those available in
+the core services, and they are pre-imported into the namespace in which
+the sw.conf file is executed.  It is essential that the sw.conf file
+specify this constant, as no default is specified anywhere else.
+For more information about job strings, see the developer's manual.
 \end{argdesc}
 
 
@@ -519,13 +527,12 @@ Default is \texttt{['TCP:localhost:9887']}.
 
 
 Parameters for the \texttt{sessionHandler} service.
-%% JACOB--FIXME -- re: \nonscope
 \begin{argdesc}
 \item[SessionTimeout] 
 The session timeout, in seconds.  Sessions which have seen no action
 for this period of time are ripe for reaping.
 Default is 1800 (30 minutes).
-\item[SessionReapInterval]
+\item[SessionReapInterval] \nonscope
 Session reap interval, in seconds.  When the reap interval has elapsed,
 the server may reap old sessions in the aftermath of its next
 request handling cycle.  To turn off reaping (if more than one
@@ -533,30 +540,33 @@ server is using the same session store, or if another process
 is performing reaping separately), set this to zero or a negative
 value.
 Default is 300 (5 minutes).
-\item[SessionStore]
+\item[SessionStore] 
 The session store implementation class (full package name). This
 defaults to None, which, if the sessionHandler service is imported,
 will cause an error.  To use sessionHandler, you must specify a session
 store implementation; e.g.:
-\begin{verbatim}
+\begin{verbatim} 
 SessionStore='sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
 \end{verbatim}
-Default is \texttt{None}.
-\item[SessionIDKey]
+Default is \texttt{None}; two SessionStore implementations are currently 
+available, \texttt{MySQLSessionStore.MySQLSessionStoreImpl} and 
+\texttt{FSSessionStore.FSSessionStoreImpl}.  SessionStore can be scoped 
+by host, port, or ip; it should not be scoped by location.
+\item[SessionIDKey] \nonscope
 The key under which the session is kept (in a cookie or in URL rewriting).
 Default is \texttt{'sessionID'}.
 \end{argdesc}
 The following \texttt{sessionHandler} config variables specify names
 of the session table and its columns and the MySQL host, user and password.
 \begin{argdesc}
-\item[SessionHandler_MySQLHost]='localhost'
-\item[SessionHandler_MySQLUser]='sessionHandler'
-\item[SessionHandler_MySQLPass]='sessionPass'
-\item[SessionHandler_MySQLDB]='sessionStore'
-\item[SessionHandler_MySQLTable]='Sessions'
-\item[SessionHandler_MySQLIDColumn]='id'
-\item[SessionHandler_MySQLPickleColumn]='pickle'
-\item[SessionHandler_MySQLTimestampColumn]='accessTime'
+\item[SessionHandler_MySQLHost]='localhost' \nonscope
+\item[SessionHandler_MySQLUser]='sessionHandler' \nonscope
+\item[SessionHandler_MySQLPass]='sessionPass' \nonscope
+\item[SessionHandler_MySQLDB]='sessionStore' \nonscope
+\item[SessionHandler_MySQLTable]='Sessions' \nonscope
+\item[SessionHandler_MySQLIDColumn]='id' \nonscope
+\item[SessionHandler_MySQLPickleColumn]='pickle' \nonscope
+\item[SessionHandler_MySQLTimestampColumn]='accessTime' \nonscope
 \end{argdesc}
 
 
@@ -619,6 +629,7 @@ corresponding function), the address FromAddress is used.
 
 
 \section{\texttt{pars}}
+
 The \texttt{pars} service is present to allow you to maintain the
 docroot \'al\`a java-style/\texttt{CLASSPATH}, sorta.  It allows you
 to store items that would normally be required to be in the docroot,
@@ -629,6 +640,13 @@ then, if \texttt{parFallthrough} is specified, look in the docroot.
 
 \section{\texttt{sessionHandler}}
 %%%FIXME
+The \texttt{sessionHandler} service adds to the \texttt{web}
+service's \texttt{CONNECTION} object the ability to create a session object,
+which can contain and automatically persist pickleable Python data for the 
+duration of a web session, maintained and tracked by a session id placed 
+in a cookie.  For sessionHandler to work, it is necessary to specify a 
+\texttt{SessionStore} implementation by setting the configuration variable of
+the same name in \texttt{sw.conf}.
 
 \section{Database Services}
 \label{databaseservices}
