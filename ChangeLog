@@ -1,5 +1,8 @@
 2003-04-11  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* docs/stmlrefer/stmlrefer.tex (section{The \texttt{CONNECTION}
+	Object}): typo fix, thanks to Frank Tegtmeyer.
+
 	* pylibs/formlib/__init__.py: conditional import of aecomp
 	submodule (will still work if AE isn't installed).
 
