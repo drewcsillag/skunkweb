@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-import string, types
+import types
 
 class SYSDATE: pass
 
@@ -53,7 +53,7 @@ def DBIGetConnection(alias):
                 raise ValueError, ("invalid connect string: doesn't start"
                                    " with pydo: <%s>") % connArgs
             rconnString = connArgs[5:]
-            colInd = string.index(rconnString, ':')
+            colInd = rconnString.index(':')
             driverName = rconnString[:colInd]
             driverArgs = rconnString[colInd+1:]
         elif argType==types.DictType:
@@ -75,16 +75,3 @@ def _getDriver(driverName):
         
     return _loadedDrivers[driverName]
     
-##def _getConnectionByConnString(connString):
-##    if not _connStringToConnections.has_key(connString):
-##        if connString[:5] != 'pydo:':
-##            raise ValueError, ("invalid connect string: doesn't start"
-##                               " with pydo: <%s>") % connString
-##        rconnString = connString[5:]
-##        colInd = string.index(rconnString, ':')
-##        driverName = rconnString[:colInd]
-##        driverString = rconnString[colInd+1:]
-##        _connStringToConnections[connString] = _getDriver(
-##            driverName)(driverString)
-        
-##    return _connStringToConnections[connString]

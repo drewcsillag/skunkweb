@@ -1,5 +1,10 @@
 2003-01-12  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/PyPgSQLcache.py: the pylibs used by the driver, below.
+
+	* SkunkWeb/Services/pypgsqlcache.py: caching service for pypgsql
+	driver.  This design is a pain in the neck.
+
 	* pylibs/PyDO/pypgsqlconn.py: first draft of pypgsql PyDO driver,
 	submitted by "John Pydo".
 
