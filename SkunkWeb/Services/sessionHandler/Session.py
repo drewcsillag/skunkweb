@@ -15,8 +15,8 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Author: smulloni $
-# $Revision: 1.10 $
+# $Author: drew_csillag $
+# $Revision: 1.1.1.1 $
 # Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
@@ -66,7 +66,10 @@ def removeSession(self):
     '''
     clears and removes any active session.
     '''
+    DEBUG(SESSIONHANDLER, "in removeSession()")
+    self.getSession(0)
     if hasattr(self, '__userSession'):
+        DEBUG(SESSIONHANDLER, "calling delete()")
         self.__userSession.delete()
         del self.__userSession    
 
@@ -228,6 +231,10 @@ class SessionStore:
     
 ########################################################################
 # $Log: Session.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:07  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.10  2001/07/25 13:34:31  smulloni
 # modified sessionHandler so that the SessionStore parameter is a string, not
 # a class; added comments to sw.conf.in for sessionHandler-related goodies.
