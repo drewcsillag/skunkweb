@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.5 2001/10/28 18:49:38 drew_csillag Exp $
+#$Id: Executables.py,v 1.6 2001/11/18 18:32:27 smulloni Exp $
 import sys
 import cStringIO
 import copy
@@ -83,7 +83,7 @@ class PythonExecutable:
                 
             if self.compType in ( DT_REGULAR, DT_INCLUDE ):
                 output = outputIO.getvalue()
-            return output
+                return output
 
         finally:
             if self.compType in ( DT_REGULAR, DT_INCLUDE ):

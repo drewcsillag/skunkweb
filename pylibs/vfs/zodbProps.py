@@ -1,8 +1,8 @@
-# $Id$
-# Time-stamp: <02/02/04 22:10:10 smulloni>
+# $Id: zodbProps.py,v 1.1 2002/02/05 03:18:17 smulloni Exp $
+# Time-stamp: <02/02/05 02:45:40 smulloni>
 
 ######################################################################## 
-#  Copyright (C) 2002 Jocob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@ import ZODB
 from Persistence import PersistentMapping
 import BTrees.OOBTree
 from ZEO import ClientStorage
-from os.path import normpath
+from skunklib import normpath2 as _normpath
+
 
 class ZODBPathPropertyStore(PathPropertyStore):
 
@@ -47,7 +48,7 @@ class ZODBPathPropertyStore(PathPropertyStore):
         self.__db=dbroot[root]
         
     def getproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         self.__conn.sync()
         db=self.__db
         if db.has_key(path):
@@ -57,7 +58,7 @@ class ZODBPathPropertyStore(PathPropertyStore):
         raise KeyError, property
 
     def setproperty(self, path, property, value):
-        path=normpath(path)
+        path=_normpath(path)
         self.__conn.sync()
         db=self.__db
         if db.has_key(path):
@@ -69,7 +70,7 @@ class ZODBPathPropertyStore(PathPropertyStore):
         get_transaction().commit()
         
     def properties(self, path):
-        path=normpath(path)
+        path=_normpath(path)
         self.__conn.sync()
         db=self.__db
         if db.has_key(path):
@@ -77,13 +78,13 @@ class ZODBPathPropertyStore(PathPropertyStore):
         return ()
 
     def hasproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         self.__conn.sync()
         db=self.__db
         return db.has_key(path) and db[path].has_key(property)
 
     def delproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         self.__conn.sync()
         db=self.__db
         if db.has_key(path) and db[path].has_key(property):
@@ -92,5 +93,8 @@ class ZODBPathPropertyStore(PathPropertyStore):
 
     
 ########################################################################
-# $Log$
+# $Log: zodbProps.py,v $
+# Revision 1.1  2002/02/05 03:18:17  smulloni
+# fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
+#
 ########################################################################

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/04 21:34:11 smulloni>
+# Time-stamp: <02/02/05 13:43:32 smulloni>
 
 ########################################################################
 #  
@@ -24,9 +24,24 @@ from rosio import RO_StringIO
 from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS
 from zipfs import ZipFS
-from tarfs import TarFS
 from shelfProps import ShelfPathPropertyStore
+
+# and now, try to import stuff with optional dependencies
+try:
+    from tarfs import TarFS
+except ImportError:
+    pass
 try:
     from zodbProps import ZODBPathPropertyStore
 except ImportError:
     pass
+
+# I'd like to do this, but it leads to a circular dependency with AE:
+
+##try:
+##    from aeProps import AEPathPropertyStore
+##except ImportError:
+##    pass
+    
+# SkunkWeb would die on startup with an AttributeError (AE has no
+# attribute "Cache") were I to uncomment the above.

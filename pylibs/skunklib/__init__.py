@@ -26,4 +26,18 @@ from _translate import *
 from _normheader import *
 #import C version of the posix os.path.normpath
 from _normpath import *
-#from os.path import normpath
+
+def normpath2(path):
+    """
+    a variant of skunklib's normpath
+    that always removes final slashes
+    (skunklib.normpath leaves them on).
+    Still faster than os.path.normpath
+    by a long shot.
+    """
+    p=normpath(path)
+    if len(p)>1 and p[-1]=='/':
+        return p[:-1]
+    return p
+
+

@@ -1,8 +1,8 @@
 # $Id$
-# Time-stamp: <02/02/04 22:09:09 smulloni>
+# Time-stamp: <02/02/05 14:15:25 smulloni>
 
 ######################################################################## 
-#  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2001, 2002 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 from vfs import PathPropertyStore
 import shelve
-from os.path import normpath
+from skunklib import normpath2 as _normpath
 
 class ShelfPathPropertyStore(PathPropertyStore):
     def __init__(self, dbname):
@@ -36,7 +36,7 @@ class ShelfPathPropertyStore(PathPropertyStore):
         return shelve.open(self.__dbname)
         
     def getproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         property=str(property)
         db=self.__db()
         if db.has_key(path):
@@ -46,7 +46,7 @@ class ShelfPathPropertyStore(PathPropertyStore):
         raise KeyError, property
             
     def setproperty(self, path, property, value):
-        path=normpath(path)
+        path=_normpath(path)
         property=str(property)
         db=self.__db()
         if db.has_key(path):
@@ -58,23 +58,23 @@ class ShelfPathPropertyStore(PathPropertyStore):
         db.close()
 
     def properties(self, path):
-        path=normpath(path)
+        path=_normpath(path)
         db=self.__db()
         if db.has_key(path):
             return db[path]
         return {}
 
     def hasproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         db=self.__db()
         return db.has_key(path) and db[path].has_key(property)
 
     def haspath(self, path):
-        path=normpath(path)
+        path=_normpath(path)
         return self.__db().has_key(path)
 
     def delproperty(self, path, property):
-        path=normpath(path)
+        path=_normpath(path)
         db=self.__db()
         if db.has_key(path) and db[path].has_key(property):
             del db[path][property]
@@ -82,6 +82,12 @@ class ShelfPathPropertyStore(PathPropertyStore):
             
 ########################################################################
 # $Log$
+# Revision 1.4  2002/02/05 19:22:24  smulloni
+# bug fix to AE/Executables.py;
+# alternate normpath function in skunklib;
+# new PathPropertyStore using AE python datacomponents;
+# tweaks to other PathPropertyStores.
+#
 # Revision 1.3  2002/02/05 03:18:17  smulloni
 # fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
 #

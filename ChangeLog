@@ -1,10 +1,34 @@
+2002-02-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/FSSessionStore.py
+	(FSSessionStoreImpl.reapOldRecords): fixed typo that caused it to
+	crash; also moved one line out of a loop. 
+
+	* pylibs/vfs/__init__.py: made TarFS also an optional import;
+	wanted to import AEPathPropertyStore, but that led to a circular
+	import dependency; hmmmm.
+
+	* pylibs/vfs/shelfProps.py, zodbProps.py: use skunklib.normpath2.
+
+	* pylibs/skunklib/__init__.py (normpath2): added a wrapper around
+	skunklib normpath that removes final slashes for those cases when
+	you want that.  I should add it to the C module, to be in the
+	spirit of things, eventually.
+
+	* pylibs/vfs/aeProps.py: Added a read-only PathPropertyStore that uses
+	python data components to store the properties.  You want a management 
+	interface? Take this!
+
+	* pylibs/AE/Executables.py (PythonExecutable.run): indentation problem
+	led to error if a data component didn't return anything
+
 2002-02-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* configure.in, configure, SkunkWeb/configure.in,
 	SkunkWeb.configure: remove references to pars service.	
 
 	* pylibs/vfs/__init__.py: try to import the ZODBPathPropertyStore,
-	and pass on error.
+	and pass in case of error.
 
 	* pylibs/vfs/zodbProps.py (ZODBPathPropertyStore): added
 	a PathPropertyStore that uses ZODB/ZEO.
