@@ -1,3 +1,8 @@
+2002-08-16  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.typeCheckAndConvert): added
+	check for longtype.
+
 2002-08-15  Andrew Csillag  <drew@localhost.localdomain>
 
 	* 3.3 cut
