@@ -1,3 +1,11 @@
+2002-11-13    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/containers/__init__.py: created a package for containers,
+	in anticipation of eventually needing to write more of them.
+
+	* pylibs/containers/fieldcontainer.py: adding a hybrid list/dict
+	container that I needed for formlib.
+
 2002-11-12    <smulloni@smullbola.smullyan.org>
 
 	* docs/tutorial/src: (many files) various changes, still very rough
