@@ -13,13 +13,13 @@ MKPDF=		$(MKHOWTO) --pdf
 
 
 # what's what
-MANDVIFILES=	stmlrefer.dvi opman.dvi PyDO.dvi
+MANDVIFILES=	stmlrefer.dvi opman.dvi PyDO.dvi devel.dvi
 HOWTODVIFILES=	
 
-MANPDFFILES=	stmlrefer.pdf opman.pdf PyDO.pdf
+MANPDFFILES=	stmlrefer.pdf opman.pdf PyDO.pdf devel.pdf
 HOWTOPDFFILES=	
 
-MANPSFILES=	stmlrefer.ps opman.ps PyDO.ps
+MANPSFILES=	stmlrefer.ps opman.ps PyDO.ps devel.ps
 HOWTOPSFILES=	
 
 DVIFILES=	$(MANDVIFILES) $(HOWTODVIFILES)
@@ -73,72 +73,6 @@ PyDO.dvi: ../PyDO/PyDO.tex
 PyDO.pdf: ../PyDO/PyDO.tex
 	$(MKPDF) ../PyDO/PyDO.tex
 
-
-# Python/C API Reference Manual
-#api.dvi: api.tex $(APIFILES)
-#	 $(MKDVI) api.tex
-#
-#api.pdf: api.tex $(APIFILES)
-#	 $(MKPDF) api.tex
-#
-#api.tex: ../api/api.tex ../api/refcounts.dat ../tools/anno-api.py
-#	 $(PYTHON) ../tools/anno-api.py -o $@ ../api/api.tex
-#
-## Distributing Python Modules
-#dist.dvi: $(DISTFILES)
-#	 $(MKDVI) ../dist/dist.tex
-#
-#dist.pdf: $(DISTFILES)
-#	 $(MKPDF) ../dist/dist.tex
-#
-## Documenting Python
-#doc.dvi: $(DOCFILES)
-#	 $(MKHOWTO) --dvi ../doc/doc.tex
-#
-#doc.pdf: $(DOCFILES)
-#	 $(MKHOWTO) --pdf ../doc/doc.tex
-#
-## Extending and Embedding the Python Interpreter
-#ext.dvi: $(EXTFILES)
-#	 $(MKDVI) ../ext/ext.tex
-#
-#ext.pdf: $(EXTFILES)
-#	 $(MKPDF) ../ext/ext.tex
-#
-## Installing Python Modules
-#inst.dvi: $(INSTFILES)
-#	 $(MKHOWTO) --dvi ../inst/inst.tex
-#
-#inst.pdf: $(INSTFILES)
-#	 $(MKHOWTO) --pdf ../inst/inst.tex
-#
-## Python Library Reference
-#lib.dvi: $(LIBFILES)
-#	 $(MKDVI) ../lib/lib.tex
-#
-#lib.pdf: $(LIBFILES)
-#	 $(MKPDF) ../lib/lib.tex
-#
-## Macintosh Library Modules
-#mac.dvi: $(MACFILES)
-#	 $(MKHOWTO) --dvi ../mac/mac.tex
-#
-#mac.pdf: $(MACFILES)
-#	 $(MKHOWTO) --pdf ../mac/mac.tex
-#
-## Python Reference Manual
-#ref.dvi: $(REFFILES)
-#	 $(MKDVI) ../ref/ref.tex
-#
-#ref.pdf: $(REFFILES)
-#	 $(MKPDF) ../ref/ref.tex
-#
-## Python Tutorial
-#tut.dvi: $(TUTFILES)
-#	 $(MKDVI) ../tut/tut.tex
-#
-#tut.pdf: $(TUTFILES)
-#	 $(MKPDF) ../tut/tut.tex
 
 
 clean:
