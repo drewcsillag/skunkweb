@@ -1,5 +1,7 @@
 2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/PyDO/postconn.py (_dateConvertFromDB): added check for None value 
+
 	* SkunkWeb/Services/templating/SendmailTag.py (SendmailTag.genCode): attempting to use
 	the sendmail tag previously produced a NameError, as MailServices was not being accessed
 	through __h in the generated code.
