@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.4 2002/05/15 16:19:39 smulloni Exp $
-# Time-stamp: <2002-06-06 09:42:55 acsillag>
+# $Id: __init__.py,v 1.5 2002/06/06 13:53:58 drew_csillag Exp $
+# Time-stamp: <2002-06-27 16:04:51 acsillag>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -315,7 +315,39 @@ class PlainSessionAuth(SessionAuthBase, AuthFileBase, RespAuthBase):
         SessionAuthBase.__init__(self, usernameSlot)
         AuthFileBase.__init__(self, authFile)
         RespAuthBase.__init__(self, loginPage)
-        
+
+class PseudoDict:
+    def __init__(self):
+        self.items = []
+
+    def _find(self, item):
+        for i, (k,v) in zip(range(len(self.items)), self.items):
+            if k == item:
+                return i
+        return -1
+    
+    def __setitem__(self, item, value):
+        i = self._find(item)
+        if i == -1:
+            self.items.append([item, value])
+        else:
+            self.items[i][1] = value
+
+    def get(self, item):
+        i = self._find(item)
+        if i != -1:
+            return self.items[i][1]
+        return None
+    
+_AuthObjCache=PseudoDict()
+
+def getAuthorizer():
+    key = (Configuration.authAuthorizer, Configuration.authAuthorizerCtorArgs)
+    authorizer = _AuthObjCache.get(key)
+    if authorizer is None:
+        authorizer = _AuthObjCache[key] = _getClass(key[0])(*key[1])
+    return authorizer
+
 def checkAuthorization(conn, sessionDict):
     """
     any, and sends a preemptive 401 response, if necessary.
@@ -324,11 +356,11 @@ def checkAuthorization(conn, sessionDict):
         return
 
     DEBUG(AUTH, 'checking authorization')
-
-    authorizer = Configuration.authAuthorizer
-    if type(authorizer) == type(''): #if string, load module and replace
-        authorizer = Configuration.authAuthorizer = _getClass(authorizer)(
-            *Configuration.authAuthorizerCtorArgs)
+    authorizer = getAuthorizer()
+        
+    #if type(authorizer) == type(''): #if string, load module and replace
+    #    authorizer = Configuration.authAuthorizer = _getClass(authorizer)(
+    #        *Configuration.authAuthorizerCtorArgs)
         
     if not authorizer.checkCredentials(conn):
         DEBUG(AUTH, 'not authenticated')
@@ -361,6 +393,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.5  2002/06/06 13:53:58  drew_csillag
+# now cookieauth will set conn.remoteUser and conn.remotePassword when logging in
+#
 # Revision 1.4  2002/05/15 16:19:39  smulloni
 # fixing broken import
 #

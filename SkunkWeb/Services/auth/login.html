@@ -10,9 +10,9 @@
 
   <:#:>If we got a username/password submission<:/#:>
 
-  <:import SkunkWeb Configuration:>
   <:#:>Attempt to validate the username/password combo<:/#:>
-  <:if `not Configuration.authAuthorizer.login(CONNECTION, username, password)`:>
+  <:import auth:>
+  <:if `not auth.getAuthorizer().login(CONNECTION, username, password)`:>
    <:#:> 
    
    What to do if the username/password combo is bogus, or potentially,
