@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/12/05 12:51:44 smulloni>
+# Time-stamp: <02/12/05 13:04:33 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -249,15 +249,22 @@ class XMLElement:
         return self.__parent.getPrimogenitor()
 
     def walk(self, visitfunc, state=None, filter=None):
+        if filter is not None:
+            if not filter(self):
+                return
+        visitfunc(self, state)
         for c in self.getChildren():
-            if (filter and filter(c)) or not filter:
-                visitfunc(c, state)
             if isinstance(c, XMLElement):
                 c.walk(visitfunc, state, filter)
+            else:
+                visitfunc(c, state)
         
 
 ########################################################################
 # $Log$
+# Revision 1.10  2002/12/05 18:05:35  smulloni
+# another go.
+#
 # Revision 1.9  2002/12/05 17:52:31  smulloni
 # basic fix.
 #
