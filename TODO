@@ -1,5 +1,5 @@
-#   Time-stamp: <03/07/19 13:06:37 smulloni> 
-#   $Id: TODO,v 1.47 2003/05/05 15:56:19 drew_csillag Exp $
+#   Time-stamp: <2003-12-26 14:53:47 smulloni> 
+#   $Id: TODO,v 1.48 2003/07/19 17:08:16 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -22,15 +22,49 @@ Do Quick release
 update Freshmeat
     http://freshmeat.net/add-release/16533/17283/
 
-
 SkunkWeb 3.4
 ------------
 * urls in html-helper tags should htmlquote ampersands in querystrings
-* session handler -- many changes, needs completion, checking in, testing
-? cronjobs
-* gentoo ebuild
-* formlib: options are passed in a different order to SelectFields than
+X session handler -- many changes, needs completion, checking in, testing
+X cronjobs
+X gentoo ebuild
+? formlib: options are passed in a different order to SelectFields than
   to ButtonGroupFields
+* cleanup old files lying around 
+* docs: somewhat presentable version of new handbook
+X product service/vfs -- import hook seems to be misbehaving; deprecate it
+  and use Python2.3 zipimport
+* move much of pylibs into the new skunk package:
+* skunk.components (the old AE)
+* skunk.cache (the old AE.Cache, generalized)
+* skunk.config (the old scope, plus various versions/interfaces lying around) 
+* skunk.logging (replacing Logger)
+* skunk.templates (replacing DT; contains subset of STML that doesn't depend 
+  on AE)
+* skunk.templates.stml (containing complete stml implementation, including tags 
+  currently defined in AE)
+* skunk.pydo (replacing PyDO; PyDO2 replaces the old PyDO)
+* skunk.dbcache (replacing various connection cache modules)
+* skunk.vfs
+* skunk.formlib
+* skunk.xhtmlgen (replacing ecs) -- should have a better parser, that accepts entities. 
+* skunk package should have a doctest-based test suite!
+
+* review use of globals and modify them.  componentStack, for instance,
+  should the attribute of a particular "component transaction" (?).In
+  normal SkunkWeb use, there will be only one.  Configuration will be
+  available as from the CONNECTION.  A more general object precursor
+  of CONNECTION may be best to add to requestHandler.
+
+? installation modification -- use distutils and install in
+  site-packages/skunk, with a top-level __init__.py and a sys.path
+  modification inside the skunkweb environment  ??
+
+* revise release utilities; add freshmeat xmlrpc calls.
+* swpython will fail if log files can't be opened, even with the -r
+  option. This raises the question: if this is fixed, swpython will
+  enable any user on a system to access any databases configured for
+  the skunkweb installation.  That's a problem.
 
 SkunkWeb 3.3
 ------------------------------
