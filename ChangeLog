@@ -1,3 +1,8 @@
+2003-06-06  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/cronjob.py (CronJob.__call__): use exec rather than eval.
+	(CronTab.run_jobs): ignore SIG_CHLD in child process.
+
 2003-06-03  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/configure.in, configure: configure swcron.in.

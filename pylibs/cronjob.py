@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/06/03 16:08:30 smulloni>
-# $Id: cronjob.py,v 1.4 2003/06/03 15:26:14 smulloni Exp $
+# Time-stamp: <03/06/06 13:36:27 smulloni>
+# $Id: cronjob.py,v 1.5 2003/06/03 20:53:40 smulloni Exp $
 
 """
 a simple cron implementation.  
@@ -132,14 +132,13 @@ class CronJob(object):
                  *args,
                  **kwargs):
         if callable(self.jobFunc):
-            ret=self.jobFunc(*args, **kwargs)
+            return self.jobFunc(*args, **kwargs)
         else:
             if local_ns is None:
                 local_ns=globals()
             if global_ns is None:
                 global_ns=globals()
-            ret=eval(self.jobFunc, global_ns, local_ns)
-        return ret
+            exec self.jobFunc in global_ns, local_ns
 
 class CronLogger(object):
     """
@@ -208,8 +207,8 @@ class CronTab(object):
             # this is for testing
             except KeyboardInterrupt:
                     break
-        signal.signal(signal.SIGCHLD, sig.SIG_DFL)
-        signal.signal(signal.SIGTERM, sig.SIG_DFL)
+        signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
         
     def run_jobs(self, dt=None):
         """
@@ -231,6 +230,7 @@ class CronTab(object):
                     self._children[pid]=1
                     continue
                 else:
+                    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
                     newout=cStringIO.StringIO()
                     newerr=cStringIO.StringIO()
                     oldout=sys.stdout
