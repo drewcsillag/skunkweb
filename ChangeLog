@@ -1,3 +1,8 @@
+2001-12-18  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/PyDO/postconn.py: fix from Gregory Brauer for setting string
+	  attributes to None
+
 2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/vfs.py (MultiFS): sketch of fs that mounts other fs'es, soon to replace the list of fses
