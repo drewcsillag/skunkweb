@@ -935,60 +935,12 @@ else
     { echo "configure: error: $INSTALL does not appear to be a GNU install!" 1>&2; exit 1; }
 fi
 
-# Make sure xargs is GNU xargs
-# Extract the first word of "gmake", so it can be a program name with args.
-set dummy gmake; ac_word=$2
-echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:943: checking for $ac_word" >&5
-if eval "test \"`echo '$''{'ac_cv_path_GMAKE'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  case "$GMAKE" in
-  /*)
-  ac_cv_path_GMAKE="$GMAKE" # Let the user override the test with a path.
-  ;;
-  ?:/*)			 
-  ac_cv_path_GMAKE="$GMAKE" # Let the user override the test with a dos path.
-  ;;
-  *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
-  ac_dummy="$PATH"
-  for ac_dir in $ac_dummy; do 
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      ac_cv_path_GMAKE="$ac_dir/$ac_word"
-      break
-    fi
-  done
-  IFS="$ac_save_ifs"
-  ;;
-esac
-fi
-GMAKE="$ac_cv_path_GMAKE"
-if test -n "$GMAKE"; then
-  echo "$ac_t""$GMAKE" 1>&6
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-
-if test -z $GMAKE
-then
-    echo $ac_n "checking make GNU compatibility""... $ac_c" 1>&6
-echo "configure:979: checking make GNU compatibility" >&5
-    if $MAKE --version >/dev/null 2>&1
-    then
-        echo "$ac_t""Ok" 1>&6
-    else
-        { echo "configure: error: $MAKE does not appear to be a GNU make, and no gmake found!" 1>&2; exit 1; }
-    fi
-fi
 
 # Make sure xargs is GNU xargs
 # Extract the first word of "xargs", so it can be a program name with args.
 set dummy xargs; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:992: checking for $ac_word" >&5
+echo "configure:944: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_XARGS'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1028,7 +980,7 @@ fi
 
 # Check xargs version
 echo $ac_n "checking xargs GNU compatibility""... $ac_c" 1>&6
-echo "configure:1032: checking xargs GNU compatibility" >&5
+echo "configure:984: checking xargs GNU compatibility" >&5
 if $XARGS --version >/dev/null 2>&1
 then
     echo "$ac_t""OK" 1>&6
@@ -1060,7 +1012,7 @@ fi
 
 # look for python
 echo $ac_n "checking --with-python given""... $ac_c" 1>&6
-echo "configure:1064: checking --with-python given" >&5
+echo "configure:1016: checking --with-python given" >&5
 # Check whether --with-python or --without-python was given.
 if test "${with_python+set}" = set; then
   withval="$with_python"
@@ -1080,7 +1032,7 @@ then
 # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1084: checking for $ac_word" >&5
+echo "configure:1036: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PYTHON'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1121,7 +1073,7 @@ fi
 
 # Check python version
 echo $ac_n "checking python version""... $ac_c" 1>&6
-echo "configure:1125: checking python version" >&5
+echo "configure:1077: checking python version" >&5
 if $PYTHON <<\EOF 
 import sys
 import string
@@ -1141,7 +1093,7 @@ fi
 
 # Check crypt module
 echo $ac_n "checking python crypt module""... $ac_c" 1>&6
-echo "configure:1145: checking python crypt module" >&5
+echo "configure:1097: checking python crypt module" >&5
 if $PYTHON <<\EOF 
 import sys
 try:
@@ -1161,7 +1113,7 @@ fi
 
 # check for mx package
 echo $ac_n "checking eGenix mxBase Python package""... $ac_c" 1>&6
-echo "configure:1165: checking eGenix mxBase Python package" >&5
+echo "configure:1117: checking eGenix mxBase Python package" >&5
 if $PYTHON <<\EOF 
 import sys
 try:
@@ -1184,7 +1136,7 @@ fi
 # Extract the first word of "bash", so it can be a program name with args.
 set dummy bash; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1188: checking for $ac_word" >&5
+echo "configure:1140: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_BASH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1253,12 +1205,12 @@ fi
 
 
 echo $ac_n "checking for strftime""... $ac_c" 1>&6
-echo "configure:1257: checking for strftime" >&5
+echo "configure:1209: checking for strftime" >&5
 if eval "test \"`echo '$''{'ac_cv_func_strftime'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1262 "configure"
+#line 1214 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char strftime(); below.  */
@@ -1281,7 +1233,7 @@ strftime();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1285: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1237: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_strftime=yes"
 else
@@ -1301,12 +1253,12 @@ else
 fi
 
 echo $ac_n "checking for strptime""... $ac_c" 1>&6
-echo "configure:1305: checking for strptime" >&5
+echo "configure:1257: checking for strptime" >&5
 if eval "test \"`echo '$''{'ac_cv_func_strptime'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1310 "configure"
+#line 1262 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char strptime(); below.  */
@@ -1329,7 +1281,7 @@ strptime();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1333: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1285: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_strptime=yes"
 else
@@ -1349,12 +1301,12 @@ else
 fi
 
 echo $ac_n "checking for timegm""... $ac_c" 1>&6
-echo "configure:1353: checking for timegm" >&5
+echo "configure:1305: checking for timegm" >&5
 if eval "test \"`echo '$''{'ac_cv_func_timegm'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1358 "configure"
+#line 1310 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char timegm(); below.  */
@@ -1377,7 +1329,7 @@ timegm();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1381: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1333: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_timegm=yes"
 else
@@ -1400,7 +1352,7 @@ fi
 # Extract the first word of "lynx", so it can be a program name with args.
 set dummy lynx; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1404: checking for $ac_word" >&5
+echo "configure:1356: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_LYNX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1435,7 +1387,7 @@ fi
 # Extract the first word of "latex", so it can be a program name with args.
 set dummy latex; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1439: checking for $ac_word" >&5
+echo "configure:1391: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_LATEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1470,7 +1422,7 @@ fi
 # Extract the first word of "pdflatex", so it can be a program name with args.
 set dummy pdflatex; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1474: checking for $ac_word" >&5
+echo "configure:1426: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_PDFLATEX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1505,7 +1457,7 @@ fi
 # Extract the first word of "dvips", so it can be a program name with args.
 set dummy dvips; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1509: checking for $ac_word" >&5
+echo "configure:1461: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_DVIPS'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1695,7 +1647,6 @@ s%@RANLIB@%$RANLIB%g
 s%@INSTALL_PROGRAM@%$INSTALL_PROGRAM%g
 s%@INSTALL_SCRIPT@%$INSTALL_SCRIPT%g
 s%@INSTALL_DATA@%$INSTALL_DATA%g
-s%@GMAKE@%$GMAKE%g
 s%@XARGS@%$XARGS%g
 s%@WITH_SKUNKWEB@%$WITH_SKUNKWEB%g
 s%@PYTHON@%$PYTHON%g

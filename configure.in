@@ -55,19 +55,19 @@ else
     AC_MSG_ERROR([$INSTALL does not appear to be a GNU install!])
 fi
 
-# Make sure xargs is GNU xargs
-AC_PATH_PROG(GMAKE,gmake)
-
-if test -z $GMAKE
-then
-    AC_MSG_CHECKING([make GNU compatibility])
-    if $MAKE --version >/dev/null 2>&1
-    then
-        AC_MSG_RESULT([Ok])
-    else
-        AC_MSG_ERROR([$MAKE does not appear to be a GNU make, and no gmake found!])
-    fi
-fi
+dnl # Make sure xargs is GNU xargs
+dnl AC_PATH_PROG(GMAKE,gmake)
+dnl 
+dnl if test -z $GMAKE
+dnl then
+dnl 	AC_MSG_CHECKING([make GNU compatibility])
+dnl 	if $MAKE --version >/dev/null 2>&1
+dnl 	then
+dnl 	    AC_MSG_RESULT([Ok])
+dnl 	else
+dnl 	    AC_MSG_ERROR([$MAKE does not appear to be a GNU make, and no gmake found!])
+dnl 	fi
+dnl fi
 
 # Make sure xargs is GNU xargs
 AC_PATH_PROG(XARGS,xargs)
