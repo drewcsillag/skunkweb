@@ -8,6 +8,7 @@ Changes in 3.2.1 (not yet released)
 * rewrite fixes and feature additions
 * usual array of general bug fixes
 * mod_skunkweb now properly reports its existence in the Server header
+* UNIX socket fixes
 
 Changes in 3.2 beta 3
 ========================================

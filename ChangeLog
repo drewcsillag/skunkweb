@@ -1,3 +1,10 @@
+2002-05-24  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/SocketMan/SocketMan.py(SocketMan._reset): now doesn't
+	barf if the socket removal fails
+
+	* pylibs/AE/CodeSources.py(updatecache): now attempts to do
+	something a bit more intelligent when errors occur during reload
 
 2002-05-21  Jacob Smullyan  <smulloni@smullyan.org>
 
