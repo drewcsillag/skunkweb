@@ -1,3 +1,11 @@
+2002-06-17  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* configure.in, configure, SkunkWeb/configure.in,
+	SkunkWeb/configure: added reference to scgi service.
+
+	* SkunkWeb/Services/scgi.py: added support for the SCGI protocol
+	-- http://www.mems-exchange.org/software/scgi/
+
 2002-06-12  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* docs/stmlrefer/stmlrefer.tex: added bit about timeout rethrow

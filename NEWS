@@ -1,3 +1,11 @@
+Changes in 3.2.3
+========================================
+* added support for the SCGI Protocol 
+  - http://www.mems-exchange.org/software/scgi/
+* document updates/revamps (currently stmlrefer and ops)
+* now is more persistant about the timeout exception (it's reraised each
+  second after a timeout occurs)
+
 Changes in 3.2.2
 ========================================
 * The <:compargs:> tag can now be used in an STML block (used to only work
