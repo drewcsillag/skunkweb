@@ -1,3 +1,10 @@
+2003-11-30  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/SQLSessionStore.py
+	(AbstractSQLSessionStore.getConnection): bug fix for the
+	postgresql implementation -- attempting to call fetchall on a
+	cursor when there are no rows is not tolerated by pypgsql.
+
 2003-11-29  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: replace references to AE

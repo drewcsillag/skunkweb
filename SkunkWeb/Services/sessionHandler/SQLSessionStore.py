@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SQLSessionStore.py,v 1.5 2003/07/19 17:08:16 smulloni Exp $
+# $Id: SQLSessionStore.py,v 1.6 2003/11/29 20:05:28 smulloni Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
@@ -85,7 +85,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
     def getConnection(self):
         raise NotImplementedError
 
-    def execSql(self, sql, args=None):
+    def execSql(self, sql, args=None, expect=1):
         DEBUG(SESSIONHANDLER, sql)
         try:
             db=self.getConnection()
@@ -94,7 +94,10 @@ class AbstractSQLSessionStore(Session.SessionStore):
                 cursor.execute(sql, args)
             else:
                 cursor.execute(sql)
-            retval=cursor.fetchall()
+            if expect:
+                retval=cursor.fetchall()
+            else:
+                retval=None
             cursor.close()
             db.commit()
             return retval
@@ -127,7 +130,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
               'timeCol' : self.timeCol, 
               'idCol' : self.idCol, 
               'id' : self.__id}
-        self.execSql(self.touchSQL % args)
+        self.execSql(self.touchSQL % args, expect=0)
         self._touched=int(time.time())
 
     def marshalTimeStamp(self, tstamp):
@@ -178,7 +181,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
         args={'id' : self.__id,
               'idCol' : self.idCol,
               'table' : self.table}        
-        self.execSql(self.deleteSQL % args)
+        self.execSql(self.deleteSQL % args, expect=0)
         self._touched=int(time.time())
 
     def lastTouched(self):
@@ -189,4 +192,4 @@ class AbstractSQLSessionStore(Session.SessionStore):
         args={'timeCol' : self.timeCol,
               'timeout' : Session._timeout,
               'table' : self.table}      
-        self.execSql(self.reapSQL % args)
+        self.execSql(self.reapSQL % args, expect=0)
