@@ -1,3 +1,11 @@
+2002-12-23    <smulloni@smullbola.smullyan.org>
+
+	* docs/stmlrefer/stmlrefer.tex: fixed LaTeX error.
+
+	* pylibs/PyDO/PyDO2.py: start on a draft of a version of PyDO
+	using new-style classes and doing a couple of things that the old
+	PyDO doesn't do.  
+
 2002-12-18    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/views.py (ViewableForm.__init__): another default

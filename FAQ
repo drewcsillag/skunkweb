@@ -37,7 +37,13 @@ file in the docs directory, that goes into a bit more detail.
  * Like WebWare, Zope uses a threaded model instead of a forking
    model, so it has many of the same issues there.
  
- * DTML bites.  It hits on making it easy to do easy things, but is
+ * Zope's DTML has long been recognized to have deficiencies as a
+   templating system; their more recent foray, ZPT, is much more 
+   sophisticated.  A debate simmers about the usability of ZPT; 
+   its usability by designers is one of its major justifications, 
+   and yet its legibility by programmers
+
+bites.  It hits on making it easy to do easy things, but is
    too constraining for the expert because you don't have the full
    flexibility of Python in the tags.  I know that they are working on
    another templating language (ZPT if I'm correct), but from what
