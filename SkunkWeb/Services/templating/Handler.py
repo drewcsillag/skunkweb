@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Handler.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
+#$Id: Handler.py,v 1.2 2001/09/21 20:16:31 drew_csillag Exp $
 
 import AE.Cache
 import AE.Component
@@ -39,7 +39,8 @@ Configuration.mergeDefaults(
     interpretMimeTypes = [
         "text/html",
         "application/x-python"
-        ]
+        ],
+    defaultIndexHtml = None
     )
 
 def _handleException(connObj):
@@ -96,7 +97,11 @@ def requestHandler(connObj, sessionDict):
                     connObj.statInfo = st
                     break
             if not st: #no index document exists
-                return
+                if Configuration.defaultIndexHtml:
+                    s = Configuration.defaultIndexHtml
+                    st = AE.Cache._statDocRoot(uri)
+                else:
+                    return
             connObj.uri = s
             DEBUG(TEMPLATING, "uri is now %s" % s)
 
