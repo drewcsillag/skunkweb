@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.5 2002/05/09 18:51:55 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.6 2002/05/30 14:20:48 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -1277,13 +1277,13 @@ static int skunkweb_handler(request_rec* r)
 #ifndef APACHEV1
     if (strcmp(r->handler,"skunkweb-handler"))
     {
-#ifdef DEBUG
+	/*#ifdef DEBUG
         SK_AP_RERROR3(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		      "handler for <%s> is %s", r->uri, r->handler);
-#endif
+	#endif*/
 	return DECLINED;
-#endif
     }
+#endif
     /* Get the configuration */
     conf=ap_get_module_config(r->server->module_config, &skunkweb_module);
 
@@ -1297,7 +1297,7 @@ static int skunkweb_handler(request_rec* r)
 #ifdef DEBUG
 	SK_AP_RERROR2(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		      "scanning exclude list for match of %s", r->uri);
-#endif
+#endif /* DEBUG */
 	elts = (char**)conf->excludes->elts;
 	/* 
 	   loop through the table and if a table entry matches
@@ -1311,14 +1311,14 @@ static int skunkweb_handler(request_rec* r)
 #ifdef DEBUG
 		SK_AP_RERROR3(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 			      "matched exclude <%s>: <%s>", elts[i], r->uri);
-#endif
+#endif /* DEBUG */
 		return DECLINED;
 	    }
 	}
 #ifdef DEBUG
 	SK_AP_RERROR1(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		      "no exclusions matched");
-#endif
+#endif /* DEBUG */
     }
 
 #ifdef DEBUG
