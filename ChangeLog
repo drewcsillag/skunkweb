@@ -1,3 +1,8 @@
+2003-05-02    <drew@loki.sai-office>
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.response): 
+	fix for stupidity error
+
 2003-05-02  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* INSTALL (systems): added to list of supported OSes.

@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.21 2003/05/02 17:21:31 drew_csillag Exp $
-# Time-stamp: <2003-05-02 15:06:21 drew>
+# $Id: protocol.py,v 1.22 2003/05/02 20:12:09 drew_csillag Exp $
+# Time-stamp: <2003-05-02 15:41:54 drew>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -173,7 +173,7 @@ class HTTPConnection:
             ae = self.requestHeaders.get('accept-encoding', '').split(',')
             for i in ('gzip', 'x-gzip'):
                 if (i in ae
-                    and self.responseHeaders['content-type'][:5] == 'text/'):
+                    and str(self.responseHeaders.get('content-type'))[:5] == 'text/'):
                     rawOutput = _compressit(rawOutput)
                     self.responseHeaders['Content-Encoding'] = i
                     break
