@@ -25,8 +25,11 @@ def process_munge(form, argdict, dispatcher, ns):
         
 def process_submit(form, argdict, dispatcher, ns):
     """
+    
     """
-    pass
+    elem=ecs.Div("this is a test")
+    open('/tmp/submittest', 'w').write(str(elem))
+
 
 forms=[ViewableForm('page1',
                     method="POST",
