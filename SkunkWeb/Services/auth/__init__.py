@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.10 2002/11/07 19:34:17 smulloni Exp $
-# Time-stamp: <02/11/02 15:14:13 smulloni>
+# $Id: __init__.py,v 1.11 2003/05/01 20:45:53 drew_csillag Exp $
+# Time-stamp: <2004-03-02 14:57:41 drew>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -270,12 +270,17 @@ class SessionAuthBase: #class to do auth using sessions
     and defining a function) the username and password that is obtained.
 
     """
-    def __init__(self, usernameSlot):
+    def __init__(self, usernameSlot, path = None, domain = None,
+                 secure = None):
         """
         username is dict entry in the session for the username
         password is dict entry in the session for the password
+        path, domain and secure are passed through to CONNECTION.getSession()
         """
         self.usernameSlot = usernameSlot
+        self._path = path
+        self._domain = domain
+        self._secure = secure
 
     def checkCredentials(self, conn):
         """for session authentication, you may not actually store the username
@@ -292,7 +297,8 @@ class SessionAuthBase: #class to do auth using sessions
         """again, you may want to customize this such that the password
         isn't in the session, but that's up to you"""
         if self.validate(username, password):
-            sess = conn.getSession(1)
+            sess = conn.getSession(1, path = self._path, domain = self._domain,
+                                   secure = self._secure)
             sess[self.usernameSlot] = username
             sess.save()
             return 1
@@ -375,6 +381,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.11  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.10  2002/11/07 19:34:17  smulloni
 # fix for cookie expiration in auth; many changes in tutorial demo app.
 #
