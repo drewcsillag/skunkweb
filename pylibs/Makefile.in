@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
+# $Id: Makefile.in,v 1.2 2001/08/12 16:44:35 drew_csillag Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -37,7 +37,7 @@ skunk_bindir    = @bindir@
 components 	=
 
 # Python components which require building
-py_comps	= signal_plus skunklib uuid AE/cacheKey 
+py_comps	= signal_plus skunklib uuid AE/cacheKey scopeable
 #mmlib
 
 # generate makefile names
