@@ -378,8 +378,8 @@ can be used within ``<Directory>``, ``<Location>`` and
 	as specified in the ``AecgiListenPorts`` configuration
 	parameter in ``sw.conf``. More information about this
 	configuration parameter is available in the *Configuration >
-	Server Options > Parameters For The aecgi Service* section,
-	which will appear later in this chapter.
+	Server Options > Parameters of the *SkunkWeb Parameters* chapter
+	in this manual.
 
 
 **SkunkWebRetries**
@@ -524,15 +524,16 @@ The ``swmgr`` utility can take one of four arguments:
 **stop**
 	
 	This stops a running SkunkWeb server. Same thing happens like
-	in restart if a SkunkWeb server process is not running. (And
-	no, there is no -f switch for stop, unless there is enough
-	demand for a faster stop.)
-
+	in restart if a SkunkWeb server process is not running. The 
+	``-f`` switch can be used with this option, just like in the 
+	``restart`` option.
+	
 **-r**
 	This flag allows one to start SkunkWeb up as root so it can bind to a low port.
 
+**configtest**
 
-[TODO: More params to add]
+[TODO]
 
 
 Configuration
@@ -584,9 +585,9 @@ for a fast restart.
 The sw.conf file also contains information about each parameter.
 
 Do not change the name of the configuration file. SkunkWeb looks for
-this file when it starts up. If you wish to separate the contents of
-the sw.conf file, you can use the "Include" directive to split up the
-configuration in different files::
+this file when it starts up. If you wish to separate the 
+contents of the sw.conf file, you can use the "Include" directive to 
+split up the configuration in different files::
 
 	Include("mysw.conf")
 
@@ -624,7 +625,10 @@ SkunkWeb Services that should be loaded up at startup time. Here is
 the original line that comes with the default distribution of
 SkunkWeb::
 
-	services = ['requestHandler', 'aecgi', 'ae_component', 'web', 'templating','remote','remote_client']
+	services = ['requestHandler', 'aecgi', 
+			    'ae_component', 'web', 
+			    'templating','remote',
+			    'remote_client']
 
 Here, it specifies a number of services that are available to SkunkWeb
 at startup time.
@@ -637,7 +641,10 @@ If, for example, you are going to use a database with SkunkWeb, (such
 as PostgreSQL), you need to first specify it here so it will be loaded
 up at startup time::
 
-	services = ['requestHandler', 'aecgi', 'ae_component', 'web', 'templating','remote','remote_client', 'postgresql']
+	services = ['requestHandler', 'aecgi', 
+			    'ae_component', 'web', 
+			    'templating','remote',
+			    'remote_client', 'postgresql']
 
 Services, being special Python modules, can have parameters associated
 to it in ``sw.conf``. You will need to set those parameters within
