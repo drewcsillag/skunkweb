@@ -1,5 +1,5 @@
-# $Id: ConfigAdditives.py,v 1.2 2001/09/09 02:37:41 smulloni Exp $
-# Time-stamp: <01/10/01 20:09:31 smulloni>
+# $Id: ConfigAdditives.py,v 1.3 2001/10/02 02:35:34 smulloni Exp $
+# Time-stamp: <02/03/30 14:22:41 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
 #                     Jacob Smullyan <smulloni@smullyan.org>
@@ -19,10 +19,20 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 
-########################################################################@
+########################################################################
+
+__all__=['Location',
+         'Host',
+         'Port',
+         'IP',
+         'UNIXPath',
+         'Scope',
+         'Include']
 
 from SkunkWeb.Hooks import ServerStart
 import scopeable as scope
+import ConfigLoader
+import KickStart
 
 def _createMatcher(matcherClass, paramName, paramVal, kids, kw):
     m=matcherClass(paramName, paramVal, kw)
@@ -69,6 +79,9 @@ def Scope(*scopeMatchers):
     from SkunkWeb import Configuration
     Configuration.addScopeMatchers(*scopeMatchers)
 
+def Include(filename):
+    ConfigLoader.loadConfigFile(filename, KickStart.CONFIG_MODULE)
+        
 def importConfiguration():
     # have to do this here since this is imported before the configuration
     # "module" has been put in place
@@ -81,6 +94,9 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.3  2001/10/02 02:35:34  smulloni
+# support for scoping on unix socket path; very serious scope bug fixed.
+#
 # Revision 1.2  2001/09/09 02:37:41  smulloni
 # performance enhancements, removal of sundry nastinesses and erasure of
 # reeking rot.

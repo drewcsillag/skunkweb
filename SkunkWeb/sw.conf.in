@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.12 2002/02/15 05:55:46 smulloni Exp $
-# Time-stamp: <02/03/03 20:01:52 smulloni>
+# $Id: sw.conf.in,v 1.13 2002/03/04 01:08:29 smulloni Exp $
+# Time-stamp: <02/03/30 14:17:20 smulloni>
 
 ########################################################################
 #
@@ -429,12 +429,12 @@ sys.path.append('@prefix@/sitelibs')
 # expression will be added to connection.args if rewriteMatchToArgs is 
 # true (the default).  For example:
 #
-# rewriteRules = [('test', r'^/rewrite/(?P<real>.*?)\.html', r"/\1.html")]
+# rewriteRules = [(r'^/rewrite/(?P<real>.*?)\.html', r"/\1.html")]
 # above rule will convert uri '/rewrite/any_name.html' to
 # '/any_name.html' and set connection.args['real'] to 'any_name'
 #
 # variables:
-# rewriteRules=[]
+# rewriteRules=[] 
 # rewriteApplyAll=1
 # rewriteMatchToArgs=1
 
@@ -545,7 +545,14 @@ sys.path.append('@prefix@/sitelibs')
 # userDirPath = 'public_html'
 
 ########################################################################
+# directive to include another conf file:
+# Include('/path/to/special.conf')
+
+########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.13  2002/03/04 01:08:29  smulloni
+# commented out "userModuleCleanup = 1".
+#
 # Revision 1.12  2002/02/15 05:55:46  smulloni
 # adding documentation to configure and sw.conf.in for rewrite service.
 #
