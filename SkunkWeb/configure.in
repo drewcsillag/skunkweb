@@ -74,6 +74,14 @@ AC_ARG_WITH(group,
 	GROUP=$withval], [
 	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
 
+AC_SUBST(RUNASROOT)
+AC_ARG_WITH(runasroot,
+[  --with-runasroot        If you want to have SkunkWeb bind to low ports, add
+                          this switch and set the userToRunAs and groupToRunAs
+                          sw.conf configuration options], [
+	RUNASROOT=root], [
+	RUNASROOT=$OWNER])
+
 AC_SUBST(WEBDOC)
 AC_ARG_WITH(webdoc, 
 [  --with-webdoc           Install some sample content], [
