@@ -155,8 +155,7 @@ class CompositeField(Field):
         self.errors=FieldContainer(fieldmapper=_getfield,
                                    storelists=1)
         self.composeValue = valueComposer
-        self.setable=setable
-        
+                
     def _get_fields(self):
         return self._fields
     fields=property(_get_fields)

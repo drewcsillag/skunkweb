@@ -1,7 +1,7 @@
 import pprint
 from formlib import *
 from formlib.form import CompositeField
-from formlib.views import TextField, SubmitField, ViewableForm, ViewableCompositeField, isviewable, ViewableFieldProxy 
+from formlib.views import TextField, SubmitField, ViewableForm, ViewableCompositeField, ViewableFieldProxy 
 from formlib.validates import InternationalAddressField
 
 addFld = InternationalAddressField('intadd', 'An International Address', defaultState='NY', defaultCountry='US') 
