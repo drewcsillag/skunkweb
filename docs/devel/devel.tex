@@ -84,7 +84,7 @@ importable.  The implementation of the ``module'' is the
 (\texttt{ScopeableConfig} is itself a \texttt{scopeable.Scopeable} subclass
 with a backwards compatibility layer that will probably be removed soon.)
 
-\begin{methoddesc}{\mergeDefaults}{dict} Function taking any number of dictionary
+\begin{methoddesc}{mergeDefaults}{dict} Function taking any number of dictionary
 arguments, and/or keyword arguments. For each key/value in each dictionary, (with 
 any keyword arguments comprising a final dictionary), if the current
 configuration already has a variable with that name, it is skipped,
@@ -92,22 +92,22 @@ otherwise a the configuration variable with that name is set to the
 corresponding value. 
 \end{methoddesc}
 
-\begin{methoddesc}{\update}{dict} Updates the root configuration with the
+\begin{methoddesc}{update}{dict} Updates the root configuration with the
 contents of the argument (argument should be a dictionary-like
 object). 
 \end{methoddesc}
-\begin{methoddesc}{\push}{} Overlay configuration with the contents
+\begin{methoddesc}{push}{} Overlay configuration with the contents
 of the argument (should be a dictionary-like object). 
 \end{methoddesc}
-\begin{methoddesc}{\pop}{} Undo the last overlay.
+\begin{methoddesc}{pop}{} Undo the last overlay.
 \end{methoddesc}
-\begin{methoddesc}{\trim}{} Undo all overlays, resulting in just the
+\begin{methoddesc}{trim}{} Undo all overlays, resulting in just the
 root configuration. 
 \end{methoddesc}
-\begin{methoddesc}{\mash}{} No argument function that returns a
+\begin{methoddesc}{mash}{} No argument function that returns a
 dictionary whose contents are the current view of the configuration.
 \end{methoddesc}
-\begin{methoddesc}{\mashSelf}{} Sets the root configuration to
+\begin{methoddesc}{mashSelf}{} Sets the root configuration to
 \verb![self.mash()]!. 
 \end{methoddesc}
 
