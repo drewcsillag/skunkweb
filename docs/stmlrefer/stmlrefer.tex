@@ -45,15 +45,15 @@ language Python, and with \emph{templates}, which are text documents
 with embedded programming code. In SkunkWeb, these templates' embedded
 programming code is written in a language called STML, or Skunk
 Template Markup Language. STML is like other markup languages such as
-HTML or XML, in that it uses ``tags'' to express its instructions.
+HTML or XML, in that it uses tags to express its instructions.
 
 This guide introduces the
 syntax and conventions of STML, and also includes a reference
-for all STML ``tags''.
+for all STML tags.
 
 STML documents are text (usually HTML) documents with 
-embedded ``programming'' tags. These programming tags are 
-written in the special ``tag language'' we call STML 
+embedded programming tags. These programming tags are 
+written in the special tag language we call STML 
 (Skunk Template Markup Language).
 
 At first glance, an STML document looks just like 
@@ -74,7 +74,7 @@ you give in the tags.
 STML tags are more complex and powerful than HTML tags. 
 In HTML, a tag has a name (such as \texttt{BR}), 
 and optionally some \emph{attributes}, which are pairs 
-of strings with a ``name'' and a ``value'':
+of strings with a name and a value:
 
 \begin{verbatim}
 <A HREF="index.html">
@@ -116,7 +116,7 @@ or double quotes.
 The value of attribute \texttt{baz} is \texttt{5}. 
 In HTML, this would be the string \texttt{"5"}, and so it 
 is in STML. But STML, which uses Python, is smart enough 
-to know about Python's real ``data types'', such as integers 
+to know about Python's real data types, such as integers 
 and floating-point numbers.
 
 Therefore, if you want an attribute value to be 
@@ -318,11 +318,10 @@ Click%20here%20%3E%3E%3E%3E
 The \code{<:val:>} tag is equivalent to the following code executed
 in a Python component:
 
-\begin{obeylines} \ttfamily
+\begin{verbatim}
 import DT.DTCommon
-print DT.DTCommon.ValFmtRgy[\emph{fmt}](\emph{expr})
-\end{obeylines}
-
+print DT.DTCommon.ValFmtRgy[fmt](expr)
+\end{verbatim}
 
 
 \section{\texttt{<:set:>}}
@@ -426,15 +425,15 @@ string, and do anything to that string after ending the
 
 
 Spooling is equivalent to the following Python code in a Python component:
-\begin{obeylines}
-\ttfamily
+\begin{verbatim}
 import sys, cStringIO
-\emph{tempname} = sys.stdout
+tempname = sys.stdout
 sys.stdout = cStringIO.StringIO()
-\emph{\# stuff between <:spool:> tags }
-\emph{name} = sys.stdout.getvalue()
-sys.stdout = \emph{tempname}
-\end{obeylines}
+# stuff between <:spool:> tags 
+name = sys.stdout.getvalue()
+sys.stdout = tempname
+\end{verbatim}
+
 
 
 
@@ -625,9 +624,9 @@ If in the current STML document, there exists no local variable called
 it the object in \texttt{value}. The \texttt{value} argument defaults
 to the empty string.
 
-This tag is often used in STML ``components'', which are STML
+This tag is often used in STML components, which are STML
 documents that can be embedded in other STML documents. Components
-are called with ``argument attributes'', which end up as local
+are called with argument attributes, which end up as local
 variables in the component document. If the calling STML document
 does not pass a variable you need, it won't be in your component
 document, and when you try to use it, you will get a Python
@@ -675,7 +674,7 @@ the \texttt{Date} module's default format, which is the ISO format
     For all of the above, leading zeroes are included 
     as necessary: ``01'' instead of 1, etc. However, 
     if the format element is in UPPERCASE, leading zeroes 
-    are not included: ``MM'' $\rightarrow$ ``1'', ``mm'' $\rightarrow$ ``01''.
+    are not included: ``MM'' -> ``1'', ``mm'' -> ``01''.
 
 \begin{argdesc}
 \item[mon] abbreviated name of month
@@ -687,10 +686,10 @@ the \texttt{Date} module's default format, which is the ISO format
 
 
     For all of the above, if the element is in UPPERCASE, 
-    the result will be in ALL CAPS: ``MONTH'' $\rightarrow$ ``JANUARY''. 
+    the result will be in ALL CAPS: ``MONTH'' -> ``JANUARY''. 
     If the element is Initcap, the result will be initcapped: 
-    ``Month'' $\rightarrow$ ``January''. Any other combination of case will 
-    be considered lowercase: ``month'' or ``moNth'' $\rightarrow$ ``january''.
+    ``Month'' -> ``January''. Any other combination of case will 
+    be considered lowercase: ``month'' or ``moNth'' -> ``january''.
     
 \begin{argdesc}
 \item[date] is a Python expression resulting in a
@@ -803,7 +802,7 @@ a \texttt{NameError}, meaning that nothing exists under that name:
 If the Python expression \texttt{expr} evaluates to true, 
 render until an \texttt{<:/if:>}, \texttt{<:else:>} 
 or \texttt{<:elif:>} tag is encountered.  The
-\texttt{expr}arguments in  
+\texttt{expr} arguments in  
 \texttt{<:if:>} and \texttt{<:elif:>} tags \emph{must} be 
 enclosed in backticks, of course.
 
@@ -856,7 +855,7 @@ In the following example, the output will be \texttt{Shaft is the Man.}
 <:/for:>
 \end{verbatim}
 
-The \texttt{<:for:><:/for:>} tag implements a ``loop'': 
+The \texttt{<:for:><:/for:>} tag implements a loop: 
 it expects the expression in \texttt{expr} to return a 
 sequence of items (a tuple or list, for example). 
 For each item in the sequence, \texttt{<:for:>} 
@@ -943,9 +942,9 @@ is true, it executes all of the things inside the tag. Then it
 repeats this process until the expression is false. It is functionally
 identical to the Python \texttt{while} statement.
 
-This tag is vulnerable to ``infinite loops'', unless you do something
+This tag is vulnerable to infinite loops, unless you do something
 inside the tag to change the value of the expression, the tag will
-execute indefinitely, until the SkunkWeb server calls a ``timeout'' and
+execute indefinitely, until the SkunkWeb server calls a timeout and
 raises an error. For example, this STML will cause an infinite loop:
 
 \begin{verbatim}
@@ -990,7 +989,7 @@ is true. For example, either of these STML blocks will print
 
 \begin{verbatim}<:break:>\end{verbatim}
 
-When inside a ``looping tag'', tells the templating engine to exit
+When inside a looping tag, tells the templating engine to exit
 the loop immediately. Not allowed outside of a looping tag.
 See the \texttt{<:for:>} \doref{tagfor} tag
 and the \texttt{<:while:>} \doref{tagwhile} tag
@@ -1002,7 +1001,7 @@ for examples.
 
 \begin{verbatim}<:continue:>\end{verbatim}
 
-When inside a ``looping tag'', tells the templating engine to return
+When inside a looping tag, tells the templating engine to return
 immediately to the top of the loop and continue executing.
 Not allowed outside of a looping tag.
 See the \texttt{<:for:>} \doref{tagfor} tag
@@ -1101,6 +1100,16 @@ Note the last way to use the \texttt{<:try:>} tag: with
 a \texttt{<:finally:>} tag. The tags behave the same
 way as Python's \texttt{try:} and \texttt{finally:} statements.
 
+\strong{CAVEAT PROGRAMMER:} beware of the \texttt{<:except:>} tag with
+no arguments, as you may catch the document timeout exception
+(\texttt{requestHandler.requestHandler.DocumentTimeout}).  If you catch
+it and ignore it, your document will \emph{never} time out.  Moral of
+the story, either:
+\begin{enumerate}
+\item Don't use the \texttt{<:except:>} tag without arguments
+\item Make sure you don't do anything in your \texttt{<:try:>} block
+that may block.
+\end{enumerate}
 
 \section{\texttt{<:raise:>}}
 \label{tagraise}
@@ -1117,7 +1126,7 @@ the tag will raise the exception as the string you indicated:
 \end{verbatim}
 
 will raise the \emph{string} \texttt{"BadBadError"} as the exception.
-If you want to raise a ``real exception'', such as one of Python's built-in
+If you want to raise a real exception, such as one of Python's built-in
 exceptions or an exception class from a module, you must put it in backticks.
 For example, if you want to reject the value of some variable passed to you
 with the Python built-in exception \texttt{ValueError}:
@@ -1144,7 +1153,7 @@ Causes execution of the current STML document or component to stop
 entirely. If the templating engine is executing a component or
 include, it stops executing that component or include and returns
 execution to the template which did the include or component call.  If
-there is no calling template (you're at the ``top level'' template),
+there is no calling template (you're at the top level template),
 then the templating engine stops executing any STML, and then returns
 the response to the user as it currently stands.
 
@@ -1154,7 +1163,7 @@ the response to the user as it currently stands.
 
 The biggest benefit of STML documents is that you can 
 reuse them inside other STML documents. We call these
-``embeddable'' STML documents components. They have a different
+embeddable STML documents components. They have a different
 file extension: while your regular STML documents end with
 the extension of the kind of output they generate (like
 \texttt{.html}), all STML component documents end with the file
@@ -1165,14 +1174,14 @@ those later).
 
 If you have a block of HTML that must be included on 
 every page of your website, make it an STML component, 
-and then your other STML templates can ``embed'' the template 
+and then your other STML templates can embed the template 
 in their own output. This lets you use an efficient, modular 
 design when building your website.
 
-There are two very different ways to ``embed'' an STML document 
-in another one: by ``including'' the embedded template's STML code, 
-or by ``calling'' it as an STML component. Let's examine the 
-differences between ``include'' and ``component'' in the next sections.
+There are two very different ways to embed an STML document 
+in another one: by including the embedded template's STML code, 
+or by calling it as an STML component. Let's examine the 
+differences between include and component in the next sections.
 
 
 \section{\texttt{<:include:>}}
@@ -1282,9 +1291,9 @@ section \ref{pythoncode}, page \pageref{pythoncode})
 
 \texttt{<:component name [\emph{named_args}] [cache=no|yes|defer|force|old] [__args__]:>}
 
-This tag ``calls'' an STML component much as you would call a function
+This tag calls an STML component much as you would call a function
 in Python, and displays any resulting output of the component. It is
-\emph{not} like ``including'' the STML component in your document. A
+\emph{not} like including the STML component in your document. A
 component called with this tag does not get access to your document's
 local variables; you must pass any variables explicitly as named
 attributes in the \texttt{<:component:>} tag.
@@ -1338,7 +1347,7 @@ print AE.Component.callComponent(name, argdict,
 The \texttt{whatever} values are from the \texttt{AE.Component} module constants of the following:
 \label{whatevervals}
 \begin{argdesc}
-\item[NO] do use the cache
+\item[NO] do not use the cache
 \item[YES] analogous to \texttt{cache=yes} in the \texttt{<:component:>} tag
 \item[DEFER] analogous to \texttt{cache=defer} in the
 \texttt{<:component:>} tag
@@ -1359,7 +1368,7 @@ Use them in the \texttt{<:component:>} or
 tags just as you would regular \texttt{.comp} component files.
 
 
-\subsection{Making components ``cacheable''}
+\subsection{Making components cacheable}
 \label{tagcomponentcaching}
 
 There is a special attribute for the \texttt{<:component:>} 
@@ -1417,7 +1426,7 @@ output.
 This gives you a great performance gain: if any component's cached
 output expires, no individual user will have to wait for the component
 to be executed before receiving her response. The component's cache
-will be updated ``offline'', behind the scenes.
+will be updated offline, behind the scenes.
 
 You can make all of your component calls automatically ``deferred'' by
 setting the configuration variable
@@ -1445,22 +1454,25 @@ restriction you must obey:
 
 \begin{itemize}
 \item \emph{The attributes passed to the cached component must be, 
-as Python says, ``hashable''.}
+as Python says, hashable.}
 \end{itemize}
 
 The reason for this restriction is that the SkunkWeb server 
-needs to take all of the attributes you pass and ``flatten''
+needs to take all of the attributes you pass and flatten
 them into a short, unique value. The SkunkWeb server uses 
 this value to look up the cached output it has stored in 
 its disk cache.
 
-So, what does ``hashable'' mean? Well, just consider it 
+So, what does hashable mean? Well, just consider it 
 to mean ``able to be flattened'' until you learn more Python. 
 Here's a rule of thumb:
 
 \begin{itemize}
 \item Numbers, strings, dates, and the \texttt{None} object are hashable
-\item Tuples (read-only sequences) are hashable if all of its items are hashable
+
+\item Tuples (read-only sequences) are hashable if all of its items
+are hashable
+
 \item Lists (changeable sequences) are not hashable, but SkunkWeb makes
 an exception and lets you use them as arguments to cacheable 
 components, as long as the list's items are either hashable or
@@ -1475,6 +1487,10 @@ just as it does for lists, with the same cautions and restrictions.
 
 \item Any combination of acceptable objects is acceptable: 
 a tuple of lists of dates, etc.
+
+\item \texttt{DateTime} objects are not natively hashable, but
+SkunkWeb has a provision in the cache key generation code to make it
+as if they were hashable.
 
 \item Instances of Python classes which you write yourself are not
 acceptable, unless you implement a \texttt{__hash__} or \texttt{__cachekey__}
@@ -1506,10 +1522,10 @@ Data components are like regular STML components, with these differences:
 
 \begin{itemize}
 \item Data component file end with the file extension \texttt{.dcmp}
-instead of \texttt{.comp}.
+(or \texttt{.pydcmp}) instead of \texttt{.comp} (or \texttt{.pycomp}).
 
 \item 
-Any ``output'' of a data component is ignored. Instead, the data
+Any output of a data component is ignored. Instead, the data
 component must return a Python object with the \texttt{<:return:>}
 tag.
 
@@ -1543,7 +1559,7 @@ the result of the Python expression in the tag. Examples:
 <:return `{'hey': 'dude', 'i': 'made', 'a': 'dictionary'}`:>
 \end{verbatim}
 
-If you ``forget'' to put a return tag in your data component, 
+If you forget to put a return tag in your data component, 
 the object returned is the \texttt{None} object, just like a Python 
 function that forgets to return something.
 
@@ -1560,12 +1576,18 @@ val = AE.Component.callComponent(name, argdict,
 See section \ref{whatevervals}, page \pageref{whatevervals} for valid
 values of \texttt{whatever}.
 
+If you are in a Python data component and want to return the value of
+a variable \texttt{foo}, you'd do this:
+\begin{verbatim}
+raise ReturnValue, foo
+\end{verbatim}
+
 \subsection{Cacheable data components}
 \label{tagdatacompcaching}
 
 As with regular components, you may call data components with
-\texttt{cache=yes} (or \texttt{cache=defer} or
-\texttt{cache=force}). Data components use the \texttt{<:cache:>}
+\texttt{cache=yes} (or \texttt{cache=defer} or \texttt{cache=force} or
+\texttt{cache=old}). Data components use the \texttt{<:cache:>}
 \doref{tagcache} tag to specify how long to cache, just like
 components do.
 
@@ -1575,7 +1597,7 @@ to cached regular components \doref{tagcomponentrestrictions}.
 
 Cached data components must also obey another restriction: 
 the object returned by a data component must be \emph{pickleable}. 
-That's Python's way of saying ``serializable''. If you don't 
+That's Python's way of saying serializable. If you don't 
 know much about Python's \texttt{pickle} module, don't worry. 
 The rule of thumb is: practically any kind of object you work 
 with is pickleable. All Python basic data types can be pickled, 
@@ -1590,9 +1612,6 @@ return from a data component.
 \label{tagtype}
 
 \texttt{<:type \emph{named_args}:>}
-
-\textbf{Note:} This tag is for advanced use by developers
-who understand STML components and the Python type system.
 
 The \texttt{<:type:>} tag allows you to to 
 run-time type checking on variables.
@@ -1609,12 +1628,6 @@ if they pass an
 value is a tuple, check to see if \texttt{isinstance} succeeds on any
 of the types/classes in the tuple.  If there is no match, a
 \texttt{TypeError} will be raised.
-
-For convenience, the type objects from the \texttt{types} module
-are available in the global document namespace.  See the \emph{Python
-Library Reference} section on the \texttt{types} module for details
-on the type objects contained in the \texttt{types} module.
-
 
 Passing values other than classes or types is erroneous and will raise
 a \texttt{TypeError} at run-time.  If a named variable doesn't exist, a
@@ -1695,6 +1708,12 @@ period of time:
 <:cache duration=40m20m:>
 \end{verbatim}
 
+The Python equivalent of the \texttt{<:cache duration=\emph{foo}:>} tag is:
+\begin{verbatim}
+import TimeUtil
+__expiration = TimeUtil.convertDuration(foo)
+\end{verbatim}
+
 \subsection{Using the \texttt{until} argument}
 
 If you specify \texttt{until}, the value can be one
@@ -1764,6 +1783,11 @@ cache control:
 \end{verbatim}
 \end{itemize}
 
+The Python equivalent of the \texttt{<:cache until=\emph{foo}:>} tag is:
+\begin{verbatim}
+import TimeUtil
+__expiration = TimeUtil.convertUntil(foo)
+\end{verbatim}
 
 
 
@@ -1796,14 +1820,13 @@ Some examples, with their equivalents in straight Python:
 \item[<:import string find string_find:>] \texttt{from string import find as string_find}
 \end{argdesc}
 
-\textbf{Note on where modules come from:} When you
-do an \texttt{<:import foo:>} in STML, the SkunkWeb server
-first looks for the module \texttt{foo} in Python's standard
-module directories. If it does not find the module in any
-of those directories, SkunkWeb then looks in your custom SkunkWeb
-module library, which is usually \texttt{/usr/local/skunk/site-libs}
-(but could be changed by changing the \texttt{ImportPath}
-configuration variable)
+\textbf{Note on where modules come from:} When you do an
+\texttt{<:import foo:>} in STML, the SkunkWeb server first looks for
+the module \texttt{foo} in Python's standard module directories. If it
+does not find the module in any of those directories, SkunkWeb then
+looks in your custom SkunkWeb module library, which is usually
+\texttt{/usr/local/skunk/site-libs} (but could be changed by 
+modifying \texttt{sys.path} in \texttt{sw.conf})
 for a file \texttt{foo.py}.
 If SkunkWeb still cannot find the module \texttt{foo}, it raises an 
 \texttt{ImportError}.
@@ -1819,10 +1842,19 @@ tags are only enabled if using the \texttt{AE} library under the
 SkunkWeb server or under \texttt{swpython}.  Chances are exceptionally
 fair that this is the case.
 
-The default behavior of these tags is very simple.  Your SkunkWeb
-administrator or lead developer may customize the behavior of these
-tags to fit the needs of your website.  If these STML tags behave
-differently or strangely in your web application, it's probably
+For the most part, unless you have a dynamic url scheme (e.g. your
+user-visible URLs are in Spanish, but English in the code, or perhaps
+you use Akamai for images), you probably don't need these at all, but
+if you do, they can be \emph{very} useful.  The behavior of these can
+be modified by writing a service that overrides the relavent functions
+in the \texttt{templating.UrlBuilder} module (under
+\texttt{SkunkWeb/Services}).
+
+The default behavior (i.e. you've not overriden bits of
+\texttt{templating.UrlBuilder}) of these tags is very simple.  Your
+SkunkWeb administrator or lead developer may customize the behavior of
+these tags to fit the needs of your website.  If these STML tags
+behave differently or strangely in your web application, it's probably
 because they've been customized; ask your local SkunkWeb guru.
 
 \section{\texttt{<:url:>}}
@@ -1867,11 +1899,12 @@ that any other arguments you pass by name will be put in the
 \end{itemize}
 
 The equivalent Python component code would be:
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import templating.UrlBuilder
 print templating.UrlBuilder.url(path, queryargs, text,
-     \textit{extra_args_as_dict}, noescape)
-\end{obeylines}
+     extra_args_as_dict, noescape)
+\end{verbatim}
+
 
 
 
@@ -1880,7 +1913,7 @@ print templating.UrlBuilder.url(path, queryargs, text,
 
 \begin{verbatim}<:img path [queryargs] [noescape] [extra_args]:>\end{verbatim}
 
-creates an appropriate HTML \texttt{<IMG>} tag. 
+Creates an appropriate HTML \texttt{<IMG>} tag. 
 Arguments similar to \texttt{<:url:>} \doref{tagurl}. 
 
 The \texttt{queryargs} argument, if present, allows you to pass a
@@ -1906,11 +1939,11 @@ Examples:
 \end{verbatim}
 
 The equivalent Python component code would be:
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import templating.UrlBuilder
 print templating.UrlBuilder.image(path, queryargs,
-     \textit{extra_args_as_dict}, noescape)
-\end{obeylines}
+     extra_args_as_dict, noescape)
+\end{verbatim}
 
 
 \section{\texttt{<:form:>}}
@@ -1918,24 +1951,25 @@ print templating.UrlBuilder.image(path, queryargs,
 
 \texttt{<:form path [noescape] [\emph{extra_args}]:>}
 
-Creates an appropriate HTML \texttt{<FORM>} ``start'' tag. 
+Creates an appropriate HTML \texttt{<FORM>} start tag. 
 Arguments are similar to the \texttt{<:url:>} \doref{tagurl}.
 The \texttt{extra_args} parameter is not actually a real argument name, but
 is a pass through to let you pass through arguments to the
 \texttt{<FORM>} 
 tag such as \texttt{METHOD}. These arguments must be passed by name only.
 
-\textbf{IMPORTANT NOTE!} This tag only generates the ``start'' HTML
+\textbf{IMPORTANT NOTE!} This tag only generates the start HTML
 form tag, but \emph{not} the closing \texttt{</FORM>} tag.
 Always remember to close your HTML forms with the raw HTML tag
 \texttt{</form>}.
 
 The equivalent Python component code would be:
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import templating.UrlBuilder
 print templating.UrlBuilder.form(path,
-     \textit{extra_args_as_dict}, noescape)
-\end{obeylines}
+     extra_args_as_dict, noescape)
+\end{verbatim}
+
 
 
 \section{\texttt{<:hidden:>}}
@@ -1962,10 +1996,11 @@ produces
 
 
 The Python component code to mimic this tag is:
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import templating.UrlBuilder
-print templating.UrlBuilder( \emph{named_args_as_dict} )
-\end{obeylines}
+print templating.UrlBuilder( named_args_as_dict )
+\end{verbatim}
+
 
 \section{\texttt{<:redirect:>}}
 \label{tagredirect}
@@ -2008,10 +2043,11 @@ must be passed by name, like \texttt{url=foo} or
 
 
 The equivalent Python component code is: 
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import templating.UrlBuilder
 templating.UrlBuilder.redirect(path, url, queryargs, noescape)
-\end{obeylines}
+\end{verbatim}
+
 
 
 
@@ -2024,7 +2060,7 @@ it was a better approach to use Python's standard
 modules for Internet services. If you need to perform
 some operation, such as fetching a web page from a server,
 or talking to a UseNet newsgroup, or fetching mail
-from a POP mail server, write your own ``wrapper module''
+from a POP mail server, write your own wrapper module
 for use in SkunkWeb, and make use of Python's fantastic
 standard modules, such as \texttt{httplib} and
 \texttt{urllib}.
@@ -2059,7 +2095,7 @@ templating.MailServices.sendmail (
 \label{stmlrefmsg}
 In many web applications, you will find that you need
 to display text messages to the web user, such as 
-error messages, alert messages, ``success'' messages,
+error messages, alert messages, success messages,
 and so forth. Yet you do not wish to type these messages
 directly into your STML templates; what if you use them
 in many places on your Web site, and then you have to
@@ -2067,7 +2103,7 @@ change the text of a message? You do not want to have
 to hand-edit each STML document to make the change.
 
 STML provides a nice way to manage text messages
-and avoid ``hard-coding'' them into your STML documents:
+and avoid hard-coding them into your STML documents:
 \textbf{message catalogs}. An STML message catalog acts somewhat
 like a Python dictionary: you give it a \emph{key},
 which is a string, and the mesage catalog looks up
@@ -2154,11 +2190,7 @@ The catalog object is now loaded into the local variable
 \end{verbatim}
 
 If the catalog object is a multi-lingual message catalog,
-you may pass the optional argument \texttt{lang}. If passed,
-it should be one of the strings \texttt{"esp"}, 
-\texttt{"por"} or \texttt{"eng"}, for Spanish, Portuguese,
-or English respectively. (For backward compatibility, the
-string \texttt{"spa"} is acceptable for Spanish.)
+you may pass the optional argument \texttt{lang}.
 If you do not specify \texttt{lang},
 the SkunkWeb server will look for a global variable in your template
 called \texttt{lang}, and use that.  You can configure your SkunkWeb
@@ -2197,13 +2229,14 @@ variable subtitution \doref{msgcatvarsub}
 section for details.
 
 The equivalent Python code is:
-\begin{obeylines}\ttfamily
+\begin{verbatim}
 import AE.MsgCatalog
 import DT.DTCommon
 print AE.MsgCatalog.getMessage ( 
     catalog, msgname, lang, DT.DTCommon.ValFmtRgy[ fmt ], 
-    \emph{substitution_args_as_dict} )
-\end{obeylines}
+    substitution_args_as_dict )
+\end{verbatim}
+
 
 \section{Variable Subsitution in Messages}
 \label{msgcatvarsub}
@@ -2265,7 +2298,7 @@ are the message names (always strings), and
 the values are the messages themselves (always
 strings).
 
-Multi-lingual message catalogs are ``two-level''
+Multi-lingual message catalogs are two-level
 Python dictionaries. The language is the top level,
 and each language key has a full dictionary of 
 message names and values. Here's the above simple
@@ -2330,10 +2363,12 @@ your custom SkunkWeb Python modules and their documentation.)
 tag; you will be forever glad you did.}}
 
 Note that this tag considers all of its contents to be text; STML tags
-are not parsed. The resulting documentation will be in ``plaintext'', unless
+are not parsed. The resulting documentation will be in plain text, unless
 you use the magic \textbf{skunkdoc} XML format: make the first two
 non-whitespace characters in the tag \texttt{**} and the skunkdoc tool
-will parse them as XML. See the manual ``Documentation Tools'' on the skunk.org
+will parse them as XML. See the non-existant 
+%%ATC--FIXME
+manual ``Documentation Tools'' on the skunk.org
 website to learn all about the skunkdoc XML format.
 
 
@@ -2511,23 +2546,18 @@ As with normal STML data components, any generated output is ignored.
 
 
 \chapter{Namespaces}
-\strong{ATC--FIXME}
 \label{namespaces}
 
+In the global namespace of the top-level component there are, by
+default, only five things, four of which you can safely ignore,
+leaving the \texttt{CONNECTION} object.  For non top-level components,
+you either get what was passed or inherited (in the case of include),
+and that's it.
 
-\section{The Global Namespace}
-\label{globalns}
-
-The global namespace contains:
-\begin{itemize}
-\item The contents of the \texttt{types} module that don't start with a
-leading underscore. 
-\item The \texttt{SkunkWeb} module.
-\end{itemize}
 
 \section{The \texttt{CONNECTION} Object}
 \label{connectionobj}
-
+%%ATC-- LEFT OFF HERE
 \chapter{User Modules}
 \label{usermodules}
 The \texttt{site-libs} directory contains application-specific modules
