@@ -219,4 +219,4 @@ def _isNumber(t):
 def _isString(t):
     pfx = string.split(t, '(')[0]
     return string.upper(pfx) in (
-        'CHAR', 'TEXT', 'VARCHAR', 'NAME')
+        'BPCHAR', 'CHAR', 'TEXT', 'VARCHAR', 'NAME')

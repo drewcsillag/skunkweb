@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.1 2002/04/17 19:25:51 drew_csillag Exp $
-# Time-stamp: <2002-04-17 14:53:26 drew>
+# $Id: __init__.py,v 1.2 2002/04/17 19:37:48 drew_csillag Exp $
+# Time-stamp: <02/04/17 16:23:01 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -155,30 +155,10 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2002/04/17 19:37:48  drew_csillag
+# minor tweak to debug info
+#
 # Revision 1.1  2002/04/17 19:25:51  drew_csillag
 # added
-#
-# Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.8  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.7  2001/05/04 18:38:48  smullyan
-# architectural overhaul, possibly a reductio ad absurdum of the current
-# config overlay technique.
-#
-# Revision 1.6  2001/04/25 20:18:44  smullyan
-# moved the "experimental" services (web_experimental and
-# templating_experimental) back to web and templating.
-#
-# Revision 1.5  2001/04/23 18:52:54  smullyan
-# basicauth repaired.
-#
-# Revision 1.4  2001/04/23 17:30:06  smullyan
-# basic fixes to basic auth and httpd; added KeepAliveTimeout to requestHandler,
-# using select().
-#
 ########################################################################
 

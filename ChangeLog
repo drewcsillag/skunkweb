@@ -1,3 +1,7 @@
+2002-04-17  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/PyDO/postconn.py (_isString): added support for bpchar.
+
 2002-04-17  Andrew Csillag  <drew@localhost.localdomain>
 
 	* NEWS: updating for what will be 3.2.1 
@@ -18,8 +22,6 @@
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: first shot towards Apache 2
 	compatibility.  Doesn't compile for it yet, but it's getting there.
-
-2002-04-13  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/PyDO/PyDO.py: fixed bug in scatterFetchPost when got no results back from the query.  Thanks to Karl Putland <kperacles@yahoo.com>.
 
