@@ -73,7 +73,7 @@ The requirements are:
 - Python 2.1.1 or later, optionally with the crypt module installed.
 - An ANSI C Compiler such as GNU gcc.
 - mx.DateTime - this is used for the caching mechanisms. This can be
-  obtained at this address: http://www.egenix.com/. 
+  obtained at this URL: http://www.egenix.com/. 
 
 Optional Modules:
 
@@ -112,9 +112,8 @@ Optional Software:
  would only apply to situations where Apache and SkunkWeb are
  on the same machine.
 
-
-- Sudo. If you would like to run SkunkWeb under a different
-  username other than the one SkunkWeb usually runs under, you
+- Sudo. If you would like to start SkunkWeb as a different
+  user than the one which will own the SkunkWeb processes, you
   will need sudo present on your system.
 
 Installation
@@ -164,18 +163,8 @@ necessary. All you need to do is::
 	make
 	make install
 
-where ``<SKUNKWEB_DIST>`` is the name of the folder containing the
-SkunkWeb distribution.  (TODO -- configure without options just
-doesn't work, but we don't know what options to suggest here without 
-knowing what kind of installation is desired.  So the rhetorical tack
-of saying "all you need to do here" probably should be revised.  The
-user has to read to the bottom, probably, and then we could give a
-couple of example configures -- one for a home directory installation
-without apache -- the best for testing -- one for /usr/local/skunk
-with user, group and apxs specified, and a FHS install.)
-
-At the completion of the installation, you can find the software in
-the directory ``/usr/local/skunk``.
+where ``<SKUNKWEB_DIST>`` is the name of the folder containing the SkunkWeb
+distribution.  
 
 There are a list of configuration options available when using the
 "configure" script to customize your installation:
@@ -213,8 +202,8 @@ There are a list of configuration options available when using the
 	The default installation path is /usr/local/skunk. Use this
 	switch to specify a different installation path.
 
-Other standard configure parameters like --prefix for
-determining installation directories are also honored.  
+Other standard configure parameters (e.g., --bindir, --libdir, and
+--localstatedir) for determining installation directories are also honored.
 
 If you are installing a server for development purposes or for
 testing, the easiest approach is to install it in your home directory,
@@ -223,7 +212,7 @@ without mod_skunkweb::
   ./configure --prefix=$HOME/skunk --without-mod_skunkweb
 
 If you want a system-wide install with skunkweb in /usr/local, with
-mod_skunkweb and skunk configured to run as nobodynogroup::
+mod_skunkweb and skunk configured to run as nobody.nogroup::
 
   ./configure --with-apxs=/usr/local/apache/bin/apxs \
               --with-user=nobody \
@@ -259,8 +248,7 @@ reaper. The cache reaper is a script that deletes expired caches
 periodically, as the cache will tend to build up over time. Add this
 to your ``crontab``::
 
-	0 0 * * * <SKUNKWEB_DIR>/util/cache_reaper.py -c /usr/local/skunk/cache
-
+	0 0 * * * <SKUNKWEB_DIR>/util/cache_reaper.py 
 
 Testing Your Installation
 -------------------------
@@ -287,21 +275,14 @@ of relief.
 SkunkWeb HTTP Server
 --------------------
 
-SkunkWeb comes with a built-in HTTP server, which is useful for
-development purposes or where an Apache installation communicating
-with SkunkWeb is unnecessary.
+SkunkWeb comes with a built-in HTTP server, which is useful for development
+purposes or where an Apache installation communicating with SkunkWeb is
+unnecessary.  (It is also possible to use apache's mod_proxy module to serve as
+a front-end to SkunkWeb's httpd service.)
 
-The HTTP server is simple to set up, with a few parameters to get you up and going. 
+The HTTP server is simple to set up, and is enabled by default in an adequate
+configuration.
 
-The HTTP Server is enabled by default.
-
-If you are installing a fresh copy of SkunkWeb, you might want to skip
-the compliation of ``mod_skunkweb``, if you plan to just use the
-SkunkWeb HTTP Server. To do this you would type this when you
-configure the software for installation::
-
-	./configure --without-mod_skunkweb
-	
 There are certain parameters available in SkunkWeb's configuration
 file, ``sw.conf``, which is available in
 ``<SKUNKWEB_DIR>/etc/sw.conf``. There are four parameters in
