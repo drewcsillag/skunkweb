@@ -1,5 +1,5 @@
-# Time-stamp: <02/08/08 22:48:56 smulloni>
-# $Id: sqliteconn.py,v 1.1 2002/08/07 14:05:46 smulloni Exp $
+# Time-stamp: <02/08/12 11:21:55 smulloni>
+# $Id: sqliteconn.py,v 1.2 2002/08/09 03:14:21 smulloni Exp $
 #  
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
 #                     Andrew T. Csillag <drew_csillag@geocities.com>
@@ -54,21 +54,15 @@ class PyDOSqlite:
     def execute(self, sql, values, attributes):
         cur=self.conn.cursor()
         if self.verbose:
-            print sql
-            print values
+            print "SQL> %s" % sql
         cur.execute(sql) #, values)
         result=cur.fetchall()
-        if self.verbose:
-            print "result: %s" % (result,)
+
         if not result and cur.fetchone() in (None, (), []):
-            if self.verbose:
-                print "returning cur.rowcount"
             return cur.rowcount
         fields=[x[0] for x in cur.description]
         if attributes is None:
             return result, fields
-        if self.verbose:
-            print attributes
         return self.convertResultRows(fields, attributes, result)
 
     def convertResultRows(self, columnNames, attributes, rows):
@@ -118,15 +112,15 @@ def test():
                                 'verbose' : 1})
 
     class Contact(PyDO.PyDO):
-        connectionAlias='test'
-        table='contact'
-        fields=(
+        connectionAlias="test"
+        table='Contact'
+        fields= (
             ('id', 'integer'),
             ('firstname', 'text'),
             ('lastname', 'text'),
-            ('home_email', 'text'))
-        autoincrement=['id']
+            ('home_email', 'text') )
         unique=['id']
+        auto_increment={'id' : 'Contact'}
 
     contacts=Contact.getSome()
     for c in contacts:
@@ -147,4 +141,5 @@ def test():
         else:
             c.rollback()
     
+
     

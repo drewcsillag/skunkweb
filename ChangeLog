@@ -1,3 +1,12 @@
+2002-08-12  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/static.py (Sissubclass): patch (from Drew) so that it
+	returns 0 rather than inappropriately raising an exception.
+
+	* pylibs/PyDO/sqliteconn.py (test): fixes, now that I have patched
+	pysqlite to deal correctly with rowcount.  The way I have
+	auto_increment working here isn't very pleasing, however.
+
 2002-08-09  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/AE/cacheKey/cachekey.c: removed circularity checking

@@ -28,13 +28,16 @@ def Sisinstance(obj, dataClass):
 
 def Sissubclass(sub, super):
     """returns 1 if sub is a PyDO subclass of super"""
-    if not isinstance(sub, _StaticBase):
-        raise TypeError, "first arg isn't a data class"
-    if not isinstance(super, _StaticBase):
-        raise TypeError, "second arg isn't a data class"
-    if sub._klass == super._klass: return 1
+    if not isinstance(sub, _StaticBase) \
+           and isinstance(super, _StaticBase):
+        return 0 
+    if sub._klass == super._klass:
+        return 1
     for sc in sub._superClasses:
-        return Sissubclass(sc, super)
+        if Sissubclass(sc, super):
+            return 1
+    return 0
+
 
 class _method:
     def __init__(self, obj, meth):
