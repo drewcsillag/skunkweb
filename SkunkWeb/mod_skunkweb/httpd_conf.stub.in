@@ -30,6 +30,9 @@ SkunkWebErrorEmails	@OWNER@@localhost
 # List of uri prefixes for which should be handled in the normal way by
 # apache and *not* by SkunkWeb.
 #
+# THIS OPTION IS NO LONGER SUPPORTED UNDER APACHE 2 AND MAY GO AWAY FOR
+# APACHE 1.x AS YOU CAN DO THE SAME THING VIA <Location> directives
+#
 # SkunkWebExclude /foo/ /bar/
 
 # In the event that we cannot reach a server running on SkunkWebSocketAddress,
