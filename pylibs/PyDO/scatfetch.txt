@@ -1,0 +1,81 @@
+On Thu, Sep 27, 2001 at 03:00:07PM -0700, Gregory Brauer wrote:
+> 
+> 
+> Could someone explain, or point me to something that explains, a
+> scatterFetch?  An example would be helpful.  Also, why is the
+> scatterFetch method declared "static_", but listed in the instance
+> methods section?
+
+I hadn't got around to documenting it (I will now :), but here's what
+it does:  It's for the case where you want to fetch multiple types of
+objects with one database query.  For example:
+
+Stretching the users and groups example yet again to fetch the user
+and group info together all at once, the sql would be: (assuming a one
+to many from users to groups, i.e.  a user can be in only one group)
+
+select users.username, groups.groupname from users, groups
+where
+   groups.id = users.group_id;
+
+scatterFetch allows you to get tuples of objects that correspond like
+this (you can to M2M but you wind up getting a cartesian product -- as
+you would in straight SQL).
+
+In this example, you'd do this:
+
+uglist = Users.scatterFetch([ (Groups, 'id', Users, 'group_id') ])
+which would return a list of [UsersObj, GroupsObj] lists.
+
+Below is the full example text.
+
+Hope this helps!
+Drew
+
+----full-example-data---
+--SQL---
+create table groups (id int4 primary key, name text);
+create table users (id int4 primary key, name text, group_id int4 references groups);
+
+###PyDO module
+import PyDO
+PyDO.DBIInitAlias('drew', 'pydo:postgresql::drew')
+
+class Users(PyDO.PyDO):
+    connectionAlias = 'drew'
+    table = 'users'
+    fields = (('id','int4'),
+              ('name', 'text'),
+              ('group_id', 'int4'))
+    unique = ['id']
+
+    def getall(self):
+        return Users.scatterFetch([ (Groups, 'id', Users, 'group_id') ])
+
+class Groups(PyDO.PyDO):
+    connectionAlias = 'drew'
+    table = 'groups'
+    fields = (('id','int4'),
+              ('name', 'text'))
+    unique = ['id']
+
+##interaction
+>>> g = Groups.new(id = 0, name = 'test group')
+>>> u = Users.new(id = 0, name = 'drew', group_id = 0)
+>>> u = Users.new(id = 1, name = 'drew1', group_id = 0)
+>>> u.getall()
+[[<PyDO Users data class instance>, <PyDO Groups data class instance>], [<PyDO Users data class instance>, <PyDO Groups data class instance>]]
+>>> f = u.getall()
+>>> for i in f:
+...    print i[0]['name'], i[1]['name']
+... 
+drew test group
+drew1 test group
+>>> 
+
+    
+    
+-- 
+print(lambda(m,d,y):['Sun','Mon','Tues','Wednes','Thurs','Fri','Satur'
+][(lambda(m,d,y):(23*m/9+d+4+y/4-y/100+y/400)%7)(m<3and(m,d+y,y-1)or(
+m,d+(y-2),y))])(map(int,raw_input('mm/dd/yyyy>').split('/')))+'day'
