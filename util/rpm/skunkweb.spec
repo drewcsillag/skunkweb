@@ -1,11 +1,13 @@
 #  which python binary to use, list the full path or "auto"
 %define config_pythonpath auto
 
-#  apache version to use
-%define config_apache httpd
+# name of the python rpm -- may be called "python2" on some systems
+#  "auto" will try to figure it out
+%define config_pythonpkgname auto
 
-# name of the python rpm -- may be called "python2" on some systems 
-%define pythonpkg python
+#  name of apache package, Red Hat >= 8.0 uses "httpd", older uses "apache"
+#  "auto" will try to figure it out
+%define config_apachepkgname auto
 
 #################################
 #  End of user-modifiable configs
@@ -18,8 +20,11 @@
 #  locate python executable
 %define pythonpath %(if [ "%{config_pythonpath}" != auto ]; then echo %{config_pythonpath}; else ls /usr/bin/python[23].* | sort | tail -1; fi)
 
-%define apache %(if [ "${config_apache}" != auto ]; then echo %{config_apache}; else echo %{apxspath} -q TARGET; fi)
-%define apachemodprefix (if [ "${apache}" = httpd ]; then echo .libs/; fi)
+#  find the name of the python package
+%define pythonreq %(if [ "%{config_pythonpkgname}" != auto ]; then echo %{config_pythonpkgname}; else rpm -qf --qf '%{name}' %{pythonpath}; fi)
+
+#  find the name of the apache package
+%define apachereq %(if [ "%{config_apachepkgname}" != auto ]; then echo %{config_apachepkgname}; else rpm -qi httpd >/dev/null 2>&1 && echo httpd || echo apache; fi)
 
 #  location to apxs executable
 %define apxspath /usr/sbin/apxs
@@ -40,7 +45,7 @@ BuildRoot: /var/tmp/%{name}-%{version}-root
 Requires: %{pythonpath}
 Requires: %{pylibdir}/site-packages/mx/__init__.py
 BuildRequires: %{apxspath}
-BuildRequires: %{pythonpkg} >= 2.1
+BuildRequires: %{pythonreq} >= 2.1
 
 %description
 SkunkWeb is a scalable, extensible and easy to use web application server
@@ -50,7 +55,7 @@ designed for handling both high-traffic and smaller sites, written in Python.
 Summary: A module for including Skunkweb in Apache.
 Group: System Environment/Daemons
 Requires: %{name}
-Requires: %{apache}
+Requires: %{apachereq}
 
 %description mod_skunkweb
 A module for including the Skunkweb environment in the Apache web server.
@@ -121,7 +126,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 echo '0 0 * * * skunkweb /usr/share/skunkweb/util/cache_reaper.py -c /var/lib/skunkweb/cache' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb
 
 #  set up logrotate script
-cp skunkweb.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/skunkweb
+cp util/rpm/skunkweb.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/skunkweb
 
 #  build file list
 find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
@@ -129,12 +134,12 @@ find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
 echo '%attr(750,skunkweb,skunkweb) %dir /var/lib/skunkweb/cache' >>skunkweb.files
 
 #  set up init file
-cp skunkweb.init $RPM_BUILD_ROOT/etc/rc.d/init.d/skunkweb
+cp util/rpm/skunkweb.init $RPM_BUILD_ROOT/etc/rc.d/init.d/skunkweb
 echo '%attr(755,root,root) /etc/rc.d/init.d/skunkweb' >>skunkweb.files
 
 #  set up log-file
 mkdir -p $RPM_BUILD_ROOT/var/log/skunkweb
-echo '%attr(750,skunkweb,skunkweb) /etc/rc.d/init.d/skunkweb' >>skunkweb.files
+echo '%attr(750,skunkweb,skunkweb) %dir /var/log/skunkweb' >>skunkweb.files
 
 #  install skunkweb
 MODFILELIST=`pwd`/mod_skunkweb.files
@@ -143,7 +148,9 @@ export MODFILELIST
    cd SkunkWeb/mod_skunkweb
    moddir=`%{apxspath} -q LIBEXECDIR`
    mkdir -p "${RPM_BUILD_ROOT}/${moddir}"
-   cp ${apachemodprefix}mod_skunkweb.so "${RPM_BUILD_ROOT}/${moddir}"
+   MODSWNAME=mod_skunkweb.so
+   [ -f .libs/mod_skunkweb.so ] && MODSWNAME=.libs/mod_skunkweb.so
+   cp "${MODSWNAME}" "${RPM_BUILD_ROOT}/${moddir}"
    echo "/${moddir}"/mod_skunkweb.so >>"$MODFILELIST"
 
    #  use conf.d?

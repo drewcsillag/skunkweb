@@ -1,3 +1,9 @@
+2003-05-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* util/rpm/skunkweb.spec, util/rmp/skunkweb.init,
+	util/rpm/skunkweb.logrotate: more improvements from SR, including
+	log rotation and init scripts, now moved into uti/rpm.
+
 2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* skunkweb.spec: added some configuration with the intent of
