@@ -31,7 +31,7 @@ class PushyFlowManager(object):
                                   fieldmapper=_getname,
                                   storelists=0)
         
-    def getStartForm(self):
+    def getStartForm(self, argdict):
         return self.forms[0]
 
     def next(self, form, state, argdict, ns):

@@ -1,3 +1,9 @@
+2003-01-02    <smulloni@smullbola.smullyan.org>
+
+	* test/sitelibs/formlibtest/testDispatch3.py
+	(PushyFlowManager.getStartForm): fixed to match signature change
+	in dispatcher.py.
+
 2003-01-01  James Richards  <jrichards@satie.wnyc.org>
 
 	* views.py (ViewableCompositeField.__init__): Overriding setting
