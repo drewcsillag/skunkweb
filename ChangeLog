@@ -1,3 +1,8 @@
+2002-06-03  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: fixed a goof that showed
+	up when building against Apache 1 due to a misplaced #endif
+
 2002-05-30  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* pylibs/PyDO/postconn.py: proper handling of date strings where 
