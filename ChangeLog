@@ -1,3 +1,10 @@
+2003-08-12  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Cache.py (_fixPath): now applying normpath twice.
+	This prevents the the docroot from being escaped, but also
+	normalizes the entire path (removing extra slashes).  Otherwise,
+	the vfs breaks in some cases (most notably with the product service).
+
 2003-08-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* new beta (3.4b4) release cut, to get the security fixes out
