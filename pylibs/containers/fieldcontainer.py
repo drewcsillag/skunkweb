@@ -7,7 +7,7 @@
 ########################################################################
 
 try:
-    list
+    object
 except NameError:
     import UserList.UserList as list
 
