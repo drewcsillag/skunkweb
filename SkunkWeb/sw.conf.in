@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: sw.conf.in,v 1.5 2001/09/07 16:50:54 smulloni Exp $
+# $Id: sw.conf.in,v 1.6 2001/10/01 14:46:05 drew_csillag Exp $
 # Time-stamp: <01/05/07 13:57:33 smulloni>
 
 ########################################################################
@@ -187,6 +187,11 @@ userModuleCleanup = 1
 # etc.
 #
 # documentRoot = '<SKUNKROOT>/docroot'
+
+########################################################################
+# What filesystem implementations to use to search for resources.
+#
+# documentRootFS = [vfs.LocalFS()]
 
 ########################################################################
 # for the sendmail tag, how to actually send it.
@@ -400,14 +405,14 @@ userModuleCleanup = 1
 
 ########################################################################
 # If using the pars service, a list of par files that should be used to
-# serve.
+# serve. DEPRECATED in SkunkWeb 3.2; use DocumentRootFS instead.
 #
 # parFiles = []
 
 ########################################################################
 # If using the pars service and the document we're looking for is not
 # in the par files we loaded, should we fall through to the filesystem
-# to look for it?
+# to look for it?  (probably) DEPRECATED in SkunkWeb 3.2.
 #
 # parFallthrough = 1
 
@@ -506,6 +511,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.6  2001/10/01 14:46:05  drew_csillag
+# added defaultIndexHtml and userdir config
+#
 # Revision 1.5  2001/09/07 16:50:54  smulloni
 # documented ServerName variable
 #

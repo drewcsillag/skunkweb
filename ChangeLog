@@ -1,5 +1,8 @@
 2001-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sw.conf.in: added documentation of documentRootFS configuration
+	variable, and comments on now (probably) deprecated pars service variables.
+
 	* SkunkWeb/Services/templating/UrlBuilder.py (image): the <:img:>
 	tag will now determine the width and height of the image if the url
 	is local and PIL (Python Imaging Library) is installed, and neither
