@@ -1,3 +1,8 @@
+2001-10-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/devel/devel.tex (subsection{The \texttt{SkunkWeb.Configuration} ``Module''}): 
+	minor updates.
+
 2001-10-19  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* 3.1.2 cut
