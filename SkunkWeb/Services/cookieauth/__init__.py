@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 14:59:58 drew_csillag Exp $
+# $Id: __init__.py,v 1.1 2002/04/17 19:25:51 drew_csillag Exp $
 # Time-stamp: <2002-04-17 14:53:26 drew>
 ########################################################################
 #  
@@ -138,7 +138,7 @@ def authorize(username, password, responseCookie):
     if Configuration.cookieExtras:
         for k,v in Configuration.cookieExtras.items():
             responseCookie[Configuration.cookieAuthName][k] = v
-    DEBUG(AUTH, "cookie is %s" % responseCookie)
+    #DEBUG(AUTH, "cookie is %s" % responseCookie)
     return 1
     
 import web.protocol
@@ -155,6 +155,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.1  2002/04/17 19:25:51  drew_csillag
+# added
+#
 # Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
 # take 2 of import
 #
