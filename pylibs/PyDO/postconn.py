@@ -112,7 +112,10 @@ class PyDOPostgreSQL:
                     if a in ('FLOAT4', 'FLOAT8'):
                         f = float
                     else:
-                        f = lambda x: int(float(x))
+                        if item is None:
+                            f = lambda x: x
+                        else:
+                            f = lambda x: x is None and None or int(float(x))
                     d[desc] = f(item)
                 else:
                     d[desc] = item
