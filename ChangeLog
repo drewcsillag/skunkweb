@@ -1,3 +1,8 @@
+2002-02-01  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/__init__.py (__initSession): 
+	forgot to import LogObj
+
 2002-01-29  Andrew Csillag  <drew@thoughttrack.com>
 
 	* pylibs/static.py: after having dropped this fix that actually

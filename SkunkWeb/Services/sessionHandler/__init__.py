@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.4 2001/08/12 05:13:27 smulloni Exp $
+# $Id: __init__.py,v 1.5 2001/08/13 01:08:09 smulloni Exp $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package
@@ -71,7 +71,8 @@ def __initConfig():
 def __initSession():
     import SkunkWeb.Configuration as Configuration
     if not Configuration.SessionStore:
-        LOG("no sessionStore defined: cannot load sessionHandler service")
+        import SkunkWeb.LogObj as lo
+        lo.LOG("no sessionStore defined: cannot load sessionHandler service")
     else:
         import Session
         import SkunkWeb.constants as skc
@@ -93,6 +94,17 @@ __initSession()
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.5  2001/08/13 01:08:09  smulloni
+# added an evil boolean flag and an InitRequest hook to reset it.  These ensure
+# that a session store is only touched if the session has not already been
+# saved.  Unfortunately,  when a session is made dirty and then a
+# redirect is performed, the next request can be handled by another process
+# before the previous process is done persisting the session data, and the
+# best workaround at present is to manually save the session before the
+# redirect.  But this would have caused two database (or filesystem) hits
+# for that request alone, one to save the session and another to update its
+# timestamp; this change prevents that.
+#
 # Revision 1.4  2001/08/12 05:13:27  smulloni
 # adding new session store, using PostgreSQL with PyDO.
 #
