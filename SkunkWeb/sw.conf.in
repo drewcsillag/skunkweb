@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.18 2002/06/07 15:43:08 drew_csillag Exp $
-# Time-stamp: <2002-06-28 17:36:26 acsillag>
+# $Id: sw.conf.in,v 1.19 2002/06/28 21:32:30 drew_csillag Exp $
+# Time-stamp: <2002-07-05 10:29:31 acsillag>
 
 ########################################################################
 #
@@ -442,7 +442,7 @@ sys.path.append('@prefix@/sitelibs')
 # How long (in seconds) the http keepalive timeout should be between
 # HTTP requests
 #
-# HTTPKeepaliveTimeout = 15
+# HTTPKeepAliveTimeout = 15
 
 ########################################################################
 # A list of mime types that should not be accessible via web request
@@ -616,6 +616,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.19  2002/06/28 21:32:30  drew_csillag
+# added comment to remind all about authActivated
+#
 # Revision 1.18  2002/06/07 15:43:08  drew_csillag
 # should now work with DCOracle2
 #
