@@ -1,4 +1,18 @@
+2003-05-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* Makefile.in, SkunkWeb/Makefile.in,
+	SkunkWeb/mod_skunkweb/Makefile.in: absorbing SR's build patches;
+	added an APXSFLAGS variable for the rpm spec's sake.
+
+	* skunkweb.spec: Sean Reifschneider's revised rpm spec, revised
+	and probably screwed up by me (js).
+
 2003-05-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/ogenscript.py, pylibs/PyDO/pgenscript.py,
+	pylibs/PyDO/sapdbgenscript.py: changed shebang from
+	/usr/local/bin/python to /usr/bin/env python (thanks Sean
+	Reifschneider).
 
 	* docs/stmlrefer/stmlrefer.tex (chapter{Internet Services}): added
 	Frank Tegtmeyer's patch for MailServices documentation.

@@ -6,7 +6,7 @@
 #      README file.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.21 2003/05/02 14:15:00 drew_csillag Exp $
+# $Id: Makefile.in,v 1.22 2003/05/02 17:27:10 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -98,7 +98,7 @@ install: swpython
 	done
 
 	for comp in ${components}; do \
-	    if (cd $${comp}; $(MAKE) install); \
+	    if (cd $${comp} && $(MAKE) install); \
 	    then :; \
 	    else \
 		exit 1;\
@@ -127,92 +127,14 @@ install: swpython
 
 distclean: clean
 	for comp in $(components); do \
-	    (cd $${comp}; $(MAKE) distclean); \
+	    (cd $${comp} && $(MAKE) distclean); \
 	done
 	-rm -f Makefile config.log config.status skunkweb.py sw.conf swmgr
 	-rm -f swpython.py SkunkWeb/bootloader.py
 
 clean: 
 	for comp in $(components); do \
-	    (cd $${comp}; $(MAKE) clean); \
+	    (cd $${comp} && $(MAKE) clean); \
 	done
 	-rm -f *~
 
-########################################################################
-# $Log: Makefile.in,v $
-# Revision 1.21  2003/05/02 14:15:00  drew_csillag
-# swpython.c fix
-#
-# Revision 1.20  2003/05/02 13:21:54  drew_csillag
-# added things for swpython
-#
-# Revision 1.19  2003/05/01 20:45:52  drew_csillag
-# Changed license text
-#
-# Revision 1.18  2003/04/16 14:40:41  drew_csillag
-# portability things for hpux
-#
-# Revision 1.17  2003/04/05 04:16:14  smulloni
-# added DESTDIR to make install targets.
-#
-# Revision 1.16  2002/07/11 22:57:00  smulloni
-# configure changes to support other layouts
-#
-# Revision 1.15  2002/06/28 21:09:00  smulloni
-# groundwork laid for preventing attribute assignment to Configuration.
-#
-# Revision 1.14  2002/06/24 20:08:30  drew_csillag
-# made it so all makefiles should work with BSD make, not just GNU Make
-#
-# Revision 1.13  2002/06/18 20:33:27  drew_csillag
-# updated for favicon.ico
-#
-# Revision 1.12  2002/05/15 14:01:37  smulloni
-# added auth to list of services
-#
-# Revision 1.11  2002/03/21 18:10:17  smulloni
-# adding new demo files
-#
-# Revision 1.10  2002/02/07 07:18:41  smulloni
-# documentRootFS is now a single instance.
-#
-# Revision 1.9  2002/01/25 16:40:48  drew_csillag
-# made so they're now BSD-happy
-#
-# Revision 1.8  2002/01/24 04:46:38  smulloni
-# fixed typo.
-#
-# Revision 1.7  2002/01/21 22:56:03  smulloni
-# cause gallery demo to be installed.
-#
-# Revision 1.6  2001/11/14 05:38:54  smulloni
-# fixed nasty bug that broke install
-#
-# Revision 1.5  2001/11/11 22:10:09  smulloni
-# changes to configuration to enable more flexible installation.
-#
-# Revision 1.4  2001/10/29 14:46:45  drew_csillag
-# added swcgi stuff
-#
-# Revision 1.3  2001/08/12 16:44:35  drew_csillag
-# No longer require GNU install
-#
-# Revision 1.2  2001/08/10 16:41:10  drew_csillag
-# now installs demo/index.html
-#
-# Revision 1.1.1.1  2001/08/05 14:59:30  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.7  2001/08/03 16:02:50  drew
-# now installs demo files
-#
-# Revision 1.6  2001/07/11 17:17:27  drew
-# added copyright notice
-#
-# Revision 1.5  2001/04/10 22:48:26  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#
-########################################################################

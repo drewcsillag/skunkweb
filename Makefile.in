@@ -35,7 +35,7 @@ default:	build
 
 clean:	
 	for comp in ${components}; do \
-	    if (cd $${comp}; $(MAKE) clean); \
+	    if (cd $${comp} && $(MAKE) clean); \
 	    then :; \
 	    else \
 	        exit 1; \
@@ -46,7 +46,7 @@ distclean: clean
 	-rm -f Makefile config.log config.cache config.status *~
 	-rm -f pylibs/skunkdoc/skunkdoc2html.py
 	for comp in ${components}; do \
-	    if (cd $${comp}; $(MAKE) distclean); \
+	    if (cd $${comp} && $(MAKE) distclean); \
 	    then :; \
 	    else \
 	        exit 1; \
@@ -55,7 +55,7 @@ distclean: clean
 
 build:
 	for comp in ${components}; do \
-	    if (cd $${comp}; $(MAKE)) ; \
+	    if (cd $${comp} && $(MAKE)) ; \
 	    then :; \
 	    else \
 	        exit 1; \
@@ -64,7 +64,7 @@ build:
 
 install: make-tree
 	for comp in ${components}; do \
-	    if (cd $${comp}; $(MAKE) install); \
+	    if (cd $${comp} && $(MAKE) install); \
 	    then :; \
 	    else \
 	       exit 1; \
