@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # $Author: smulloni $
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 # Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
@@ -42,11 +42,18 @@ DEBUG(SESSIONHANDLER, "reap interval is %d" % _reapInterval)
 ########################################################################
 # methods that gets inserted into the HTTPConnection class
 
-def getSession(self, create=0):           
+def getSession(self, create=0, **cookieParams):           
     '''
     returns the session associated with this request.
     If create, will create a new session if there is none.
     '''
+    # check cookieParam input
+    illegal=filter(lambda x:x not in ('path', 'domain', 'secure'),
+                   cookieParams.keys())
+    if illegal:
+        message="illegal keyword arguments for cookieParams: %s" % str(illegal)
+        raise ValueError, message
+        
     if hasattr(self, '__userSession'):
         DEBUG(SESSIONHANDLER, "session found: %s" % self.__userSession.__dict__)
         return self.__userSession
@@ -56,11 +63,15 @@ def getSession(self, create=0):
             return None
         else:
             self.__userSession=Session(id)
-            # here I should attempt to determine whether cookies are enabled, and then
-            # turn on url rewriting if they are not.  TO BE DONE
-            if (hasattr(self, 'requestCookie')
-                and not self.requestCookie.has_key(_sessionIDKey)):
+            if not self.requestCookie.has_key(_sessionIDKey):
                 self.responseCookie[_sessionIDKey]=id
+                
+                # initialize valid cookie params, if specified
+                morsel=self.responseCookie[_sessionIDKey]
+                for param in ('path', 'domain', 'secure'):
+                    val=cookieParams.get(param)
+                    if val:
+                        morsel[param]=val
             return self.__userSession
 
 def removeSession(self):
@@ -256,6 +267,9 @@ class SessionStore:
     
 ########################################################################
 # $Log: Session.py,v $
+# Revision 1.5  2001/08/15 22:13:01  smulloni
+# tweaks to sessionHandler: fixed Session.get(), and added Session.setDirty()
+#
 # Revision 1.4  2001/08/14 05:12:46  smulloni
 # added a get() method to sessionHandler.Session.Session; fixed PyDO postgres
 # date conversion bug.

@@ -1,3 +1,10 @@
+2001-12-06  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/Session.py (getSession): Added
+	optional cookieParam keyword arguments, constrained to 'path', 'domain',
+	and 'secure', for setting session cookie parameters at session creation time.
+	They are otherwise ignored.
+	
 2001-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in: added documentation of documentRootFS configuration
