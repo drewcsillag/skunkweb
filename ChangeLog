@@ -1,3 +1,11 @@
+2003-04-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/skunkweb.py.in, SkunkWeb/SkunkWeb/Server.py,
+	SkunkWeb/SkunkWeb/bootloader.py.in,
+	pylibs/ProcessMgr/ProcessMgr.py: modified patch by Frank Tegtmeyer
+	to get the server to run without daemonizing, for monitoring with
+	djb's daemontools.
+
 2003-04-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/stmlrefer/stmlrefer.tex (section{The \texttt{CONNECTION}

@@ -36,7 +36,7 @@ configFiles = None
 #read command line
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 'c:h:', [
-        'help', 'config-files=', 'foreground'])
+        'help', 'config-files='])
 except getopt.GetoptError, val:
     sys.stderr.write("ERROR: %s\n" % val)
     help()
