@@ -93,19 +93,7 @@ AC_ARG_WITH(webdoc,
 	WEBDOC="no";])
 
 AC_SUBST(SERVICES)
-AC_ARG_WITH(services, 
-[  --with-services=svcs    Specify the list of services to install
-                          space delimited list of services to install, valid
-                          names are:
- 	                      ae_component aecgi auth basicauth fcgiprot httpd
-			      mysql oracle postgresql product remote 
-                              remote_client requestHandler rewrite scgi 
-                              sessionHandler templating userdir web 
-                          [default: install all services]
-], [
-	SERVICES=$withval], [
-	SERVICES="ae_component aecgi auth basicauth httpd mysql oracle postgresql product remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir cookieauth";])
-
+SERVICES=ae_component aecgi auth basicauth extcgi fcgiprot httpd mysql oracle postgresql product psptemplate pycgi pypgsqlcache remote remote_client requestHandler rewrite scgi sessionHandler templating userdir web
 
 dnl Checks for programs.
 AC_PROG_CC

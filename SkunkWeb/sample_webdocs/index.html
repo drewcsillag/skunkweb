@@ -1,8 +1,7 @@
-<:*
+<:#:>
 This is a demo index.html, you get this after the installation as a proof of
 concept that your server works
-*:>
-
+<:/#:>
 <html>
 <head>
 <title>The Skunk Server Demo</title>
@@ -12,24 +11,16 @@ concept that your server works
 <body bgcolor="white" color="blue">
 
 <center>
-<:* Jump through hoops to get to the choice() function *:>
-<:try:>
-	<:import rand:>
-	<:call `choice=rand.choice`:>
-<:except `ImportError`:>
-        <:#:>In Python 1.6, module is 'random'<:/#:>
-	<:import random:>
-	<:call `choice=random.choice`:>
-<:/try:>
-
-<:* Add the skunk logo *:>
-<:component logo.comp col=`choice(xrange(0,10))` cache=yes:>
+<:import random choice:>
+<:#:> Add the skunk logo <:/#:>
+<:component logo.comp col=`choice(range(10))` cache=yes:>
 </center>
-
-<h2 align=center>Congratulations!</h2>
-<h3 align=center>You have successfully installed Apache / Skunk 
 <:import SkunkWeb Configuration:>
-<:val `Configuration.SkunkWebVersion`:> server</h3>
-
-Check out the <A HREF="demo">demos</a>
+<h2 align=center>Congratulations!</h2>
+<h3 align=center>You have successfully installed 
+SkunkWeb <:val `Configuration.SkunkWebVersion`:>.</h3>
+<p>More information is available at SkunkWeb's
+<a href="http://skunkweb.sourceforge.net/">home page</a>.</p>
+<p align="center">Look at the <:url /demo text="demos":>.</p>
 </body>
+</html>

@@ -1,3 +1,15 @@
+2003-02-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sample_webdocs/index.html: cleaned up slightly.
+
+	* SkunkWeb/configure.in: dropping --with-services configure
+	option, which is pointless.
+	
+	* SkunkWeb/swpython.py.in: now set version correctly.
+	
+	* starting to prepare release 3.4b1.  I'm going to prepare
+	the release a little differently to produce a cleaner tarball.
+
 2003-01-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/rewrite.py: Pretty thorough overhaul:  

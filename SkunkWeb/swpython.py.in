@@ -94,7 +94,7 @@ SkunkWeb.Hooks.ChildStart()
 
 if interactive or (not args and not command):
     import code
-    code.interact('SkunkWeb Python 3.0 -- NO WARRANTY')
+    code.interact('SkunkWeb @SW_VERSION@ -- NO WARRANTY')
 else:
     if command:
         exec command in {}, {}
