@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ae_component.py,v 1.4 2002/07/15 15:07:10 smulloni Exp $
+# $Id: ae_component.py,v 1.5 2002/07/21 13:51:00 smulloni Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -70,7 +70,7 @@ def __initConfig():
             
     # set AE's config object to ours
     cfg.Configuration = Configuration
-    __checkScopes(Configuration.matchers)
+    __checkScopes(Configuration.scopeMatchers())
 
 def __checkScopes(m):
     from SkunkWeb import Configuration
@@ -175,53 +175,3 @@ __initDebug()
 __initConfig()
 __initHooks()
 
-########################################################################
-# $Log: ae_component.py,v $
-# Revision 1.4  2002/07/15 15:07:10  smulloni
-# various changes: configuration (DOCROOT); new sw.conf directive (File);
-# less spurious debug messages from rewrite; more forgiving interface to
-# MsgCatalog.
-#
-# Revision 1.3  2002/07/11 22:57:00  smulloni
-# configure changes to support other layouts
-#
-# Revision 1.2  2001/08/27 18:45:07  drew_csillag
-# performance tweaks
-#
-# Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.8  2001/07/30 16:07:29  smulloni
-# made scope.Scopeable's "__matchers" field public: "matchers", and
-# fixed two references to it, in ae_component and pars services.
-#
-# Revision 1.7  2001/07/29 15:29:31  drew
-# made so cannot change docroot w/o changing the compileCacheRoot also
-#
-# Revision 1.6  2001/07/11 18:01:09  drew
-# added component commenting, useful for debugging
-#
-# Revision 1.5  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.4  2001/05/04 18:38:47  smullyan
-# architectural overhaul, possibly a reductio ad absurdum of the current
-# config overlay technique.
-#
-# Revision 1.3  2001/04/23 04:55:42  smullyan
-# cleaned up some older code to use the requestHandler framework; modified
-# all hooks and Protocol methods to take a session dictionary argument;
-# added script to find long lines to util.
-#
-# Revision 1.2  2001/04/16 18:10:16  smullyan
-# fix to reload in Server.py; debug flags in AE module now reconciled with
-# ServiceRegistry.
-#
-# Revision 1.1  2001/04/04 19:14:19  smullyan
-# abstracted AE component initialization into the ae_component service;
-# removed the equivalent functionality from templating_experimental,
-# and modified templating_experimental and remote to import ae_component
-# and invoke its hooks (by altering their jobNames).
-#
-########################################################################

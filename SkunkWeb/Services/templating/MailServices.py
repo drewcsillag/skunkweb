@@ -17,7 +17,7 @@
 #   
 """**
 <p>This module provides services for sending electronic mail
-from AED applications, especially from the <:sendmail:> STML
+from SkunkWeb applications, especially from the <:sendmail:> STML
 tag.</p>
 
 <p>There are two different methods to send mail with this module:
@@ -30,7 +30,7 @@ via a pipe.</li>
 </ul>
 </p>
 
-<p>You may choose which method your AED server uses in
+<p>You may choose which method your SkunkWeb server uses in
 the <tt>templating.conf</tt> configuration file:</p>
 
 <ul>
@@ -49,7 +49,7 @@ to <tt>'localhost'</tt>.</li>
 </ul>
 
 """
-# $Id: MailServices.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
+# $Id: MailServices.py,v 1.2 2002/06/18 20:25:06 drew_csillag Exp $
 
 import smtplib
 import socket
@@ -68,7 +68,7 @@ class MailError ( SkunkRuntimeError ):
     pass
 
 # Init some variables
-Configuration._mergeDefaultsKw(
+Configuration.mergeDefaults(
     MailMethod = 'sendmail',
     MailHost = 'localhost',
     SendmailCommand = 'sendmail -t',
@@ -121,7 +121,7 @@ def sendmail_smtp ( to_addrs, subj, msg,
     uses SMTP to send a mail message. Function raises a 
     <code>MailError</code> if it cannot connect to the SMTP
     server; any other errors are merely sent as warnings
-    to the AED error log.</p>
+    to the SkunkWeb error log.</p>
     """
     try:
         conn = smtplib.SMTP ( _mailhost )
@@ -161,7 +161,7 @@ def sendmail_pipe ( to_addrs, subj, msg,
     sends an email message by opening a pipe to the Unix <tt>sendmail</tt>
     utility. Function raises a <code>MailError</code> if it cannot
     create the pipe; any other errors returned by sendmail are
-    recorded as warnings in the AED error log.</p>
+    recorded as warnings in the SkunkWeb error log.</p>
     """
 
     try:
