@@ -1,5 +1,7 @@
 2002-02-14  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/rewrite.py: Added Spruce Weber's rewrite service. 
+
 	* pylibs/Authenticator.py (Authenticator.authenticate): this method
 	was dying with an error whenever someone tried a username that was
 	not in the auth file; fixed.
