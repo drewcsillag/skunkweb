@@ -23,7 +23,7 @@
  * extensively for virtually every request, and speedup here will be noticeable
  * on overall AED performance.
  *
- * $Id: cachekey.c,v 1.1.1.1 2001/08/05 15:00:45 drew_csillag Exp $
+ * $Id: cachekey.c,v 1.2 2002/04/26 16:50:31 drew_csillag Exp $
  */
 
 #include "Python.h"
@@ -47,9 +47,12 @@ static PyObject *encodeInstance(PyObject *obj, int *counter,
     has_hashmethod = PyObject_HasAttrString(obj, "__hash__");
     if (!has_cachekeymethod && !has_hashmethod)
     {
-	PyErr_SetString(PyExc_ValueError, "each object used in a cache key"
-			"must define either a __cachekey__ or __hash__ method"
-			);
+	PyObject *terrstr;
+	terrstr = PyObject_Str(obj);
+	PyErr_Format(PyExc_ValueError, "each object used in a cache key "
+		     "must define either a __cachekey__ or __hash__ method. "
+		     "Got %s", PyString_AsString(terrstr));
+	Py_DECREF(terrstr);
 	return NULL;
     }
     class = PyObject_GetAttrString(obj, "__class__");
