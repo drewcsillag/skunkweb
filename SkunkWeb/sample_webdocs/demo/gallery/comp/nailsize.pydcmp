@@ -1,0 +1,21 @@
+# -*-python-*-
+
+import sys
+import PIL.Image
+import AE.Cache
+import Date.TimeUtil
+
+# cache for a day
+__expiration=Date.TimeUtil.convertDuration('1d')
+
+# get height and width of thumbnail, using the same code as PIL to
+# preserve aspect ratio.  Opening the image doesn't read the raster
+# data, so this isn't terribly expensive.
+
+size=(x, y)
+im=PIL.Image.open(AE.Cache._openDocRoot(imagefile))
+x, y = im.size
+if x > size[0]: y = y * size[0] / x; x = size[0]
+if y > size[1]: x = x * size[1] / y; y = size[1]
+raise ReturnValue, (x, y)
+

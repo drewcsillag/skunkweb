@@ -1,0 +1,21 @@
+1. handle multiple directories.
+2. annotations.
+3. layout customization.
+4. admin, content management.
+5. user-customization controls.
+6. stylesheets, more graceful appearance, embeddability.
+7. switch listing.pydcmp to use the vfs, or ensure that the other
+   code doesn't use 3.2 features.
+
+A spec file for a directory should be useful for 2 & 3 -- it could
+list files in the desired order, specify default values for
+items_per_page, x, y, suppress files from the listing, contain
+annotations, etc.  An admin app could edit this file via the web.
+
+Multiple directories are a slightly more involved problem.  Actually
+there are two issues: making the gallery program a reusable product
+that can be installed in various places, and making one instance of it
+service multiple directories (and give the user the ability to
+navigate between them).
+
+

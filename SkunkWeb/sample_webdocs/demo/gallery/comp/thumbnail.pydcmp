@@ -1,0 +1,28 @@
+# -*-python-*-
+
+import PIL.Image
+import AE.Cache
+import Date.TimeUtil
+import cStringIO
+import os
+import time
+
+# required arguments (must be in global namespace): imagefile
+# (filename, relative to docroot), and size (x, y tuple)
+
+# cache for a day
+__expiration = Date.TimeUtil.convertDuration("1d")
+    
+def thumbnail(filename, size):
+    im=PIL.Image.open(AE.Cache._openDocRoot(filename))
+    stream=cStringIO.StringIO()
+    im.thumbnail(size)
+    ext=os.path.splitext(filename)[1]
+    try:
+        format=PIL.Image.EXTENSION[ext]
+    except KeyError:
+        raise ValueError, "filename extension %s not recognized" % ext
+    im.save(stream, format)
+    return PIL.Image.MIME[format], stream.getvalue()
+
+raise ReturnValue, thumbnail(imagefile, size)

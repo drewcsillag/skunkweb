@@ -1,0 +1,25 @@
+# -*-python-*-
+
+# required variables:
+#   page_num -- the current requested page
+#   items_per_page
+#   cnt -- the total number of items being paged
+# returns:
+#   the number of possible pages
+#   the start index for the current page
+
+# sanity check for cnt
+cnt=max(0, cnt)
+
+# no divzero error, please
+items_per_page=max(1, items_per_page)
+
+import math
+num_pages=int(math.ceil(float(cnt) / items_per_page))
+
+# sanity check for page_num
+page_num=max(0, min(num_pages-1, page_num))
+
+start=page_num*items_per_page
+
+raise ReturnValue, (num_pages, start)
