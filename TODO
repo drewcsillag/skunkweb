@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-03 12:24:44 drew> 
-#   $Id: TODO,v 1.48 2001/08/03 16:24:15 drew Exp $
+#   Time-stamp: <2001-08-06 11:49:52 drew> 
+#   $Id: TODO,v 1.1.1.1 2001/08/05 14:57:51 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -20,11 +20,9 @@ Push release to support and technet
 Make docs (opman, stmlref, skunkdoc, develop) in (dvi, ps, pdf, html, and
     html tarball)
 
-SkunkWeb 3.0a
+SkunkWeb 3.0b
 ------------------------------
-* document sw.conf in the .in file
-* clean up docs somewhat
-
+x clean up docs somewhat
 
 SkunkWeb 3.0
 ------------------------------
@@ -45,6 +43,8 @@ L skunk manifesto
 L real PyDO doc
 L real static doc
 
+X make default in httpd.stub to point to the tcp port not the unix socket
+X document sw.conf in the .in file
 X fix install target so that it installs *all* of the sample web content
 X put in descriptions of errorTemplate and notFoundTemplate into sw.conf.in
 X set default of parFallthrough to 1
@@ -238,8 +238,6 @@ Future stuff
 Unknowns
 ------------------------------
 ? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
-? write/copy-and-alter operations manual
-? fix so templating can be loaded without web being there
 ? add request data recording/playback extension
 ? test Server framework by trying to implement remote debugging extension
 ? single submit library (use uuid lib probably)

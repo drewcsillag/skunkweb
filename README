@@ -21,8 +21,9 @@ LICENSE
 README for SkunkWeb
 ------------------------------
 The installation instructions are in ``INSTALL''.  STML (Skunk
-Template Markup Language) operations and developer manuals are under
-docs/.
+Template Markup Language) operations and developer (the developer
+manual is currently old and incorrect, don't rely on it just yet)
+manuals are under docs/.
 
 
 Starting the SkunkWeb Server
