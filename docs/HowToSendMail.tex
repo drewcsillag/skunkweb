@@ -11,7 +11,7 @@ requirements that should be fullfilled. The incredible amount of web services
 sending technically illegal mail or creating annoyances for users and mail
 administrators is unbelievable.
 
-You can do the world a favor by reading this document, following it's
+You can do the world a favor by reading this document, following its
 guidelines and thus avoiding all the trouble with mail services and
 people.
 \end{abstract}
@@ -45,34 +45,34 @@ Here are some guidelines to keep your reputation of not being a spammer:
 	belonging to the ,,direct marketing guild'', use the term ,,double
 	opt-in''. That's simply nonsense~- either the user opts in (with
 	verification) or not. Don't trust anyone using the term double
-	opt-in, most likely it's a spammer (of course this will be denied
+	opt-in, most likely its a spammer (of course this will be denied
 	by him).
-  \item Never trade addresses - not by providing them to others, not by
+  \item Never trade addresses~- not by providing them to others, not by
 	accepting them from others.
   \item Always respect the users wish to not longer receive your mails.
-        Provide a way for them to unsubscribe without your manual
-	intervention and immediately.
+        Provide a way for them to unsubscribe immediately and without
+	your manual intervention.
   \item Handle complaints manually, not by an automated answer.
   \item Make your mails identifyable as coming from you. Possibly
-        provide a reference on the web where the user may check the
+        provide a reference to a webpage where the user may check the
 	authenticity of your mail.
   \item Provide a contact address for complaints. Mails coming in at
         that address have to be handled of course.
-  \item Handle bounces (non deliverable mails) - you should unsubscribe
+  \item Handle bounces (non deliverable mails)~- you should unsubscribe
         addresses, that generate bounces everytime, after a while.
 \end{itemize}
 
 \subsection{Privacy and style}
 
-Even in cases where the mail is not SPAM, people easyly may get annoyed by it.
+Even in cases where the mail is not SPAM, people easily may get annoyed by it.
 Always remember that your mails require attention and time of the receiver.
 This time and attention is valuable, so don't waste it!
 
 \begin{itemize}
   \item Use a good subject line. It's the key to users attention. It
         should give a summary of what the user has to expect from this mail.
-  \item Use ,,inverse writing'' style - start with a summary and then
-        give the details for interested users (see Nielsen).
+  \item Use ,,inverse writing'' style~- start with a summary and then
+        give the details for interested users (see Nielsen reference below).
   \item Use clear and concise language. Make your intention for sending
         this mail clear and, if possible, the mails value for the receiver.
 	In any case there should be a value for the receiver or you will
@@ -89,8 +89,9 @@ This time and attention is valuable, so don't waste it!
 	anyway.
   \item Use an existing address as envelope sender\footnote{envelope senders
         are explained later}.
-  \item In case of bounces make the user aware of it in your web
-        application. There may be a problem with its mail provider that
+  \item In case of bouncing mails make the corresponding user aware of it
+        in your web application.
+	There may be a problem with its mail provider that
 	the user should know about.
 \end{itemize}
 
@@ -105,12 +106,12 @@ You can find the alertbox issue at\\
 The number of technical incorrect implemented mailservices within web
 applications is frustrating and it seems it gets worse with every new one.
 
-Typically the ones that run these services don't know about it or worse,
-they don't care. It's very frustrating for mail administrators at the
-receiving sites to handle such situations.
+Typically the ones that run these services don't know about the problems
+or worse, they don't care. It's very frustrating for mail administrators
+at the receiving sites to handle such situations.
 
-In many cases the offending
-site is completely blocked, thus loosing the possibility to send any
+In many cases the offending site is completely blocked as a countermeasure,
+thus loosing the possibility to send any
 mail to this mailserver again. Possibly the bad site is also reported
 to some databases that collect information about such behaviour and
 provide more administrators the possibility to block the site too.
@@ -128,15 +129,10 @@ Here are some errors that SkunkWeb/Python avoid:
   \item bare linefeeds (see http://cr.yp.to/docs/smtplf.html for more
         information)
   \item missing Date: header
-  \item missing, not required but very useful, message id
+  \item missing, not required but very useful, message~id
   \item MIME encoding for ASCII (not a problem but not necessary)
   \item 8bit data without proper MIME headers
   \item sending with empty envelope sender
-\end{itemize}
-
-Here are some problems that you have to avoid yourself:
-
-\begin{itemize}
   \item sending with invalid envelope sender\\
         SkunkWeb uses the FromAddress if no other envelope sender
 	is given. The FromAddress is possibly taken from the default
@@ -144,6 +140,11 @@ Here are some problems that you have to avoid yourself:
 	itself. The default value is ,,root@localhost'' which is not
 	a valid envelope sender. You \textbf{have to} change this
 	default value to a reachable address that is under your control.
+\end{itemize}
+
+Here are some problems that you have to avoid yourself:
+
+\begin{itemize}
   \item encoding of multipart messages\\
         currently this is only supported via the ,,raw'' parameter
   \item encoding of character sets besides us-ascii and iso-8859-1
@@ -157,19 +158,320 @@ Here are some problems that you have to avoid yourself:
 	verified addresses.
   \item sending to addresses that do not or no longer exist\\
         Always ensure that you handle bounces, either by hand or, much
-	better, automated. Addresses that are not rechable for a longer
+	better, automated. Addresses that are not reachable for a longer
 	period must be removed from your database. If possible, the
 	user should be made aware of that fact inside the web application.
 \end{itemize}
 
 
+\section{Internet mail basics}
+
+While there are many resources that explain Internet mail, there
+are only a few good ones that are complete \textbf{and} correct.
+That's why this section is included here. It is also meant as a
+reference that is quickly accessible.
+
+\subsection{Simple Mail Transport Protocol (SMTP)}
+
+Electronic mail is older than the Internet. It is possible to use
+any transport mechanism that one can think of to move mail from the
+sender to the receiver. Prominent mechanisms are UUCP (Unix to Unix Copy)
+and SMTP. On the Internet nearly always the Simple Mail Transport
+Protocol is used.
+
+The protocol is text based and easy to debug. It is also easy to be used
+for forgery. There is no authentication, no verification, no
+encryption and no security at all. There are some enhancements that try to
+improve the security of the protocol but they are strictly optional and
+cannot be relied on.
+
+The transport of messages is often done in one step from the sender
+to the receiver. It is possible that the message travels through
+multiple systems before reaching its destination. This builds a
+,,store and forward'' system that moves the message closer to the
+recipient in every step.
+
+The content of the message is irrelevant to SMTP.
+There are some requirements though - for example it is assumed that the
+content is line oriented and that these lines don't exceed a given
+length. Nevertheless good SMTP implementations don't have any problems
+with overlong lines.
+
+While the mail is travelling through the net, the recipients on the
+envelope may require different transport paths. If this is the case, the
+message (content) is copied and gets the necessary subset of the
+recipients. This means that a mail system may get one message with
+ten recipients and, for example, creates three copies which then are delivered
+to three different target systems with three, five and two recipients on it.
+
+To get more and complete information about SMTP, look at\\
+\texttt{http://cr.yp.to/smtp.html}
+
+\subsection{Headers and envelope}
+
+SMTP implements the concept of messages that are moved
+inside envelopes~- exactly like the postal service does with letters.
+The SMTP message has exactly one sender on its envelope but may have
+many recipients on it. Like explained above, the message may be copied
+and the recipients divided into groups that have different transport
+paths. At the destination system the message always has only
+one envelope sender and one envelope recipient for final delivery.
+
+While transport of the message through the net is mostly done over SMTP,
+the final delivery is always a local mechanism like creating a file or
+appending to a file.
+
+What consequences has the use of envelopes?
+
+First it is important to recognize that the headers of the message don't
+have anything to do with the envelope. In fact the whole content of the
+message is irrelevant for the delivery mechanisms. The message is simply
+treated as a block of data with no special meaning.
+
+To recall the postal service example: If you write two letters to two
+different persons, prepare the envelopes and then put each letter into the
+wrong envelope they will go to the wrong persons. The postal service has
+no way to check the content of the letters to correlate them with the
+envelope. The service is simply not interested (or at least should not
+be) about what is inside the envelope.
+
+The same is true for electronic mail. The transport mechanisms only look
+for the envelope. They don't look into the headers and don't touch the
+message itself. As always here are exceptions too. Sometimes mails are
+converted from one encoding to another, although this should not be necessary
+anymore on the Internet. Also every delivery step prepends the headers
+with a Received: header that is a trace of the delivery path of the
+message. An analogy would be the stamps on conventional envelopes that every
+step in the postal delivery leaves. The Received: headers are also counted to
+defend against mail loops. If they are above a limit (typically 20), the
+message is bounced.
+
+The second consequence is the handling of bounces (undeliverable mails).
+As with the postal service (at least in Germany) the message is returned
+to the envelope sender, if it is not deliverable. If your envelope sender
+is wrong, \textbf{your} bounces will annoy some innocent victim.
+
+If your envelope sender is an unreachable address itself, the system
+that generates the bounce (the postal service)
+is unable to return the message somewhere. In this case the message
+(letter) will either be destroyed silently or handed over to a responsible
+person for further inspection. This person will get annoyed of course too,
+because it has to take action on errors that \textbf{you} made. In most cases
+these situations are cleared by the victims with blocking the offending
+addresses, or worse, servers.
+
+Because this type of error (invalid envelope sender) is used by spammers to
+hide their identity and avoid all the bounces that their incorrect address
+pools generate, many sites do intensive checks on envelope data. If they see
+not reachable envelope senders, your mail will be blocked.
+
+Of course you want to get your messages through to the interested web users,
+so it is not in your interest to have wrong or undeliverable envelope
+senders.
+
+The standard envelope sender address that skunkweb defines is
+root@localhost (also defined in sw.conf) which is not an address that
+makes bounces deliverable. The MailServices module
+now refuses to send messages with this envelope sender to force
+you to change the value.
+
+
+\subsection{Interfaces for injecting mail}
+\label{sec:interfaces}.
+
+There are two main interfaces for injecting mail on a Unix system.
+
+The first is use of the SMTP protocol. The client or program connects
+to the SMTP port of the host, hands over the message and then closes the
+connection. This type of injection is supported by SkunkWeb too. The
+mechanism is called ,,relay'' in SkunkWeb and set through the ,,MailMethod''
+configuration variable. Additionally you have to set the ,,MailHost''
+variable.
+
+The second common interface is a call to the sendmail binary. Nearly all
+Unix systems still ship with the dangerous sendmail program, although
+there are some very good alternatives now. If other systems are used,
+they mostly provide a replacement, that behaves like the sendmail
+program. This is true at least for qmail and postfix.
+Mails are piped to the standard input of the sendmail binary,
+while the envelope sender and
+the envelope receivers are given as arguments on the commandline.
+Please notice that
+this puts some constraints on the number of recipients, because they have
+to fit into the available buffer for the sendmail commandline.
+Consult your manuals or experiment to know the limits of your system.
+All up to 100 receivers should be no problem.\\
+Setting the envelope sender on the commandline produces a nasty security
+warning with sendmail. You have to add the user running SkunkWeb to the
+trusted users in sendmail to avoid this.\\
+The sendmail variant is called ,,sendmail'' in SkunkWeb. It has to be set
+through the ,,MailMethod'' configuration variable. There is an additional
+variable ,,SendmailCommand'' that should not be changed. It points to the
+used sendmail binary.
+
+SkunkWeb also supports a third interface. Its called ,,qmail'' and has also
+to be set through the ,,MailMethod'' configuration variable. At the moment
+it works exactly like the sendmail interface. In the future it will support
+variable envelope senders that can be used to track bounces per recipient
+and per message. The messages are injected to the standard input of the
+qmail-inject program, envelope sender and recipients are set as arguments
+on the commandline. The same restrictions as for the sendmail method
+apply (except the security warning).
+
+In case your qmail binaries don't live under /var/qmail/bin, the path
+to the qmail-inject binary may be set through the configuration variable
+,,QmailInject''.
+
+
 \section{Usage patterns}
+
+Sending mail is not only a technical problem. Depending on the task
+that should be done by sending mail there are some things that have to
+be thought about before. Problems for your reputation, for the security
+of your service or for performance may arise if you blindly implement
+some kind of mail sending service.
+
+Especially dangerous are all services that enable a user to send mail
+to another one through your service. Such services are subject to abuse
+and should contain some damage limiting restrictions or should be avoided
+generally.
+
 \subsection{Administrative mails}
-\subsection{Newsletters}
+
+Administrative mails are the ones with the least problems. They are
+required by procedures (for example password change of a user) or
+triggered by some state of the web application. They should be sent
+only when really necessary, or when they are requested by the user.
+
+Of course the given guidelines for mail apply here too. In general mails
+should be as polite as possible while giving instructions or informations.
+In English this should not be a big problem, but there are languages
+that use different words depending on the relationship between the
+,,talkers''. German for example uses ,,Du'' for a more personal touch and
+,,Sie'' for official style or between persons not knowing each other.
+The most heavy differences, to my knowledge, has Japanese, which
+establishes many layers of differentiation. In any case where ,,the system''
+or ,,the machine'' talks to the user, the machine should be seen as slave
+of the user. This has to be reflected by the used language.
+A survey of users of a german BBS network showed that people like
+to get the more official ,,Sie'' within system messages even if in general
+the personal ,,Du'' was used between users of the network. As always
+your users culture may be different.
+
+\subsection{Newsletters and Mailinglists}
+
+Newsletters and mailinglists are generally better implemented outside
+of SkunkWeb. A web application is simply not the right tool for that
+task. SkunkWeb may be used to implement a frontend for the management
+of newsletters and mailinglists, but the sending process itself should
+be done through available mailinglist managers (ezmlm, MailMan,
+Majordomo, \ldots) or, if they don't fit, through cron jobs.
+
+It's possible to prepare a newsletter through SkunkWeb. The newsletters
+properties may be stored in a database. The sending itself should be done
+later with a cronjob which gets the necessary data from the database
+and reports failure or success also through the database.
+
+If you don't listen to that advice, at least watch out for the limits
+of your sending interface. This is discussed in section
+\ref{sec:interfaces}.
+
 \subsection{Feedback}
+
+Feedback forms don't require much attention besides setting a valid
+envelope sender and receiver (see below for a common security desaster).
+Because you (or your customers) receive
+the messages, the used form and language is completely up to you.
+If you like funky messages, use them until they begin to annoy you
+(nothing annoys more than to receive the same gag twenty times a day).
+
+You should use different recipients for different types of feedback.
+The webmaster is for sure not the right receiver for complaints about
+long delivery times for goods or incorrect statements in articles that
+are posted by the marketing department.
+
+There is a potential security desaster (that is unfortunately very common)
+with feedback forms. Never, I repeat, \textbf{never} give the recipients
+email address as parameter to the script that handles the users form
+input!
+
+What are the problems with this approach? 
+
+First you may want to keep the recipient addresses secret, for example
+to keep them SPAM free. It may seriously impact productivity if critical
+addresses are invaded by SPAM. Besides that it's simply annoying and you
+may delete important mail from users by accident while deleting SPAM.
+
+Second this practice makes your web server a tool for spammers and
+other people that don't want to be traced. If they recognize that your
+application sends mail on their behalf, they will use it. A prominent
+software package that enables this misuse is formmail from Matt's script
+archive that is still widely used today.
+
+To avoid this problem, you may hardcode the receiver in your script. If
+the script is used from many places in your application and needs to be
+usable for different receivers, code them in a table and use the codes
+in your forms. If a request uses a nonexistent code, show an error
+message. The code table can be in the script code itself or in some
+configuration area but never in the document space that is presented to
+users.
+
+If you see HTML like the following, the alarm bells in your head should
+ring loudly:
+
+\begin{scriptsize}
+\begin{verbatim}
+<form action="/sendmail" method="POST">
+<input type="hidden" name="receiver" value="service@example.com" />
+...
+</form>
+\end{verbatim}
+\end{scriptsize}
+
+The following is o.k. It should be noted that the value can be
+anything, as long as it is used as a key to the real address.
+
+\begin{scriptsize}
+\begin{verbatim}
+<form action="/sendmail" method="POST">
+<input type="hidden" name="receiver" value="11" />
+...
+</form>
+\end{verbatim}
+\end{scriptsize}
+
+
 \subsection{,,Send to a Friend''}
 
-\section{Sanity checks before sending}
+This is the most problematic application of electronic mail in web
+services because the sender and the receiver of the messages are under
+control of the visiting web user. Often they are used for postcard
+services or to send interesting articles to other people.
+
+To avoid misuse of such a service, the following countermeasures
+should be established:
+
+\begin{description}
+  \item[envelope sender] ~ \\
+       The envelope sender should be set to an address that is under
+       your control. If possible it should encode the given receiver
+       so that a script is able to extract the receiver address.
+       A bouncing receiver should not be accepted as receiver again
+       (at least for a while). Clients that (within a given time)
+       repeatedly send mails to bouncing addresses should not be
+       allowed to use the service again.
+       The clients may be identified by a cookie or other data.
+  \item[local blacklists] ~ \\
+       Users should be able to enter their address into local blacklists
+       that the sender and receiver are checked against. The entries
+       may have a limited lifetime. Of course the addresses have to be
+       verified by the system to avoid blacklisting of users that want
+       to use the service.\\
+       Clients that repeatedly try to use blacklisted addresses should
+       not be allowed to use the service again.
+
+\end{description}
+
 
 \section{The sendmail function}
 \subsection{Basic parameters}
