@@ -1,3 +1,14 @@
+2001-09-06  Drew Csillag  <drew@starmedia.net>
+
+	* configure, configure.in, SkunkWeb/configure, SkunkWeb/configure.in:
+	added stuff for fcgiprot
+
+	* docs/opman/opman.tex: added stuff for FastCGI
+
+	* SkunkWeb/Services/fcgiprot.py: added FastCGI handler
+
+	* pylibs/fcgi.py: added
+	
 2001-09-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (_processRequest): no actual change, 
