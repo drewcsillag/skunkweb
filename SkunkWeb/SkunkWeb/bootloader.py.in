@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: bootloader.py.in,v 1.2 2002/02/21 18:54:38 smulloni Exp $
+# $Id: bootloader.py.in,v 1.3 2002/06/05 20:29:20 drew_csillag Exp $
 # Time-stamp: <01/04/23 15:51:51 smulloni>
 ########################################################################
 
@@ -46,8 +46,8 @@ def init(configFiles, SkunkRoot):
     #do stupid function to import modules so our module snapshot will be
     #complete since we have to grab it before the configuration is loaded
     #but would otherwise have to import SkunkWeb.Server to get everything
-    import sys
     def _stupidfunc():
+        import sys
         import Logger, traceback, signal, LogObj
         from SocketMan.SocketMan import SocketMan
         mods = sys.modules.keys() + ['SkunkWeb.Server']
@@ -74,6 +74,18 @@ def load():
 
 ########################################################################
 # $Log: bootloader.py.in,v $
+# Revision 1.3  2002/06/05 20:29:20  drew_csillag
+# 	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind
+# 	us that in the event that we add an import, that we add that import
+# 	to _stupidfunc in the bootloader
+#
+# 	* SkunkWeb/SkunkWeb/bootloader.py.in(init): now has some logic
+# 	to produce a true module snapshot that should always do the right
+# 	thing so reload will work
+#
+# 	* SkunkWeb/skunkweb.py.in: adjusted for bootloader change so reload
+# 	should now work properly -- again
+#
 # Revision 1.2  2002/02/21 18:54:38  smulloni
 # fix for crash on restart due to import hook.
 #
