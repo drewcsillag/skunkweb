@@ -1,3 +1,8 @@
+2002-12-30    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/dispatcher.py (FormDispatcher.dispatch): permit start form
+	to be null.
+
 2002-12-30  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/PyDO2.py: small fixes.

@@ -1,5 +1,5 @@
-# Time-stamp: <02/12/13 11:07:00 smulloni>
-# $Id: dispatcher.py,v 1.9 2002/12/05 20:40:38 smulloni Exp $
+# Time-stamp: <02/12/30 12:01:54 smulloni>
+# $Id: dispatcher.py,v 1.10 2002/12/26 01:10:29 smulloni Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
@@ -125,7 +125,8 @@ class FormDispatcher:
         # if there isn't one, return the start form.
         else:
             form=self.flowmgr.getStartForm()
-            form.reset()
+            if form:
+                form.reset()
         if form:
             # update the state with the new form name
             self.statemgr.push_formname(form.name)
