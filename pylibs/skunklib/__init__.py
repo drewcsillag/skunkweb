@@ -22,3 +22,7 @@ The C implementation of some commonly used functions
 # Import quote and encode functions
 from _urllib import *
 from _translate import *
+#import header case normalizer
+from _normheader import *
+#import C version of the posix os.path.normpath
+from _normpath import *
