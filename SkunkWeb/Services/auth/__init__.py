@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.4 2002/04/28 03:17:46 drew_csillag Exp $
-# Time-stamp: <2002-04-29 17:06:00 drew>
+# $Id: __init__.py,v 1.1 2002/04/29 21:09:48 drew_csillag Exp $
+# Time-stamp: <2002-04-29 22:12:24 drew>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -40,31 +40,38 @@ AUTH=ServiceRegistry.AUTH
 
 # an authorizer 
 #class authorizer:
+#    def __init__(self, ......):
+#    """
+#    The ...... will be filled with the contents of
+#    Configuration.authAuthorizerCtorArgs when this object is instantiated.
+#    """
+#
 #    def checkCredentials(self, conn):
 #    """
-#    examine the connection however you see fit to see if the
+#    Examine the connection however you see fit to see if the
 #    connection has the credentials needed to view the page
 #    return true to accept, false to reject
 #    """
 #
 #    def login(self, conn, username, password):
 #    """
-#    take the username and password, validate them, and if they are
+#    Take the username and password, validate them, and if they are
 #    valid, give the connection credentials to validate them in the
-#    future.  If your authorizer is doing basicauth-style authentication,
-#    this method is not required.
+#    future (i.e. make it so checkCredentials() returns true).  If your
+#    authorizer is doing basicauth-style authentication, this method is
+#    not required.
 #    """
 #
 #    def logout(self, conn):
 #    """
 #    Remove any credentials from the browser.  This method is not required
 #    for methods (specifically, basicauth) that do not have the concept of
-#    logging out
+#    logging out.
 #    """
 #
 #    def authFailed(self, conn):
 #    """
-#    if the connections credentials are rejected, what to do.  For
+#    If the connections credentials are rejected, what to do.  For
 #    this, unless you are using a basic-auth means, inheriting from
 #    RespAuthBase is probably sufficient (it will bring up a login
 #    page), otherwise inheriting from BasicAuthBase and providing an
@@ -75,7 +82,7 @@ AUTH=ServiceRegistry.AUTH
 #    #require it
 #    def validate(self, username, password):
 #    """
-#    return true if the username/password combo is valid, false otherwise
+#    Return true if the username/password combo is valid, false otherwise
 #    """
 
 
@@ -256,23 +263,23 @@ class SessionAuthBase: #class to do auth using sessions
     and defining a function) the username and password that is obtained.
 
     """
-    def __init__(self, usernameSlot, passwordSlot):
+    def __init__(self, usernameSlot):
         """
         username is dict entry in the session for the username
         password is dict entry in the session for the password
         """
         self.usernameSlot = usernameSlot
-        self.passwordSlot = passwordSlot
 
     def checkCredentials(self, conn):
         """for session authentication, you may not actually store the username
         and/password in the session (especially the password), but since
         we only use sess.get, you can leave it out if you want"""
-        sess = conn.getSession(0)
+        sess = conn.getSession()
         if not sess: return None
         username = sess.get(self.usernameSlot)
-        password = sess.get(self.passwordSlot)
-        return self.validate(username, password)
+        #if the session has this, they must have already authenticated
+        if username: 
+            return 1
 
     def login(self, conn, username, password):
         """again, you may want to customize this such that the password
@@ -280,15 +287,13 @@ class SessionAuthBase: #class to do auth using sessions
         if self.validate(username, password):
             sess = conn.getSession(1)
             sess[self.usernameSlot] = username
-            sess[self.passwordSlot] = password
             sess.save()
             return 1
 
     def logout(self, conn):
         sess = conn.getSession()
-        if not sess: return #no session!?!??!?!
+        if not sess: return
         del sess[self.usernameSlot]
-        del sess[self.passwordSlot]
         sess.save()
 
 #the classes that are usable as authAuthorizers
@@ -354,4 +359,7 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.1  2002/04/29 21:09:48  drew_csillag
+# added
+#
 ########################################################################
