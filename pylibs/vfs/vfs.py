@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <03/02/27 21:49:51 smulloni>
+# Time-stamp: <03/02/27 21:59:16 smulloni>
 
 ########################################################################
 #  
@@ -396,13 +396,6 @@ class MultiFS(FS):
         mount point via their __str__ method; this enables the mount
         point to be determined dynamically.
 
-        strange bug: I had defined the default value for mountdict as
-        {}, but after creating one instance with mounted directories,
-        creating another instance without specifying a value for
-        mountdict caused the *first* print statement below to print
-        the value of the previous instance's mounts attribute!
-        Changing the default value to None removed that behavior.
-        
         """
         if mountdict!=None:
             self.mounts=mountdict
