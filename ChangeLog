@@ -1,3 +1,8 @@
+2002-06-30  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/Services/auth/__init__.py (getAuthorizer): made it so
+	we don't need the PseudoDict thing we used to need.
+
 2002-06-28  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Makefile.in (DEMO_FILES): added components for python
