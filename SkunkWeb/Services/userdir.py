@@ -15,8 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: userdir.py,v 1.2 2001/09/21 20:39:56 drew_csillag Exp $
-# Time-stamp: <01/05/04 13:07:01 smulloni>
+# $Id: userdir.py,v 1.3 2001/10/10 15:06:27 drew_csillag Exp $
 ########################################################################
 import pwd
 from SkunkWeb import Configuration
@@ -66,7 +65,7 @@ def doUserDirPre(connection, sessionDict):
 def doUserDirPost(sessionDict): #requestHandler.requestHandler.EndSession
     if not Configuration.userDir:
         return
-    if not sessionDict.hasKey('UserDir'):
+    if not sessionDict.has_key('UserDir'):
         return
     if not sessionDict['UserDir']:
         return

@@ -1,3 +1,7 @@
+2001-10-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/userdir.py (doUserDirPost): fixed typo.
+
 2001-10-10  Drew Csillag  <drew@starmedia.net>
 
 	* SkunkWeb/Services/userdir.py(doUserDirPost): fix to function
