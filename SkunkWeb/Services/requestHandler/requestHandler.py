@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: requestHandler.py,v 1.5 2002/06/18 20:09:59 drew_csillag Exp $
+# $Id: requestHandler.py,v 1.6 2002/06/19 13:37:43 smulloni Exp $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 
@@ -33,6 +33,7 @@ import socket
 import types
 import SocketScience
 from SkunkExcept import SkunkCriticalError
+import errno
 
 BeginSession=KeyedHook()
 InitRequest=KeyedHook()
@@ -102,7 +103,13 @@ def _processRequest(sock, addr, protocolImpl):
         # the protocol can close the connection by return a negative timeout;
         # sessionDict allows it to reference state that has been stored there.
         timeout=protocolImpl.keepAliveTimeout(sessionDict)
-        if (timeout<0) or not _canRead(sock, timeout):
+        try:
+            if (timeout<0) or not _canRead(sock, timeout):
+                _endSession(sessionDict)
+                return
+        except socket.error, v:
+            if v != errno.ECONNRESET: #ignore conn reset exceptions
+                raise
             _endSession(sessionDict)
             return
 
@@ -170,9 +177,13 @@ def _sendResponse(sock,
                   sessionDict):
     try:
         SocketScience.send_it_all(sock, responseData)
+    except IOError, en:  #ignore broken pipes
+        if en != errno.EPIPE:
+            logException()
     except:
         logException()
 
+ 
     # reset alarm
     signal.alarm(Configuration.PostResponseTimeout)
     
@@ -236,6 +247,9 @@ def addRequestHandler(protocol, ports):
 
 ########################################################################
 # $Log: requestHandler.py,v $
+# Revision 1.6  2002/06/19 13:37:43  smulloni
+# some pychecker-inspired fixes.
+#
 # Revision 1.5  2002/06/18 20:09:59  drew_csillag
 # SkunkExcept
 # 	wasn't imported so could cause problems in certain cases, fixed.
