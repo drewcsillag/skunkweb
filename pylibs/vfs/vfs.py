@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/22 15:45:54 smulloni>
+# Time-stamp: <02/06/19 09:34:15 smulloni>
 
 ########################################################################
 #  
@@ -150,7 +150,7 @@ class FS:
         for name in names:
             name = os.path.join(dir, name)
             if self.exists(name) and self.isdir(name):
-                self.walk(name, func, arg)
+                self.walk(name, visitfunc, arg)
             
     def rename(self, path, newpath):
         raise NotImplementedError
@@ -495,6 +495,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.12  2002/06/19 13:37:43  smulloni
+# some pychecker-inspired fixes.
+#
 # Revision 1.11  2002/02/22 20:56:07  smulloni
 # adding wizard.py, for the product wizard; adding fixes for product mount/documenRoot
 # scoping incompatibility.

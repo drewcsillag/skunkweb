@@ -1,3 +1,10 @@
+2002-06-19  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py: added
+	missing import.
+
+	* pylibs/vfs/vfs.py (FS.walk): fixed typo pointed out by pychecker.
+
 2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/sample_webdocs/demo/gallery/index.html, 
