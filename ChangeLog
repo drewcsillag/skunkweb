@@ -1,3 +1,10 @@
+2003-01-28  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/rewrite.py (ExtraPathFinder.__call__): jeez,
+	this was called "call" rather than "__call__".  Obviously in much
+	use. 
+	(_HostMatchBase): added host-specific rewriters.
+
 2003-01-22  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/argextract.py: fixing import error.

@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/09 16:00:56 smulloni>
-# $Id: rewrite.py,v 1.8 2002/07/28 19:18:19 smulloni Exp $
+# Time-stamp: <03/01/28 16:35:44 smulloni>
+# $Id: rewrite.py,v 1.9 2002/11/12 19:53:46 smulloni Exp $
 
 ########################################################################
 #  
@@ -61,13 +61,20 @@ class DynamicRewriter:
     def refresh(self, connection, sessionDict):
         self.connection=connection
         self.sessionDict=sessionDict
+        self.matched=0
+
+    def groupdict(self, match):
+        if self.matched:
+            return match.groupdict()
+        return {}
 
     def __call__(self, match):
         """
         by default, does nothing;
         override this to do something else
         """
-        return match.string
+        self.matched=1
+        return match.group(0)
 
 class Redirect(DynamicRewriter):
     """
@@ -124,7 +131,7 @@ class ExtraPathFinder(DynamicRewriter):
         self.notFoundHandler=notFoundHandler
         self.path_info_var_name=path_info_var_name
 
-    def call(self, match):
+    def __call__(self, match):
         fs=Configuration.documentRootFS
         (path, info)=fs.split_extra(self.connection.uri)
         if not path:
@@ -132,8 +139,78 @@ class ExtraPathFinder(DynamicRewriter):
                 self.connection,
                 self.sessionDict)
         else:
-            connection.uri=path
+            #connection.uri=path
             connection.args[self.path_info_var_name]=info
+            connection.requestHeaders['PATH_INFO']=info
+            return path
+
+class _HostMatchBase(DynamicRewriter):
+    """
+    base class for checking the Host header before doing any rewrite.
+    """
+    def __init__(self,
+                 hostregex):
+        if type(hostregex)==_sre_pattern_type:
+            self.hostregex=hostregex
+        else:
+            self.hostregex=re.compile(hostregex)
+        self.replacement=replacement
+
+    def __call__(self, match):
+        if self.hostregex.match(self.connection.host):
+            return self.real_call(match)
+        # clear the 
+        return match.group(0)
+
+class HostMatchRewrite(_HostMatchBase):
+    """
+    like a normal rewrite rule, but only takes effect
+    if the host header matches as well.
+    """
+    def __init__(self, hostregex, replacement):
+        _HostMatchBase.__init__(self, hostregex)
+        self.replacement=replacement
+
+    def real_call(self, match):
+        return self.replacement
+
+class HostMatchRedirect(_HostMatchBase, Redirect):
+    def __init__(self, hostregex, url_template):
+        _HostMatchBase.__init__(self, hostregex)
+        Redirect.__init__(self, url_template)
+
+    def real_call(self, match):
+        Redirect.__call__(self, match)
+
+    def __call__(self, match):
+        _HostMatchBase.__call__(self, match)
+
+class HostMatchStatus404(_HostMatchBase, Status404):
+    def __init__(self, hostregex, handler=fourOhFourHandler):
+        _HostMatchBase.__init__(self, hostregex)
+        Status404.__init__(self, handler)
+
+    def real_call(self, match):
+        Status404.__call__(self, match)
+
+    def __call__(self, match):
+        _HostMatchBase.__call__(self, match)
+
+class HostMatchExtraPathFinder(_HostMatchBase, ExtraPathFinder):
+    def __init__(self,
+                 hostregex,
+                 notFoundHandler=fourOhFourHandler,
+                 path_info_var_name='path_info'):
+        _HostMatchBase.__init__(self, hostregex)
+        ExtraPathFinder.__init__(self,
+                                 notFoundHandler,
+                                 path_info_var_name)
+
+        def real_call(self, match):
+            ExtraPathFinder.__call__(self, match)
+
+        def __call__(self, match):
+            _HostMatchBase.__call__(self, match)
         
 ########################################################################
 
@@ -141,13 +218,15 @@ def _dorewrite(match, connection, sessionDict, replacement, key):
     if callable(replacement):
         if isinstance(replacement, DynamicRewriter):
             replacement.refresh(connection, sessionDict)
+            groupdict=replacement.groupdict(match)
         connection.uri = match.re.sub(replacement, connection.uri)
     else:
         connection.uri = match.expand(replacement)
-    groupdict=match.groupdict()
-    if Configuration.rewriteMatchToArgs:
-        connection.args.update(groupdict)
-    sessionDict['rewriteRules'][key].update(groupdict)
+        groupdict=match.groupdict()
+    if groupdict:
+        if Configuration.rewriteMatchToArgs:
+            connection.args.update(groupdict)
+        sessionDict['rewriteRules'][key].update(groupdict)
 
 
 def _rewritePre(connection, sessionDict):
@@ -230,6 +309,11 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.9  2002/11/12 19:53:46  smulloni
+# moved rewrite's rewriting to an earlier hook; progress on tutorial
+# demo app; put the code from CONNECTION.extract_args in a separate module
+# so it can be used by formlib.
+#
 # Revision 1.8  2002/07/28 19:18:19  smulloni
 # changes to PyDO documentation, and added a dynamic rewriter to rewrite.py
 #
