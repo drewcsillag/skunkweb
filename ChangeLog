@@ -1,3 +1,19 @@
+2002-04-29  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/sw.conf.in: removed cookieauth stuff, added auth stuff
+
+	* configure, configure.in: removed cookieauth stuff, added auth stuff
+	
+	* SkunkWeb/configure, SkunkWeb/configure.in: removed cookieauth 
+	stuff, added auth stuff
+
+	* SkunkWeb/Services/auth/{login.html,__init__.py,logout.html}:
+	added new auth service
+
+	* SkunkWeb/Services/cookieauth: whole directory removed.  Superceded 
+	by new auth service which is now the swiss army knife of web
+	authentication.
+
 2002-04-27  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/Services/cookieauth/__init__.py: cleaned up so that you can provide arbitrary authenticator info that only somewhat cookie related???
