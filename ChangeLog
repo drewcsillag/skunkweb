@@ -1,3 +1,12 @@
+2001-08-10  Drew Csillag  <drew@starmedia.net>
+
+	* SkunkWeb/sample_webdocs/index.html, SkunkWeb/sample_webdocs/demo/index.html: 
+	put a link to the demo page and made a demo page.  Hopefully will
+	have more demos soon... hint... hint...
+
+	* pylibs/AE/Component.py: made so you can tell whether the component
+	call a) was rendered or fetched from cache, or b) was expired
+
 2001-08-09  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB): fixed date parsing bug 

@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-08 22:41:29 drew> 
-#   $Id: TODO,v 1.2 2001/08/05 15:48:46 drew_csillag Exp $
+#   Time-stamp: <2001-08-10 18:18:39 drew> 
+#   $Id: TODO,v 1.3 2001/08/08 02:40:11 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -20,16 +20,10 @@ Push release to support and technet
 Make docs (opman, stmlref, skunkdoc, develop) in (dvi, ps, pdf, html, and
     html tarball)
 
-SkunkWeb 3.0b
-------------------------------
-x clean up docs somewhat
-
 SkunkWeb 3.0
 ------------------------------
 * fix devel doc -- remove config stuff, api only
 * finish rewrite of the operations manual
-* way to determine whether call to callComponent actually rendered the 
-  component or it was just fetched from cache.  (expired and rendered flags)
 * security audit on rcc code
 
 ? build docs and include in dist as opposed to building during build
@@ -106,6 +100,8 @@ N add a superteam service
 
 DONE
 ------------------------------
+X way to determine whether call to callComponent actually rendered the 
+  component or it was just fetched from cache.  (expired and rendered flags)
 X get release stuff figured out (tag, build doc, build tarball) and working
 X make default in httpd.stub to point to the tcp port not the unix socket
 X document sw.conf in the .in file
