@@ -19,7 +19,7 @@
 }{\end{list}}
 
 \newcommand{\doref}[1]{(see section \ref{#1}, page \pageref{#1})}
-
+\newcommand{\nonscope}{[N]}
 
 %begin titlepage stuff
 \maketitle
@@ -286,65 +286,154 @@ Scope(Host(`www.foo.com',
 \end{verbatim}	
 
 \subsection{The Options}
-grab docs from sw.conf
-JACOB -- which of these are reasonably scopeable?
+\textbf{Note:} Arguments that are \emph{scopable} are denoted with a 
+\nonscope\ in their description.
 
-core params
-\begin{verbatim}
-    services
-    accessLog =  '%s/var/log/access.log' % Configuration.SkunkRoot,
-    errorLog =   '%s/var/log/error.log' % Configuration.SkunkRoot,
-    regularLog = '%s/var/log/sw.log' % Configuration.SkunkRoot,
-    debugLog =   '%s/var/log/debug.log' % Configuration.SkunkRoot,
-    stampEveryLine = 1,
-    initialDebugServices=[]
-        numProcs = 15,
-        maxKillTime = 5,
-        pidFile = "%s/var/run/sw.pid" % Configuration.SkunkRoot,
-        pollPeriod = 5,
-        maxRequests = 256,
-        userModuleCleanup = 0,
-SkunkRoot = SkunkRoot
-\end{verbatim}
+Core Parameters:
+\begin{argdesc}
+\item[services] \nonscope A list of services you want to load
+\item[accessLog] File path where the access log will be written.
+Defaults to \texttt{'/usr/local/skunk/var/log/access.log'}.
+\item[errorLog] File path where the error log will be written.
+Defaults to \texttt{'/usr/local/skunk/var/log/error.log'}.
+\item[regularLog] File path where the regular log will be written.
+Defaults to \texttt{'/usr/local/skunk/var/log/sw.log'}.
+\item[debugLog] File path where the debug log will be written.
+Defaults to \texttt{'/usr/local/skunk/var/log/debug.log'}.
+\item[pidFile] \nonscope File path where a file will be written whose sole contents is the parend process id.  Defaults to \texttt{'/usr/local/skunk/var/run/sw.pid'}.
+\item[stampEveryLine] If you don't want every line of a multiline log entry
+to be prefixed with a logstamp (the default behavior), set this to a
+false value.  Default is 0.
+\item[initialDebugServices] \nonscope List of services that are INITIALLY set to
+be debugged.  To determine what services are being debugged at
+runtime, use SkunkWeb.ServiceRegistry.getDebugServices().  Default is the empty list.
+\item[numProcs] \nonscope
+The number of child processes to be started.  This is the max number
+of concurrent page views (although if Apache sits in front, it may
+look like quite a few more).
+Default is 15.
 
-
-ae_component
-\begin{verbatim}
-        documentRoot = "%s/docroot" % Configuration.SkunkRoot,
-        compileCacheRoot = "%s/cache" % Configuration.SkunkRoot,
-        componentCacheRoot = "%s/cache" % Configuration.SkunkRoot,
-        failoverComponentCacheRoot = "%s/failoverCache" % Configuration.SkunkRoot,
-        mimeTypesFile = "%s/etc/mime.types" % Configuration.SkunkRoot,
-        componentCommentLevel = 0,
-\end{verbatim}
-
-
-aecgi
-\begin{verbatim}
-AecgiListenPorts=['TCP:localhost:9888']
-\end{verbatim}
-
-
-pars
-\begin{verbatim}
-    parFiles = [],
-    parFallthrough = 0
-\end{verbatim}
-
-
-basicauth
-\begin{verbatim}
-    basicAuthName = None,
-    basicAuthFile = None
-\end{verbatim}
+\item[maxKillTime] \nonscope
+The number of seconds that the parent will wait after having sent
+SIGTERM to the children before killing the children off with SIGKILL
+during a shutdown or restart.  Default is 5.
+\item[pollPeriod] \nonscope
+You probably don't need to change this, but it's the interval at which
+the parent looks for corpses that need to be buried and replaced with
+new, living kids.
+Default is 5.
+\item[maxRequests] \nonscope
+The number of requests that a child server process will handle before
+committing suicide and having the parent respawn.  This is mainly to
+make sure we aren't leaking memory, but you can probably set it to
+something a bit higher.
+Default is 256.
+\item[userModuleCleanup] \nonscope
+For development, this will cause changes to sitelibs to be reflected
+on the next request, without a bounce of the server.  Turn it off
+for production environments.
+Default is 0.
+\end{argdesc}
 
 
-httpd
-\begin{verbatim}
-lookupHTTPRemoteHost=0,
-                            HTTPKeepAliveTimeout=15,
-                            HTTPListenPorts=['TCP::8080']
-\end{verbatim}
+
+Parameters for the \texttt{ae_component} service:
+\begin{argdesc}
+\item[documentRoot]
+The directory that is used to hold templates, images, msgcats, comps,
+etc.
+Default is \texttt{'/usr/local/skunk/docroot'}.
+\item[compileCacheRoot] 
+The location on disk of where the compile cache should reside.  This
+should be a local filesystem.
+Default is \texttt{'/usr/local/skunk/cache'}.
+\item[componentCacheRoot] 
+The location of the component cache on disk.  Can be the same as the
+compileCacheRoot.
+Default is \texttt{'/usr/local/skunk/cache'}.
+\item[failoverComponentCacheRoot, numServers, failoverRetry] If using
+NFS (or other shared filesystem) for the component cache, set
+\texttt{numServers} to the number of shared filesystems that the
+component cache will be on, \texttt{failoverRetry} to the number of
+seconds to wait before trying the shared filesystem again (it should
+be soft mounted!!!), and \texttt{failoverComponentCacheRoot} to an
+area on local disk to use as a temporary replacement for the server
+that failed in the meantime.  If \texttt{numServers} is 0, the
+\texttt{failover*} options are ignored.  Default for
+\texttt{numServers} is 0, the default for
+\texttt{failoverComponentCacheRoot} is
+\texttt{'/usr/local/skunk/failoverCache'} and the default for
+\texttt{'failoverRetry'} is 30.
+\item[mimeTypesFile] \nonscope
+The location of your mimetypes file.  Default is \texttt{'/usr/local/skunk/etc/mime.types'}
+\item[componentCommentLevel] 
+Level of commenting to be inserted in HTML documents when components
+are entered/exited.
+\begin{description}
+\item[0] no commenting (default)
+\item[1] only show component name in comments
+\item[2] show component name and argument names
+\item[3] show component name, argument names and values
+\end{description}
+Default is 0
+\end{argdesc}
+
+
+
+Parameters for the \texttt{aecgi} service:
+\begin{argdesc}
+\item[AecgiListenPorts] \nonscope
+List of ports (specified as string(s) of either
+\texttt{TCP:}\emph{hostname}\texttt{:}\emph{portnumber} or
+\texttt{UNIX:}\emph{filepath}\texttt{:}\emph{octal_socket_permissions})
+that the SkunkWeb server will listen for AECGI protocol (the protocol used
+by \texttt{mod\_skunkweb}) connections .
+Default is \texttt{['TCP:localhost:9888']}.
+\end{argdesc}
+
+
+
+Parameters for the \texttt{pars} service:
+\begin{argdesc}
+\item[parFiles] List of par files that should be used in lieu of the
+docroot.  Defaults to \texttt{[]}.
+\item[parFallthrough] Boolean specifying that we should fall through
+to the \texttt{documentRoot} if a file we're looking for doesn't exist
+in the current list of parfiles.  Default is 1.
+\end{argdesc}
+
+
+
+Parameters for the \texttt{basicauth} service:
+\begin{argdesc}
+\item[basicAuthName] The name showed in the popup box where the user is asked to authenticate themselves.  Default is \texttt{None}.
+\item[basicAuthFile] The file (created using the \texttt{swpasswd} tool) that is used to validate the authentication credentials given by the user.  Default is \texttt{None}.
+\end{argdesc}
+If both of these are \texttt{None}, no authentication is done.
+
+
+
+Parameters for the \texttt{httpd} service:
+\begin{argdesc}
+\item[lookupHTTPRemoteHost] \nonscope
+If you set this to a true value, the CGI environmental variable
+HTTP_REMOTE_HOST will always be set, involving a potentially costly DNS
+lookup.  If you don't want it, you can still use HTTP_REMOTE_ADDR and
+perform the lookup on demand.  Default is 0 (no lookup and no HTTP_REMOTE_HOST
+variable in the environment).
+N.B. This only affects the httpd service, and has no bearing on environmental
+variables SkunkWeb receives from Apache or elsewhere.
+Default is 0.
+\item[HTTPKeepAliveTimeout] \nonscope
+How long (in seconds) the http keepalive timeout should be between
+HTTP requests.
+Default is 15.
+\item[HTTPListenPorts] \nonscope
+List of port(s) for the httpd service to listen on (specified in the same
+way as the \texttt{AecgiListenPorts} socket is).
+Default is \texttt{['TCP::8080']}.
+\end{argdesc}
+
 
 mysql
 \begin{verbatim}
