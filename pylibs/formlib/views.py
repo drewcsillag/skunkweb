@@ -164,6 +164,19 @@ class TextAreaField(ViewableField):
 ########################################################################
 
 class SelectField(ViewableDomainField):
+    """\
+    A component view which accepts a list of options for composing a <select> field:
+    - a list of strings ['1','2', '3'] becomes
+      <select><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+
+    - a list of two element string tuples [('One', '1'), ('Two', '2')] becomes
+      <select><option value="1">One</option><option value="2">Two</option></select>
+
+    - a list of tuples, each  containing a string key and a subgroup list ['My Subgroup', ['1', '2']]:
+      <select><optgroup label="My Subgroup"><option value="1">1</option><option value="2">2</option></optgroup></select>
+
+    Various combinations of the above basic listing schemes are possible 
+    """
     def __init__(self,
                  name,
                  options,
