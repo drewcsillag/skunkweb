@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.2 2001/09/04 04:06:17 smulloni Exp $ 
- * Time-stamp: <01/09/04 12:41:09 smulloni>
+ * $Id: _scope.c,v 1.3 2001/09/04 17:23:55 smulloni Exp $ 
+ * Time-stamp: <01/09/04 13:51:16 smulloni>
  */
 
 /***********************************************************************
@@ -81,9 +81,6 @@ static PyObject  *Scopeable_init(PyObject *self, PyObject *args) {
   PyObject_SetAttrString(self, CURRENT_SCOPES, currentScopes);
   Py_INCREF(Py_None);
   PyObject_SetAttrString(self, MASH, Py_None);
-#ifdef MYDEBUG
-  PyObject_Print(((PyInstanceObject *)self)->in_class->cl_getattr, stdout, 0); 
-#endif
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -104,18 +101,8 @@ static void _mergeDefaults(PyObject *self, PyObject *dict) {
   if (!(len=PyList_GET_SIZE(dictList))){
     PyObject *newDict=PyDict_New();
     Py_INCREF(newDict);
-#ifdef MYDEBUG
-    printf("new dictionary: ");
-    PyObject_Print(newDict, stdout, 0);
-    puts("");
-#endif
     PyList_Append(dictList, newDict);
     len++;
-#ifdef MYDEBUG
-    printf("dictList: ");
-    PyObject_Print(dictList, stdout, 0);
-    puts("");
-#endif
   }
   lastIndex=len-1;
   lastDict=PyList_GET_ITEM(dictList, lastIndex);
@@ -145,11 +132,6 @@ static PyObject *Scopeable_mergeDefaults(PyObject *self,
 		      "Scopeable.mergeDefaults: expected a dictionary");
       return NULL;
     }
-#ifdef MYDEBUG
-    PyObject_Print(dict, stdout, 0);
-    puts("");
-#endif
-
     Py_INCREF(dict);
     _mergeDefaults(self, dict);
 
@@ -223,26 +205,16 @@ static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
   printf("in getattr\n");
 #endif
   inDict=((PyInstanceObject *)realSelf)->in_dict;
-#ifdef MYDEBUG
-  printf("instance dictionary: ");
-  PyObject_Print(inDict, stdout, 0);
-  puts("");
-#endif
   masher=PyMapping_GetItemString(inDict, MASH);
-#ifdef MYDEBUG
-  printf("mash found\n");
-#endif  
+
   if (PyObject_IsTrue(masher) 
       && PyMapping_HasKeyString(masher, attrname)) {
     val=PyMapping_GetItemString(masher, attrname);
   } 
-    /*Py_DECREF(masher);*/
   else {
     PyObject *dictList;
     int len, i;
-#ifdef MYDEBUG
-    printf("no mash value found, about to look in dictList\n");
-#endif 
+
     dictList=PyMapping_GetItemString(inDict, DICTLIST);    
     len=PyList_Size(dictList);
 
@@ -254,15 +226,6 @@ static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
       }
     }
   }  
-#ifdef MYDEBUG
-  if (val==NULL) {
-    printf("val is currently NULL\n");
-  } else {
-    printf("val: ");
-    PyObject_Print(val, stdout, 0);
-    puts("");
-  }
-#endif
   if (val==NULL) {
     /* check for special attribute "__all__" */
     char *allattr="__all__";
@@ -315,9 +278,6 @@ static PyObject *Scopeable_update(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "OO", &self, &newDict)) {
     return NULL;
   }
-#ifdef MYDEBUG
-  printf("parsed arguments\n");
-#endif
   if (!PyDict_Check(newDict)) {
     PyErr_SetString(PyExc_TypeError, "a dictionary is expected for update");
     return NULL;
@@ -554,6 +514,9 @@ void init_scope() {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.3  2001/09/04 17:23:55  smulloni
+ * fix to mergeDefaults(), which was bombing out.
+ *
  * Revision 1.2  2001/09/04 04:06:17  smulloni
  * removed segfault-producing Py_DECREF
  *
