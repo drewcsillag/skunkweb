@@ -1,13 +1,27 @@
+2004-03-15  Drew Csillag <drew@loki.sai.local>
+
+	* pylibs/SocketMan/SocketMan.py (SocketMan.addConnection): now
+	retries a few times on bind in case the original isn't quite dead
+	yet.
+
+	* SkunkWeb/SkunkWeb/LogObj.py (redirectStdOutErr): now checks to
+	see if stderr/stdout already redirected before redirecting again
+	
+	* SkunkWeb/skunkweb.py.in: now logs the exception *before* writing
+	that skunkweb died abnormally so that you actually get to see the
+	exception if writing to stderr fails.  Also logs any exception if
+	we get the "server exited wayyy too soon" message.
+
 2004-03-14  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/xmlutils.py (XMLElement.__eq__, __ne__): added rich
 	comparison methods for testing equality; fix for AttributeError.
 
 2004-03-12  Jacob Smullyan <smulloni@smullyan.org>
-     	* pylibs/PyDO/PyDO2.py: removed use of string module
+	* pylibs/PyDO/PyDO2.py: removed use of string module
 	in favor of string methods (stylistic nit-pick).
 
-2004-03-02    <drew@loki.sai.local>
+2004-03-02 Drew Csillag <drew@loki.sai.local>
 	
 	* SkunkWeb/Services/sessionHandler/FSSessionStore.py: removed one
 	of the two leading underscores from get/setPickle
