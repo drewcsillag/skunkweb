@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/21 01:32:29 smulloni>
+# Time-stamp: <02/05/25 15:05:54 smulloni>
 
 ########################################################################
 #  
@@ -23,7 +23,7 @@
 from rosio import RO_StringIO
 from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS, \
-     VFSRegistry, registerFS
+     VFSRegistry, registerFS, FileNotFoundException, NotWriteableException
 from zipfs import ZipFS
 from shelfProps import ShelfPathPropertyStore
 import importer

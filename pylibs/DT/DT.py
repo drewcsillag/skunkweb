@@ -126,6 +126,14 @@ class DT:
         """
         return getattr ( self, '_error_tag', None )
 
+    def __store_ns(self, ns, env):
+        for v in ('__t', '__h', '__d'):
+            if ns.has_key(v):
+                env[v]=ns[v]
+                
+    def __unstore_ns(self, ns, env):
+        self.__store_ns(env, ns)
+
     def __call__(self, local_ns, global_ns, hidden_ns, 
                        call_type = DT_REGULAR ):
         """
@@ -136,7 +144,11 @@ class DT:
 
         if call_type == DT_INCLUDE:
             # Store somewhere parent's stuff
-            __t, __h, __d = ns['__t'], ns['__h'], ns['__d']
+            # this failed when trying to do an include call
+            # from a top-level python document; now be a little
+            # more careful
+            #__t, __h, __d = ns['__t'], ns['__h'], ns['__d']
+            self.__store_ns(ns, locals())
 
         # 
         # Add our stuff to local namespace
@@ -188,7 +200,8 @@ class DT:
 
         if call_type == DT_INCLUDE:
             # Restore parent's stuff
-            ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
+            #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
+            self.__unstore_ns(ns, locals())
 
         if call_type == DT_DATA:
             return ns['__return']
