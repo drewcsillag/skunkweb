@@ -1,5 +1,9 @@
 2003-05-12  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* 3.4b3 release cut.
+
+	* NEWS: updated.
+
 	* docs/stmlrefer/stmlrefer.tex (subsection{Using the
 	\texttt{duration} argument}): fixing incorrect import statement.
 
