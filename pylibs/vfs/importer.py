@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <02/02/16 01:31:56 smulloni>
+# $Id: importer.py,v 1.1 2002/02/16 06:37:00 smulloni Exp $
+# Time-stamp: <02/02/19 23:47:17 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -19,9 +19,11 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
 
-# this should add an import hook so that python modules can be imported from
-# the vfs.  It makes no attempt to load c modules or to check the timestamps of
-# pyc files.
+"""
+This adds an import hook so that python modules can be imported from
+the vfs.  It makes no attempt to load c modules or to check the
+timestamps of pyc files.
+"""
 
 import os
 import marshal
@@ -39,7 +41,11 @@ suffixes=[('.pyc', _importpyc), ('.py', _importpy)]
 
 
 class VFSImporter(imputil.Importer):
-
+    """
+    An imputil-based importer for importing python modules
+    from a vfs.  To use this, create one, call importer.install(),
+    and add the importer to sys.path.
+    """
     def __init__(self, fs, path):
         self.fs=fs
         self.path=path
@@ -73,16 +79,24 @@ class VFSImporter(imputil.Importer):
                     bytes=self.fs.open(filename).read()
                     return 0, importFunc(bytes, modname), {}
 
+def install():
+    if type(__import__)==types.BuiltinFunctionType:
+        global _manager
+        _manager=imputil.ImportManager()
+        _manager.install()
 
-def test():
-    import vfs
-    fs=vfs.LocalFS('/home/smulloni/')
-    myimp=VFSImporter(fs, ['/python'])
-    import sys
-    imputil.ImportManager().install()
-    sys.path.append(myimp)
-    import foofoo
-    print foofoo
+def uninstall():
+    if type(__import)==types.MethodType:
+        try:
+            global _manager
+            _manager.uninstall()
+            del _manager
+        except NameError:
+            # something else may have put in an import hook
+            pass
+        
+
+    
 
                     
                     

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/05 13:43:32 smulloni>
+# Time-stamp: <02/02/19 13:59:05 smulloni>
 
 ########################################################################
 #  
@@ -25,6 +25,9 @@ from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS
 from zipfs import ZipFS
 from shelfProps import ShelfPathPropertyStore
+from importer import VFSImporter
+import importer
+
 
 # and now, try to import stuff with optional dependencies
 try:

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/19 11:42:05 smulloni>
+# Time-stamp: <02/02/19 17:02:46 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -30,7 +30,7 @@ class ZipFS(FS):
 
     writeable=0
     
-    def __init__(self, zippath, root='/', prefix='/'):
+    def __init__(self, zippath, root='', prefix='/'):
         if not zipfile.is_zipfile(zippath):
             raise zipfile.BadZipfile, "not a zip file: %s" % zippath
         self.zpath=os.path.abspath(zippath)
@@ -98,6 +98,9 @@ class ZipFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.6  2002/02/20 04:54:14  smulloni
+# vfs fixes and first cut at a product service.
+#
 # Revision 1.5  2002/02/19 17:17:49  smulloni
 # vfs improvements; documentation typo fix.
 #

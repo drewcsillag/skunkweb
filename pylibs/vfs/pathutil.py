@@ -1,5 +1,5 @@
-# $Id: pathutil.py,v 1.2 2002/01/22 17:42:18 smulloni Exp $
-# Time-stamp: <02/02/19 11:58:53 smulloni>
+# $Id: pathutil.py,v 1.3 2002/02/19 17:17:49 smulloni Exp $
+# Time-stamp: <02/02/19 23:15:52 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -89,10 +89,10 @@ class Archive:
     def savePaths(self, namelist):
         self.paths={}
         rootlen=len(self.root)
-        nl=[x[rootlen:] for x in namelist if x.startswith(self.root)]
-        for name in nl:
+        nl=[(x[rootlen:], x) for x in namelist if x.startswith(self.root)]
+        for name, realname in nl:
             adjusted=_adjust_user_path(os.path.join(self.prefix, name))
-            self.paths[adjusted]=name
+            self.paths[adjusted]=realname
         implied=impliedPaths(self.paths.keys())
         for name in implied:
             self.paths[name]=None

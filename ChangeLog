@@ -1,5 +1,12 @@
 2002-02-19  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/product/: adding first cut at a
+	product service.  
+
+	* pylibs/vfs/zipfs.py (ZipFS.__init__), pylibs/vfs/tarfs.py
+	(TarFS.__init__):  default value for root parameter was wrong in
+	both cases; fixed.
+
 	* pylibs/vfs/tarfs.py (TarFS.__init__): support for root
 	parameter. 
 
