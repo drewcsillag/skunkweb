@@ -5,12 +5,13 @@ from formlib.views import TextField, SubmitField, ViewableForm, ViewableComposit
 from formlib.validates import InternationalAddressField
 
 addFld = InternationalAddressField('intadd', 'An International Address', defaultState='NY', defaultCountry='US') 
-flds = [ addFld ]
+subFld = SubmitField('submit')
+flds = [ addFld, subFld ]
 
 def validate(form):
     pass
 
-form = ViewableForm(name="testAllViews", method="POST", fields=[addFld], validators=[validate])
+form = ViewableForm(name="testAllViews", method="POST", fields=flds, validators=[validate])
 
 print 'COMPOSITE FORM INTERNALS<br/>'
 cmpFld = form.fields['intadd']
