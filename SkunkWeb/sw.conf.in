@@ -1,5 +1,10 @@
 # -*-python-*-
-#  
+
+# $Id: sw.conf.in,v 1.7 2001/12/02 23:09:46 smulloni Exp $
+# Time-stamp: <01/12/02 21:38:21 smulloni>
+
+########################################################################
+#
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      This program is free software; you can redistribute it and/or modify
@@ -15,9 +20,9 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-#   
-# $Id: sw.conf.in,v 1.6 2001/10/01 14:46:05 drew_csillag Exp $
-# Time-stamp: <01/05/07 13:57:33 smulloni>
+#
+########################################################################
+
 
 ########################################################################
 # services you want to load.
@@ -91,7 +96,7 @@ services = ['requestHandler',
 useCompileMemoryCache = 1
 
 ########################################################################
-# if you don't every line of a multiline log entry to be prefixed
+# if you don't want every line of a multiline log entry to be prefixed
 # with a logstamp (the default behavior), set this to a false value.
 #
 # stampEveryLine=0
@@ -473,7 +478,11 @@ userModuleCleanup = 1
 
 ########################################################################
 # To use cached connections with the pylibs/MySQL module set this to
-# a dictionary of 'name': 'connection_string' pairs
+# a dictionary of 'name': connect-kwarg pairs, e.g.:
+# MySQLConnectParams = {'torchsong' : {'host' : 'localhost',
+#                                      'user' : 'lungfish',
+#                                      'password' : 'aardvark',
+#                                      'db'   : 'ostrich'}}
 #
 # MySQLConnectParams = {}
 
@@ -511,6 +520,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.7  2001/12/02 23:09:46  smulloni
+# some documentation changes related to vfs
+#
 # Revision 1.6  2001/10/01 14:46:05  drew_csillag
 # added defaultIndexHtml and userdir config
 #
