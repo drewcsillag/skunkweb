@@ -1,3 +1,11 @@
+2003-07-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py,
+	SkunkWeb/Services/web/protocol.py (_processRequest): : commented
+	out debug statements in the main loop.
+
+	* pylibs/DT/DTLexer.py (DTToken.__repr__): fix for closed elements.
+
 2003-07-17  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/hooks.py (KeyedHook.oneshot, Hook.oneshot): added

@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.22 2003/05/02 20:12:09 drew_csillag Exp $
-# Time-stamp: <2003-05-02 15:41:54 drew>
+# $Id: protocol.py,v 1.23 2003/05/02 20:42:37 drew_csillag Exp $
+# Time-stamp: <03/07/18 09:50:47 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -354,8 +354,8 @@ def _processRequest(requestData, sessionDict):
     """
     response=None
     
-    DEBUG(WEB, 'creating Connection')
-    DEBUG(WEB, 'requestData is %s' % str(requestData))
+    # DEBUG(WEB, 'creating Connection')
+    # DEBUG(WEB, 'requestData is %s' % str(requestData))
     connection=HTTPConnection(requestData)
 
     sessionDict[constants.CONNECTION]=connection
@@ -363,33 +363,33 @@ def _processRequest(requestData, sessionDict):
     sessionDict[constants.LOCATION]=connection.uri
     sessionDict[constants.SERVER_PORT]=int(connection.env['SERVER_PORT'])
     try:
-        DEBUG(WEB, 'executing HaveConnection hook')
+        # DEBUG(WEB, 'executing HaveConnection hook')
         HaveConnection(Configuration.job, connection, sessionDict)
-        DEBUG(WEB, 'survived HaveConnection hook')
+        # DEBUG(WEB, 'survived HaveConnection hook')
 
         # overlay of config information
         Configuration.trim()
         Configuration.scope(sessionDict)
         #Configuration.saveMash()
 
-        DEBUG(WEB, 'executing PreHandleConnection hook')
+        # DEBUG(WEB, 'executing PreHandleConnection hook')
         PreHandleConnection(Configuration.job, connection, sessionDict)
                 
     except PreemptiveResponse, pr:
-        DEBUG(WEB, 'got preemptive response')
+        # DEBUG(WEB, 'got preemptive response')
         response=pr.responseData
     except:
         logException()
     else:
-        DEBUG(WEB, 'handling connection')
+        # DEBUG(WEB, 'handling connection')
         HandleConnection(Configuration.job, connection, sessionDict)
         response=connection.response()
 
     # the connection should be available to postResponse and cleanup hooks.
     sessionDict[constants.CONNECTION]=connection
-    DEBUG(WEB, 'returning response: %s' % response)
-    if response!=None:
-        DEBUG(WEB, 'length of response: %d' % len(response))
+    # DEBUG(WEB, 'returning response: %s' % response)
+    #if response!=None:
+    #    DEBUG(WEB, 'length of response: %d' % len(response))
     return response
 
 
