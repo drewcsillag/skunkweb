@@ -35,8 +35,8 @@ def help():
 configFiles = None
 #read command line
 try:
-    optlist, args = getopt.getopt(sys.argv[1:], 'c:h', [
-        'help', 'config-files='])
+    optlist, args = getopt.getopt(sys.argv[1:], 'c:h:', [
+        'help', 'config-files=', 'foreground'])
 except getopt.GetoptError, val:
     sys.stderr.write("ERROR: %s\n" % val)
     help()
@@ -44,9 +44,10 @@ except getopt.GetoptError, val:
 for (opt, optval) in optlist:
     if opt in ('--help', '-h'):
         help()
-    else: # opt in ('--config-files', '-c'):
+    elif opt in ('--config-files', '-c'):
         configFiles = optval.split(':')
-
+    else:
+        assert 1==0
 
 SkunkWebPath = '@libdir@'
 if SkunkWebPath[0] != '@':
@@ -61,7 +62,9 @@ import SkunkWeb
 if not configFiles:
     configFiles=[bootloader.DEFAULT_CONFIG_FILE_NAME]
     
-mods = bootloader.init(configFiles, bootloader.SkunkRoot)
+mods = bootloader.init(configFiles,
+                       bootloader.SkunkRoot)
+
 
 ##NEW
 from SkunkWeb import Configuration

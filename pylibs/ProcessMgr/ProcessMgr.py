@@ -59,14 +59,20 @@ class _HupSignal ( _SignalException ):
 #the process manager
 class ProcessMgr:
     """a fixed, preforking process manager"""
-    def __init__( self, numProcs = 0, maxKillTime = 5, pidFile=None,
-                  pollPeriod = 5, logInterface = DummyLogger() ):
+    def __init__( self,
+                  numProcs=0,
+                  maxKillTime=5,
+                  pidFile=None,
+                  pollPeriod=5,
+                  logInterface=DummyLogger(),
+                  foreground=0):
         
-        self.numProcs = numProcs
-        self.pidFile = pidFile
-        self.pollPeriod = pollPeriod
-        self.maxKillTime = maxKillTime
-        self.logInterface = logInterface
+        self.numProcs=numProcs
+        self.pidFile=pidFile
+        self.pollPeriod=pollPeriod
+        self.maxKillTime=maxKillTime
+        self.logInterface=logInterface
+        self.foreground=foreground
         self._modules = None
         self._children = {}
 
@@ -122,13 +128,18 @@ class ProcessMgr:
             self.run()
             sys.exit()
 
-        #become daemon and process group leader
-        self.logInterface.LOG("daemonizing...")
-        if os.fork():
-            sys.exit()
-        if os.fork():
-            sys.exit()
-        os.setsid()
+        # eventually suppress going to background (for running under
+        # daemontools (F. Tegtmeyer 2003-04-11)
+        if self.foreground == 0:
+           #become daemon and process group leader
+           self.logInterface.LOG("daemonizing...")
+           if os.fork():
+               sys.exit()
+           if os.fork():
+               sys.exit()
+           os.setsid()
+        else:
+           self.logInterface.LOG('running in non-daemon mode with ProcessMgr')
 
         #write the pid file
         open(self.pidFile,'w').write('%s' % os.getpid())

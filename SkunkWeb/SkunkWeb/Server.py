@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.6 2002/08/16 15:56:15 drew_csillag Exp $
+# $Id: Server.py,v 1.7 2003/04/03 17:51:27 smulloni Exp $
 ########################################################################
 
 ########################################################################
@@ -50,7 +50,8 @@ class SkunkWebServer(SocketMan):
                            Configuration.maxKillTime,
                            Configuration.pidFile,
                            Configuration.pollPeriod,
-                           LogObj)
+                           LogObj,
+                           foreground=Configuration.runInForeground)
 
         signal.signal(signal.SIGINT, self._SIGTERMHandler)
 
@@ -107,9 +108,9 @@ class SkunkWebServer(SocketMan):
     def reload(self):
         # extract what we need from configuration, and wipe it out
         global Configuration
-        ver, cf, sr = (Configuration.SkunkWebVersion,
-                       Configuration._config_files_,
-                       Configuration.SkunkRoot)
+        ver, cf, sr= (Configuration.SkunkWebVersion,
+                      Configuration._config_files_,
+                      Configuration.SkunkRoot)
         SocketMan.reload(self)
         del Configuration
         
@@ -147,7 +148,8 @@ class SkunkWebServer(SocketMan):
         self.pidFile = Configuration.pidFile
         self.pollPeriod = Configuration.pollPeriod
         self.maxKillTime = Configuration.maxKillTime
-            
+        self.foreground=Configuration.runInForeground
+        
 def _setConfigDefaults():
     import confvars
     Configuration.mergeDefaults(
@@ -182,52 +184,3 @@ _setConfigDefaults()
 svr = SkunkWebServer()
 svr.moduleSnapshot()    
 
-########################################################################
-# $Log: Server.py,v $
-# Revision 1.6  2002/08/16 15:56:15  drew_csillag
-# added userModuleCleanupIgnore option to make the umc cleaner not clean out
-# specified modules
-#
-# Revision 1.5  2002/07/25 17:27:46  drew_csillag
-# made it do uid switching
-#
-# Revision 1.4  2002/07/11 22:57:00  smulloni
-# configure changes to support other layouts
-#
-# Revision 1.3  2002/06/05 20:29:20  drew_csillag
-# 	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind
-# 	us that in the event that we add an import, that we add that import
-# 	to _stupidfunc in the bootloader
-#
-# 	* SkunkWeb/SkunkWeb/bootloader.py.in(init): now has some logic
-# 	to produce a true module snapshot that should always do the right
-# 	thing so reload will work
-#
-# 	* SkunkWeb/skunkweb.py.in: adjusted for bootloader change so reload
-# 	should now work properly -- again
-#
-# Revision 1.2  2001/08/17 16:47:21  drew_csillag
-# fixed syntax warning
-#
-# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.16  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.15  2001/04/16 18:10:16  smullyan
-# fix to reload in Server.py; debug flags in AE module now reconciled with
-# ServiceRegistry.
-#
-# Revision 1.14  2001/04/16 17:53:01  smullyan
-# some long lines split; bug in Server.py fixed (reference to deleted
-# Configuration module on reload); logging of multiline messages can now
-# configurably have or not have a log stamp on every line.
-#
-# Revision 1.13  2001/04/10 22:48:31  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#
-########################################################################
