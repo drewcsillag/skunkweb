@@ -4,7 +4,7 @@ Ernest Chen
 Jacob Smullyan
 Gregory Brauer
 Stephen Coursen
-Jeroen van Dongen 
+Jeroen van Dongen (PyDO, http logging, various bug fixes)
 Dave Swegen
 Ulrich Eck (for PyDO's sapdb adaptor)
 Spruce Weber (rewrite service, mysql fixes)
