@@ -1,34 +1,9 @@
-#  
-#  Copyright (C) 2001-2003, Andrew T. Csillag <drew_csillag@geocities.com>,
-#                   Jacob Smullyan <smulloni@smullyan.org>
-#  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-#   
-########################################################################
-
-## This module used to be deprecated, because we though, incorrectly,
-## that it was much slower than the C version (scopeable).  In fact, that
-## was a profiling error; the C version was only very slightly faster,
-## and after making a small optimization here, the Python version is now
-## considerably faster than the C.
-
 import fnmatch
-import types
 import re
+import types
 
 class Scopeable:
+
     """
     a class for storing configuration data that needs to vary
     according to some set of arbitrary conditions.
@@ -60,121 +35,111 @@ class Scopeable:
     1
     """
     
-    def __init__(self, dict={}):
-        self.__dictList=[dict]
-        self.matchers=[]
-        self.__currentScopes={}
-
-    def mergeDefaults(self, *args, **kw):
+    _fridge={}
+    def __init__(self, defaults=None):
+        if defaults is None:
+            defaults={}
+        Scopeable._fridge[self]={'dictlist' : [],
+                                 'defaults' : defaults,
+                                 'currentScopes' : {},
+                                 'scopeMatchers' : []}
+        self.__dict__.update(defaults)
+        
+    def mergeDefaults(self, *dicts, **kw):
         """
-        passed either a dictionary (or multiple dictionaries, which will
-        be evaluated in order) or keyword arguments, will fold the key/value
-        pairs therein into the dictionary of defaults without deleting any
-        values that already exist there.  Equivalent to:
-            newDict.update(defaultDict)
-            defaultDict=newDict
+        passed either a dictionary (or multiple dictionaries,
+        which will be evaluated in order) or keyword arguments, will
+        fold the key/value pairs therein into the dictionary of
+        defaults without deleting any values that already exist there.
+        Equivalent to: newDict.update(defaultDict) defaultDict=newDict
         """
-        for dict in args:
-                self.__mergeDefaults(dict)
-        self.__mergeDefaults(kw)
+        fridge=self._get_fridge()
+        tmp=fridge['defaults']
+        for d in dicts:
+            d.update(tmp)
+            tmp=d
+        kw.update(tmp)
+        fridge['defaults']=kw
+        self.__dict__.update(kw)
 
-    def __mergeDefaults(self, dict):
-        dict.update(self.__dictList[-1])
-        self.__dictList[-1]=dict
+    def update(self, d):
+        self._get_fridge()['defaults'].update(d)
 
-    def __getattr__(self, attr):
-        for d in self.__dictList:
+    def _lookup(self, attr):
+        # not really intended to be used,
+        # the old gettattr hook
+        fridge=self._get_fridge()
+        dictlist=fridge['dictlist'][:]
+        dictlist.reverse()
+        for d in dictlist:
             try:
                 return d[attr]
             except KeyError:
                 continue
-        if attr=='__all__':
-            return self.mash().keys()
-        raise AttributeError, attr
-
-    def defaults(self):
-        """
-        this isn't a copy.  Use, do not abuse, etc.
-        """
-        return self.__dictList[-1]                            
-
-    def mash(self):
-        nd={}
-        dlCopy=self.__dictList[:]
-        dlCopy.reverse()
-        map(nd.update, dlCopy)
-        return nd
-
-    def freeze(self):
-        """
-        takes the current state of the object and
-        loads it into self.__dict__, storing
-        a copy of the original dict so it can
-        be unfrozen
-        """
-        # store copy of the original dict in the
-        # fridge
-        olddict=self.__dict__.copy()
-        self.__dict__.update(self.mash())
-        self.__dict__['__olddict__']=olddict
-
-    def unfreeze(self):
         try:
-            olddict=self.__dict__['__olddict__']
+            return dictlist['defaults'][attr]
         except KeyError:
             pass
-        else:
-            self.__dict__=olddict
-    
-    def update(self, dict):
-        self.__dictList[-1].update(dict)
+        # need a better exception for this
+        raise AttributeError, attr        
+        
+    def defaults(self):
+        return self._get_fridge()['defaults'].copy()
 
-    def push(self, dict):
-        self.__dictList.insert(0, dict)
+    def currentScopes(self):
+        return self._get_fridge()['currentScopes']
 
-    def pop(self, index):
-        return self.__dictList.pop(index)
+    def scopeMatchers(self):
+        return self._get_fridge()['scopeMatchers']
+
+    def _get_fridge(self):
+        return Scopeable._fridge[self]
+
+    def mash(self):
+        fridge=self._get_fridge()
+        nd=fridge['defaults'].copy()
+        map(nd.update, fridge['dictlist'])
+        return nd
+
+    def push(self, d):
+        self._get_fridge()['dictlist'].append(d)
+        self.__dict__.update(d)
+
+    def pop(self):
+        fridge=self._get_fridge()
+        popped=fridge['dictlist'].pop()
+        dl=fridge['dictlist'][:]
+        dl.reverse()
+        D=self.__dict__
+        for k in popped.keys():
+            del D[k]
+            for d in dl:
+                try:
+                    v=d[k]
+                except KeyError:
+                    continue
+                else:
+                    D[k]=v
+                    break
 
     def trim(self):
-        # should this be automatic or not?
-        # self.unfreeze()
-        del self.__dictList[:-1]    
-
-    def mashSelf(self):
-        self.__dictList=[self.mash()]
+        fridge=self._get_fridge()
+        del fridge['dictlist'][:]
+        self.__dict__.clear()
+        self.__dict__.update(fridge['defaults'])
 
     def addScopeMatchers(self, *paramMatchers):
-        """
-        paramMatcher is a ScopeMatcher instance.
-        """
-        self.matchers.extend(paramMatchers)
-        self.matchers.sort()
-
-    def scope(self, param=None):
-        """
-        param should be one of the following:
-        1. None (the default), in which case all the current scopes will be
-           returned;
-        2. a string (a param name), in which case all the current top-level
-           scopes for that parameter will be returned;         
-        3. a dictionary of values {param = paramValue}, in which case the 
-           Scopeable will be scoped according to those values.
-        """
-        if param==None:
-            return self.__currentScopes
-        elif type(param)!=types.DictType:
-            # treat this as a accessor method          
-                if self.__currentScopes.has_key(param):
-                    return self.__currentScopes[param]
-                else:
-                    return None
-        else:
-            # treat as a mutator
-            # store the current scope
-            self.__currentScopes.update(param)
-            scopedDict={}
-            for matcher in self.matchers:
-                self.__processMatcher(matcher, scopedDict, param)                
+        matchers=self.scopeMatchers()
+        matchers.extend(paramMatchers)
+        matchers.sort()
+        
+    def scope(self, d):
+        # store the current scope
+        current=self.currentScopes()
+        current.update(d)
+        scopedDict={}
+        for m in self.scopeMatchers():
+            self.__processMatcher(m, scopedDict, d)                
             if scopedDict:
                 self.push(scopedDict)
 
@@ -338,3 +303,4 @@ def test2(**kw):
 ##    del config
 
 
+                

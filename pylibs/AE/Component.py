@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.8 2002/06/25 15:08:59 drew_csillag Exp $
+# $Id: Component.py,v 1.9 2002/08/13 14:41:01 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -36,7 +36,7 @@ from Logs import COMPONENT_TTL
 import cfg
 
 #config vars
-cfg.Configuration._mergeDefaultsKw(
+cfg.Configuration.mergeDefaults(
 #    defaultDefer = 0, 
     defaultExpiryDuration = 30,
     fallbackToCache = None,
@@ -394,6 +394,9 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.9  2002/08/13 14:41:01  drew_csillag
+# added rectifyRelativeName, which is just an alias of _rectifyRelativeName
+#
 # Revision 1.8  2002/06/25 15:08:59  drew_csillag
 # 	* pylibs/AE/Component.py: made it so the componentStack gets
 # 	trimmed properly.  When adding frames, we used to blindly append

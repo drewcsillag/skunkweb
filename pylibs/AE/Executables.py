@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.9 2002/07/31 18:49:57 drew_csillag Exp $
+#$Id: Executables.py,v 1.10 2002/08/01 16:50:53 drew_csillag Exp $
 import sys
 import cStringIO
 import copy
@@ -30,7 +30,7 @@ import Exceptions
 
 import cfg
 #config vars
-cfg.Configuration._mergeDefaultsKw(
+cfg.Configuration.mergeDefaults(
     templateMimeTypes = ['text/html', 'text/plain']
     )
 #/config

@@ -15,13 +15,13 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: MimeTypes.py,v 1.5 2001/07/09 20:38:41 drew Exp $
+#$Id: MimeTypes.py,v 1.1.1.1 2001/08/05 15:00:37 drew_csillag Exp $
 import os
 import sys
 
 #config vars
 import cfg
-cfg.Configuration._mergeDefaultsKw(
+cfg.Configuration.mergeDefaults(
     mimeTypesFile = 'mime.types',
     defaultMimeType = 'application/octet-stream'
     )

@@ -15,25 +15,12 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigLoader.py,v 1.5 2002/06/06 00:15:29 smulloni Exp $
+# $Id: ConfigLoader.py,v 1.6 2003/04/18 04:08:22 smulloni Exp $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
 import os, sys, types
-import scope #able as scope
-
-class ScopeableConfig(scope.Scopeable):
-    # for backwards compatability. This layer
-    # may be eliminated!!!! TO BE DONE
-
-    _mergeDefaults=scope.Scopeable.mergeDefaults
-    _mergeDefaultsKw=scope.Scopeable.mergeDefaults
-    _trim=scope.Scopeable.trim
-    _mash=scope.Scopeable.mash
-    _update=scope.Scopeable.update
-    _mashSelf=scope.Scopeable.mashSelf
-    _push=scope.Scopeable.push
-    _pop=scope.Scopeable.pop
+import scope 
     
 def loadConfigFile(filename, cfgModuleName):
     filename = os.path.abspath(filename)
@@ -59,43 +46,7 @@ def loadConfig(codeObj, cfgModuleName):
     if cfMod:
         cfMod.update(ns)
     else:
-        m = sys.modules[cfgModuleName] = ScopeableConfig(ns)
+        m = sys.modules[cfgModuleName] = scope.Scopeable(ns)
         l = cfgModuleName.split('.')
         if len(l) > 1:
             setattr(__import__('.'.join(l[:-1]),['*'], ['*'], ['*']), l[-1], m)
-
-
-########################################################################
-# $Log: ConfigLoader.py,v $
-# Revision 1.5  2002/06/06 00:15:29  smulloni
-# slimmed down Configuration object by keeping globals out of it.
-#
-# Revision 1.4  2002/04/27 19:28:48  smulloni
-# implemented dynamic rewriting in rewrite service; fixed Include directive.
-#
-# Revision 1.3  2001/09/04 19:12:57  smulloni
-# integrated scopeable package into SkunkWeb.
-#
-# Revision 1.2  2001/09/04 18:25:38  smulloni
-# modified so as to use scopeable pylib
-#
-# Revision 1.1.1.1  2001/08/05 15:00:26  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.7  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.6  2001/05/03 16:15:00  smullyan
-# modifications for scoping.
-#
-# Revision 1.5  2001/05/01 21:46:29  smullyan
-# introduced the use of scope.Scopeable to replace the the ConfigLoader.Config
-# object.
-#
-# Revision 1.4  2001/04/10 22:48:32  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#
-########################################################################
