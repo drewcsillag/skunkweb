@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Component.py,v 1.11 2003/05/01 20:45:58 drew_csillag Exp $
+# $Id: Component.py,v 1.12 2003/06/11 17:47:02 smulloni Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -56,12 +56,6 @@ class ComponentStackFrame:
         self.argDict = argDict
         self.auxArgs = auxArgs
         self.compType = compType
-
-    def __del__(self):
-        if self.compType != DT_INCLUDE:
-            for k in self.namespace.keys():
-                self.namespace[k] = None
-            self.namespace.clear()
 
 def strBool(s):
     s = str(s)

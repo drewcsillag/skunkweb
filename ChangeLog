@@ -1,3 +1,9 @@
+2004-07-28  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* pylibs/AE/Component.py (ComponentStackFrame.__del__):
+	removing the __del__ method, as Python now can take care of circular
+	references without help.
+
 2004-07-25  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/DT/DTLexer.py: pcre has finally been removed from Python
