@@ -1,5 +1,13 @@
 2002-06-07  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* pylibs/PyDO/README: made mention of DCOracle2
+
+	* SkunkWeb/sw.conf.in: added warning not to use 
+	OracleProcedurePackageLists with DCOracle2
+
+	* pylibs/Oracle/__init__.py,pylibs/PyDO/oracleconn.py: should
+	now work with DCOracle2
+
 	* INSTALL: fixed error about building paper docs
 
 	* All of this sections changes are for the fact that you previously
