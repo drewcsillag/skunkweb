@@ -19,7 +19,7 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.5 2001/07/09 20:38:42 drew Exp $
+#$Id: make_distr.py,v 1.1.1.1 2001/08/05 14:59:20 drew_csillag Exp $
 
 import commands
 import re
@@ -57,7 +57,7 @@ if not conf_q.ask():
 #
 # Update the version
 #
-for d, f, var, real_f in ( ('AED', 'AED/configure.in', 'AED_VERSION', 'configure'), ):
+for d, f, var, real_f in ( ('SkunkWeb', 'SkunkWeb/configure.in', 'SW_VERSION', 'configure'), ):
    full_f = os.path.join ( src_dir, f )
    lines = open ( full_f ).read()
    pat = re.compile ( '^%s=.*' % var, re.MULTILINE )
@@ -102,7 +102,7 @@ for d, f, var, real_f in ( ('AED', 'AED/configure.in', 'AED_VERSION', 'configure
 #
 #for d, local in ( ('.', 1), ('AED', 0), ('SDS', 0), ('pylibs', 0), ('misc', 0),
 #                  ('schemas', 0) ):
-for d, local in ( ('.', 1), ('AED', 0), ('pylibs', 0), ('docs', 0) ):
+for d, local in ( ('.', 1), ('SkunkWeb', 0), ('pylibs', 0), ('docs', 0) ):
 
     # Tag the stuff 
     if local:
@@ -125,11 +125,11 @@ for d, local in ( ('.', 1), ('AED', 0), ('pylibs', 0), ('docs', 0) ):
 # Ok, all tagged - create the distribution 
 #
 os.chdir ( _dir )
-d_file = os.path.join ( _dir, 'skunk-%s.tgz' % vers) 
+d_file = os.path.join ( _dir, 'skunkweb-%s.tgz' % vers) 
 
-cmds = ('cvs export -r %s -d skunk-%s skunk' % (tag, vers),
-       'tar czf %s skunk-%s' % (d_file, vers),
-       'rm -rf skunk-%s' % vers )
+cmds = ('cvs export -r %s -d skunkweb-%s skunkweb' % (tag, vers),
+       'tar czf %s skunkweb-%s' % (d_file, vers),
+       'rm -rf skunkweb-%s' % vers )
 
 print 'Creating distribution'
 
