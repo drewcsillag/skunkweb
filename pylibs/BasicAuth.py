@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: BasicAuth.py,v 1.8 2001/07/27 16:09:53 drew Exp $
+# $Id: BasicAuth.py,v 1.1.1.1 2001/08/05 15:00:23 drew_csillag Exp $
 """
 This module implements the back-end details of "basic" 
 authentication as used by many HTTP servers 
@@ -46,7 +46,7 @@ crypt, you can use the other contents of this module
 without a hitch.
 """
 
-import os, stat, string
+import os, types, string
 
 # hacky wrap of crypt module import,
 # so that someone is told what to do about 
@@ -152,7 +152,7 @@ class DictAuthenticator(Authenticator):
 	return self._match_password(p, password)
 
     # public persistence methods
-    def reset(): 
+    def reset(self): 
 	"""
 	This method, if overridden, should "reset" the users
 	dictionary attribute so that it has no "dirty" or "stale"
@@ -164,7 +164,7 @@ class DictAuthenticator(Authenticator):
 	"""
 	pass
 
-    def flush(): 
+    def flush(self): 
 	"""
 	This method, if overridden, should flush all "dirty"
 	or "unwritten" username/password pairs to persistence,
