@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.5 2003/04/23 02:24:13 smulloni Exp $
+# $Id: Logger.py,v 1.6 2003/04/23 02:44:46 smulloni Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -28,7 +28,7 @@ class _configStub:
         self.errorLog=None
         self.regularLog=None
         self.accessLog=None
-        self._stampEveryLine=1
+        self.stampEveryLine=1
         self.logDateFormat='%a, %d %b %Y %H:%M:%S GMT'
         self.debugFlags=0
 
@@ -58,7 +58,7 @@ def _fmtDate():
                          time.gmtime(time.time()))
 
 def _stamp(logStamp, msg):
-    if config._stampEveryLine:
+    if config.stampEveryLine:
         return ["%s%s\n" % (logStamp, x) for x in msg.split("\n")]
     else:
         return ('%s%s\n' % (logStamp, msg))
