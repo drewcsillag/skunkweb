@@ -1,3 +1,14 @@
+2001-10-29  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/opman/opman.tex: updated with swcgi stuff
+
+	* NEWS: updated
+
+	* SkunkWeb/Makefile.in, SkunkWeb/configure.in, SkunkWeb/configure:
+	added stuff to configure/install swcgi
+
+	* SkunkWeb/swcgi.py.in: added CGI adaptor
+
 2001-10-28  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/AE/Executables.py(STMLExecutable.mergeNamespaces): fixed

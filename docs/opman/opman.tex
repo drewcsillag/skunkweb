@@ -768,6 +768,24 @@ Usage: swpython [-ih] [-c configfilelist] [-e script] [scriptname]
   -r,--redir-logs                    Redirect logs to stderr
 \end{verbatim}
 
+\section{\texttt{swcgi}}
+\label{swcgi}
+\index{\texttt{swcgi}}
+
+The \tetxtt{swcgi} script is used to be able to use Apache and
+SkunkWeb together without the use of \texttt{mod_skunkweb}.
+Specifically, in cases where you're not allowed to install Apache
+modules, or things of that nature.
+
+A typical configuration would be to add the following to your
+\texttt{httpd.conf}:
+\begin{verbatim}
+ScriptAlias / /usr/local/skunk/bin/swcgi
+\end{verbatim}
+
+To really use it though you should check out the top of the script and
+edit it to suit your needs (right now, the thing to check out is the
+value of the \texttt{connectInfo} variable).
 
 \chapter{Virtual Hosting}
 Virtual Hosting with SkunkWeb is a relatively simple matter.  Mostly

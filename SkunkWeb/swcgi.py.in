@@ -1,0 +1,58 @@
+#!@PYTHON@
+
+#edit this as appropriate as to where the aecgi protocol is listening
+#as specified by the AecgiListenPorts variable in sw.conf
+connectInfo = ('localhost', 9888)# or '/tmp/skunksock' or whatever
+
+
+#shouldn't need to change anything below here
+
+#proto
+#read 1 byte
+#send 10 byte length
+#read req data (marshal format)
+#read 10 byte lenght
+#read data
+
+#req data is dict of {'environ': os.environ,
+#                     'headers': request_headers,
+#                     'stdin': stdin}
+
+import os
+import socket
+import sys
+import string
+import marshal
+
+env = {}
+headers = {}
+stdin = ''
+for k, v in os.environ.items():
+    if k[:5] == 'HTTP_':
+        hdrized = '-'.join(map(string.capitalize, k[5:].split('_')))
+        headers[hdrized] = v
+    env[k] = v
+    
+if headers.has_key('Content-Length'):
+    cl = headers['Content-Length']
+    stdin = sys.stdin.read(string.atoi(cl))
+
+
+req_data = marshal.dumps({'environ': env,
+                          'headers': headers,
+                          'stdin': stdin})
+
+
+if type(connectInfo) == type(''):
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+else:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+sock.connect(connectInfo)
+sock.recv(1)
+sock.send('%010d%s' % (len(req_data), req_data))
+rlen = sock.recv(10)
+rlen = string.atoi(rlen)
+data = sock.recv(rlen)
+sys.stdout.write(data)
+          
