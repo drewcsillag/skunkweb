@@ -21,7 +21,7 @@
 %define pythonpath %(if [ "%{config_pythonpath}" != auto ]; then echo %{config_pythonpath}; else ls /usr/bin/python[23].* | sort | tail -1; fi)
 
 #  find the name of the python package
-%define pythonreq %(if [ "%{config_pythonpkgname}" != auto ]; then echo %{config_pythonpkgname}; else rpm -qf --qf '%{name}' %{pythonpath}; fi)
+%define pythonreq %(if [ "%{config_pythonpkgname}" != auto ]; then echo %{config_pythonpkgname}; else rpm -qf --qf '%''{name}' %{pythonpath}; fi)
 
 #  find the name of the apache package
 %define apachereq %(if [ "%{config_apachepkgname}" != auto ]; then echo %{config_apachepkgname}; else rpm -qi httpd >/dev/null 2>&1 && echo httpd || echo apache; fi)
@@ -170,8 +170,11 @@ export MODFILELIST
 %clean
 [ ! -z "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-%post
+%pre
 useradd -r skunkweb
+exit 0
+
+%post
 chkconfig --add skunkweb
 chkconfig skunkweb on
 
