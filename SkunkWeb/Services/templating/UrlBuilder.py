@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: UrlBuilder.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
+# $Id: UrlBuilder.py,v 1.2 2001/12/02 20:57:50 smulloni Exp $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -163,16 +163,27 @@ def hidden ( dict ):
         enck = DT.DTUtil.htmlquote(str(k))
         if type(v) == types.ListType:
             for vi in v:
-                encv=DT.DTUtil.htmlquote(str(vi))
+                if vi is None:
+                    encv = ""
+                else:
+                    encv=DT.DTUtil.htmlquote(str(vi))
                 l.append('<input type=hidden name="%s" value="%s">'
                          % (enck, encv))
-        elif v is not None:
-            encv=DT.DTUtil.htmlquote(str(v))
+        else: 
+            if v is None:
+                encv = ""
+            else:
+                encv=DT.DTUtil.htmlquote(str(v))
             l.append('<input type=hidden name="%s" value="%s">' % (enck, encv))
     return string.join(l,'\r\n')
 
 ########################################################################
 # $Log: UrlBuilder.py,v $
+# Revision 1.2  2001/12/02 20:57:50  smulloni
+# First fold of work done in September (!) on dev3_2 branch into trunk:
+# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
+# to templating's <:img:> tag.
+#
 # Revision 1.1.1.1  2001/08/05 15:00:11  drew_csillag
 # take 2 of import
 #
