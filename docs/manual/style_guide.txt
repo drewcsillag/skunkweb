@@ -4,6 +4,12 @@ Style Guide For SkunkWeb ReST Documentation.
 Main Title
 ==========
 
+-------------
+Chapter Title
+-------------
+
+N.B.: The above are *only* used in index.txt!!!
+
 Section Title
 =============
 
