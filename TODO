@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-09-06 16:31:35 drew> 
-#   $Id: TODO,v 1.10 2001/08/24 13:16:29 drew_csillag Exp $
+#   Time-stamp: <2001-09-06 18:12:48 drew> 
+#   $Id: TODO,v 1.11 2001/09/06 20:32:03 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -25,11 +25,14 @@ SkunkWeb 3.1
 
 Future stuff
 ------------------------------
-* fix devel doc -- remove config stuff, api only
+* a means to pass arguments to a cachable component that do not become
+  part of the cache key
+* ways to get expired and rendered flags via the component tags
+* fix devel doc -- remove config stuff, api only -- services and 
+  what API's (hooks) they export.  How to write a service.
 * separate pargen release
 * separate DT release
 * Patch to pydoc to allow it to handle STML
-* profile, profile and profile some more.
 * a PSP (python server pages implementation) (I've got a really cheesy one,
   but I've got to imagine there's more to it than that).
 * tags which make javascript easier to live with
