@@ -185,8 +185,10 @@ class PyDOBase(static):
         return self._dict.values()
     
     def get(self, item, default = None):
-        """returns self[item] if it exists, otherwise returns default"""
-        return self._dict.get(item, default)
+        """returns self[item] if it exists and is not None,
+        otherwise returns default"""
+        return self._dict.get(item, default) or default
+
     
     def update(self, dict):
         """updates self with the key/value pairs in dict"""

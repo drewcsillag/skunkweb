@@ -1,3 +1,8 @@
+2002-01-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/PyDO.py (PyDOBase.get): self.get(columnname,
+	default) now returns default if self._dict[columnname]==None. 
+
 2002-01-26  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py (_fixPath): _normpath is now applied to the
