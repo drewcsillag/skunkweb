@@ -1,3 +1,15 @@
+2002-12-04  James Richards  <jrichards@satie.wnyc.org>
+
+	* pylibs/formlib/views.py (Layout.handleError): Base class with standard semantics for error handling during layout
+	(FlowLayout.layoutFields): flow layout for simple flow based form layout 
+	(StackLayout.layoutFields): stack layout for default stack based form layout 
+	(NestedListLayout.layoutFields): nested layout for more complex form layouts
+	(ViewableForm.__init__): added layout construction parameter to viewable form using StackLayout as default form layout
+	(ViewableForm._get_fieldLayout): added ViewableForm.fieldLayout as property to separate layout concerns from form fields property
+	(ViewableForm._flattenFields): utility method to separate form fields from form field layout concerns
+	(ViewableForm.getView): moving bulk of view generation to layout instance  
+	(ViewableCompositeField.__init__): Adding abstraction to allow composite fields to be directly viewable within a ViewableForm rather than always deferring to FieldProxies 
+
 2002-12-03    <smulloni@smullbola.smullyan.org>
 
 	* test/sitelibs/formlibtest/testDispatch3.py
