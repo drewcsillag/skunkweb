@@ -6,7 +6,7 @@ systems:
     Solaris
 
 It should work on any reasonable version of Unix that Python works.
-It *may* run on Windoze under Cygwin, but it hasn't been tested.
+It turns out that it appears to run on Windows under Cygwin.
 
 
 Prerequisites
@@ -64,4 +64,42 @@ Additional options if building SkunkWeb:
 
 Once ``configure'' has completed, simply type ``make; make install''.
 
-$Id: INSTALL,v 1.6 2001/08/21 20:48:03 drew_csillag Exp $
+
+Building the Documentation
+------------------------------
+In most cases you probably want to grab the docs from the SkunkWeb
+website (http://skunkweb.sourceforge.net/docs.html), but if you want
+to build them yourself, here's how:
+
+If you've ever built the Python documentation from source, SkunkWeb's
+is built pretty much the same way.
+
+What you need:
+   1) A working LaTeX2e installation (PDFLaTeX if you want PDF output)
+   2) LaTeX2HTML 2K.1beta (1.47) if you want to build the HTML docs
+      --other versions may work, but I've heard there may be problems.
+
+There are three directories that correspond to the output type:
+  html           HTML output  
+  paper-letter   Paper formats (PS, DVI, PDF) for letter sized paper
+  paper-a4       Paper formats (PS, DVI, PDF) for A4 sized paper
+
+For HTML
+----------
+Go to the docs/html and type:
+	make <docname>/<docname>.html
+Where <docname> is one of:
+     devel - the developer's manual
+     opman - the operations (installation/care and feeding) manual
+     stmlrefer - the STML reference manual
+
+For Paper formats
+--------------------
+Go to either docs/paper-letter or docs/paper-a4 depending on what size
+paper you're shooting for.  Then type:
+	make <docname>/<docname>.<ext>
+Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
+depending, of course on what format you want it in.
+
+$Id: INSTALL,v 1.7 2002/04/24 19:22:59 drew_csillag Exp $
+
