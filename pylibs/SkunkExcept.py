@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SkunkExcept.py,v 1.3 2003/05/01 20:45:57 drew_csillag Exp $
+# $Id: SkunkExcept.py,v 1.4 2003/05/05 17:04:12 smulloni Exp $
 
 """
 This module provides a set of exception classes for use in
@@ -169,13 +169,18 @@ class SkunkSyntaxError ( SkunkCustomError ):
         lineno, offset, line = self._exc.lineno, self._exc.offset, \
                                self._exc.text
         err=[]
-        if not lineno and not offset and not line:
+        if not (lineno and offset and line):
+        #if not lineno and not offset and not line:            
             # This is a f#$#ed up syntax error
+            srclines = self._text.split('\n')
             err=[ErrorHandler._error,
                  'Syntax error in file %s\n' % self._filename,
                  'Error: %s\n' % str ( self._exc ),
-                 'Unfortunately, due to Python compiler limitations' \
-                 ' context is not available\n', 
+                 'Unfortunately, due to Python compiler limitations',
+                 ' context is not available\n',
+                 'Program text is\n%s' %
+                 '\n'.join(["%04d: %s" % (i+1, srclines[i])
+                            for i in range(len(srclines))]), 
                  ErrorHandler._close]
 
             return ''.join(err)
@@ -206,6 +211,7 @@ class SkunkSyntaxError ( SkunkCustomError ):
         err.append(''.join(['%s\n' % x for x in before]))
         if line:
             err.append(line)
+
         err.append('-' * (offset - 1) + '^\n')
         err.append(''.join(['%s\n' % x for x in after])) 
         err.append(ErrorHandler._close)
