@@ -1,5 +1,6 @@
 #  which python binary to use, list the full path or "auto"
 %define config_pythonpath auto
+%define config_apache auto
 
 #################################
 #  End of user-modifiable configs
@@ -14,6 +15,10 @@
 
 #  location to apxs executable
 %define apxspath /usr/sbin/apxs
+
+%define apache $(if [ "${config_apache}" != auto ]; then echo ${config_apache}; else $(apxspath} -q TARGET; fi}
+
+%define apachemodprefix (if [ "${apache}" = httpd ]; then echo .libs/; fi)
 
 #  get python lib directory
 %define pylibdir %(%{pythonpath} -c "import sys; print '%s/lib/python%s' % (sys.prefix, sys.version[:3])")
@@ -41,7 +46,7 @@ designed for handling both high-traffic and smaller sites, written in Python.
 Summary: A module for including Skunkweb in Apache.
 Group: System Environment/Daemons
 Requires: %{name}
-Requires: httpd
+Requires: %{apache}
 
 %description mod_skunkweb
 A module for including the Skunkweb environment in the Apache web server.
@@ -115,7 +120,7 @@ export MODFILELIST
    cd SkunkWeb/mod_skunkweb
    moddir=`%{apxspath} -q LIBEXECDIR`
    mkdir -p "${RPM_BUILD_ROOT}/${moddir}"
-   cp .libs/mod_skunkweb.so "${RPM_BUILD_ROOT}/${moddir}"
+   cp ${apachemodprefix}mod_skunkweb.so "${RPM_BUILD_ROOT}/${moddir}"
    echo "/${moddir}"/mod_skunkweb.so >>"$MODFILELIST"
 
    #  use conf.d?

@@ -1,5 +1,8 @@
 2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* skunkweb.spec: added some configuration with the intent of
+	making the mod_skunkweb build with apache 1.3.
+
 	* pylibs/PyDO/psycopgconn.py, pylibs/PyDO/PyDBI.py
 	(_driverConfig): S. Reifschneider's contributed driver for the
 	psycopg postgresql driver.
