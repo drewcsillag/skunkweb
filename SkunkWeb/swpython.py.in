@@ -117,7 +117,7 @@ else:
         v.filename = args[0]
         raise
     sys.argv = args
-    ll = {}
+    ll = {'__name__':'__main__'}
     exec co in ll, ll
     
     if interactive:
