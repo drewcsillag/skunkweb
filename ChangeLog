@@ -1,3 +1,8 @@
+2002-06-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/ConfigLoader.py (loadConfig): now exec config files
+	in {}, ns rather than ns, ns.
+
 2002-06-05  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind

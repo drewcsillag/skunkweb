@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigLoader.py,v 1.3 2001/09/04 19:12:57 smulloni Exp $
+# $Id: ConfigLoader.py,v 1.4 2002/04/27 19:28:48 smulloni Exp $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
@@ -52,8 +52,10 @@ def loadConfigString(s, filename, cfgModuleName):
 def loadConfig(codeObj, cfgModuleName):
     cfMod = sys.modules.get(cfgModuleName)
     ns = cfMod and cfMod.defaults() or {}
-        
-    exec codeObj in ns, ns #let caller catch exc's
+
+    # we used to exec in ns, ns; anyone see a problem with this?
+    exec codeObj in {}, ns  #let caller catch exc's
+
     if cfMod:
         cfMod.update(ns)
     else:
@@ -65,6 +67,9 @@ def loadConfig(codeObj, cfgModuleName):
 
 ########################################################################
 # $Log: ConfigLoader.py,v $
+# Revision 1.4  2002/04/27 19:28:48  smulloni
+# implemented dynamic rewriting in rewrite service; fixed Include directive.
+#
 # Revision 1.3  2001/09/04 19:12:57  smulloni
 # integrated scopeable package into SkunkWeb.
 #
