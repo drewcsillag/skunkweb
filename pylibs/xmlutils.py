@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/08/29 11:36:27 smulloni>
+# Time-stamp: <02/08/30 10:32:17 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -110,7 +110,7 @@ class XMLElement:
         self.empty=empty
         self.html_compat=html_compat
         self.__children=[]
-        self.__attributes={}
+        self.attributes=self.__attributes={}
         self.__namespaces={}
         self.__defaultNamespace=''
         if namespace:
@@ -246,6 +246,10 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.6  2002/08/30 19:47:54  smulloni
+# xmlutils.XMLElement now has a public "attributes" member; added DTD
+# for flow definitions.
+#
 # Revision 1.5  2002/08/29 15:37:10  smulloni
 # add/revised copyright notice and license
 #

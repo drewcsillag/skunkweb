@@ -1,0 +1,57 @@
+<!-- a dtd for a notation used to define state machines -->
+<!-- Time-stamp: <02/08/30 15:44:48 smulloni> -->
+<!-- $Id$ -->
+
+<!-- root element.  Stages, flows, and fields can be defined at -->
+<!-- toplevel. -->
+
+<!ELEMENT flowdef (stage | flow | field)+>
+
+<!-- a stage is essentially a namespace, optionally containing some -->
+<!-- number of fields, an optionally inheriting fields from one or -->
+<!-- more other stages. Stages can be defined where they occur in a -->
+<!-- flow, or at top level.  When a stage is not defined inline, or -->
+<!-- occurs more than once within one or more flows, it can be -->
+<!-- referenced by id: <stage idref="4"/>.  In that case, it is not -->
+<!-- permitted to define fields for the stage.-->
+
+<!-- what an application means by "stage" and "field" is specific to -->
+<!-- the application. -->
+
+<!ELEMENT stage field*>
+<!ATTLIST stage 
+    id ID #IMPLIED
+    idref IDREF #IMPLIED
+    inherits IDREFS #IMPLIED>
+
+<!ENTITY % node "(stage | flow | cond)">
+
+<!-- flows contain a sequence of stages, flows, or conds. The -->
+<!-- progression from one stage to another is application-defined.-->
+
+<!ELEMENT flow %node;*>
+<!ATTLIST flow 
+    id ID #IMPLIED
+    idref IDREF #IMPLIED>
+
+<!-- a field is a data segment, and can contain anything.  Like stage, -->
+<!-- it should not contain a definition when referenced by idref. Its -->
+<!-- name should be unique among fields.  -->
+
+<!ELEMENT field ANY>
+<!ATTLIST field
+    id ID #IMPLIED
+    idref IDREF #IMPLIED
+    name CDATA #REQUIRED>
+
+<!-- a cond is a way of writing if <expr> then node1; else -->
+<!-- node2. node2 is optional. -->
+
+<!ELEMENT cond expr %node; %node;? >
+
+<!-- an expr is also a data segment, containing code that can -->
+<!-- return a boolean value to an application. The type attribute -->
+<!-- gives the application a cue as how to evaluate the expression. -->
+
+<!ELEMENT expr ANY>
+<!ATTLIST expr type CDATA #IMPLIED>

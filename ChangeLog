@@ -1,3 +1,10 @@
+2002-08-30  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/flowmgr/flowdef.dtd: DTD for flow definitions.
+
+	* pylibs/xmlutils.py (XMLElement.__init__): made attributes
+	dictionary directly available and non-private.
+
 2002-08-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/xmlutils.py (makeElement): modified parser so it could
