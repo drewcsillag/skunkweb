@@ -1,5 +1,5 @@
-# Time-stamp: <02/09/30 00:44:44 smulloni> 
-# $Id: hoptime.py,v 1.1 2002/09/30 01:53:44 smulloni Exp $
+# Time-stamp: <02/10/01 17:58:58 smulloni> 
+# $Id: hoptime.py,v 1.2 2002/09/30 15:44:50 smulloni Exp $
 
 import PyDO
 
@@ -12,6 +12,7 @@ class _hoptimebase(PyDO.PyDO):
     connectionAlias='hoptime'
 
 class GameStateException(Exception): pass
+class GameClosed(GameStateException): pass
 
 rollback=_hoptimebase.rollback
 commit=_hoptimebase.commit
@@ -79,7 +80,7 @@ class Games(_hoptimebase):
 
     def addPlayer(self, user):
         if self['status']!='joining':
-            raise "game closed"
+            raise GameClosed
         Players.new(game=self['id'], player=user['id'])
 
     def getOwner(self):
@@ -155,10 +156,18 @@ class Users(_hoptimebase):
         return Games.getSome(owner = self['id'])
 
     def getPlayedGames(self):
-        return self.joinTable('id', "players", 'player', 'game', Games, 'id')
+        return self.joinTable('id',
+                              "players",
+                              'player',
+                              'game',
+                              Games,
+                              'id')
 
     def move(self, game, text):
-        return Moves.new(refetch=1, player=self['id'], game=game['id'], content_append=text)
+        return Moves.new(refetch=1,
+                         player=self['id'],
+                         game=game['id'],
+                         content_append=text)
 
 class Stories(_hoptimebase):
     table='stories'
