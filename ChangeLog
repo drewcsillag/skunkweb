@@ -1,5 +1,7 @@
 2003-04-20  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* FAQ: added item about setting temporary Configuration values.
+
 	* pylibs/scope.py (Scopeable.updateDefaults): renamed the old
 	update() method, since it wasn't named very accurately.
 
@@ -19,7 +21,7 @@
 	directly, without the silly subclass.
 
 	* pylibs/scope.py: a new implementation, much faster (by an order
-	of ten or more) than the old.
+	of ten or more) than the old for attribute lookups.
 
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -34,7 +36,7 @@
 
 	* pylibs/scope.py: added "freeze" and "unfreeze" methods
 	that store the scoped values in self.__dict__ and clean them
-	out, respectively.
+	out, respectively. (deleted this later.)
 	(Scopeable.pop): made compatible with scopeable.Scopeable.pop().
 
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
