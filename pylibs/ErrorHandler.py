@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ErrorHandler.py,v 1.14 2001/07/27 16:25:09 drew Exp $
+# $Id: ErrorHandler.py,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
 # 
 """
 This module implements some pretty error handling 
@@ -196,7 +196,7 @@ def _showException ( tp, value, tb, outf = None ):
 
             else:
                 # Hope someone catches it :-)
-                raise SkunkExcept.CriticalError, 'unknown trace level: %d' % \
+                raise SkunkExcept.SkunkCriticalError, 'unknown trace level: %d' % \
                                                  trace_level
         elif tp == KeyboardInterrupt:
             # Handle keyboard interrupt gracefully
