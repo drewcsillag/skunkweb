@@ -16,9 +16,13 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # an object that transforms itself depending on its environment.
-# $Id: scope.py,v 1.7 2001/07/30 16:07:29 smulloni Exp $
+# $Id: scope.py,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
 # Time-stamp: <01/05/04 11:01:26 smulloni>
 ########################################################################
+
+"""
+This module is deprecated, as it is very slow; use the faster 'scopeable' package.
+"""
 
 import fnmatch
 import types
@@ -285,6 +289,10 @@ def test2(**kw):
 
 ########################################################################
 # $Log: scope.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:26  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/30 16:07:29  smulloni
 # made scope.Scopeable's "__matchers" field public: "matchers", and
 # fixed two references to it, in ae_component and pars services.

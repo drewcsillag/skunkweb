@@ -1,3 +1,20 @@
+2001-09-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (_processRequest): no actual change, 
+	but marked where one might call Configuration.saveMash().  I'm not sure
+	I like the saveMash() feature.
+
+	* pylibs/scope.py: added deprecation comment.
+
+	* pylibs/Makefile.in (py_comps): added scopeable to Makefile.in.
+
+	* pylibs/ConfigLoader.py: altered to use new scopeable package;
+	removed code that has been commented out for months.
+
+	* pylibs/scopeable/__init__.py: added "scopeable" package, 
+	with hopefully faster C code, to replace the excruciatingly 
+	slow scope.py.
+
 2001-08-28  Drew Csillag  <drew@naxos.starmedia.net>
 
         * pylibs/skunklib/_normpath.c: fixed core dumpage by rewrite

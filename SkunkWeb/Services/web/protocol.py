@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.1.1.1 2001/08/05 14:59:58 drew_csillag Exp $
+# $Id: protocol.py,v 1.2 2001/08/28 11:38:47 drew_csillag Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -285,6 +285,7 @@ def _processRequest(requestData, sessionDict):
         # overlay of config information
         Configuration.trim()
         Configuration.scope(sessionDict)
+        #Configuration.saveMash()
 
         DEBUG(WEB, 'executing PreHandleConnection hook')
         PreHandleConnection(Configuration.job, connection, sessionDict)
@@ -317,9 +318,13 @@ def _cleanupConfig(requestData, sessionDict):
     Configuration.trim()
     Configuration.scope({constants.IP : sessionDict[constants.IP],
                          constants.PORT: sessionDict[constants.PORT]})
+    #Configuration.saveMash()
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.2  2001/08/28 11:38:47  drew_csillag
+# now uses normheader
+#
 # Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
 # take 2 of import
 #
