@@ -112,6 +112,15 @@ class InternationalAddressField(ViewableCompositeField):
         cntry = SelectField('country', COUNTRY_CODES, description='Your Country', default=defaultCountry, multiple=0, size=1)
         pstl = TextField('postal', description='Postal Code', size='40')
 
+        # keep a reference to the fields to make validation simpler [no looping over fields]
+        self._address1 = add1
+        self._address2 = add2
+        self._city = cty
+        self._state = st
+        self._province = prov
+        self._country = cntry
+        self._postal = pstl
+
         #This address field maintains a set list of fields
         componentFields = [add1, add2, cty, st, prov, cntry, pstl]
         
@@ -123,6 +132,25 @@ class InternationalAddressField(ViewableCompositeField):
                                 setable,
                                 componentFields,
                                 componentFieldDelimiter)
+
+    def validate(self, form=None):
+        errorlist = []
+        if not self._address1.value and not self._address2.value:
+            # at least one address line must be filled out
+            errorlist.append(FormError(self, 'Please enter at least one line of address information.'))
+        if not self._city.value:
+            errorlist.append(FormError(self, 'Please enter a city.'))
+        if not self._postal.value:
+            errorlist.append(FormError(self, 'Please enter a postal code.'))
+        if not self._country.value:
+            errorlist.append(FormError(self, 'Please entery a country.'))
+        else:
+            # for US residents, a state must be chosen, otherwise a province must be filled out
+            if self._country.value == 'US' and not self._state.value:
+                errorlist.append(FormError(self, 'Please enter a state for US residents.'))
+            elif self._country.value != 'US' and not self._province.value:
+                errorlist.append(FormError(self, 'Please enter a province for non-US residents.'))
+        return errorlist    
         
                                 
 
