@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-08-06 11:49:52 drew> 
-#   $Id: TODO,v 1.1.1.1 2001/08/05 14:57:51 drew_csillag Exp $
+#   Time-stamp: <2001-08-08 22:41:29 drew> 
+#   $Id: TODO,v 1.2 2001/08/05 15:48:46 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -28,7 +28,6 @@ SkunkWeb 3.0
 ------------------------------
 * fix devel doc -- remove config stuff, api only
 * finish rewrite of the operations manual
-* get release stuff figured out (tag, build doc, build tarball) and working
 * way to determine whether call to callComponent actually rendered the 
   component or it was just fetched from cache.  (expired and rendered flags)
 * security audit on rcc code
@@ -43,6 +42,71 @@ L skunk manifesto
 L real PyDO doc
 L real static doc
 
+Future stuff
+------------------------------
+* profile, profile and profile some more.
+* a python server pages implementation (I've got a really cheesy one,
+  but I've got to imagine there's more to it than that).
+* tags which make javascript easier to live with
+* precompiled .par files
+* allow site-libs to be in .par files
+* other uses for swpython
+
+From Jacob's list:
+* an XML-RPC component handler;
+    Drew:
+    > Do you mean to effectively have a standard mapping from XML-RPC to the
+    > docroot?
+    Jacob:
+    > The latter, yes, so apps other than SkunkWeb can use SW components.  And
+    > just as important, so SW can make component calls to XML-RPC servers.
+* remote debugging (again!);
+* DAV support built on httpd;
+* SW products (combined par/service), with an swpython-based installer:
+  wiki, bulletin board, and other standard web toys (the toys themselves
+  would obviously not be part of the core);
+* support for chat and p2p protocols;
+* component protocol/host aliasing, so an application can call a component
+  without knowing whether it is remote or, if remote, what host it is from.
+  Would be useful for product deployment; this could be done with a component
+  handler that delegates to other handlers depending on configuration options.
+
+
+
+Unknowns
+------------------------------
+? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
+? add request data recording/playback extension
+? test Server framework by trying to implement remote debugging extension
+? single submit library (use uuid lib probably)
+? make precompiled .pars - or option to compile on server start? 
+  - would be a good application of swpython
+? add an input tag (mimicking HTMLs) which can do client-side checking via
+  javascript
+  - ? a way to have a form redisplay if invalid data in a field
+
+Nopes
+------------------------------
+N CookieEncoding stuff
+    * Get the _Nonce for CookieEncoding into config, error if not in config
+    * change _Nonce in CookieEncoding
+    * separate armoring from encoding so armoring can be done separately
+  module is dead
+N DCOracle merge -- no longer included in dist
+N add indexing to skunkdoc
+N error if numKids == 0
+N make AE use ConfigLoader's Config obj
+N document in templating service that it will handle files where
+  mimetype, DT_REGULAR is in the excutable map
+N add a superteam service
+
+@ SkunkWeb operations and setup and hints (e.g. don't use clearCache unless
+  the # of cached versions is small)
+@ update/convert to latex skunk_arch
+
+DONE
+------------------------------
+X get release stuff figured out (tag, build doc, build tarball) and working
 X make default in httpd.stub to point to the tcp port not the unix socket
 X document sw.conf in the .in file
 X fix install target so that it installs *all* of the sample web content
@@ -228,40 +292,3 @@ X make so reload tries to fire off swpython to see that the config is ok (
    proper, if configcheck fails, log it and continue with existing config.
 
    By nature of the fact that swmgr starts swpython, we get this for free
-
-
-Future stuff
-------------------------------
-* profile, profile and profile some more.
-
-
-Unknowns
-------------------------------
-? make rcc's via HTTP, HTTPS and swrcs (swrc over SSL)
-? add request data recording/playback extension
-? test Server framework by trying to implement remote debugging extension
-? single submit library (use uuid lib probably)
-? make precompiled .pars - or option to compile on server start? 
-  - would be a good application of swpython
-? add an input tag (mimicking HTMLs) which can do client-side checking via
-  javascript
-  - ? a way to have a form redisplay if invalid data in a field
-
-Nopes
-------------------------------
-N CookieEncoding stuff
-    * Get the _Nonce for CookieEncoding into config, error if not in config
-    * change _Nonce in CookieEncoding
-    * separate armoring from encoding so armoring can be done separately
-  module is dead
-N DCOracle merge -- no longer included in dist
-N add indexing to skunkdoc
-N error if numKids == 0
-N make AE use ConfigLoader's Config obj
-N document in templating service that it will handle files where
-  mimetype, DT_REGULAR is in the excutable map
-N add a superteam service
-
-@ SkunkWeb operations and setup and hints (e.g. don't use clearCache unless
-  the # of cached versions is small)
-@ update/convert to latex skunk_arch
