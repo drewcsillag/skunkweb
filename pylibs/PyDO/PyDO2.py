@@ -11,7 +11,7 @@
 
 from PyDBI import *
 import operators
-import types, string
+import types 
 
 class _fieldproperty(object):
     def __init__(self, fieldname):
@@ -398,9 +398,9 @@ class PyDO(_pydobase):
             if type(item) == types.StringType:
                 order_list.append(item)
             else:
-                order_list.append(string.join(item, ' '))
+                order_list.append(' '.join(item))
                     
-        sql = ' ORDER BY %s' % string.join(order_list, ', ')
+        sql = ' ORDER BY %s' % ', '.join(order_list)
         
         return sql
     

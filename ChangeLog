@@ -1,5 +1,9 @@
-2004-03-02    <drew@loki.sai.local>
+2004-03-12  Jacob Smullyan <smulloni@smullyan.org>
+     	* pylibs/PyDO/PyDO2.py: removed use of string module
+	in favor of string methods (stylistic nit-pick).
 
+2004-03-02    <drew@loki.sai.local>
+	
 	* SkunkWeb/Services/sessionHandler/FSSessionStore.py: removed one
 	of the two leading underscores from get/setPickle
 
