@@ -1,8 +1,0 @@
-core
-*.so
-*.o
-Makefile
-Makefile.pre
-sedscript
-config.c
-Setup
