@@ -1,3 +1,8 @@
+2003-08-11    <smulloni@smullyan.org>
+
+	* SkunkWeb/util/cache_reaper.py.in: now a swpython script,
+	and by default finds all the scoped component cache roots and clears them. 
+
 2003-08-11  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/vfs/tarfs.py (TarFS.open): removing "<>".

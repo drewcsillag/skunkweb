@@ -1,4 +1,4 @@
-#!@PYTHON@
+#!@bindir@/swpython
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -7,8 +7,6 @@
 #      README file.
 #   
 import sys
-
-sys.path.append('@libdir@/pylibs')
 import os
 import cPickle
 import time
@@ -16,16 +14,37 @@ import stat
 
 import Config
 from SkunkExcept import *
+import SkunkWeb.Configuration as C
 
 conf = Config.Config([
-    Config.el('keyfiles', 'look for key files', None, 'k', 'keyfiles'),
-    Config.el('cachedir', 'cache directory', '@CACHE@',
-              'c', 'cachedir', 'pathtocache'),
-    Config.el('deadtime', 'how long after cache entry dies do we delete it',
-              24 * 60 * 60, 'd', 'deadtime', 'seconds', convert_hook = int),
-    Config.el('help', 'show this screen', None, 'h', 'help'),
-    Config.el('preview', "don't actually delete, but show what would be done",
-              None, 'p', 'preview'),
+    Config.el('keyfiles',
+              'look for key files',
+              None,
+              'k',
+              'keyfiles'),
+    Config.el('cachedirs',
+              desc='cache directories',
+              value=None,
+              short_op='c',
+              long_op='cachedirs',
+              value_name='pathtocache'),
+    Config.el('deadtime',
+              'how long after cache entry dies do we delete it',
+              24 * 60 * 60,
+              'd',
+              'deadtime',
+              'seconds',
+              convert_hook = int),
+    Config.el('help',
+              'show this screen',
+              None,
+              'h',
+              'help'),
+    Config.el('preview',
+              "don't actually delete, but show what would be done",
+              None,
+              'p',
+              'preview'),
     ], 'walk the cache directory and reap dead entries')
     
 def get_expiration(filename):
@@ -83,38 +102,59 @@ def walk_func((dodel, deadtime, keyfiles), dirname, filelist):
                     except ValueError:
                         pass
 
-try:
-    args = conf.parse(sys.argv[1:])
-except:
-    conf.usage()
-    sys.exit()
-    
-if conf['help'] or args:
-    print conf.usage()
-    sys.exit()
 
-if conf['preview']:
-    print 'running in preview mode'
-    dodel = 0
-else:
-    dodel = 1
+def checkScopes(m, cargo):
+    for i in m:
+        try:
+            cacheroot=i.overlayDict['componentCacheRoot']
+        except KeyError:
+            pass
+        else:
+            cargo[cacheroot]=0
+        checkScopes(i.children(), cargo)
 
-cacheDir = conf['cachedir']
-deadtime = conf['deadtime']
-keyfiles = conf['keyfiles']
+if __name__=='__main__':        
 
-print 'About to delete cache entries in %s expired more than %d ' \
-      'seconds ago' % ( cacheDir, deadtime )
+    try:
+        args = conf.parse(sys.argv[1:])
+    except:
+        conf.usage()
+        sys.exit()
 
-# Make a note of the time
-_start_time = time.time()
+    if conf['help'] or args:
+        print conf.usage()
+        sys.exit()
 
-os.path.walk(cacheDir, walk_func, (dodel, deadtime, keyfiles))
+    if conf['preview']:
+        print 'running in preview mode'
+        dodel = 0
+    else:
+        dodel = 1
 
-if dodel:
-    sys.stdout.write ( 'Deleted ' )
-else:
-    sys.stdout.write ( 'Would have deleted ' )
+    cacheDirs = conf['cachedirs']
+    deadtime = conf['deadtime']
+    keyfiles = conf['keyfiles']
 
-print '%d out of %d total cache entries, time taken %.3f seconds' % \
-      ( _reaped, _total, time.time() - _start_time )
+    if cacheDirs==None:
+        dirs={}
+        if C.componentCacheRoot:
+            dirs[C.componentCacheRoot]=0
+        checkScopes(C.scopeMatchers(), dirs)
+        cacheDirs=dirs.keys()
+    else:
+        cacheDirs=cacheDirs.split(':')
+
+    print "About to delete cache entries expired more than %d seconds ago" \
+          " in %s" % (deadtime, ", ".join(cacheDirs))
+    start_time=time.time()
+    for cdir in cacheDirs:
+        _t=time.time()
+        os.path.walk(cdir, walk_func, (dodel, deadtime, keyfiles))
+        if dodel:
+            print 'Deleted',
+        else:
+            print 'Would have deleted', 
+        print '%d out of %d total cache entries, time taken %.3f seconds' % \
+              (_reaped, _total, time.time() - _t)
+    print "total time: %.3f seconds" % (time.time() - start_time)
+    sys.exit(0)
