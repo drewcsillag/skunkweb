@@ -1,3 +1,9 @@
+2001-08-28  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* docs/paper-letter/Makefile: fixed clean and clobber stuff
+
+	* docs/html/Makefile: fixed the clean target
+
 2001-08-27  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* SkunkWeb/Services/web/protocol.py: now uses skunklib.normheader
