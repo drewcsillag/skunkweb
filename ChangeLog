@@ -1,5 +1,9 @@
 2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* SkunkWeb/Services/templating/MailServices.py: fixed way old bug.
+	Had a reference to AED that would get hit when sending a message
+	via SMTP would fail.
+
         * pylibs/parfile.py: removed, as it's been useless for a while now
 
 	* pylibs/AE/ComponentTag.py: use of __args__ would cause an error
