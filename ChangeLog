@@ -1,3 +1,17 @@
+2002-04-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/ConfigLoader.py (loadConfig): fix so that multiple config
+	files/Include directive will work as promised.
+
+	* FAQ: updated.
+
+	* SkunkWeb/Services/rewrite.py (__getcompiled): now compile regexes
+	in Configuration.rewriteRules, if they aren't already
+	compiled. (DynamicRewriter, Redirect): extended service so it can
+	perform take functions as replacements, as in re.sub, and, with
+	DynamicRewriter, have access to the connection and sessionDict.
+	A Redirect class added as example and trial run.
+
 2002-04-26  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/AE/cacheKey/cachekey.c(encodeSingle): now will encode
@@ -54,7 +68,9 @@
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: first shot towards Apache 2
 	compatibility.  Doesn't compile for it yet, but it's getting there.
 
-	* pylibs/PyDO/PyDO.py: fixed bug in scatterFetchPost when got no results back from the query.  Thanks to Karl Putland <kperacles@yahoo.com>.
+	* pylibs/PyDO/PyDO.py: fixed bug in scatterFetchPost when got no
+	results back from the query.  Thanks to Karl Putland
+	<kperacles@yahoo.com>. 
 
 2002-04-09  Jacob Smullyan  <jsmullyan@wnyc.org>
 

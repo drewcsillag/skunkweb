@@ -1,5 +1,5 @@
-# Time-stamp: <02/02/15 00:03:34 smulloni>
-# $Id$
+# Time-stamp: <02/04/27 13:28:47 smulloni>
+# $Id: rewrite.py,v 1.1 2002/02/15 05:08:39 smulloni Exp $
 
 ########################################################################
 #  
@@ -30,6 +30,7 @@ from SkunkWeb.LogObj import DEBUG, logException
 from hooks import Hook
 from SkunkWeb.ServiceRegistry import REWRITE
 import re
+from requestHandler.protocol import PreemptiveResponse
 
 Configuration.mergeDefaults(rewriteRules = [],
                             rewriteApplyAll = 1,
@@ -42,6 +43,56 @@ PostRewrite=Hook()
 PreRewriteCleanup=Hook()
 
 _sre_pattern_type=type(re.compile('foo'))
+
+_patdict={}
+
+def _getcompiled(regexstring):
+    if not _patdict.has_key(regexstring):
+        pat=re.compile(regexstring)
+        _patdict[regexstring]=pat
+        return pat
+    return _patdict[regexstring]
+
+########################################################################
+
+class DynamicRewriter:
+    def refresh(self, connection, sessionDict):
+        self.connection=connection
+        self.sessionDict=sessionDict
+
+    def __call__(self, match):
+        """
+        by default, does nothing;
+        override this to do something else
+        """
+        return match.string
+
+class Redirect(DynamicRewriter):
+    """
+    redirects to another url upon a rewrite match.
+    """
+    def __init__(self, url_template):
+        self.url_template=url_template
+
+    def __call__(self, match):
+        url=match.expand(self.url_template)
+        self.connection.redirect(url)
+        raise PreemptiveResponse, self.connection.response()
+
+########################################################################
+
+def _dorewrite(match, connection, sessionDict, replacement):
+    if callable(replacement):
+        if isinstance(replacement, DynamicRewriter):
+            replacement.refresh(connection, sessionDict)
+        connection.uri = match.re.sub(replacement, connection.uri)
+    else:
+        connection.uri = match.expand(replacement)
+    groupdict=m.groupdict()
+    if Configuration.rewriteMatchToArgs:
+        connection.args.update(groupdict)
+    sessionDict['rewriteRules'][key].update(groupdict)
+
 
 def _rewritePre(connection, sessionDict):
     """
@@ -67,7 +118,7 @@ def _rewritePre(connection, sessionDict):
         if type(rule[0])==_sre_pattern_type:
                 pat=rule[0]
         else:
-            pat=re.compile(rule[0])
+            pat=_getcompiled(rule[0])
         
         m = pat.search(connection.uri)
         if m != None:
@@ -80,11 +131,9 @@ def _rewritePre(connection, sessionDict):
                 DEBUG(REWRITE, 'survived PreRewrite hook')
             except:
                 logException()
-            connection.uri = m.expand(rule[1])
-            groupdict=m.groupdict()
-            if Configuration.rewriteMatchToArgs:
-                connection.args.update(groupdict)
-            sessionDict['rewriteRules'][key].update(groupdict)
+
+            _dorewrite(m, connection, sessionDict, rule[1])
+            
             try:
                 DEBUG(REWRITE, 'executing PostRewrite hook')
                 PostRewrite(connection, sessionDict)
@@ -117,5 +166,8 @@ def __initHooks():
 __initHooks()
 
 ########################################################################
-# $Log$
+# $Log: rewrite.py,v $
+# Revision 1.1  2002/02/15 05:08:39  smulloni
+# added Spruce Weber's rewrite service.
+#
 ########################################################################

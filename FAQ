@@ -6,18 +6,19 @@
 Yes, they definitely do share objectives, but they differ in many ways
 as to the approach:
 
- * WebWare uses a threaded model.  While in some ways makes things
+ * WebWare uses a threaded model.  While in some ways this makes things
    simpler, it makes many things more complicated.  Also, because of
    the Python global interpreter lock, if you have more than 1 CPU,
    WebWare won't actually use very much, if any of the additional CPUs
    since only one thread can run at a time.  SkunkWeb uses a forking
-   process model, which makes resource sharing more complicated in
-   certain circumstances, it will fully utilize all available
+   process model, which can make resource sharing more complicated in
+   certain circumstances, but which also fully utilizes all available
    processors, so SkunkWeb scales better.  It also makes reliability
    simpler, since if you screw up in one process, it won't kill the
-   whole server.  OTOH, this makes it probably not run on Windows, but
-   it may run under Windows with the Cygwin toolkit.  Besides, windows
-   has enough problems.
+   whole server.  OTOH, this means it doesn't run on Windows, which
+   doesn't have the fork() call (actually it has been run on Windows
+   with the Cygwin toolkit, but this is nothing we actively support).
+   Besides, windows has enough problems.
 
  * Caching.  WebWare doesn't have any built in output cache mechanism.
 
@@ -29,8 +30,7 @@ as to the approach:
    other SkunkWeb servers if you set it up to do so.
 
 I guess that's the short list.  If you run latex on the SkunkIPC10.tex
-file (a paper I hope to give at the February conference) in the docs
-directory, that goes into a bit more detail.
+file in the docs directory, that goes into a bit more detail.
 
 2) What's the difference between SkunkWeb and Zope?
 
@@ -41,12 +41,18 @@ directory, that goes into a bit more detail.
    too constraining for the expert because you don't have the full
    flexibility of Python in the tags.  I know that they are working on
    another templating language (ZPT if I'm correct), but from what
-   I've seen, it too misses the mark.
+   I've seen, it too misses the mark.  [It has clear advantages for  
+   web designers who wish to be able to use tools like Dreamweaver to 
+   edit templates, but isn't particular easy or pleasant from the 
+   programmer's point of view, IMHO. -- js]
 
  * ZODB is the filesystem.  Many people have written about how having
    the templates in the ZODB instead of a filesystem can be a pain
    because you can't use all of your usual filesystem
-   tools/editors/etc. so I won't go into too much detail on it.
+   tools/editors/etc. so I won't go into too much detail on it.  SkunkWeb 
+   uses a virtual filesystem, so it can use the local file system or other 
+   data stores in arbitrarily configurable combination, depending on
+   your needs.
 
  * Zope has a whole web-based content management system.  Again, for
    the less experienced, this is a plus, but if you are dealing with
@@ -56,6 +62,10 @@ directory, that goes into a bit more detail.
  * To call arbitrary code from Zope templates, you have to create
    Python Method objects, which let's be honest, is a pain.  STML has
    an import tag which allows you to just get to work.
+
+ * SkunkWeb doesn't force programmers to accept magical implicit behaviors 
+   like acquisition, as Zope does; you don't need to "drink the Kool-Aid" and
+   buy into a novel and introverted programming paradigm to use SkunkWeb.
 
  * Internationalization.  I don't believe that Zope has any builtin
    support for message catalogs and the like.
@@ -155,26 +165,38 @@ Can you add a SkunkWeb-PHP comparison to your FAQ?
    templating language comes to mind).
  
 5)Dave Swegen wrote:
-> If this is the case, is there any way of allowing such files to be
-> passed straight through, without compiling them?
+> Is there any way of allowing [some] files to be passed straight through, 
+without compiling them?
 
-That sounds like that's what is happening.  The solution is a scoping
-directive in sw.conf:
+One solution is a scoping directive in sw.conf (or in another file which you 
+include into sw.conf through sw.conf's Include directive):
 
 Scope(Location("/nointerp.html", interpretMimeTypes=[]))
 
 Where /nointerp.html is a document (or a directory name, whatever) you
 don't want interpreted.  You could do this for an entire tree if you
-wanted also.
+wanted also.  If you are using Apache, the SkunkWebExcludeDocs
+directive can also be used to make Apache serve a tree of documents
+with its default handler.
 
 6)On Fri, Oct 12, 2001 at 10:33:42AM +0100, Dave Swegen wrote:
 > Is there any way for a pydcmp to get hold of the value of docroot? At
 > the moment I'm having to hardcode the value in, which is somewhat ugly.
 
-I've not actually run this, so I'm not positive it works, but it should:
+Sure.
 
 from SkunkWeb import Configuration
-print Configuration.documentRoot # or whatever you want to do here.
+doSomethingWith(Configuration.documentRoot) 
+
+The Configuration object is generally speaking a treasure trove of
+such information.  Be aware that it is a "scopeable" object, meaning
+that it can be configured to return different values for different
+variables depending on the request; the documentRoot, for instance,
+may not always be the same, so you wouldn't want to cache any
+component whose output is dependent on an internally-accessed
+Configuration variable that may be scoped.  It is safer, therefore, to
+pass in the value of a Configuration variable as an argument to the
+component.
 
 7) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
 server or virtual host? SkunkWebExclude doesn't work!
@@ -195,3 +217,10 @@ SetHandler skunkweb-handler
 SetHandler cgi-script
 </Location>
 
+8) My sw.conf file is unmanageable!  Can I break it up into several files?
+
+Use the Include directive:
+
+# in sw.conf
+Include("/usr/local/skunk/etc/vhosts.conf")
+Include("/usr/local/skunk/etc/rewrite.conf") # etc.

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigLoader.py,v 1.2 2001/09/04 18:25:38 smulloni Exp $
+# $Id: ConfigLoader.py,v 1.3 2001/09/04 19:12:57 smulloni Exp $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
@@ -54,15 +54,20 @@ def loadConfig(codeObj, cfgModuleName):
     ns = cfMod and cfMod.defaults() or {}
         
     exec codeObj in ns, ns #let caller catch exc's
-    
-    if not cfMod:
+    if cfMod:
+        cfMod.update(ns)
+    else:
         m = sys.modules[cfgModuleName] = ScopeableConfig(ns)
         l = cfgModuleName.split('.')
         if len(l) > 1:
             setattr(__import__('.'.join(l[:-1]),['*'], ['*'], ['*']), l[-1], m)
 
+
 ########################################################################
 # $Log: ConfigLoader.py,v $
+# Revision 1.3  2001/09/04 19:12:57  smulloni
+# integrated scopeable package into SkunkWeb.
+#
 # Revision 1.2  2001/09/04 18:25:38  smulloni
 # modified so as to use scopeable pylib
 #
