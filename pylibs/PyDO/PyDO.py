@@ -147,11 +147,11 @@ class PyDOBase(static):
         return conn
 
     #easy access to commit and rollback
-    def commit(self):
+    def static_commit(self):
         """commit the transaction"""
         self.getDBI().commit()
 
-    def rollback(self):
+    def static_rollback(self):
         """rollback the current transaction"""
         self.getDBI().rollback()
     
