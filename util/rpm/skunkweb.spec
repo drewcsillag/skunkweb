@@ -123,7 +123,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
            INSTALL=install INSTALL_DATA=install
 
 #  set up cache reaper
-echo '0 0 * * * skunkweb /usr/share/skunkweb/util/cache_reaper.py -c /var/lib/skunkweb/cache' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb
+echo '0 0 * * * skunkweb /usr/share/skunkweb/util/cache_reaper.py' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb
 
 #  set up logrotate script
 cp util/rpm/skunkweb.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/skunkweb

@@ -1,3 +1,8 @@
+2003-08-13  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* util/rpm/skunkweb.spec: removed cachefile argument from cronjob
+	invocation of cache reaper.
+
 2003-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* due to breakage of product service, cutting a 3.4b5 release.
