@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.1 2002/10/02 21:14:48 smulloni Exp $
-# Time-stamp: <02/10/03 16:29:13 smulloni>
+# $Id: ftpfs.py,v 1.2 2002/10/03 21:10:52 smulloni Exp $
+# Time-stamp: <02/10/04 14:33:05 smulloni>
 
 ########################################################################
 #  
@@ -30,6 +30,10 @@ More information about ftpparse itself is available on Dan
 Bernstein's website at http://cr.yp.to/ftpparse.html.
 """
 
+import sys
+import os
+import cStringIO
+import ftplib
 
 try:
     import ftpparse
@@ -42,18 +46,16 @@ except ImportError:
     raise
 
 import vfs
-import ftplib
-import types
-if type(list)==types.BuiltinFunctionType:
+
+_have22=(2, 2)<=sys.version_info[:2]
+if not _have22:
     # 2.1
     from UserList import UserList as list_
-    _isstring=lambda x: isinstance(x, str)
+    _isstring=lambda x: isinstance(x, (str, unicode))
 else:
     list_=list
     _isstring=lambda x: type(x) in (types.StringType, types.UnicodeType)
 
-import os
-import cStringIO
 try:
     from skunklib import normpath2 as normpath
 except ImportError:
@@ -89,23 +91,25 @@ class FtpListResult(list_):
 
 
 class FTPFile:
-    def __init__(self, ftpfs, name, mode='r'):
+    def __init__(self, ftpconn, name, mode='r'):
         self.mode=mode
         self.name=name
         self.closed=0
-        self._ftpfs=ftpfs
+        self._conn=ftpconn
         self._buff=cStringIO.StringIO()
         self.__initmode()
 
     def __readall(self, binary=0):
         sio=cStringIO.StringIO()
         if binary:
-            self._ftpfs._conn.retrbinary(self.name, sio.write)
+            self._conn.retrbinary('RETR %s' % self.name,
+                                  sio.write)
         else:
-            self._ftpfs._conn.retrlines(self.name,
-                                        lambda x: sio.write("%s\n" % x))
+            self._conn.retrlines('RETR %s' %self.name,
+                                 lambda x: sio.write("%s\n" % x))
         self._buff.truncate()
         self._buff.write(sio.getvalue())
+        self._buff.reset()
 
 
     def write(self, bytes):
@@ -113,10 +117,12 @@ class FTPFile:
             raise ValueError, "file closed"
         if self.mode not in ('w', 'wb'):
             raise vfs.NotWriteableException, self.name
-       self._buff.write(bytes)
+        self._buff.write(bytes)
 
-    def read(self, size=-1):
-        return self._buff.read(size)
+    def read(self, size=-99):
+        if size and size >-1:
+            return self._buff.read(size)
+        return self._buff.read()
 
     def seek(self, offset, whence=0):
         self._buff.seek(offset, whence)
@@ -129,10 +135,12 @@ class FTPFile:
             raise ValueError, "file closed"        
         if self.mode=='w':
             self._buff.reset()
-            self._ftpfs._conn.storlines(self.name, self._buff)
+            self._conn.storlines('STOR %s' % self.name,
+                                 self._buff)
         elif self.mode=='wb':
             self._buff.reset()
-            self._ftpfs._conn.storbinary(self.name, self._buff)
+            self._conn.storbinary('STOR %s' % self.name,
+                                  self._buff)
         else:
             raise vfs.NotWriteableException, self.name
 
@@ -143,21 +151,83 @@ class FTPFile:
             self.closed=1
 
     def __initmode(self):
-        if mode.startswith('r'):
+        if self.mode.startswith('r'):
             self.__readall('b' in self.mode)
-            
 
+if _have22:
+    class _robustmeta(type):
+        def __new__(self, classname, bases, classdict):
+            robustlist=classdict.get('robust')
+            robustify=classdict.get('robustify')
+            
+            if robustlist and robustify:
+                for mname in robustlist:
+                    m=classdict.get(mname)
+                    if m and isinstance(m, types.FunctionType):
+                        classdict[m]=robustify(m)
+            return type.__new__(self, classname, bases, classdict)
+
+    class FtpConnection(ftplib.FTP, object):
+        """
+        a wrapper around ftplib.FTP
+        that provides error recovery
+        in case the connection goes south due to
+        timeout
+        """
+        __metaclass__=_robustmeta
+        def login(self, user='', passwd='', acct=''):
+            self.user=user
+            self.passwd=passwd
+            self.acct=acct
+            ftplib.FTP.login(self, user, passwd, acct)
+
+        def robustify(func):
+            def robuster(*args, **kwargs):
+                try:
+                    func(*args, **kwargs)
+                except ftplib.error_temp:
+                    self=args[0]
+                    try:
+                        self.login(self.user,
+                                   self.passwd,
+                                   self.acct)
+                    except (socket.error, IOError):
+                        raise
+                return func(*args, **kwargs)
+            return robuster
+
+        robustify=staticmethod(robustify)
+
+        robust=['retrbinary',
+                'retrlines',
+                'storbinary',
+                'storlines',
+                'delete',
+                'rename',
+                'mkd',
+                'rmd',
+                'dir']
+else:
+    # I haven't implemented any error-recovery for Python 2.1.
+    # Sorry.  Anyone want to do it?
+    FtpConnection=ftplib.FTP
+        
 class FtpFS(vfs.FS):
     writeable=1
-    
-    def __init__(self, host, username='', password='', acct='', passive=1, port=0):
+    def __init__(self,
+                 host,
+                 username='',
+                 password='',
+                 acct='',
+                 passive=1,
+                 port=0):
         self._host=host
         self._port=port
         self._username=username
         self._password=password
         self._acct=acct
         self._passive=passive
-        self._conn=ftplib.FTP()
+        self._conn=FtpConnection()
         self._initconn()
 
     def _initconn(self):
@@ -189,6 +259,9 @@ class FtpFS(vfs.FS):
         return record
 
     def ministat(self, path):
+        # we don't try to get anything for '/'
+        if path=='/':
+            return [-1]*4
         record=self._get_parsed_record(path)
         if record:
             return [record[ftpparse.SIZE]] +[record[ftpparse.MTIME]]*3            
@@ -200,7 +273,7 @@ class FtpFS(vfs.FS):
     mkdirs=mkdir
 
     def isdir(self, path):
-        if path='/':
+        if path=='/':
             return 1
         record=self._get_parsed_record(path)
         if record:
@@ -208,6 +281,8 @@ class FtpFS(vfs.FS):
         
 
     def isfile(self, path):
+        if path=='/':
+            return 0
         record=self._get_parsed_record(path)
         if record:
             return record[ftpparse.RETR]
@@ -230,18 +305,6 @@ class FtpFS(vfs.FS):
         if record:
             return [x[ftpparse.NAME] for x in record]
 
-    def open(self, path, mode='rb'):
-        if mode=='r':
-            # retrlines
-            pass
-        elif mode=='rb':
-            # retrbinary
-            pass
-        elif mode=='w':
-            # storlines
-            pass
-        elif mode=='wb':
-            # storbinary
-            pass
-        else:
-            raise vfs.VFSException, "mode not supported: %s" % mode
+    def open(self, path, mode='r'):
+        return FTPFile(self._conn, path, mode)
+

@@ -1,3 +1,8 @@
+2002-10-04    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/vfs/ftpfs.py: a vfs.FS implementation for FTP.
+	For Python 2.2, provides some error recovery in case of timeouts.
+	
 2002-10-02  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): my earlier fix
