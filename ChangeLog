@@ -1,3 +1,9 @@
+2001-10-30  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/Services/remote_client.py: fixed so it works again since
+	I broke it adding the rendered/expired flags to the return value
+	of callComponent() DUH! !@#&!*(@#^!
+
 2001-10-29  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/opman/opman.tex: updated with swcgi stuff
