@@ -1,3 +1,7 @@
+2002-01-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Makefile.in (DEMO_FILES): fixed typo.
+
 2002-01-23  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/tarlib.py: added
