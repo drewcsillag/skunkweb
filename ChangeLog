@@ -1,3 +1,15 @@
+2004-09-10  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* SkunkWeb/configure, SkunkWeb/configure.in: added psycopgcache
+	module to list of services.
+
+	* pylibs/PsycopgCache.py: adding cache module.
+
+	* SkunkWeb/Services/psycopgcache.py: adding cache service.
+
+	* pylibs/PyDO/psycopgconn.py (PyDOPostgreSQL.__init__): fixed
+	various fatal bugs.
+
 2004-09-02  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
 	* pylibs/AE/Cache.py (_fixPath): this has gone through various
