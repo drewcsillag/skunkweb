@@ -19,7 +19,7 @@
 """
 currently unsupported PostgreSql types:
 
- bool bytea int2vector regproc tid xid cid oidvector SET smgr point
+ bytea int2vector regproc tid xid cid oidvector SET smgr point
  lseg path box polygon line unknown circle money macaddr inet cidr
  aclitem bpchar bit varbit
 
@@ -41,6 +41,10 @@ import pgdb
 def isDateTime(x):
     return isinstance ( x, DateTime.DateTimeType )
 
+def isInterval(x):
+    return isinstance(x, DateTime.DateTimeDeltaType) or \
+           isinstance(x, DateTime.RelativeDateTime)
+
 
 class PyDOPostgreSQL:
     def __init__(self, connectArgs):
@@ -53,9 +57,7 @@ class PyDOPostgreSQL:
         if connectArgs and connectArgs[-1] == 'verbose':
             self.verbose = 1
             connectArgs = connectArgs[:-1]
-            #connectArgs = string.join(connectArgs[:-1], ':')
         else:
-            #connectArgs = string.join(connectArgs, ':')
             self.verbose=0
         if connectArgs and connectArgs[-1] == 'cache':
             self.useCacheMod = 1
@@ -89,7 +91,7 @@ class PyDOPostgreSQL:
 
     def execute(self, sql, values, attributes):
         if self.verbose:
-            print 'SQL>', sql
+            print 'SQL> ', sql
         cur = self.conn.cursor()
         cur.execute(sql)
         try:
@@ -103,41 +105,61 @@ class PyDOPostgreSQL:
         return self.convertResultRows(fields, attributes, result)
 
     def convertResultRows(self, colnames, attributes, rows):
-        newresult = []
-        for row in rows:
-            d = {}
-            for item, desc in map(None, row, colnames):
-                #do dbtype->python type conversions here
-                a = attributes[desc]
-                if _isDateKind(a):
-                    d[desc] = _dateConvertFromDB(item)
-                elif _isNumber(a):
-                    if a in ('FLOAT4', 'FLOAT8'):
-                        f = float
-                    else:
-                        if item is None:
-                            f = lambda x: x
-                        else:
-                            f = lambda x: x is None and None or int(float(x))
-                    d[desc] = f(item)
-                else:
-                    d[desc] = item
-            newresult.append(d)
+         newresult = []
+         for row in rows:
+             d = {}
+             for item, desc in map(None, row, colnames):
+                 #do dbtype->python type conversions here
+                 a = attributes[desc].upper()
+                 if _isIntervalKind(a):
+                     d[desc]=_intervalConvertFromDB(item)
+                 elif _isTimeKind(a):
+                     d[desc]=_timeConvertFromDB(item)
+                 elif _isDateKind(a):
+                     d[desc] = _dateConvertFromDB(item)
+                 elif _isNumber(a) and not item is None:
+                     if a in ('FLOAT4', 'FLOAT8'):
+                         f = float
+                     elif a == 'INT8':
+                         f = lambda x: long(float(x))
+                     else:
+                         f = lambda x: int(float(x))
+                     d[desc] = f(item)
+                 else:
+                     d[desc] = item
+             newresult.append(d)
 
-        return newresult
+         return newresult
 
     def typeCheckAndConvert(self, val, aname, attr):
         if val == None:
             val = "NULL"
+        elif _isIntervalKind(attr):
+            if not isInterval(val):
+                raise TypeError, (
+                    'trying to assign %s to %s and is not an interval , '\
+                    'being of type %s '
+                    ) %  (val, aname, type(val))
+            val=_intervalConvertToDB(val)
+        elif _isTimeKind(attr):
+            if not isDateTime(val) and not val ==PyDBI.SYSDATE:
+                raise TypeError, (
+                    'trying to assign %s to %s and is not a time, '\
+                    'being of type %s '
+                    ) %  (val, aname, type(val))
+            val = _timeConvertToDB(val)
         elif _isDateKind(attr):
             if (not isDateTime(val)) and not val == PyDBI.SYSDATE:
-                raise TypeError,'trying to assign %s to %s and is not a date, being of type %s ' %  (val,
-                                                                                                     aname,
-                                                                                                     type(val))
+                raise TypeError,(
+                    'trying to assign %s to %s and is not a date, '\
+                    'being of type %s '
+                    ) %  (val, aname, type(val))
             val = _dateConvertToDB(val)
         elif _isNumber(attr):
             if attr in ('FLOAT4', 'FLOAT8'):
                 f = float
+            elif attr in ('BIGINT', 'INT8'):
+                f = lambda x: long(x)
             else:
                 f = lambda x: int(float(x))
             try:
@@ -150,16 +172,16 @@ class PyDOPostgreSQL:
                 val, aname)
         elif attr.upper() == 'BOOL':
             if val:
-                return '1=1'
+                return 'TRUE'
             else:
-                return '0=1'
+                return 'FALSE'
         return val
 
     def getSequence(self, name):
         cur = self.conn.cursor()
         sql = "select nextval('%s')" % name
         if self.verbose:
-            print 'SQL>', sql
+            print 'SQL> ', sql
         cur.execute(sql)
         return cur.fetchall()[0][0]
         
@@ -182,41 +204,76 @@ def _isDateKind(t):
         'TIMESTAMP', 'INTERVAL', 'DATE', 'TIME', 'ABSTIME', 'RELTIME',
         'TINTERVAL')
 
+def _isTimeKind(t):
+    return t.upper() in ('TIME', 'TIMETZ')
+
+def _isIntervalKind(t):
+    return string.upper(t) in ('INTERVAL', 'TINTERVAL')
+
 def _dateConvertFromDB(d):
     if d==None:
         return None
-    try: return DateTime.strptime(d, '%Y-%m-%d') #just Y/M/D
-    except: pass
-    
-    try: return DateTime.strptime(d, '%H:%M:%S') #just hh:mm:ss
-    except: pass
-
-    dashind = string.rindex(d, '-')
+    for format in ('%Y-%m-%d', #  Y/M/D
+                   '%H:%M:%S', #  hh:mm:ss
+                   '%H:%M'):   #  hh:mm
+        try:
+            return DateTime.strptime(d, format)
+        except:
+            pass
+    dashind = d.rfind('-')
     tz = d[dashind:]
     d = d[:dashind]
-    try: return DateTime.strptime(d, '%H:%M:%S'), tz # timetz
-    except: pass
-    # NO -- it was already stripped off, above!  -- js Thu Aug  9 11:51:23 2001
-    #strip off offset from gmt
-    #d = d[:string.rindex(d, '-')]
+
     try:
+        return DateTime.strptime(d, '%H:%M:%S'), tz # timetz
+    except:
+        pass
+    try:
+        # why is tz returned above and not here?
         return DateTime.strptime(d, '%Y-%m-%d %H:%M:%S') # full date
     except: 
-        #print "date passed to convert function: |%s|" % d
         raise
-    
+
+def _timeConvertFromDB(t):
+    if t==None:
+        return None
+    for format in ('%H:%M:%S',
+                   '%H:%M'):
+        try:
+            return DateTime.strptime(t, format)
+        except:
+            pass
+    raise DateTime.Error, "could not parse time: %s" % t
+
+def _intervalConvertFromDB(i):
+    if i==None:
+        return None
+    # this is actually rather tricky; I need to be able to return
+    # a RelativeDateTime
+    raise NotImplementedError 
 
 def _dateConvertToDB(d):
     if not isDateTime(d) and d == PyDBI.SYSDATE:
         return "'now'"
     return "'" + str(d)[:-3] + "'"
 
+def _timeConvertToDB(dt):
+    if dt == PyDBI.SYSDATE:
+        return "CURRENT_TIME";
+    return "'%s'" % dt.strftime('%H:%M:%S')
+
+def _intervalConvertToDB(dtd):
+    if isinstance(dtd, DateTime.DateTimeDeltaType):
+        return "'%s'" % dtd.strftime('%d:%H:%M:%S')
+    else:
+        return str(dtd)
+
 def _isNumber(t):
     return string.upper(t) in (
         'OID', 'DECIMAL', 'FLOAT4', 'FLOAT8', 'INT2', 'INT4', 'INT8',
-        'NUMERIC')
+        'NUMERIC', 'BIGINT', 'SMALLINT')
 
 def _isString(t):
     pfx = string.split(t, '(')[0]
     return string.upper(pfx) in (
-        'BPCHAR', 'CHAR', 'TEXT', 'VARCHAR', 'NAME')
+        'BPCHAR', 'CHAR', 'TEXT', 'VARCHAR', 'NAME', 'ISBN', 'ISSN')

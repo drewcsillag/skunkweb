@@ -1,3 +1,9 @@
+2002-04-19  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/PyDO/postconn.py: A number of changes with regard to how
+	datatypes, especially dates, times and intervals, are handled.
+	WARNING: The interval code is unfinished.
+
 2002-04-18  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/Services/cookieauth/login.html: now handles invalid login 
