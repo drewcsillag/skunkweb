@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: requestHandler.py,v 1.3 2001/10/30 15:40:11 drew_csillag Exp $
+# $Id: requestHandler.py,v 1.4 2002/06/12 18:00:41 drew_csillag Exp $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 
@@ -23,6 +23,7 @@ from SkunkWeb import Configuration, ConfigAdditives, constants
 from SkunkWeb.LogObj import DEBUG, LOG, DEBUGIT, ERROR, logException
 from SkunkWeb.Hooks import KeyedHook
 from SkunkWeb.ServiceRegistry import REQUESTHANDLER
+from SkunkExcept import *
 from protocol import PreemptiveResponse
 import exceptions
 import select
@@ -234,6 +235,12 @@ def addRequestHandler(protocol, ports):
 
 ########################################################################
 # $Log: requestHandler.py,v $
+# Revision 1.4  2002/06/12 18:00:41  drew_csillag
+# Now will reraise the timeout exception every second after a timeout occurs
+# in the hopes that if they ignore the first one, subsequent throws won't be
+# caught.  Also lets the template try to deal with timeouts a bit better should
+# they choose to do so.
+#
 # Revision 1.3  2001/10/30 15:40:11  drew_csillag
 # fixed a debug message so it won't barf on a tuple
 #
