@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.10 2001/07/09 20:38:40 drew Exp $
+# $Id: protocol.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
 # Time-stamp: <01/05/04 14:28:18 smulloni>
 
 from requestHandler.protocol import Protocol
@@ -41,11 +41,11 @@ class SkunkWebRemoteProtocol(Protocol):
         return unpickled
 
     def marshalResponse(self, response, sessionDict):
-        return self._marshalData(cPickle.dumps(response))
+        return self._marshalData(cPickle.dumps((0, response)))
     
     def marshalException(self, exc_text, sessionDict):
         excClass, excInstance=sys.exc_info()[:2]
-        return self._marshalData(cPickle.dumps((excClass,
+        return self._marshalData(cPickle.dumps((1, excClass,
                                                 excInstance,
                                                 exc_text)))
 
@@ -55,6 +55,10 @@ class SkunkWebRemoteProtocol(Protocol):
 
 ##############################################################
 # $Log: protocol.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.10  2001/07/09 20:38:40  drew
 # added licence comments
 #

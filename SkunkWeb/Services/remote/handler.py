@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: handler.py,v 1.7 2001/07/30 16:44:46 smulloni Exp $
+# $Id: handler.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:41:40 smulloni>
 
 import AE.Component
@@ -25,7 +25,7 @@ import sys
 
 def handleRequestHookFunc(requestData, sessionDict):
     if type(requestData)==types.TupleType and len(requestData)==5:
-        return apply(AE.Component.callComponent, requestData)
+        return apply(AE.Component.fullCallComponent, requestData)
     else:
         raise TypeError, "inappropriate arguments for remote call"
 
@@ -36,6 +36,10 @@ def handleRequestFailedHookFunc(exc_text, sessionDict):
 
 ########################################################################
 # $Log: handler.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/30 16:44:46  smulloni
 # fixed remote services to work with changed API of AE.Component.
 #
