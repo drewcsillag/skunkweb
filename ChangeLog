@@ -1,5 +1,8 @@
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/sessionHandler/Session.py (untouch): altered session handler
+	so if a session is manually saved, it will not be subsequently touched in the same request.
+
 	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): better fix
 	to DEBUG import problem.
 

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.3 2001/08/06 20:52:44 smulloni Exp $
+# $Id: __init__.py,v 1.4 2001/08/12 05:13:27 smulloni Exp $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package
@@ -78,7 +78,9 @@ def __initSession():
         import SkunkWeb.Hooks as hk
         import requestHandler.requestHandler as rr
         hk.ServerStart.append(Session.mungeConnection)
-        rr.PostRequest.addFunction(Session.saveSession, "%s*" % skc.WEB_JOB)
+        allweb="%s*" % skc.WEB_JOB
+        rr.InitRequest.addFunction(Session.untouch, allweb)
+        rr.PostRequest.addFunction(Session.saveSession, allweb)
 
 ########################################################################
     
@@ -91,6 +93,9 @@ __initSession()
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.4  2001/08/12 05:13:27  smulloni
+# adding new session store, using PostgreSQL with PyDO.
+#
 # Revision 1.3  2001/08/06 20:52:44  smulloni
 # fixed typo
 #

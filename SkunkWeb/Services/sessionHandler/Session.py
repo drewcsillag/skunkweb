@@ -15,13 +15,14 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Author: drew_csillag $
-# $Revision: 1.1.1.1 $
+# $Author: smulloni $
+# $Revision: 1.2 $
 # Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
 from web.protocol import HTTPConnection
-from SkunkWeb import Configuration, constants
+from SkunkWeb import Configuration
+from SkunkWeb.constants import CONNECTION
 from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 import cPickle
 import uuid
@@ -71,7 +72,9 @@ def removeSession(self):
     if hasattr(self, '__userSession'):
         DEBUG(SESSIONHANDLER, "calling delete()")
         self.__userSession.delete()
-        del self.__userSession    
+        del self.__userSession
+    if self.responseCookie.has_key(_sessionIDKey):
+        del self.responseCookie[_sessionIDKey]
 
 def getSessionID(self, create=1):
     '''
@@ -110,6 +113,18 @@ def mungeConnection(*args, **kw):
     setattr(HTTPConnection, "getSessionID", getSessionID)
 
 ####################################################################
+# hook for InitRequest
+
+def untouch(data, dict):
+    DEBUG(SESSIONHANDLER, "in untouch()")
+    if dict.has_key(CONNECTION):
+        conn=dict[CONNECTION]
+        session=conn.getSession(0)
+        if session:
+            session._touched=None
+
+
+####################################################################
 # hook for PostRequest
 
 def saveSession(requestData, sessionDict):
@@ -117,8 +132,8 @@ def saveSession(requestData, sessionDict):
     if the connection contains modified session information, saves it
     '''
     DEBUG(SESSIONHANDLER, "in saveSession")
-    if sessionDict.has_key(constants.CONNECTION):
-        connection=sessionDict[constants.CONNECTION]
+    if sessionDict.has_key(CONNECTION):
+        connection=sessionDict[CONNECTION]
         session=connection.getSession(0)
         if session:
             if session.isDirty():
@@ -156,6 +171,7 @@ class Session:
         self.__store=storageClass(id)
         self.__data=self.__store.load()
         self.__dirty=None
+        self._touched=None
 
     def getID(self):
         return self.__ID
@@ -166,6 +182,7 @@ class Session:
     def save(self):
         self.__store.save(self.__data)
         self.__dirty=None
+        self._touched=1
 
     def delete(self):
         self.__store.delete()
@@ -184,7 +201,7 @@ class Session:
         return self.__data[key]
 
     def __delitem__(self, key):
-        self.__data.__delitem__(key)
+        del self.__data[key]
         self.__dirty=1
 
     def __len__(self):
@@ -204,8 +221,10 @@ class Session:
         self.__data[key]=value
         self.__dirty=1
 
-    def touch(self):
-        self.__store.touch()
+    def touch(self): 
+        if not self._touched:
+            self.__store.touch()
+        self._touched=1
 
 ########################################################################
 
@@ -231,6 +250,9 @@ class SessionStore:
     
 ########################################################################
 # $Log: Session.py,v $
+# Revision 1.2  2001/08/10 20:59:55  smulloni
+# fix to removeSession()
+#
 # Revision 1.1.1.1  2001/08/05 15:00:07  drew_csillag
 # take 2 of import
 #
