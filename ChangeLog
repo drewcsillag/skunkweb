@@ -1,3 +1,8 @@
+2001-09-26  Drew Csillag  <drew@starmedia.net>
+
+	* pylibs/static.py: fixed so static classes not defined in modules
+	won't blow up
+
 2001-09-25  Drew Csillag  <drew@starmedia.net>
 
 	* pylibs/PyDO/postconn.py: never stored connection in itself
