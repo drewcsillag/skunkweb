@@ -419,7 +419,7 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
             
         #write out foreign key methods
         for r in t.relations:
-            # +GEB Check for OneToManys that are a manifestion of a ManyToMany
+            # Check for OneToManys that are a manifestion of a ManyToMany
             found = 0
             if isinstance(r, OneToMany):
                 for tn2, t2 in schema.tables.items():
@@ -435,12 +435,9 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                                         break
             if found == 1:
                 continue
-            # -GEB
             
             oside = tableNameToClassName[r.theirTable]
-            # +GEB
             tside = tableNameToClassName[tn]
-            # -GEB
             if isinstance(r, OneToOne) or isinstance(r, ManyToOne):
                 out.write('    def get%s(self):\n' % singular(oside))
                 out.write('        return %s.getUnique(' % oside)
@@ -448,7 +445,6 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                 for m, t in map(None, r.theirAttrs, r.myAttrs):
                     args.append("%s = self['%s']" % (m, t))
                 out.write('%s)\n\n' % string.join(args, ', '))
-                # +GEB
                 out.write('    def set%s(self, item):\n' % singular(oside))
                 out.write('        if item == None:\n')
                 for m in r.myAttrs:
@@ -457,7 +453,6 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                 for m, t in map(None, r.theirAttrs, r.myAttrs):
                     out.write("            self['%s'] = item['%s']\n" % (t, m))
                 out.write("\n")
-                # -GEB
             elif isinstance(r, OneToMany):
                 out.write('    def get%s(self):\n' % multiple(oside))
                 out.write('        return %s.getSome(' % oside)
@@ -465,12 +460,10 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                 for m, t in map(None, r.theirAttrs, r.myAttrs):
                     args.append("%s = self['%s']" % (m, t))
                 out.write('%s)\n\n' % string.join(args, ', '))
-                # +GEB
                 out.write('    def add%s(self, item):\n' % singular(oside))
                 out.write('        item.set%s(self)\n\n' % singular(tside))
                 out.write('    def remove%s(self, item):\n' % singular(oside))
                 out.write('        item.set%s(None)\n\n' % singular(tside))
-                # -GEB
 
             else: #ManyToMany
                 if not r.methName:
@@ -485,7 +478,6 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                     qcommafy(r.mySideJoinAttrs),
                     qcommafy(r.theirSideJoinAttrs),
                     oside, qcommafy(r.theirAttrs)))
-                # +GEB
                 # The next 4 lines are HACKY
                 if r.methName[:3] == 'get':
                     addMethName = 'add' + singular(r.methName[3:])
@@ -518,7 +510,6 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                     args.append("%s = item['%s']" % (m, t))
                 out.write('%s)\n' % string.join(args, ', '))
                 out.write('        link.delete()\n\n')
-                # -GEB
 
     return out
 
