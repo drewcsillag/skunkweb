@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2002/04/17 19:37:48 drew_csillag Exp $
-# Time-stamp: <02/04/17 16:23:01 smulloni>
+# $Id: __init__.py,v 1.3 2002/04/17 20:47:57 smulloni Exp $
+# Time-stamp: <2002-04-27 23:05:54 drew>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -36,14 +36,53 @@ Configuration.mergeDefaults(
     cookieNonce = "ChangeMe",
     cookieLoginPage = None,
     cookieExtras = None,
+    cookieAuthAuthorizer = None,
+    cookieAuthActivated = None
     )
 ServiceRegistry.registerService("cookieauth")
 AUTH=ServiceRegistry.COOKIEAUTH
+
+class defaultAuthKind:
+    def checkAuth(self, authCred, conn, sessionDict):
+        txt = armor.dearmor(Configuration.cookieNonce, authCred)
+        if not txt:
+            return
+
+        bits = txt.split(':')
+        user = bits[0]
+        password = ':'.join(bits[1:])
+
+        auth = Authenticator.FileAuthenticator(Configuration.cookieAuthFile)
+        return auth.authenticate(user, password)
+
+    def login(self, username, password):
+        auth = Authenticator.FileAuthenticator(Configuration.cookieAuthFile)
+        if not auth.authenticate(username, password):
+            return
+
+        st = armor.armor(Configuration.cookieNonce,
+                         '%s:%s' % (username, password))
+        return st
+    
+PlainAuthorizer = defaultAuthKind()
+def authorize(username, password, responseCookie): #for use if using default authorizer
+    st = PlainAuthorizer.login(username, password)
+    if not st:
+        return
+    responseCookie[Configuration.cookieAuthName] = armor.armor(
+        Configuration.cookieNonce, '%s:%s' % (username, password))[:-1]
+    if Configuration.cookieExtras:
+        for k,v in Configuration.cookieExtras.items():
+            responseCookie[Configuration.cookieAuthName][k] = v
+    return 1
 
 def getAuthorizationFromHeaders(conn, sessionDict):
     """
     pulls auth cookie
     """
+    if not Configuration.cookieAuthActivated:
+        return
+    
     DEBUG(AUTH, "looking for authorization cookie")
     try:
         #DEBUG(AUTH, '%s' % conn.requestCookie)
@@ -51,45 +90,26 @@ def getAuthorizationFromHeaders(conn, sessionDict):
     except:
         auth = None
 
-    if auth:
-        #DEBUG(AUTH, "dearmoring cookie %s" % auth)
-        try:
-            #DEBUG(AUTH, "Nonce is %s" % Configuration.cookieNonce)
-            auth = armor.dearmor_detail(Configuration.cookieNonce, auth)
-        except:
-            #DEBUG(AUTH, "failed %s" % sys.exc_type)
-            auth=None
-        
-    if not auth:
-        #DEBUG(AUTH, "no authorization found")
-        conn.authType = conn.remotePassword = conn.remoteUser = None
-        return
+    conn.authType='cookieauth'
+    conn.authCred = auth
 
-    if auth:
-        #DEBUG(AUTH, "found authorization %s" % auth)
-        conn.authType='cookieauth'
-        colon_idx = auth.find(':')
-        conn.remoteUser = auth[:colon_idx]
-        conn.remotePassword = auth[colon_idx+1:]
-        # in case a template author is looking for these....
-        conn.env['REMOTE_USER']=conn.remoteUser
-        conn.env['REMOTE_PASSWORD']=conn.remotePassword
-        conn.env['AUTH_TYPE']='cookieauth'
-        #DEBUG(AUTH, "HERE!")
-        
 def checkAuthorization(conn, sessionDict):
     """
     tests REMOTE_USER and REMOTE_PASSWORD against basic auth constraints, if
     any, and sends a preemptive 401 response, if necessary.
     """
-    DEBUG(AUTH, 'checking authorization')
-    file = Configuration.cookieAuthFile
-    #DEBUG(AUTH, 'file = %s' % file)
-    if not file:
+    if not Configuration.cookieAuthActivated:
         return
-    authenticator = Authenticator.FileAuthenticator(file)
-    if not authenticator.authenticate(conn.remoteUser, conn.remotePassword):
-        #DEBUG(AUTH, 'not authenticate')
+
+    DEBUG(AUTH, 'checking authorization')
+
+    if Configuration.cookieAuthAuthorizer is None:
+        authorizer = PlainAuthorizer
+    else:
+        authorizer = Configuration.cookieAuthAuthorizer
+
+    if not authorizer.checkAuth(conn.authCred, conn, sessionDict):
+        DEBUG(AUTH, 'not authenticated')
         try:
             page=AE.Component.callComponent(
                 Configuration.cookieLoginPage, {'CONNECTION':conn})
@@ -99,48 +119,18 @@ def checkAuthorization(conn, sessionDict):
             return
         
         except:
-            #DEBUG(AUTH, 'ACK! exception rendering login page')
+            DEBUG(AUTH, 'ACK! exception rendering login page')
             logException()
             page = "error occurred rendering login page"
             
         conn._output.write(page)
         resp = conn.response()
-        #DEBUG(AUTH, "page is %s" % resp)
+        DEBUG(AUTH, "page is %s" % resp)
         raise PreemptiveResponse, resp
     else:
         pass
-        #DEBUG(AUTH, 'auth returned true')
+        DEBUG(AUTH, 'auth returned true')
 
-def logout(responseCookie):
-    responseCookie[Configuration.cookieAuthName] = ""
-    if Configuration.cookieExtras:
-        for k,v in Configuration.cookieExtras.items():
-            responseCookie[Configuration.cookieAuthName][k] = v
-
-    
-def authorize(username, password, responseCookie):
-    """attempts to authorize.  If succeeds, sets the cookie and returns a true
-    value, otherwise, returns false"""
-    DEBUG(AUTH, 'authing authorization')
-    file = Configuration.cookieAuthFile
-    DEBUG(AUTH, 'file = %s' % file)
-    if not file:
-        return
-    authenticator = Authenticator.FileAuthenticator(file)
-    #DEBUG(AUTH, 'user=%s, password=%s' % (username, password))
-
-    if not authenticator.authenticate(username, password):
-        return None
-
-    #DEBUG(AUTH, "Nonce is %s" % Configuration.cookieNonce)
-    responseCookie[Configuration.cookieAuthName] = armor.armor(
-        Configuration.cookieNonce, '%s:%s' % (username, password))[:-1]
-    if Configuration.cookieExtras:
-        for k,v in Configuration.cookieExtras.items():
-            responseCookie[Configuration.cookieAuthName][k] = v
-    #DEBUG(AUTH, "cookie is %s" % responseCookie)
-    return 1
-    
 import web.protocol
 import SkunkWeb.constants
 jobGlob=SkunkWeb.constants.WEB_JOB+'*'
@@ -155,6 +145,10 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.3  2002/04/17 20:47:57  smulloni
+# added support for 'bpchar' type designation in PyDO/postconn.py;
+# removed log comments that came from another file in cookieauth/__init__.py
+#
 # Revision 1.2  2002/04/17 19:37:48  drew_csillag
 # minor tweak to debug info
 #
