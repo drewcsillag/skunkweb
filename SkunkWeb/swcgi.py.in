@@ -36,6 +36,9 @@ for k, v in os.environ.items():
 if headers.has_key('Content-Length'):
     cl = headers['Content-Length']
     stdin = sys.stdin.read(string.atoi(cl))
+elif env.has_key('CONTENT_LENGTH'):
+    nbtr = headers['Content-Length'] = env['CONTENT_LENGTH']
+    stdin = sys.stdin.read(string.atoi(nbtr))
 
 
 req_data = marshal.dumps({'environ': env,
