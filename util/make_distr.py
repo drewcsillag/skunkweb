@@ -19,7 +19,7 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.1.1.1 2001/08/05 14:59:20 drew_csillag Exp $
+#$Id: make_distr.py,v 1.2 2001/08/06 14:29:55 drew_csillag Exp $
 
 import commands
 import re
@@ -32,7 +32,7 @@ from prompt import *
 # Ask the questions
 
 vers_q = StringQuestion ( 'Please enter the version for this release' )
-src_q = StringQuestion ( 'Please enter the directory where source code is checked out in', '/usr/src/skunk' )
+src_q = StringQuestion ( 'Please enter the directory where source code is checked out in', os.getcwd() )
 dist_dir = StringQuestion ( 'Where do you wish the distribution to be created',
                             '/tmp' )
 vers_tag = StringQuestion ( 'Please enter the tag for this release' )
