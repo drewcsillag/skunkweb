@@ -1,3 +1,9 @@
+2003-12-18  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (_processRequest): added
+	ProcessResponse hook for response filtering, as prompted by patch
+	from Adam DePrince.
+
 2003-12-11  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c (critical_error): apache2

@@ -1,5 +1,5 @@
 ########################################################################
-# $Id: protocol.py,v 1.25 2003/08/17 02:17:16 smulloni Exp $
+# $Id: protocol.py,v 1.26 2003/09/08 00:24:18 smulloni Exp $
 # Time-stamp: <03/09/07 20:14:44 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -25,7 +25,7 @@ import sys
 import time
 import types
 import browser
-from SkunkWeb.Hooks import KeyedHook
+from SkunkWeb.Hooks import KeyedHook, Hook
 import argextract
 import base64
 import md5
@@ -46,7 +46,7 @@ headersOnlyStatuses=[100, 101, 102, 204, 304]
 HaveConnection=KeyedHook()
 PreHandleConnection=KeyedHook()
 HandleConnection=KeyedHook()
-
+ProcessResponse=Hook()
 
 class HTTPConnection:
     '''
@@ -387,6 +387,12 @@ def _processRequest(requestData, sessionDict):
         # DEBUG(WEB, 'handling connection')
         response=HandleConnection(Configuration.job, connection, sessionDict)
 
+    # so the response can be further processed, add it to the sessionDict temporarily
+    sessionDict['RESPONSE']=response
+    ProcessResponse(connection, sessionDict)
+    response=sessionDict['RESPONSE']
+    del sessionDict['RESPONSE']
+    
     # the connection should be available to postResponse and cleanup hooks.
     sessionDict[constants.CONNECTION]=connection
     # DEBUG(WEB, 'returning response: %s' % response)
