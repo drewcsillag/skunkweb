@@ -1,8 +1,8 @@
-# Time-stamp: <01/10/05 03:47:06 smulloni>
+# Time-stamp: <01/10/05 04:18:33 smulloni>
 # notes about hooks, to be added somewhere in devel docs -- js 
 
 SkunkWeb's requestHandler architecture is hook-based; a simple hook 
-(SkunkWeb.Hooks.Hook) is simply a function that wraps a list of other 
+(SkunkWeb.Hooks.Hook) is just a function that wraps a list of other 
 functions by calling them sequentially until one of them returns a value 
 which passes some test (in this case, return_value != None), and then 
 returning that value.  Hooks have the advantage of flexibility -- their 
@@ -33,13 +33,15 @@ not match the job name are skipped, thereby achieving a dynamic and
 unformalized polymorphism.  The job string, by potentially matching many
 function globs, behaves rather like a list of superclasses in an OO framework,
 but with no restrictions on their combination other than those implicit in
-the way the globs have been devised (which permits considerably flexibility).
+the way the globs have been devised. 
+
+This takes care of the problem of how to coordinate different behaviors for
+different kinds of jobs, but doesn't address how and when the job name value 
+is set....
 
 # continue with discussion about scoping, with reference to how
 # it affects job processing and other configuration issues, and its 
 # applicability to 'acquisition'-like behavior.
-
-
 
 
 
