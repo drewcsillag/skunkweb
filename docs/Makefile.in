@@ -36,13 +36,10 @@ execmode	= 0755
 INSTALL		= @INSTALL@ -o $(owner) -g $(group)
 INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
+all:
 
-xinstall: htmls
-	for i in $(XMLS);\
-	do \
-		for j in $$i/*; \
-		do \
-			$(INSTALL_DATA) -D $$j $(doc_prefix)/$$j;\
-		done; \
-	done
-
+SkunkWebIPC10.dvi: SkunkWebIPC10.tex SkunkWebIPC10.bib
+	$(LATEX) SkunkWebIPC10
+	bibtex SkunkWebIPC10
+        $(LATEX) SkunkWebIPC10
+        $(LATEX) SkunkWebIPC10
