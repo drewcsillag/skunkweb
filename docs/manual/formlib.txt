@@ -1,0 +1,299 @@
+==========================
+Formlib
+==========================
+
+
+Introduction
+============
+
+Formlib is a web form processing and validation framework for Python. It encapsulates many web based server-side activities, such as:
+
+    - Form definition and display
+    - Form validation
+    
+Formlib is also extensible, enabling developers to add new types of form fields, validation types etc. to be used along with the framework. Formlib is integrated with SkunkWeb, and therefore, SkunkWeb components can be used to also extend the capabilities of formlib.
+
+This manual discusses the makeup of the framework plus methods of approaching the use of the framework. The manual is divided in these sections:
+
+    - Formlib Basics: Defining Forms and Showing Forms
+    - Form Validation: Submission of form data plus checking the form's values
+    - Extending Formlib: Creation of new field types, extending the base classes in formlib, etc.
+    - Formlib Classes: A listing of form and field classes in formlib.
+    - Future: Formlib STML tags
+    - Nifty Things In Formlib:
+        (LIST:
+            InPageStateManager
+            Dispatcher,
+            Processors)
+
+
+Requirements
+============
+
+Formlib assumes that the SkunkWeb environment is available. Specifically, for basic things, it uses three packages in the SkunkWeb pylibs directory:
+
+1. ecs: for producing XHTML.
+2. DT: The STML parsing library.
+3. hooks: This is used to write functions that are executed inline until one
+    returns a 0. This is used in the Form() class, and is useful for executing
+    a number of user-defined actions when required.
+
+Certain features, even though it does not have to be used, requires the AE library. The feature is to use components within form definitions.
+
+Formlib is already included in the SkunkWeb base distribution. When you install SkunkWeb, formlib is installed along with it.
+
+
+Formlib Basics
+==============
+
+A form is defined in Python using the formlib framework. You use the `ViewableForm()` class to define the form, along with the fields that belong to the form. For example::
+
+    form = ViewableForm('my_form', action='index.py',
+                        fields=[TextField('first_name', 
+                                          description='First Name'),
+                                TextField('last_name',
+                                          description='Last Name'),
+                                SubmitField('Submit')])
+                                
+To view this form, you would use `ViewableForm()`s `getView()` method::
+
+    print form.getView()
+    
+This will show a nicely formatted form of the two text fields and the submit field in the form. The `description` in each text field will appear as the label of the field when it is used to retrieve a formatted table for the form. You can show each field like so::
+
+    print form.fields['first_name'].getView()
+    print '<br>'
+    print form.fields['last_name'].getView()
+    print '<br>'
+    print form.fields['Submit'].getView()
+    
+These will just show the fields in the form. All values that you enter into the fields and form are accessible. For example, to show the name and action of the form, you can do this::
+
+    print form.name
+    print form.action
+    
+The output will be::
+    
+    my_form
+    index.py
+    
+Same goes with the fields. To get the name and description of the first field, you can do this::
+
+    print form.fields['first_name'].name
+    print form.fields['first_name'].description
+    
+
+There are a number of values that can be used when declaring a form. Below is a list of parameters that can be used for `ViewableForm()`.
+
+1. `name`: The name of the form.
+2. `method`: The HTTP method that is used to send the form data. For example, you can put "POST" or "GET" here.
+3. `action`: What the form data should be sent to. For example, if the next page is "get_data.py", then, you would set this parameter to that value.
+4. `enctype`: Encoding type. Used for file uploads and the like, if the data to be sent is not text.
+5. `fields`: the list of fields for the form. These are all instances of formlib form classes, like `TextField()` and `SubmitField()`.
+6. `validators`: ?
+7. `processors`: ?
+
+Along with those parameters, you can send any other type of parameter, which will show in the final <form> tag output. For example, you might have some JavaScript action that occurs when the form is submitted. You can set a parameter in `ViewableForm()` like this::
+
+    form = ViewableForm('my_form', onSubmit='someFunc();')
+    print form
+    
+The output would be::
+
+    <form name='my_form', onSubmit='someFunc();' />
+    </form>
+
+
+There are a number of values that you can have for each of the fields. Here is a list of possible parameters:
+
+1. `default`: you can provide a default value for the field. For example::
+
+        a = TextField('first_name' default='John')
+        print a.getView()
+        
+   this will produce::
+   
+        <input type="text" name="first_name" value="John" />
+        
+2. `required`: A default validation value to check if the value is not blank. This will be reviewed more in the next section about validation.
+
+3. `setable`: If set to 1, then the value can change. Otherwise, an error occurs if the value is changed.
+
+4. `multiple`: If the field is going to receive multiple values, or it is possible that it will receive multiple values, setting it to `1` will allow multiple values to be used. Multiple values are represented in a Python list. If `multiple` equals `0`, then the field can only accept one value. `multiple` also affects the behavior of some types of fields. For example, `SelectField()` will output a pull-down menu if `multiple` equals `0` and a multiple value list if multiple equals `1`.
+
+5. `lenient`: For certain types of fields, where you might have a set of multiple preset values for it (for example, `ButtonBar()` allows you to create a list of submit buttons which can be conveniently shown in a row when the `getView()` method is used), this will allow you to give it other values other than the ones in the list. This will be discussed more in the validation section.
+
+Some field types have specific parameters to it. For example, `SelectField()` has an `options` parameter used to list the options in a pull-down menu, for example. These will be discussed in the section that discusses each field type.
+
+
+Formlib Validation
+==================
+
+
+Validation Basics
+-----------------
+
+Formlib has many aspects to it. One is displaying forms easily. The other is validation. Displaying and validating forms flow together with each other, which makes formlib a very powerful toolkit.
+
+Validation is one of the most critical things in web applications, and one of the main goals in formlib is to simplify this critical operation. When a form is defined with the formlib classes, it also allows access to validate any data that has been sent through, for example, and HTTP request, and generate appropriate errors if they occur.
+
+Generally, a formlib form needs to be used to display the form as well as to validate the form. For example, we might have a pages that show a form and then validates the form. On each page view of this page, we define our form and then validate against it when we received form data. Here is a piece of code, mixing formlib code with SkunkWeb code::
+
+        form = ViewableForm('my_form', action='index.py',
+                        fields=[TextField('first_name', 
+                                          description='First Name',
+                                          required=1),
+                                TextField('last_name',
+                                          description='Last Name',
+                                          required=1),
+                                SubmitField('Submit')])
+                                
+        if CONNECTION.method == 'POST':
+            form.submit(CONNECTION.args)
+            
+            if form.errors:
+                print "There were errors in you form<br /><br />"
+                form.getView()
+            else:
+                print form.fields['first_name'].value + ' ' + form.fields['last_name'].value
+
+        else:
+            form.getView()
+            
+            
+If a validation error occurred (using the default validation `required`), then, in this code, the form will show again, with the values entered into the fields, as the user submitted it, but with an error message on top of each field stating that the field was required, but the value is missing. This is the default behavior when `getView()` is used. You can manually lay out your form and show the errors differently as required.
+
+There are two attributes of note that is included with the `ViewableForm()` class. 
+
+1. `submit()`: this does a number of key things. It clears out any values in the fields that are in the fields. It then sets the data with the new data you sent to it (`submit()` accepts one parameter: a dictionary of comparable values from a form. For example, in SkunkWeb, CONNECTION.args would be used for this value.) It then automatically validates the data it received against the field instances you set in the `fields` parameter when you instansiated `ViewableForm()`. 
+
+2. `errors`: contains all of the validation errors that occurred, generally in the form of a list of `FormErrorMessage()` instances (most formlib classes use this class. You can use your own class for your own needs.) `FormErrorMessage()` has two attributes, `field` and `errormsg`. `field` is the object where validation failed in it and `errormsg` is a string containing the message of what went wrong. `errors` is just a list. When you do this::
+
+    if form.errors:
+    
+if it is a blank list, there were no errors. Else, there are errors.
+
+There are other valuable methods that can be used along with `submit()` and the `errors` attribute:
+
+1. `reset()`: This resets it to the state before validation.
+2. `getData()`: This returns a dictionary of all the data in each of the fields.
+3. `setData()`: This compares the sole argument, a dictionary, to the fields and then sets the data if the name of the field and the dictionary key matches.
+4. `validate()`: This goes through each field and validates the values in the submitted dictionary against the field. This also goes through a list of "validators", functions created to do further validations. 
+
+Custom Validation
+-----------------
+
+There are two approaches to take when dealing with custom validation. First, a class can be inherited and the `validate()` method can be overridden. Second, one can write a set of validator functions that get executed in line with the field classes' validation functions. If, in each of these methods or functions, something is returned, it gets added to the `error` variable in the `ViewableForm()` object. First, the validator function approach.
+
+Validator functions receive the whole form object when it is executed. So, when it is executed, the function can test the whole form and its fields for validity. In our "name" example above, we can write a validator function like this::
+
+    def testForName(form):
+        
+        if form.fields['first_name'].value == "John" \
+            and form.fields['last_name'].value == "Doe":
+            
+            return ValidationErrorMessage('Come on, that ain't you name!')
+            
+(Here, we are assuming that there is a class named `ValidationErrorMessage()`.) In this validation function, the form will fail if the name the user enters in equals "John Doe."
+
+The validator is added to the `ViewableForm()` declaration like this::
+
+        form = ViewableForm('my_form', action='index.py',
+                            validators=[testForName],
+                            fields=[TextField('first_name', 
+                                              description='First Name',
+                                              required=1),
+                                    TextField('last_name',
+                                              description='Last Name',
+                                              required=1),
+                                    SubmitField('Submit')])
+                                    
+Validator functions are always executed second, while the field's `validate()` methods are executed first.
+
+Generally, most simple field classes inherit from the class called `ViewableField()`, which provides a basic framework for simple field types. (There are other ones, as well, with similar characteristics to `ViewableField()`.) One of the basic facilities it has is an implementation of a validation that checks if the value is required and the value that is submitted in is not a blank string, equal None, or a blank list. This type of validation can be used using the `required` parameter when declaring the field::
+
+    a = TextField('first_name', required=1)
+    
+However, if for example, we had a credit card field and wanted to check if the card is valid, we can inherit the TextField class and then override the `validate()` method::
+
+    class CreditCardField(TextField):
+    
+    def __init__(self,
+                 name,
+                 description=None,
+                 default=None,
+                 required=1,
+                 setable=1,
+                 **view_attrs):
+        
+        ViewableField.__init__(self,
+                               name,
+                               description,
+                               default,
+                               required,
+                               multiple=0,
+                               setable=setable,
+                               **view_attrs)
+                               
+    def validate(self, form=None):
+        empty = TextField.validate()
+        if empty:
+            return empty
+            
+        if ccvalid.checkNumber(self.value) == 0:
+            return FormError("Invalid Credit Card Number", -100)
+            
+            
+(This would work if there is a ccvalid module.) We can then use our new field type in our form definition::
+
+
+    form = ViewableForm('my_form', action='index.py',
+                        validators=[testForName],
+                        fields=[CreditCardField('credit_no', required=1)])
+                        
+
+Formlib Classes
+===============
+
+This section reviews each of the available field types included with formlib and specifics on how to each one. This is separated into two parts. First, it talks about the form classes, and the second part talks about each of the field classes.
+
+
+Form Classes
+------------
+
+[TODO]
+
+Field Classes
+-------------
+
+[TODO]
+
+
+Extending Formlib
+=================
+
+This section reviews many of the base framework classes in formlib that can be used to create custom field types or custom form types. 
+
+[TODO]
+
+
+Using AE Components With Formlib
+================================
+
+AE components can be used within form definitions. This section will discuss the integration of components in formlib form definitions.
+
+[TODO]
+
+
+Formlib and STML
+================
+
+You can define your forms using SkunkWeb's templating language, STML. This section will discuss this alternate way of using defining and validating forms with formlib, and also, possible advantages using STML over plain Python to define your forms.
+
+[TODO]
+
+
+Miscellaneous Things In Formlib
+===============================
+
+[TODO]
