@@ -1,3 +1,14 @@
+2002-11-26    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/dispatcher.py (FormDispatcher.dispatch): 
+	pass state to next().
+
+	* pylibs/formlib/views.py (ViewableForm.__init__): added processors
+	argument.
+
+	* test/formlib/htdocs/testDispatch2.{html,pyinc}: new test
+	which does some conditional dispatching.
+
 2002-11-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* test/formlib/htdocs/testDispatch1.html: first dispatcher test.

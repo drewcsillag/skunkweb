@@ -503,10 +503,11 @@ class ViewableForm(Viewable, Form):
                  enctype=None,
                  fields=None,
                  validators=None,
+                 processors=[],
                  **view_attrs):
         
         self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
-        Form.__init__(self, name, method, action, enctype, flatfields, validators)
+        Form.__init__(self, name, method, action, enctype, flatfields, validators, processors)
         Viewable.__init__(self, **view_attrs)
 
     def generateLayout(self, fields):

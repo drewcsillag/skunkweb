@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/25 19:10:19 smulloni>
-# $Id: dispatcher.py,v 1.5 2002/11/25 18:18:48 smulloni Exp $
+# Time-stamp: <02/11/26 14:40:35 smulloni>
+# $Id: dispatcher.py,v 1.6 2002/11/26 01:34:18 smulloni Exp $
 
 from containers.fieldcontainer import FieldContainer
 from form import _getname
@@ -77,7 +77,10 @@ class FormDispatcher:
         if self.statemgr.formname:
             form=self.forms[self.statemgr.formname]
             # get the next action.
-            action=self.flowmgr.next(form, argdict, ns)
+            action=self.flowmgr.next(form,
+                                     self.statemgr,
+                                     argdict,
+                                     ns)
             # get the next form, if any
             form=action.dispatch(form,
                                  self.statemgr,
@@ -103,7 +106,7 @@ class LinearFlowManager(object):
     def getStartForm(self):
         return self.formlist[0]
 
-    def next(self, form, argdict, ns):
+    def next(self, form, state, argdict, ns):
         ind=self.formlist.index(form) + 1
         if ind < len(self.formlist):
             return Goto(self.formlist[ind].name)

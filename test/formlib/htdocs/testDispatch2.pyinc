@@ -1,0 +1,82 @@
+from formlib import *
+import rotor
+import pprint
+import ecs
+
+def process(form, argdict, state, ns):
+    state.state.update(form.getData())
+
+stateVar='_state'
+
+form1=ViewableForm('form1',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('username', 'Username'),
+                           PasswordField('password', 'Password'),
+                           IntegerField('age', 'Age', required=1),
+                           SubmitField('submit', default="submit")],
+                   processors=[process])
+form2=ViewableForm('form2',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('yomama', 'Yo Mama'),
+                           SelectField('fruit',
+                                       description='Fruit',
+                                       options=['orange',
+                                                'kunquat',
+                                                'banana']),
+                           SubmitField('submit', default="submit")],
+                   processors=[process])
+form3=ViewableForm('young',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('gift', "Favorite Toy"),
+                           SubmitField('submit', default='Submit For Your Toy!')],
+                   processors=[process])
+form4=ViewableForm('old',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('drug', 'Favorite Pharmaceutical'),
+                           SubmitField('submit', default="Submit To Get Free Drugs!")],
+                   processors=[process])
+statemgr=InPageStateManager('google-google GaiPan',
+                            rotor.newrotor('my artichoke', 12))
+
+class SillyFlowManager(object):
+    def __init__(self):
+        pass
+    
+    def getStartForm(self):
+        return form1
+
+    def next(self, form, state, argdict, ns):
+        if form in (form3, form4):
+            return Goto(None)
+        age=state.state.get('age', argdict.get('age'))
+        if age is not None:
+            mama=state.state.get('yomama', argdict.get('yomama'))
+            if not mama:
+                return Goto(form2.name)
+            age=int(age)
+            if age > 35:
+                return Goto(form4.name)
+            else:
+                return Goto(form3.name)
+        return Goto(form1.name)
+
+
+
+
+dispatcher=FormDispatcher(statemgr,
+                          [form1, form2, form3, form4],
+                          flowmgr=SillyFlowManager(),
+                          stateVariable=stateVar)
+
+curform=dispatcher.dispatch(CONNECTION.args, globals())
+if curform:
+    print
+    print curform.getView()
+    print
+else:
+    print '<h2>congratulations, you are done.</h2>'
+
