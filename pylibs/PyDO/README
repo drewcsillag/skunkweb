@@ -51,6 +51,7 @@ Files of Note:
     example       - a walk through example on how to write PyDO objects
     example.py    - a very simple sample PyDO-using module
     doc           - a bit more granular detail on PyDO stuff
+    scatfetch     - a brief description of the scatter fetching stuff
     conn.readme   - what the connection interface object looks like
     ogenscript.py - a cool PyDO class generator that grovels over the
                     Oracle system catalogs!  Run it with an account
