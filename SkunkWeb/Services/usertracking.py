@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/03/13 11:43:20 smulloni>
+# Time-stamp: <03/04/18 16:12:48 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -49,6 +49,7 @@ logs, which is apparently a problem with apache's mod_usertrack.
 """
 
 from SkunkWeb import Configuration, ServiceRegistry
+from SkunkWeb.LogObj import DEBUG
 from uuid import uuid
 import time
 
@@ -119,6 +120,9 @@ def _add_usertracking_cookie(conn, sessionDict):
                 v=getattr(Configuration, c)
                 if v is not None:
                     morsel[a]=v
+            DEBUG(USERTRACKING, morsel)
+            DEBUG(USERTRACKING, conn.responseCookie[cookiename])
+            #conn.responseCookie[cookiename]=morsel
 
 
 def WebtrendsCookie(conn):
