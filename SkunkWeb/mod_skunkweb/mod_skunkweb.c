@@ -7,7 +7,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.10 2003/05/01 20:45:56 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.11 2003/11/29 20:05:28 smulloni Exp $
  *
  *
  * Configuration:
@@ -459,7 +459,7 @@ static int critical_error ( request_rec *r, const char *desc )
         if ( (error_file = fopen ( conf->error_doc, "r" )) )	
 #else
 	if ( apr_file_open (&error_file, conf->error_doc, APR_READ, 0777, 
-			    r->pool))
+			    r->pool)=APR_SUCCESS )
 #endif
         {
 #ifndef APACHEV1

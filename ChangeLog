@@ -1,3 +1,8 @@
+2003-12-11  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c (critical_error): apache2
+	bugfix: wrong test for return value of apr_file_open().
+
 2003-11-30  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/SQLSessionStore.py
