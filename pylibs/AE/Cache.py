@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.11 2002/11/08 21:16:20 smulloni Exp $
+#$Id: Cache.py,v 1.12 2002/11/08 21:18:07 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -313,7 +313,7 @@ def _writeCompileCache( name, thing, serializeFunc):
     try:
         _writeDisk( path, serializeFunc( thing ) )
     except:
-        ERROR("error writing to compile cache: %s" % sys.exc_info[1])
+        ERROR("error writing to compile cache: %s" % sys.exc_info()[1])
 
 def _getCompileCacheModTime( name ):
     DEBUG(CACHE, "statting compile cache")
@@ -522,6 +522,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.12  2002/11/08 21:18:07  smulloni
+# damn, left out an import.
+#
 # Revision 1.11  2002/11/08 21:16:20  smulloni
 # Fix for relative paths for specifying message catalogs; added Input to
 # ecs (had been left out due to typo).

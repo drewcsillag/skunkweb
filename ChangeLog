@@ -1,3 +1,7 @@
+2003-01-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Cache.py (_writeCompileCache): fixed typo.
+
 2003-01-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyPgSQLcache.py: the pylibs used by the driver, below.
