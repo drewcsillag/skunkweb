@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/04/18 16:35:42 smulloni>
+# Time-stamp: <03/04/18 16:40:09 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -52,6 +52,7 @@ from SkunkWeb import Configuration, ServiceRegistry
 from SkunkWeb.LogObj import DEBUG
 from uuid import uuid
 import time
+import Cookie
 
 ServiceRegistry.registerService('usertracking')
 USERTRACKING=ServiceRegistry.USERTRACKING
