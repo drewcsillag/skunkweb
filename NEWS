@@ -6,6 +6,7 @@ Changes in cvs
 * PyDO2 fixes. 
 * PyDO and PyDO2 now make it easier to specify order by, limit, and offset.
 * bug fixes for httpd and product service.
+* bug fixes for mod_skunkweb for apache2.
 
 Changes in 3.4b5
 ================
