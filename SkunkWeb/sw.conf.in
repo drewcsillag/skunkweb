@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.30 2003/05/01 20:45:52 drew_csillag Exp $
-# Time-stamp: <2003-05-02 12:01:47 drew>
+# $Id: sw.conf.in,v 1.31 2003/05/02 17:19:51 drew_csillag Exp $
+# Time-stamp: <03/05/12 11:49:47 smulloni>
 
 ########################################################################
 #
@@ -100,6 +100,16 @@ services = ['requestHandler',
             'remote',
             'remote_client',
             'httpd']
+
+########################################################################
+# If you want to control skunkweb through D.J. Bernsteins daemontools
+# or a similar setup, skunkweb doesn't have to go to background.
+# Setting runInForeground to 1 provides this. The default value is 0,
+# so that the "traditional" Unix way of daemonizing is used.
+#
+# runInForeground = 0
+########################################################################
+
 
 ########################################################################
 # For extra performance, we can store the compiled forms of things in memory
