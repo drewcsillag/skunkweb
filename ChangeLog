@@ -1,3 +1,9 @@
+2002-11-05  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/vfs/ftpfs.py (FtpFS.walk): Added a separate walk
+	implementation, as the standard one made a multiple ftp requests for 
+	every file, which wasn't a good thing.
+
 2002-11-01    <smulloni@smullbola.smullyan.org>
 
 	* docs/tutorial/src/: (various files) some progress on 'hoptime'

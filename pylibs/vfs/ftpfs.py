@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.7 2002/10/22 21:26:11 smulloni Exp $
-# Time-stamp: <02/10/31 13:50:09 smulloni>
+# $Id: ftpfs.py,v 1.8 2002/10/31 20:20:05 smulloni Exp $
+# Time-stamp: <02/11/05 12:47:02 smulloni>
 
 ########################################################################
 #  
@@ -320,3 +320,20 @@ class FtpFS(vfs.FS):
     def open(self, path, mode='r'):
         return FTPFile(self._conn, path, mode)
 
+    # this requires a different walk implementation 
+    # that will make fewer ftp requests.
+    def walk(self, dir, visitfunc, arg):
+        try:
+            res=self._get_parsed_record(dir, 1)
+            realnames = [x[ftpparse.NAME] for x in res]
+        except:
+            return
+        names=realnames[:]
+        visitfunc(arg, dir, names)
+        for name in names:
+            if name not in realnames:
+                # does not exist
+                continue
+            if res[name][ftpparse.CWD]:
+                fullname = os.path.join(dir, name)
+                self.walk(fullname, visitfunc, arg)
