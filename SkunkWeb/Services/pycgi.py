@@ -1,5 +1,5 @@
-# Time-stamp: <02/07/25 07:19:08 smulloni>
-# $Id: pycgi.py,v 1.1 2002/07/24 01:57:57 smulloni Exp $
+# Time-stamp: <02/07/28 23:05:03 smulloni>
+# $Id: pycgi.py,v 1.2 2002/07/25 11:21:02 smulloni Exp $
 
 ########################################################################
 #  
@@ -112,7 +112,7 @@ def _fix(dict, uri):
     # file exists
     nd['PATH_INFO']=extra
     nd['PATH_TRANSLATED']=fullpath
-    nd['SCRIPT_NAME']=uri[len(Configuration.documentRoot):]
+    nd['SCRIPT_NAME']=fullpath[len(Configuration.documentRoot):]
     return nd
 
 def __initHooks():
