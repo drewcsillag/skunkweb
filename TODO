@@ -1,5 +1,5 @@
-#   Time-stamp: <01/11/06 02:17:47 smulloni> 
-#   $Id: TODO,v 1.16 2001/10/25 01:26:22 drew_csillag Exp $
+#   Time-stamp: <2001-12-14 13:08:35 drew> 
+#   $Id: TODO,v 1.17 2001/11/07 01:26:46 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -26,6 +26,8 @@ SkunkWeb 3.2
 * DAV support built on httpd;
 * CGI adaptor (in place of mod_skunkweb, etc.)
 ! configure refinements (js)
+! update MySQL driver
+* fix any references to DateTime to mx.DateTime (or handle both)
 
 Future stuff
 ------------------------------
