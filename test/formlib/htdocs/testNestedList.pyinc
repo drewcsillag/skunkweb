@@ -4,7 +4,7 @@ import pprint
 
 psswdFld = PasswordField('password', description="Required Password", size="20", maxlength="39", required=1)
 txtFld = TextField('textfield', description="Required Textfield", default="default", size="20", maxlength="39", required=1)
-txtFld2 = TextField('textfield2', description="Textfield2", size="20", maxlength="39", required=0)
+txtFld2 = TextField('textfield2', description="Required Textfield2", size="20", maxlength="39", required=1)
 txtFld3 = TextField('textfield3', description="Textfield3", size="20", maxlength="39", required=0)
 btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="20", maxlength="39", default="Click Me")
 fileFld = FileField('file', description="FileField", size="20")
@@ -32,7 +32,7 @@ checkboxGrpFld = ButtonGroupField('checkboxgroup',
                                   multiple=1)  
 # add a clearing of default to ensure that defaults can be empty...test was failing
 # on 11/26/2002
-#checkboxGrpFld.clearDefault()
+checkboxGrpFld.clearDefault()
 
 radioGrpFld = ButtonGroupField('radiogroup', 
                                ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
@@ -56,6 +56,13 @@ def validate(form):
 
 form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate])
 
+print ecs.H2("Original Fields")
+print fields
+print ecs.Hr()
+print ecs.H2("Layout")
+print ecs.Pre(form.layout)
+
+
 import ecs
 if CONNECTION.method == "POST":
     form.submit(CONNECTION.args)
@@ -78,6 +85,7 @@ if CONNECTION.method == "POST":
     oldTxtVal = form.fields['textfield'].value
     newFlds = fields
     newFlds.append(TextField('oldtextfield', description="Old Textfield Value", default=oldTxtVal, size="20", maxlength="39", required="1", disabled="disabled"))
-    form.setFields(newFlds)
+    form.fields=newFlds
 
+print ecs.Hr()
 print form.getView()    

@@ -1,0 +1,47 @@
+from formlib import *
+from formlib.form import CompositeField
+
+addr1 = TextField('1', description="Address 1", default="default", size="20", maxlength="39", required=1)
+addrpst = TextField('postal', description="Postal Code", default=None, size="20", required=1)
+sbmtFld = SubmitField("submit", default="Submit Thyself", description="SubmitField")
+
+fields = [
+         addr1,
+         addrpst,
+         sbmtFld
+         ]
+
+cmpFld = CompositeField('composite', description='Address Composite Field', componentFields=fields)
+
+def validate(form):
+    pass
+
+form = ViewableForm(name="testAllViews", method="POST", fields=[cmpFld], validators=[validate])
+
+for ky in cmpFld.components.keys():
+    print ky, cmpFld.components[ky].default
+
+
+import ecs
+if CONNECTION.method == "POST":
+    form.submit(CONNECTION.args)
+    print ecs.H4('form data')
+    print ecs.Pre(pprint.pformat(form.getData()))
+    print
+
+    if form.errors:
+        print ecs.H4('form errors')
+        print ecs.Pre(pprint.pformat([(x.field.name, x.errormsg) for x in form.errors]))
+        print
+        
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  Values were:")
+        for fld in form.fields:
+            print "%s -> %s:%s" % (fld.description, fld.name, fld.value)
+            print ecs.Br()
+        print ecs.Hr()
+
+print ecs.Hr()
+print form.getView()    
+
