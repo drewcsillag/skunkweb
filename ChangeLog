@@ -1,3 +1,8 @@
+2002-03-03  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in (userModuleCleanup): this was being turned
+	on in this conf file, by mistake; the default should be 0.
+
 2002-02-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/productwiz.py: adding a rather

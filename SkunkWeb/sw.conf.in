@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.11 2002/02/07 07:18:41 smulloni Exp $
-# Time-stamp: <02/02/15 00:47:31 smulloni>
+# $Id: sw.conf.in,v 1.12 2002/02/15 05:55:46 smulloni Exp $
+# Time-stamp: <02/03/03 20:01:52 smulloni>
 
 ########################################################################
 #
@@ -153,7 +153,7 @@ sys.path.append('@prefix@/sitelibs')
 # for development, this will cause changes to sitelibs to be reflected
 # on the next request, without a bounce of the server.  Turn it off
 # for production environments.
-userModuleCleanup = 1
+# userModuleCleanup = 1
 
 ########################################################################
 # list of document names that will be recognized as index documents;
@@ -546,6 +546,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.12  2002/02/15 05:55:46  smulloni
+# adding documentation to configure and sw.conf.in for rewrite service.
+#
 # Revision 1.11  2002/02/07 07:18:41  smulloni
 # documentRootFS is now a single instance.
 #
