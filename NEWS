@@ -1,7 +1,11 @@
-Changes in 3.3
-========================================
-* minor change to handling of python code files (__name__ == '__main__'),
-  so precompiled Cheetah templates work.
+Changes in 3.3 
+======================================== 
+* Developer's manual updated
+* fix to PyDO/mysql so that you can put NULL values into columns
+* minor change to handling of python code files (__name__ is now set
+  to '__main__' in the document namespace), so precompiled Cheetah
+  templates work.
+---3.3 beta 0 cut
 * the build process was revised to facilitate changing the installed
   directory structure using standard configure options; FHS-compliant
   packaging and installation is now feasible.

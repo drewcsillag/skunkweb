@@ -1,3 +1,10 @@
+2002-08-09  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/AE/cacheKey/cachekey.c: removed circularity checking
+	which caused core dumps under load.
+
+	* util/make_pydo_distr.py: added
+
 2002-08-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/sqliteconn.py (PyDOSqlite.execute): added some
@@ -7,7 +14,6 @@
 	of the C API for me to find the correct value for rowcount after
 	an INSERT/UPDATE, but I have only tested with 2.0, the last
 	release. 
-
 2002-08-07  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/sqliteconn.py,  pylibs/PyDO/PyDBI.py: added sqlite
