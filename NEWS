@@ -3,6 +3,7 @@ Changes in 3.4b2
 * build system revised to work with Python 2.3a1.
 * fixes for mysql support in PyDO.
 * more rewrite enhancements.
+* STML's HTML helper tags are now XHTML-compliant by default.
 
 Changes in 3.4b1
 ========================================
