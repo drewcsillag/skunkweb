@@ -1,3 +1,12 @@
+2003-12-24  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* pylibs/skunk/__init__.py, pylibs/skunk/date/__init__.py,
+	pylibs/skunk/date/timeutil.py: new timeutil module, still rough, 
+	with the goal of no longer requiring mx.DateTime; starting "skunk"
+	package, with the intention of gradually moving much of pylibs
+	into it, to better avoid name collisions and make installation of
+	pylibs into python's normal site-packages more workable.
+
 2003-12-18  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (_processRequest): added
