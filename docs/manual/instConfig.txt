@@ -20,7 +20,6 @@ Introduction
 This chapter discusses the installation and configuration of the
 SkunkWeb Application Server Software.
 
-
 Prerequisites
 =============
 
@@ -46,17 +45,17 @@ a high-traffic web site? How much caching is going on?
 Here is a few general pointers:
 
 - Processors: SkunkWeb was developed with multi-processing in
-mind. If, given your situation, and the application you have on your
-hands, you can add multiple processors to your serving
-hardware. SkunkWeb will be able to fully utilize all the processors
-since specific SkunkWeb processes can be executed using different
-CPUs.
+  mind. If, given your situation, and the application you have on your
+  hands, you can add multiple processors to your serving
+  hardware. SkunkWeb will be able to fully utilize all the processors
+  since specific SkunkWeb processes can be executed using different
+  CPUs.
 
 - Disk space: you might need a lot of disk space if you are caching a
-lot of data in SkunkWeb. It'd be best to figure the optimal amount of
-disk space needed when preparing your hardware. Since disk space is
-cheap, anyway though, this might not matter that much. Also, since you
-can share caches, for example, your choices might be even simpler.
+  lot of data in SkunkWeb. It'd be best to figure the optimal amount of
+  disk space needed when preparing your hardware. Since disk space is
+  cheap, anyway though, this might not matter that much. Also, since you
+  can share caches, for example, your choices might be even simpler.
 
 
 Generally, it is up to the developer to decide what is the appropriate
@@ -82,42 +81,41 @@ These are modules which, if present, will be used by SkunkWeb.
 
 - the ``crypt`` module. If this isn't present, it will not be used at
   all.
+
 - The Python Imaging Library (PIL), available at
   http://www.pythonware.com/.
 
 
 Optional Software:
 	
-	- Apache 1.3 or 2.0. Your Apache installation needs to have
-	DSO support, if you plan to use mod_skunkweb to interface with
-	SkunkWeb. When you configure Apache with the configure script,
-	you can use the switch --enable-module=so::
+- Apache 1.3 or 2.0. Your Apache installation needs to have
+  DSO support, if you plan to use mod_skunkweb to interface with
+  SkunkWeb. When you configure Apache with the configure script,
+  you can use the switch --enable-module=so::
 
 		cd /your/Apache/installation
 		./configure --enable-module=so
 	
-	If you run into some weirdness where Apache is not serving an
-	index page or the such from the SkunkWeb server, (which might
-	not happen really in most situations), it might be a good idea
-	to have these switches in when you configure Apache for
-	compilation::
+  If you run into some weirdness where Apache is not serving an
+  index page or the such from the SkunkWeb server, (which might
+  not happen really in most situations), it might be a good idea
+  to have these switches in when you configure Apache for
+  compilation::
 
 		--disable-module=dir
 		--disable-module=autoindex
 		
 		[TODO: Not clear]
 		
-	If you do plan to use Apache, it would be recommended that
-	SkunkWeb run under the same user that Apache runs under. This
-	would only apply to situations where Apache and SkunkWeb are
-	on the same machine.
+ If you do plan to use Apache, it would be recommended that
+ SkunkWeb run under the same user that Apache runs under. This
+ would only apply to situations where Apache and SkunkWeb are
+ on the same machine.
 
 
-	- Sudo. If you would like to run SkunkWeb under a different
-	username other than the one SkunkWeb usually runs under, you
-	will need sudo present on your system.
-
-
+- Sudo. If you would like to run SkunkWeb under a different
+  username other than the one SkunkWeb usually runs under, you
+  will need sudo present on your system.
 
 Installation
 ============
@@ -562,7 +560,9 @@ script. It is. All syntax rules apply for ``sw.conf`` as it does with
 Python.
 
 	- # at the beginning of a line denotes a comment.
+
 	- [], {} and such are used to denote lists and dictionaries.
+
 	- Indentation does count here.
 
 An index of all the available parameters in a default SkunkWeb
@@ -660,9 +660,12 @@ stops, errors, etc. The specific paths are specified in these
 ``sw.conf`` parameters:
 
 - accessLog: the access log logs user accesses to the SkunkWeb server.
+
 - errorLog: The error log keeps a log of all the errors (such as 
   unhandled exceptions, tracebacks and the like.)
+
 - regularLog: This log keeps a track when the server has started and stopped.
+
 - debugLog: [TODO]
 
 each of these parameters equal to a filepath to where the log is
@@ -809,19 +812,19 @@ implement with SkunkWeb (using the ``requestHandler`` service.)
 The below directives apply specifically for web applications:
 
 - ``Host()``: if the host name in the request matches what is
-specified in the the ``Host()`` directive, any specific directives you
-use within ``Host()`` apply for that host name only.
+  specified in the the ``Host()`` directive, any specific directives you
+  use within ``Host()`` apply for that host name only.
 
 - ``Location()``: this tests if a location specified in the URI begins
-with a specific string. If it does, specific parameters specified in
-``Location()`` can be applied for a specific URI location.
+  with a specific string. If it does, specific parameters specified in
+  ``Location()`` can be applied for a specific URI location.
 
 - ``File()``: this tests if a URI matches a regular expression. If so,
-all parameters specified will apply to the specific file.
+  all parameters specified will apply to the specific file.
 
 - ``ServerPort()``: This tests if the web server port equals a
-specific value. If so, specific parameters will apply for this web
-server port on the SkunkWeb server.
+  specific value. If so, specific parameters will apply for this web
+  server port on the SkunkWeb server.
 
 When assignments are used outside of a scope, the parameter applies to
 everything. However, if there is a scope that contains a similar
@@ -922,16 +925,16 @@ SkunkWeb servers.
 which is a wildcard character meaning that anything can be in front of
 "froggie.com"), then a certain number of directives are executed:
 
-	- ServerPort: if the web server port is ``8080``, then execute
-	a ``Location()`` directive. If the URI contains ``/admin/``
-	then turn on authentication. If the location match fails or
-	not, set the ``documentRoot``, ``compileCacheRoot`` and
-	``componentCacheRoot`` parameters to different values than
-	what is in the main sw.conf.
+  - ServerPort: if the web server port is ``8080``, then execute
+    a ``Location()`` directive. If the URI contains ``/admin/``
+    then turn on authentication. If the location match fails or
+    not, set the ``documentRoot``, ``compileCacheRoot`` and
+    ``componentCacheRoot`` parameters to different values than
+    what is in the main sw.conf.
 
-	- For all other situations, no authentication is used, and
-	there are different values for ``documentRoot``,
-	``compileCacheRoot`` and ``componentCacheRoot``.
+  - For all other situations, no authentication is used, and
+    there are different values for ``documentRoot``,
+    ``compileCacheRoot`` and ``componentCacheRoot``.
 
 
 
@@ -975,7 +978,9 @@ The most relevant caching parameters, which will be discussed in
 detail later in this chapter, are as follows:
 
 - compileCacheRoot
+
 - componentCacheRoot
+
 - failoverComponentCacheRoot
 
 These all specify directories of where to store specific caches.
@@ -1039,11 +1044,11 @@ performance.
 The core parameters discussed in an earlier are highly useful for
 tuning the server.
 
-1. Increase the number of ``numProcs`` if the server is reaching a
-performance plateau and SkunkWeb is not fully utilizing the CPU(s).
+1.Increase the number of ``numProcs`` if the server is reaching a
+  performance plateau and SkunkWeb is not fully utilizing the CPU(s).
 
-2. Increase the number of ``maxRequests``, so there is less child
-process tear-down, and especially, less database connection tear-down.
+2.Increase the number of ``maxRequests``, so there is less child
+  process tear-down, and especially, less database connection tear-down.
 
 Another is the memory compile cache (activated by the
 ``useCompileMemoryCache`` option in sw.conf). What this does is keep

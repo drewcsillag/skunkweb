@@ -1,3 +1,8 @@
+2003-07-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/manual/instConfig.txt: fixed some indentation problems in
+	the rst source.
+
 2003-07-23  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py: no longer store the full_key in the cached
