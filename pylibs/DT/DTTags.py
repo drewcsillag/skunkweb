@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: DTTags.py,v 1.9 2003/05/01 20:45:59 drew_csillag Exp $
+# $Id: DTTags.py,v 1.10 2003/07/07 21:10:26 smulloni Exp $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 
@@ -619,12 +619,13 @@ class SpoolTag(DTTag):
         DTCompilerUtil.tagDebug(indent, codeout, tag)
         tagargs=['name']
         if self._attend_to_comments:
-            tagargs.append(('comments', 0))
+            tagargs.append(('comments', None))
         pargs = args = DTUtil.tagCall(tag, tagargs)
         args = DTCompilerUtil.pyifyArgs(tag, args)
-        if self._attend_to_comments:
+        if self._attend_to_comments and args['comments'] is not None:
             self._testCommentLevel(indent, codeout, args['comments'])
-            stuff=self._pushCommentLevel(indent, codeout, args['comments'])        
+            stuff=self._pushCommentLevel(indent, codeout, args['comments'])
+
         name = DTCompilerUtil.checkName(tag, 'name', args['name'],
                                         pargs['name'])
         
@@ -636,7 +637,7 @@ class SpoolTag(DTTag):
         codeout.write(indent, '%s = __h.OUTPUT.getvalue()' % name)
         codeout.write(indent, '__h.OUTPUT = %s' % oldout)
         codeout.write(indent, 'del %s' % oldout)
-        if self._attend_to_comments:
+        if self._attend_to_comments and args['comments'] is not None:
             self._popCommentLevel(indent, codeout, *stuff)
 
     def _pushCommentLevel(self, indent, codeout, val):
@@ -711,56 +712,3 @@ class DocTag ( GenericCommentTag ):
 #        codeout.write(indent, 'testfunc(%s)' %
 #                      DTCompilerUtil.pyifyKWArgs(args['kw']))
 
-########################################################################
-# $Log: DTTags.py,v $
-# Revision 1.9  2003/05/01 20:45:59  drew_csillag
-# Changed license text
-#
-# Revision 1.8  2003/04/07 16:32:09  smulloni
-# the import tag now accepts comma-separated items.
-#
-# Revision 1.7  2002/06/07 14:46:09  drew_csillag
-# * added documentation for genCode in DTTag.
-# * added meta argument to genCode methods of the for, if, while,
-#   try and spool tags.
-# * made so the above block tags call genCodeChild with the meta
-#   argument
-#
-# Revision 1.6  2001/09/21 21:07:14  drew_csillag
-# now made
-# it so that if you have a multi-line <:call:> tag, you don't have
-# to have the ':> on it's own line for it to work.
-#
-# Revision 1.5  2001/09/21 20:16:31  drew_csillag
-# added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
-#
-# Revision 1.4  2001/08/12 01:03:15  drew_csillag
-# added the as parameter to the import tag
-#
-# Revision 1.2  2001/08/10 17:59:30  drew_csillag
-# added as
-#
-# Revision 1.1.1.1  2001/08/05 15:00:52  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.72  2001/07/09 20:38:41  drew
-# added licence comments
-#
-# Revision 1.71  2001/07/09 16:33:59  drew
-# ditched the loop tag
-#
-# Revision 1.70  2001/04/24 17:03:37  drew
-# made it so exceptions are reported correctly in the face of
-# <:try:<
-#    blow chunks
-# <:finally:>
-#   other stuff
-#
-# Previously, it would point to the last tag in the finally block in the
-# tag traceback, now it does the right thing
-#
-# Revision 1.69  2001/04/12 22:05:34  smullyan
-# added remote call capability to the STML component tag; some cosmetic changes.
-#
-########################################################################

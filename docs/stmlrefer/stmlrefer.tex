@@ -440,15 +440,36 @@ name = sys.stdout.getvalue()
 sys.stdout = tempname
 \end{verbatim}
 
+Sometimes a debugging feature of SkunkWeb, component comments, can be
+a nuisance when you are spooling the contents of component calls.  To get
+around this you can temporarily reset the value of the configuration
+variable \texttt{componentCommentLevel} that controls this feature:
 
+\begin{verbatim}
+<:import SkunkWeb.Configuration as=C:>
+<:set oldval `C.componentCommentLevel`:>
+<:call `C.componentCommentLevel=0`:>
+<:spool foo:><:component foo.comp:><:/spool:>
+<:call `C.componentCommentLevel=oldval`:>
+\end{verbatim} 
 
+or, in STML (as of SkunkWeb 3.4), it is equivalent to write:
+
+\begin{verbatim}
+<:spool myspool comments=`0`:>
+  There won't be component comments here! <:component mycomp.comp:>
+<:/spool:>
+\end{verbatim}
+
+The \texttt{comments} argument can take the same values as
+\texttt{componentCommentLevel} itself: 0 (no comments) through 3 
+(verbose comments).
 
 \section{\texttt{<:args:>}}
 \label{tagargs}
 
 \begin{verbatim}
-<:args [argname] [argname1=expr] 
-     [argname2=expr...]:>
+<:args [argname] [argname1=expr] [argname2=expr...]:>
 \end{verbatim}
 
 
