@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.4 2002/05/07 19:21:47 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.5 2002/05/09 18:51:55 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -1276,8 +1276,14 @@ static int skunkweb_handler(request_rec* r)
 
 #ifndef APACHEV1
     if (strcmp(r->handler,"skunkweb-handler"))
+    {
+#ifdef DEBUG
+        SK_AP_RERROR3(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		      "handler for <%s> is %s", r->uri, r->handler);
+#endif
 	return DECLINED;
 #endif
+    }
     /* Get the configuration */
     conf=ap_get_module_config(r->server->module_config, &skunkweb_module);
 
@@ -1289,8 +1295,8 @@ static int skunkweb_handler(request_rec* r)
 	int l;
 
 #ifdef DEBUG
-	SK_AP_RERROR1(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
-		      "scanning exclude list");
+	SK_AP_RERROR2(APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
+		      "scanning exclude list for match of %s", r->uri);
 #endif
 	elts = (char**)conf->excludes->elts;
 	/* 
@@ -1599,9 +1605,11 @@ static const command_rec skunkweb_cmds[] =
     AP_INIT_ITERATE("SkunkWebErrorEmails", set_skunkweb_error_email, NULL, 
 		    RSRC_CONF, "the list of email addresses to notify on "
 		    "critical errors"),
+    /*
     AP_INIT_ITERATE("SkunkWebExclude", set_skunkweb_excludes, NULL, RSRC_CONF,
 		    "list of uri prefixes for which mod_SkunkWeb should not "
 		    "intervene"),
+    */
     AP_INIT_ITERATE("SkunkWebFailoverHosts", set_skunkweb_failover_hosts, NULL,
 		    RSRC_CONF, "other host/ports (form of host:port) to try "
 		    "in the event of a connection failure to primary "
