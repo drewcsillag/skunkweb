@@ -1,33 +1,62 @@
+2002-11-29  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/aesencrypt.py: added command-line file
+	encryption/decryption capability.
+
+2002-11-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* test/formlib/htdocs/testDispatch2.pyinc (form2): made 'yomama'
+	required. 
+
 2002-11-27  James Richards  <jrichards@satie.wnyc.org>
 
-	* pylibs/formlib/views.py (_requirable.validate): changed default validation error message for _requirable to return field description [displayed to user] instead of field name [hidden from user]
-	(ViewableForm.handleList): fixed error in tracking number of errors and added check for fields with no error preceding fields with errors
+	* pylibs/formlib/views.py (_requirable.validate): changed default
+	validation error message for _requirable to return field
+	description [displayed to user] instead of field name [hidden from
+	user]
+	(ViewableForm.handleList): fixed error in tracking number of
+	errors and added check for fields with no error preceding fields
+	with errors
 
-	* test/formlib/htdocs/testNestedList.pyinc (checkboxGrpFld): Adding test for clearing of defaults, updated to new fields dynamic hidden property, validated error display bug fix
+	* test/formlib/htdocs/testNestedList.pyinc (checkboxGrpFld):
+	Adding test for clearing of defaults, updated to new fields
+	dynamic hidden property, validated error display bug fix
 
-	* pylibs/formlib/form.py (Form._get_fields): Adding fields as a hidden property to control update of form fields dynamically
+	* pylibs/formlib/form.py (Form._get_fields): Adding fields as a
+	hidden property to control update of form fields dynamically
 
-	* pylibs/formlib/views.py (ViewableForm._get_fields): Adding fields as a hidden property to make updateable fields simpler
+	* pylibs/formlib/views.py (ViewableForm._get_fields): Adding
+	fields as a hidden property to make updateable fields simpler
 
 2002-11-26  James Richards  <jrichards@satie.wnyc.org>
 
-	* pylibs/formlib/form.py (Form.setFields): adding setFields() to support dynamic field update
+	* pylibs/formlib/form.py (Form.setFields): adding setFields() to
+	support dynamic field update
 
-	* pylibs/formlib/views.py (ViewableForm.setFields): adding setFields() to support dynamic layout update
+	* pylibs/formlib/views.py (ViewableForm.setFields): adding
+	setFields() to support dynamic layout update
 
-	* test/formlib/htdocs/testNestedList.pyinc (checkboxGrpFld): adding call to clearDefault() to ButtonGroup element to  validate that clearing defaults will not cause a domain ValueError
+	* test/formlib/htdocs/testNestedList.pyinc (checkboxGrpFld):
+	adding call to clearDefault() to ButtonGroup element to validate
+	that clearing defaults will not cause a domain ValueError
 
 2002-11-25  James Richards  <jrichards@satie.wnyc.org>
 
-	* test/formlib/htdocs/testNestedList.html: GUI for test of nested list layout support
+	* test/formlib/htdocs/testNestedList.html: GUI for test of nested
+	list layout support
 
-	* test/formlib/htdocs/testNestedList.pyinc: simple test of nested list layout support
+	* test/formlib/htdocs/testNestedList.pyinc: simple test of nested
+	list layout support
 
-	* pylibs/formlib/views.py (ViewableForm.__init__): Adding in nested list layout support
-	(ViewableForm.getView): Added handleField() and handleList() to support nested list layout
-	(ViewableForm.getView): Added handleError() to properly associate field errors with fields in GUI
+	* pylibs/formlib/views.py (ViewableForm.__init__): Adding in
+	nested list layout support
+	(ViewableForm.getView): Added handleField() and handleList() to
+	support nested list layout
+	(ViewableForm.getView): Added handleError() to properly associate
+	field errors with fields in GUI
 
-	* pylibs/formlib/validates.py: Added module for validating components
+	* pylibs/formlib/validates.py: Added module for validating
+	components
 	
 
 2002-11-26 Jacob Smullyan   <smulloni@smullyan.org>
