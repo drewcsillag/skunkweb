@@ -1,3 +1,12 @@
+2004-02-27    <drew@loki.sai.local>
+
+	* SkunkWeb/sw.conf.in: added documentation of dontCacheSource,
+	noTagDebug and runOutOfCache options
+
+	* SkunkWeb/util/precompile.py.in: now can compile individual files
+	and also deletes the cache file before compiling (otherwise if the
+	timestamp isn't newer, it wouldn't recompile)
+
 2004-02-26    <drew@loki.sai.local>
 
 	* pylibs/SkunkExcept.py (SkunkSyntaxError.format): fix so that
