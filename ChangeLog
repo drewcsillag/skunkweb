@@ -1,5 +1,12 @@
 2002-07-23  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/SkunkWeb/constants.py (PYCGI_JOB): added constant for
+	pycgi service.
+
+	* SkunkWeb/Services/pycgi.py: start of pycgi service.  Doesn't
+	contain subinterpreter module, has barely been tested so far,
+	doesn't deal with sys.argv correctly, etc.
+
 	* pylibs/vfs/vfs.py (FS.split_extra): added FS method for finding
 	extra path info.
 
