@@ -1,3 +1,11 @@
+2001-08-25  Drew Csillag  <drew@starmedia.net>
+
+	* faq2html.py: added.  Converts FAQ to a form usable by the
+	FAQ.html template.
+
+	* FAQ: added bit about PHP
+	
+
 2001-08-21  Drew Csillag  <drew@starmedia.net>
 
 	* SkunkWeb/sample_webdocs/demo/geeknews/freshmeat.comp,
