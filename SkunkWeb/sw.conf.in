@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.19 2002/06/28 21:32:30 drew_csillag Exp $
-# Time-stamp: <2002-07-05 10:29:31 acsillag>
+# $Id: sw.conf.in,v 1.20 2002/07/05 14:22:10 drew_csillag Exp $
+# Time-stamp: <2002-07-11 15:49:42 acsillag>
 
 ########################################################################
 #
@@ -85,6 +85,10 @@
 # rewrite                 -- supports common url rewriting tasks and supplies a
 #                            more complex tasks to be performed by other services
 #                            by means of a hook framework.
+#
+# extcgi                  -- supports external CGI's, i.e. regular ones,
+#                            as opposed to python CGI's which we will some
+#                            day be able to execute in place
 
 services = ['requestHandler',
             'aecgi',
@@ -182,6 +186,24 @@ sys.path.append('@prefix@/sitelibs')
 # Scope(Location("/private",
 #                basicAuthName="privileged zone",
 #                basicAuthFile='/usr/local/skunk/var/AUTHDB'))
+
+########################################################################
+# The extcgi service
+#
+# Usually this will be a scoped thing, where you tell skunkweb where
+# the cgi executable lives and where it shows up in the URI space.
+# Unfortunately, for now, you need to tell skunkweb where it shows up
+# in the URI space twice....
+#
+# #where it is activated in the URI space
+# Scope(Location('/moin/',
+#       #tell skunkweb it's a CGI job
+#       job=CGI_JOB,               
+#       #path to the CGI program
+#       CGIProgram='/home/skunkweb/moin/wiki/cgi-bin/moin.cgi',
+#       #If the program uses PATH_INFO in it's operation, set this to the
+#       #same as Location
+#       CGIProgramBase='/moin/'))
 
 ########################################################################
 # The auth service
@@ -616,6 +638,11 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.20  2002/07/05 14:22:10  drew_csillag
+# fixed typo in HTTPKeepAliveTimeout
+# 	(previously, the "a" in alive wasn't capitalized as it should've
+# 	been)
+#
 # Revision 1.19  2002/06/28 21:32:30  drew_csillag
 # added comment to remind all about authActivated
 #
