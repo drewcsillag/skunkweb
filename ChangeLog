@@ -1,5 +1,8 @@
 2003-04-23  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/MySQL/__init__.py (cleanUser): closing connection
+	explicitly, due to reported MySQLdb bug (thanks Frank Tegtmeyer).
+
 	* pylibs/DT/DTUtil.py (htmlquote): removing adding
 	html breaks to replace line breaks; if users (or Drew) cry foul, 
 	will revert this.
