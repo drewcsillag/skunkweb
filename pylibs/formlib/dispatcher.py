@@ -1,5 +1,5 @@
-# Time-stamp: <02/12/30 12:01:54 smulloni>
-# $Id: dispatcher.py,v 1.10 2002/12/26 01:10:29 smulloni Exp $
+# Time-stamp: <02/12/30 12:32:01 smulloni>
+# $Id: dispatcher.py,v 1.11 2002/12/30 17:04:21 smulloni Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
@@ -124,7 +124,7 @@ class FormDispatcher:
             
         # if there isn't one, return the start form.
         else:
-            form=self.flowmgr.getStartForm()
+            form=self.flowmgr.getStartForm(argdict)
             if form:
                 form.reset()
         if form:
@@ -138,7 +138,7 @@ class LinearFlowManager(object):
     def __init__(self, formlist):
         self.formlist=formlist
 
-    def getStartForm(self):
+    def getStartForm(self, argdict):
         return self.formlist[0]
 
     def next(self, form, state, argdict, ns):

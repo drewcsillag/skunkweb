@@ -116,12 +116,6 @@ def _defaultValueComposer(fieldList):
     a single newline delimited list
     """
     return '\n'.join([str(fld.value) for fld in fieldList])
-##    retVal = ''
-##    if fieldList:
-##        for fld in fieldList:
-##            retVal = retVal + str(fld.value) + '\n'
-##    return retVal
-
 
 class CompositeField(Field):
 

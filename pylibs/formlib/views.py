@@ -422,8 +422,9 @@ class ButtonGroupField(ViewableDomainField):
                  description=None,
                  default=None,
                  multiple=0,
+                 type=None,
                  **view_attrs):
-        self.options, domain=self._parse_options(options, name, multiple)
+        self.options, domain=self._parse_options(options, name, multiple, type)
         ViewableDomainField.__init__(self,
                                      name=name,
                                      domain=domain,
@@ -433,20 +434,21 @@ class ButtonGroupField(ViewableDomainField):
                                      **view_attrs)
         
         
-    def _parse_options(self, options, name, multiple):
+    def _parse_options(self, options, name, multiple, type):
         d=Set()
         optlist=[]
         if isinstance(options, dict):
             options=options.items()
-        for o in [self._coerce_option(x, name, multiple) for x in options]:
+        for o in [self._coerce_option(x, name, multiple, type) for x in options]:
             d.append(o.value)
             optlist.append(o)
         return optlist, d
 
-    def _coerce_option(self, option, name, multiple):
+    def _coerce_option(self, option, name, multiple, type):
         if isinstance(option, ButtonOption):
             return option
-        type=multiple and 'checkbox' or 'radio'
+        if type==None:
+            type=multiple and 'checkbox' or 'radio'
         if isinstance(option, str):
             return ButtonOption(name=name,
                                 value=option,
@@ -480,6 +482,28 @@ class ButtonGroupField(ViewableDomainField):
         table.attributes.update(self.view_attrs)
         return table
 
+class SubmitButtonGroupField(ButtonGroupField):
+    def __init__(self,
+                 name,
+                 options,
+                 **view_attrs):
+        ButtonGroupField.__init__(self,
+                                  name,
+                                  options,
+                                  description=None,
+                                  default=None,
+                                  multiple=0,
+                                  type='submit',
+                                  **view_attrs)
+    def getView(self):
+        table=ecs.Table()
+        tr=ecs.Tr()
+        for o in self.options:
+            tr.addElement(ecs.Td(o.getView()))
+        table.addElement(tr)
+        table.attributes.update(self.view_attrs)
+        return table
+
 
 ########################################################################
 # helper classes for button groups
@@ -493,7 +517,7 @@ class ButtonOption(Viewable):
                  inputType='radio',
                  checked=None,
                  **view_attrs):
-        if inputType not in ('radio', 'checkbox'):
+        if inputType not in ('radio', 'checkbox', 'submit', 'button'):
             raise ValueError, "invalid input type: %s" % inputType
         self.inputType=inputType
         self.checked=checked
@@ -511,7 +535,7 @@ class ButtonOption(Viewable):
             elem.setAttribute('name', self.name)
         if self.value is not None:
             elem.setAttribute('value', self.value)
-        if self.checked:
+        if self.inputType in ('radio', 'checkbox') and self.checked:
             elem.setAttribute('checked', 'checked')
         elem.attributes.update(self.view_attrs)
         return elem
