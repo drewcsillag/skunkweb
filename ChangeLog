@@ -1,3 +1,8 @@
+2002-11-22  James Richards  <jrichards@satie.wnyc.org>
+
+	* pylibs/formlib/views.py (SelectField.__doc__): added documentation to SelectField for a bit more clarity in usage
+	(TextAreaField.__init__): Added check to prevent value attribute from being incorrectly added to textarea HTML fields 
+
 2002-11-22 <heiho1@mac.com>
 
 	* test/formlib/htdocs/test4.html added internationalizable address test
