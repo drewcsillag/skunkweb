@@ -11,19 +11,15 @@
 # This is the manager script for SkunkWeb, used for stopping,
 # starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.6 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: swmgr.in,v 1.7 2003/05/08 14:15:09 drew_csillag Exp $
 
 umask 002
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-bindir=@bindir@
 
-PYTHON=@PYTHON@
 # Extra options to pass to the AED server
 SWOPTIONS=""
 
-SWSTART="${bindir}/skunkweb $SWOPTIONS"
+SWSTART="@bindir@/skunkweb $SWOPTIONS"
 
 # User SkunkWeb stuff is owned by
 USER=@OWNER@
@@ -35,72 +31,47 @@ RUNASROOT=@RUNASROOT@
 SUDO=@SUDO@
 
 # Some environment that needs to be set.
-ENV="ORACLE_HOME=$ORACLE_HOME LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib NLS_LANG=$NLS_LANG"
+ENV="$SKUNKENV"
 
-function run_as_user 
-{
-    #prog=$*
+# some setup
 
-    if [ `$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"` != "$RUNASROOT" ]
+
+
+if [ `@PYTHON@ -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"` != "$RUNASROOT" ]
+then
+    # Check if sudo exists
+    if [ "$SUDO" = "" ]
     then
-        # Check if sudo exists
-	if [ "$SUDO" = "" ]
-	then
-	    echo "Not running as user '$USER' and no sudo program, aborting..."
-	    exit 1
-        fi
-
-        # Need to sudo
-	if $SUDO -u $RUNASROOT echo -n > /dev/null
-	then
-	    echo -n
-        else
-	    echo "Cannot sudo to user '$RUNASROOT', fix and retry!" >&2
-	    exit 1
-        fi
-
-	$SUDO -u $RUNASROOT env $ENV "$@"
-    else
-        env $ENV "$@"
+	echo "Not running as user '$USER' and no sudo program, aborting..."
+	exit 1
     fi
-}
 
-function get_pid_file
-{
-    run_as_user @bindir@/swpython -q -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
-}
+    # Need to sudo
+    if $SUDO -u $RUNASROOT echo -n > /dev/null
+    then
+	echo -n
+    else
+	echo "Cannot sudo to user '$RUNASROOT', fix and retry!" >&2
+	exit 1
+    fi
 
-function configtest
-{
-    run_as_user @bindir@/swpython -q -e 'import sys; print "Syntax OK";'
-}
+    run_as_user="$SUDO -u $RUNASROOT env $ENV"
+else
+    run_as_user="env $ENV"
+fi
 
 
-function usage 
-{
-    echo "Usage: `basename $0` [options] {start|stop|restart|configtest}"
-    echo "Options:"
-    echo "    -h     print this message and exit"
-    echo "    -f     fast stop or restart; doesn't run swpython"
-    echo "           to find the pid file"
-    echo "           to determine location of pid file"
-    echo "    -r     start skunkweb as root so it can bind to a low port"
-    echo
-    echo "stop, start, and restart perform the expected operations."
-    echo "Without the -f argument, stop and restart will verify that"
-    echo "the configuration files are parseable before stopping the"
-    echo "running server.  "
-    echo "configtest simply runs swpython and either terminates with"
-    echo "a Python exception or prints Syntax OK and exits."
-    exit 1
-}
+
+    
+
 
 
 while getopts "hrf" ARG
 do
   case ${ARG} in
   h)
-     usage
+     DO_USAGE=1
+     
      ;;
   r)
      RUNASROOT=root
@@ -110,33 +81,21 @@ do
      echo
      echo "In addition, to restart and stop skunkweb you must use the -r"
      echo "option when skunkweb was started with -r"
-     ;;
+      ;;
   f)
      FAST=1
      ;;
   esac
 done
      
-
-#if [ "$1" = '-r' ]
-#then
-#    RUNASROOT=root
-#    echo "If you want to make it so swmgr always starts skunkweb as root,"
-#    echo "edit swmgr and change the line where it says RUNASROOT=user"
-#    echo "and make it say RUNASROOT=root"
-#    echo
-#    echo "In addition, to restart and stop skunkweb you must use the -r"
-#    echo "option when skunkweb was started with -r"
-#    shift
-#fi
-
+if [ -z $DO_USAGE ]; then
 shift $(($OPTIND - 1))
 
 # See how we were called.
 case "$1" in
   start)
 	echo "Starting SkunkWeb..."
-	if run_as_user $SWSTART
+	if $run_as_user $SWSTART
 	then
 	    echo "SkunkWeb started."
         else
@@ -150,7 +109,7 @@ case "$1" in
         then
           PIDFILE=@localstatedir@/run/sw.pid
         else
-	  PIDFILE=`get_pid_file`
+	  PIDFILE=`$run_as_user @bindir@/swpython -q -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'`
           if [ -z "$PIDFILE" ]
 	  then
 	      echo "run of swpython to determine pidfile failed!"
@@ -165,7 +124,7 @@ case "$1" in
 	PID=`cat $PIDFILE`
 
 	# Kill it!
-	run_as_user kill -TERM $PID
+	$run_as_user kill -TERM $PID
 
 	echo "SkunkWeb stopped."
 	;;
@@ -190,16 +149,37 @@ case "$1" in
 	fi
 	PID=`cat $PIDFILE`
 	# Kill -HUP 
-	run_as_user kill -HUP $PID
+	$run_as_user kill -HUP $PID
 
 	echo "SkunkWeb restarted"
 	;;
   configtest)
-        configtest
+        $run_as_user @bindir@/swpython -q -e 'import sys; print "Syntax OK";'
         ;;
   *)
-        usage
+        DO_USAGE=1
         ;;
 esac
 
-exit 0
+fi
+
+if [ -z $DO_USAGE ]; then
+   exit 0
+fi
+
+echo "Usage: `basename $0` [options] {start|stop|restart|configtest}"
+echo "    Options:"
+echo "    -h     print this message and exit"
+echo "    -f     fast stop or restart; doesn't run swpython"
+echo "           to find the pid file"
+echo "           to determine location of pid file"
+echo "    -r     start skunkweb as root so it can bind to a low port"
+echo 
+echo "stop, start, and restart perform the expected operations."
+echo "Without the -f argument, stop and restart will verify that"
+echo "the configuration files are parseable before stopping the"
+echo "running server.  "
+echo "configtest simply runs swpython and either terminates with"
+echo "a Python exception or prints Syntax OK and exits."
+exit 1
+

@@ -1,3 +1,8 @@
+2003-08-22    <smulloni@localhost>
+
+	* SkunkWeb/swmgr.in: rewritten so that it works with ash, which
+	means, I hope, that it will work with just about anything.
+
 2003-08-22  Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (Session.setDirty): 
