@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/11/12 12:04:38 smulloni>
+# Time-stamp: <02/08/28 13:50:53 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -96,10 +96,16 @@ def makeElement(fullElementName):
                           fullElementName[:colonIndex])
 
 class XMLElement:
-
-    def __init__(self, name, namespaceCode=None, namespace=None):
+    def __init__(self,
+                 name,
+                 namespaceCode=None,
+                 namespace=None,
+                 empty=None,
+                 html_compat=None):
         self.name=name
         self.namespaceCode=namespaceCode
+        self.empty=empty
+        self.html_compat=html_compat
         self.__children=[]
         self.__attributes={}
         self.__namespaces={}
@@ -124,10 +130,20 @@ class XMLElement:
             buff.append('</')
             if (self.namespaceCode):
                 buff.append('%s:' % self.namespaceCode)
-            buff.append('%s>' % self.name)
+            buff.append(self.name)
+            buff.append('>')
         else:
-            buff.append('/>')
+            if self.html_compat:
+                if self.empty:
+                    buff.append(' />')
+                else:
+                    buff.append("> </%s>" % self.name)
+            else:
+                buff.append('/>')
         return ''.join(buff)
+
+    def hasAttribute(self, name):
+        return self.__attributes.has_key(name)
             
     def getAttribute(self, name):
         if self.__attributes.has_key(name):
@@ -142,6 +158,8 @@ class XMLElement:
             else:
                 self.setNamespace(value, name[colindex+1:])
         self.__attributes[name]=value
+        # for convenience
+        return self
 
     def getChildren(self, suppressWhitespace=1):
         if suppressWhitespace:
@@ -195,6 +213,9 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.3  2002/08/28 20:55:27  smulloni
+# some tweaks for xhtml compatibiity.
+#
 # Revision 1.2  2001/12/02 20:57:50  smulloni
 # First fold of work done in September (!) on dev3_2 branch into trunk:
 # vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
