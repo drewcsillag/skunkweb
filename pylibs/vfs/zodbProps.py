@@ -1,22 +1,12 @@
-# $Id: zodbProps.py,v 1.1 2002/02/05 03:18:17 smulloni Exp $
+# $Id: zodbProps.py,v 1.2 2002/02/05 19:22:24 smulloni Exp $
 # Time-stamp: <02/02/05 02:45:40 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 ########################################################################
 
 from vfs import PathPropertyStore
@@ -94,6 +84,12 @@ class ZODBPathPropertyStore(PathPropertyStore):
     
 ########################################################################
 # $Log: zodbProps.py,v $
+# Revision 1.2  2002/02/05 19:22:24  smulloni
+# bug fix to AE/Executables.py;
+# alternate normpath function in skunklib;
+# new PathPropertyStore using AE python datacomponents;
+# tweaks to other PathPropertyStores.
+#
 # Revision 1.1  2002/02/05 03:18:17  smulloni
 # fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
 #

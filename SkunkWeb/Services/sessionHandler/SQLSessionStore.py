@@ -1,23 +1,13 @@
 #  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
-# $Author: drew $
-# $Revision: 1.6 $
-# $Id: SQLSessionStore.py,v 1.6 2001/07/09 20:38:40 drew Exp $
+# $Author: drew_csillag $
+# $Revision: 1.1.1.1 $
+# $Id: SQLSessionStore.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
@@ -237,6 +227,10 @@ class AbstractSQLSessionStore(SessionStore):
 
 ########################################################################        
 # $Log: SQLSessionStore.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.6  2001/07/09 20:38:40  drew
 # added licence comments
 #

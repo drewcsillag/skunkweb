@@ -1,19 +1,9 @@
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
 rules = [{'funcName': 'noop', 'ruleString': 'S -> RuleList', 'lhs': 'S', 'lenrhs': 1}, {'funcName': 'noop', 'ruleString': 'RuleList -> Rule RuleList', 'lhs': 'RuleList', 'lenrhs': 2}, {'funcName': 'noop', 'ruleString': 'RuleList -> ', 'lhs': 'RuleList', 'lenrhs': 0}, {'funcName': 'buildRule', 'ruleString': 'Rule -> COLON TOKEN COLON TOKEN COLON Exprs', 'lhs': 'Rule', 'lenrhs': 6}, {'funcName': 'ExprRecur', 'ruleString': 'Exprs -> ExprList | Exprs', 'lhs': 'Exprs', 'lenrhs': 3}, {'funcName': 'ExprSingle', 'ruleString': 'Exprs -> ExprList', 'lhs': 'Exprs', 'lenrhs': 1}, {'funcName': 'ELBuildRecur', 'ruleString': 'ExprList -> Expr ExprList', 'lhs': 'ExprList', 'lenrhs': 2}, {'funcName': 'ELBuildAnchor', 'ruleString': 'ExprList -> ', 'lhs': 'ExprList', 'lenrhs': 0}, {'funcName': 'noop1', 'ruleString': 'Expr -> StarExpr', 'lhs': 'Expr', 'lenrhs': 1}, {'funcName': 'buildStar', 'ruleString': 'StarExpr -> PlusExpr *', 'lhs': 'StarExpr', 'lenrhs': 2}, {'funcName': 'noop1', 'ruleString': 'StarExpr -> PlusExpr', 'lhs': 'StarExpr', 'lenrhs': 1}, {'funcName': 'buildPlus', 'ruleString': 'PlusExpr -> OptExpr +', 'lhs': 'PlusExpr', 'lenrhs': 2}, {'funcName': 'noop1', 'ruleString': 'PlusExpr -> OptExpr', 'lhs': 'PlusExpr', 'lenrhs': 1}, {'funcName': 'buildOptional', 'ruleString': 'OptExpr -> [ ExprList ]', 'lhs': 'OptExpr', 'lenrhs': 3}, {'funcName': 'noop1', 'ruleString': 'OptExpr -> ParenExpr', 'lhs': 'OptExpr', 'lenrhs': 1}, {'funcName': 'buildParens', 'ruleString': 'ParenExpr -> ( Exprs )', 'lhs': 'ParenExpr', 'lenrhs': 3}, {'funcName': 'noopToken', 'ruleString': 'ParenExpr -> TOKEN', 'lhs': 'ParenExpr', 'lenrhs': 1}]
 gotos = {28: {}, 27: {}, 26: {}, 25: {}, 24: {}, 23: {}, 22: {}, 21: {}, 20: {'ExprList': 10, 'Expr': 13, 'PlusExpr': 12, 'OptExpr': 11, 'ParenExpr': 14, 'StarExpr': 15, 'Exprs': 26}, 19: {'ExprList': 10, 'OptExpr': 11, 'Expr': 13, 'ParenExpr': 14, 'PlusExpr': 12, 'StarExpr': 15, 'Exprs': 25}, 18: {}, 17: {'ExprList': 24, 'Expr': 13, 'PlusExpr': 12, 'OptExpr': 11, 'ParenExpr': 14, 'StarExpr': 15}, 16: {}, 15: {}, 14: {}, 13: {'ExprList': 23, 'Expr': 13, 'PlusExpr': 12, 'OptExpr': 11, 'ParenExpr': 14, 'StarExpr': 15}, 12: {}, 11: {}, 10: {}, 9: {'ExprList': 10, 'Expr': 13, 'PlusExpr': 12, 'OptExpr': 11, 'ParenExpr': 14, 'StarExpr': 15, 'Exprs': 16}, 8: {}, 7: {}, 6: {}, 5: {}, 4: {}, 3: {}, 2: {}, 1: {'Rule': 1, 'RuleList': 5}, 0: {'RuleList': 2, 'S': 3, 'Rule': 1}}

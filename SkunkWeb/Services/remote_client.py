@@ -1,21 +1,11 @@
 #  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
-# $Id: remote_client.py,v 1.3 2001/10/30 15:44:36 drew_csillag Exp $
+# $Id: remote_client.py,v 1.4 2002/02/03 05:31:33 smulloni Exp $
 # Time-stamp: <01/05/09 14:36:02 smulloni>
 ########################################################################
 
@@ -139,6 +129,9 @@ AE.Component.componentHandlers[SWRC_PROTOCOL]=SkunkWebRemoteComponentHandler()
 
 ########################################################################
 # $Log: remote_client.py,v $
+# Revision 1.4  2002/02/03 05:31:33  smulloni
+# fix to remote_client handling of string exceptions.
+#
 # Revision 1.3  2001/10/30 15:44:36  drew_csillag
 # now deals properly with new protocol
 #

@@ -1,21 +1,11 @@
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
-# $Id: Component.py,v 1.9 2002/08/13 14:41:01 drew_csillag Exp $
+# $Id: Component.py,v 1.10 2003/04/19 14:19:35 smulloni Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -394,6 +384,9 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.10  2003/04/19 14:19:35  smulloni
+# changes for scopeable
+#
 # Revision 1.9  2002/08/13 14:41:01  drew_csillag
 # added rectifyRelativeName, which is just an alias of _rectifyRelativeName
 #

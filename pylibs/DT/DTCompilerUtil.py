@@ -1,21 +1,11 @@
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
-# $Id: DTCompilerUtil.py,v 1.5 2002/06/07 14:46:29 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.6 2002/06/28 17:45:14 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 import os
@@ -214,6 +204,9 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.6  2002/06/28 17:45:14  drew_csillag
+# now converts line endings in exprs to the native lineending
+#
 # Revision 1.5  2002/06/07 14:46:29  drew_csillag
 # 	* pylibs/DT/DTCompilerUtil.py(genCodeChild): made all arguments
 # 	mandatory (see comment about DTC.py), as well as calls genCode on

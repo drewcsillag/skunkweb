@@ -3,21 +3,48 @@ LICENSE
 
 Copyright (C) 2001-2003, Andrew T. Csillag <drew_csillag@yahoo.com>,
                           Jacob Smullyan <smulloni@smullyan.org>
- 
-     This program is free software; you can redistribute it and/or modify
-     it under the terms of the GNU General Public License as published by
-     the Free Software Foundation; either version 2 of the License, or
-     (at your option) any later version.
- 
-     This program is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     GNU General Public License for more details.
- 
-     You should have received a copy of the GNU General Public License
-     along with this program; if not, write to the Free Software
-     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-  
+			    All rights reserved.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of either:
+
+	a) the GNU General Public License as published by the Free
+	Software Foundation, version 2, or
+
+	b) the "SkunkWeb License" which comes with this Kit.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either
+    the GNU General Public License or the SkunkWeb License for more
+    details.
+
+    You should have received a copy of the SkunkWeb License with this
+    Kit, in the file named "SkunkWebLicense".  If not, we'll be glad
+    to provide one.
+
+    You should also have received a copy of the GNU General Public
+    License along with this program in the file named "COPYING". If
+    not, write to the Free Software Foundation, Inc., 59 Temple Place,
+    Suite 330, Boston, MA 02111-1307, USA or visit their web page on
+    the internet at http://www.gnu.org/copyleft/gpl.html.
+
+    For those of you that choose to use the GNU General Public
+    License, our interpretation of the GNU General Public License is
+    that no SkunkWeb program (defined as templates and/or straight
+    Python code) falls under the terms of the GPL unless you
+    explicitly put said program under the terms of the GPL yourself.
+    Furthermore, any code linked with SkunkWeb does not automatically
+    fall under the terms of the GPL, provided such code only adds
+    definitions of subroutines, hooks and variables.  We consider
+    linking in code in this manner to be the moral equivalent of
+    defining programs in SkunkWeb itself.  You may sell such files
+    as proprietary provided that you provide or offer to provide the
+    SkunkWeb source, as specified by the GNU General Public License.
+    This is our interpretation of the GPL.  If you still have concerns
+    or difficulties understanding our intent, feel free to contact us.
+    Of course, the SkunkWeb License terms are much more liberal with
+    respect to these matters, so you may prefer to use that.
 
 README for SkunkWeb
 -------------------

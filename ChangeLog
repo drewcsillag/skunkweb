@@ -1,5 +1,11 @@
 2003-05-01    <drew@loki.sai-office>
 
+	* README: changed license stuff
+
+	* SkunkWebLicense: added
+	
+	* every file with a copyright header: changed license
+	
 	* configure.in:  HP-UX fix for install problems
 
 	* configure.in, SkunkWeb/configure.in: now works if python is not

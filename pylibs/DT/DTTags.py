@@ -1,21 +1,11 @@
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 #   
-# $Id: DTTags.py,v 1.7 2002/06/07 14:46:09 drew_csillag Exp $
+# $Id: DTTags.py,v 1.8 2003/04/07 16:32:09 smulloni Exp $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 
@@ -705,6 +695,9 @@ class DocTag ( GenericCommentTag ):
 
 ########################################################################
 # $Log: DTTags.py,v $
+# Revision 1.8  2003/04/07 16:32:09  smulloni
+# the import tag now accepts comma-separated items.
+#
 # Revision 1.7  2002/06/07 14:46:09  drew_csillag
 # * added documentation for genCode in DTTag.
 # * added meta argument to genCode methods of the for, if, while,

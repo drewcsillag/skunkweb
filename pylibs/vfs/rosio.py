@@ -4,19 +4,9 @@
 ######################################################################## 
 #  Copyright (C) 2001-2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
 ########################################################################
 
 from cStringIO import StringIO
@@ -68,6 +58,9 @@ class RO_StringIO:
 
 ########################################################################
 # $Log$
+# Revision 1.5  2003/05/01 20:46:02  drew_csillag
+# Changed license text
+#
 # Revision 1.4  2003/02/08 03:23:44  smulloni
 # XHTML compliance and Python 2.3a1 compatibility.
 #
