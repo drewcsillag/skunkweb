@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/01/26 16:37:26 smulloni>
+# Time-stamp: <02/02/04 21:25:08 smulloni>
 
 ########################################################################
 #  
@@ -155,18 +155,67 @@ class FS:
         return st[MST_SIZE]
 
 class PathPropertyStore:
+    """
+    an interface for storing properties
+    associated with paths
+    """
 
     def properties(self, path):
+        """
+        returns dictionary of properties
+        for the path
+        """
         raise NotImplementedError
 
     def hasproperty(self, path, property):
+        """
+        returns whether the path has the given property
+        """
         raise NotImplementedError
     
     def getproperty(self, path, property):
+        """
+        returns the given property
+        for the path
+        """
         raise NotImplementedError
 
     def setproperty(self, path, property, value):
+        """
+        associates given property with given value
+        for the given path
+        """
         raise NotImplementedError
+
+    def delproperty(self, path, property):
+        """
+        removes a property from the store
+        if it exists for the path; otherwise,
+        does nothing
+        """
+        raise NotImplementedError
+
+    def acquire(self, path, property, raise_on_failure=1):
+        """
+        look for a property associated with the
+        current path; if not found, walk the directory
+        tree up towards the the root until a property
+        with that name is found.  If no such property
+        is found, raise a KeyError unless raise_on_failure
+        is false.
+        """
+        if self.hasproperty(path, property):
+            return self.getproperty(path, property)
+        else:
+            while 1:
+                path=os.path.dirname(os.path.normpath(path))
+                if self.hasproperty(path, property):
+                    return self.getproperty(path, property)
+                if path=='/':
+                    if raise_on_failure:
+                        raise KeyError, "property not found: %s" % property
+                    return None
+                
     
 
 class LocalFS(FS):
@@ -373,6 +422,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.6  2002/02/05 03:18:17  smulloni
+# fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
+#
 # Revision 1.5  2002/01/27 03:10:44  smulloni
 # moving in the direction of getting rid of Configuration.DocumentRoot!
 #

@@ -92,10 +92,10 @@ AC_ARG_WITH(services,
                            names are:
 
                            ae_component aecgi basicauth httpd mysql oracle
-                           pars postgresql remote remote_client requestHandler
+                           postgresql remote remote_client requestHandler
                            sessionHandler templating web fcgiprot userdir], [
 	SERVICES=$withval], [
-	SERVICES="ae_component aecgi basicauth httpd mysql oracle pars postgresql remote remote_client requestHandler sessionHandler templating web fcgiprot userdir";])
+	SERVICES="ae_component aecgi basicauth httpd mysql oracle postgresql remote remote_client requestHandler sessionHandler templating web fcgiprot userdir";])
 
 
 dnl Checks for programs.

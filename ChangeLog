@@ -1,3 +1,24 @@
+2002-02-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* configure.in, configure, SkunkWeb/configure.in,
+	SkunkWeb.configure: remove references to pars service.	
+
+	* pylibs/vfs/__init__.py: try to import the ZODBPathPropertyStore,
+	and pass on error.
+
+	* pylibs/vfs/zodbProps.py (ZODBPathPropertyStore): added
+	a PathPropertyStore that uses ZODB/ZEO.
+
+	* pylibs/vfs/shelfProps.py (ShelfPathPropertyStore): tested
+	and made to work multi-process.
+
+	* test/vfs_testsuite.py: added some tests for vfs.
+
+	* pylibs/vfs/vfs.py (PathPropertyStore): Added new methods to
+	interface, delproperty (should remove a existing property
+	associated with an existing path) and acquire (walks up the
+	directory tree looking for a property if not found).
+
 2002-02-03  Andrew Csillag  <drew@thoughttrack.com>
 
 	* pylibs/PyDO/sapdbconn.py: minor fix from Ulrich Eck

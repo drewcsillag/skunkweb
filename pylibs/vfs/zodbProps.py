@@ -1,8 +1,8 @@
 # $Id$
-# Time-stamp: <02/02/04 22:09:09 smulloni>
+# Time-stamp: <02/02/04 22:10:10 smulloni>
 
 ######################################################################## 
-#  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2002 Jocob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -20,86 +20,77 @@
 ########################################################################
 
 from vfs import PathPropertyStore
-import shelve
+import ZODB
+from Persistence import PersistentMapping
+import BTrees.OOBTree
+from ZEO import ClientStorage
 from os.path import normpath
 
-class ShelfPathPropertyStore(PathPropertyStore):
-    def __init__(self, dbname):
-        self.__dbname=dbname
-        try:
-            import gdbm
-            gdbm.open(dbname, 'c')
-        except:
-            shelve.open(dbname)
+class ZODBPathPropertyStore(PathPropertyStore):
 
-    def __db(self):
-        return shelve.open(self.__dbname)
+    """
+    a PathPropertyStore implementation backed by a ZODB, using
+    OOBTree and PersistentMapping, accessed via a ZEO ClientStorage.
+    You specify the connection specs for the ClientStorage (see the
+    ClientStorage constructor), and optionally the key under which
+    the data will be stored under the root (defaults to 'pps_store')
+    """
+    
+    def __init__(self, connectSpecs, root='pps_store'):
+        storage=ClientStorage.ClientStorage(connectSpecs)
+        db=ZODB.DB(storage)
+        self.__conn=db.open()
+        dbroot=self.__conn.root()
+        if not dbroot.has_key(root):
+            dbroot[root]=BTrees.OOBTree.OOBTree()
+            get_transaction().commit()
+        self.__db=dbroot[root]
         
     def getproperty(self, path, property):
         path=normpath(path)
-        property=str(property)
-        db=self.__db()
+        self.__conn.sync()
+        db=self.__db
         if db.has_key(path):
             pathhash=db[path]
             if pathhash.has_key(property):
                 return pathhash[property]
         raise KeyError, property
-            
+
     def setproperty(self, path, property, value):
         path=normpath(path)
-        property=str(property)
-        db=self.__db()
+        self.__conn.sync()
+        db=self.__db
         if db.has_key(path):
             pathhash=db[path]
-            pathhash[property]=value
         else:
-            pathhash={property : value}
-        db[path]=pathhash
-        db.close()
-
+            pathhash=PersistentMapping()
+            db[path]=pathhash
+        pathhash[property]=value
+        get_transaction().commit()
+        
     def properties(self, path):
         path=normpath(path)
-        db=self.__db()
+        self.__conn.sync()
+        db=self.__db
         if db.has_key(path):
-            return db[path]
-        return {}
+            return db[path].data.copy()
+        return ()
 
     def hasproperty(self, path, property):
         path=normpath(path)
-        db=self.__db()
+        self.__conn.sync()
+        db=self.__db
         return db.has_key(path) and db[path].has_key(property)
-
-    def haspath(self, path):
-        path=normpath(path)
-        return self.__db().has_key(path)
 
     def delproperty(self, path, property):
         path=normpath(path)
-        db=self.__db()
+        self.__conn.sync()
+        db=self.__db
         if db.has_key(path) and db[path].has_key(property):
             del db[path][property]
-            db.close()
-            
+            get_transaction.commit()
+
+    
 ########################################################################
 # $Log$
-# Revision 1.3  2002/02/05 03:18:17  smulloni
-# fixed ShelfPathPropertyStore, added a ZODB-based implementation, and added two methods to PathPropertyStore itself, one of them not virtual.
-#
-# Revision 1.2  2001/12/02 20:57:50  smulloni
-# First fold of work done in September (!) on dev3_2 branch into trunk:
-# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
-# to templating's <:img:> tag.
-#
-# Revision 1.1.2.2  2001/10/16 03:27:15  smulloni
-# merged HEAD (basically 3.1.1) into dev3_2
-#
-# Revision 1.1.2.1  2001/09/27 03:36:07  smulloni
-# new pylibs, work on PyDO, code cleanup.
-#
 ########################################################################
-
-
-
-
-    
-    

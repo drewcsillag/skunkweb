@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <2002-01-28 10:28:09 drew>
+# Time-stamp: <02/02/04 21:34:11 smulloni>
 
 ########################################################################
 #  
@@ -25,3 +25,8 @@ from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS
 from zipfs import ZipFS
 from tarfs import TarFS
+from shelfProps import ShelfPathPropertyStore
+try:
+    from zodbProps import ZODBPathPropertyStore
+except ImportError:
+    pass
