@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.13 2002/05/03 21:09:44 smulloni Exp $
+# $Id: protocol.py,v 1.14 2002/05/09 18:51:55 drew_csillag Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -349,6 +349,7 @@ def _processRequest(requestData, sessionDict):
     sessionDict[constants.CONNECTION]=connection
     sessionDict[constants.HOST]=connection.host
     sessionDict[constants.LOCATION]=connection.uri
+    sessionDict[constants.SERVER_PORT]=int(connection.env['SERVER_PORT'])
     try:
         DEBUG(WEB, 'executing HaveConnection hook')
         HaveConnection(Configuration.job, connection, sessionDict)
@@ -388,6 +389,8 @@ def _cleanupConfig(requestData, sessionDict):
         del sessionDict[constants.HOST]
     if sessionDict.has_key(constants.LOCATION):
         del sessionDict[constants.LOCATION]
+    if sessionDict.has_key(constants.SERVER_PORT):
+        del sessionDict[constants.SERVER_PORT]
     Configuration.trim()
 
     if sessionDict.has_key(constants.IP):
@@ -399,6 +402,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.14  2002/05/09 18:51:55  drew_csillag
+# Server: header juggling
+#
 # Revision 1.13  2002/05/03 21:09:44  smulloni
 # fix for dealing with exotic content-types in the request
 #

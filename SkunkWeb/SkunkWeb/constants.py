@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: constants.py,v 1.3 2002/07/11 19:21:55 drew_csillag Exp $
+# $Id: constants.py,v 1.4 2002/07/24 01:57:57 smulloni Exp $
 # Time-stamp: <01/05/04 13:31:34 smulloni>
 ########################################################################
 
@@ -28,6 +28,7 @@ a repository for constants defined by other services.
 
 IP='ip'
 PORT='port'
+SERVER_PORT='server_port'
 UNIXPATH='unixpath'
 JOB='job'
 CONNECTION='connection'
@@ -47,6 +48,9 @@ CGI_JOB = WEB_JOB + '/cgi/'
 PYCGI_JOB = WEB_JOB + '/pycgi/'
 ########################################################################
 # $Log: constants.py,v $
+# Revision 1.4  2002/07/24 01:57:57  smulloni
+# experimental, not to be much recommended pycgi service.
+#
 # Revision 1.3  2002/07/11 19:21:55  drew_csillag
 # added CGI_JOB
 #

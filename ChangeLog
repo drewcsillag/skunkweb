@@ -1,3 +1,10 @@
+2002-09-30  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/SkunkWeb/constants.py (SERVER_PORT),
+	SkunkWeb/Services/web/protocol.py (_processRequest),
+	SkunkWeb/SkunkWeb/ConfigAdditives.py (ServerPort): support for
+	scoping based on the SERVER_PORT environmental variable.
+
 2002-09-30    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): module was broken,

@@ -1,5 +1,5 @@
-# $Id: ConfigAdditives.py,v 1.4 2002/03/30 20:05:27 smulloni Exp $
-# Time-stamp: <02/07/15 11:00:26 smulloni>
+# $Id: ConfigAdditives.py,v 1.5 2002/07/15 15:07:10 smulloni Exp $
+# Time-stamp: <02/09/30 12:34:46 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
 #                     Jacob Smullyan <smulloni@smullyan.org>
@@ -25,6 +25,7 @@ __all__=['Location',
          'File',
          'Host',
          'Port',
+         'ServerPort',
          'IP',
          'UNIXPath',
          'Scope',
@@ -69,6 +70,13 @@ def Port(port, *kids, **kw):
                           kids,
                           kw)
 
+def ServerPort(port, *kids, **kw):
+    return _createMatcher(scope.StrictMatcher,
+                          'server_port',
+                          port,
+                          kids,
+                          kw)
+
 def IP(ip, *kids, **kw):
     return _createMatcher(scope.StrictMatcher,
                           'ip',
@@ -102,6 +110,11 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.5  2002/07/15 15:07:10  smulloni
+# various changes: configuration (DOCROOT); new sw.conf directive (File);
+# less spurious debug messages from rewrite; more forgiving interface to
+# MsgCatalog.
+#
 # Revision 1.4  2002/03/30 20:05:27  smulloni
 # added Include directive for sw.conf; fixed IP bug (was being clobbered in sw.conf)
 #
