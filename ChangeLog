@@ -1,3 +1,7 @@
+2001-08-10  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* INSTALL: removed reference to aed_compat
+
 2001-08-09  Drew Csillag  <drew@starmedia.net>
 
 	* docs/opman/opman.tex: almost done!!!
