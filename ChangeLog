@@ -1,3 +1,13 @@
+2002-01-29  Andrew Csillag  <drew@thoughttrack.com>
+
+	* pylibs/static.py: after having dropped this fix that actually
+	makes this stuff work on 2.2, finally reinstated the fix because
+	__call__ was being improperly handled.
+
+2002-01-28  Andrew Csillag  <drew@thoughttrack.com>
+
+	* 3.2beta0 cut
+
 2002-01-27  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/PyDO.py (PyDOBase.get): self.get(columnname,
