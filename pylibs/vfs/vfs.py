@@ -1,9 +1,9 @@
 # $Id$
-# Time-stamp: <02/06/19 09:34:15 smulloni>
+# Time-stamp: <02/07/23 21:36:45 smulloni>
 
 ########################################################################
 #  
-#  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2001, 2002 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -164,6 +164,30 @@ class FS:
             return 1
         except:
             return 0
+
+    def split_extra(self, path, extra_info='', nodir=1):
+        """
+        if given a path will extra path info, will
+        return (path of existing file, extra path info)
+        if some part of the path represents an existing file, and
+        ('', '') if there is no file.  If nodir is true,
+        the file must not be a directory unless extra_info=='', or
+        the return value will be ('', '').
+        """
+        
+        if path=='':
+            return ('', '')
+        if self.exists(path):
+            if nodir and self.isdir(path) and extra_info!='':
+                return ('', '')
+            return path, extra_info
+        else:
+            p, e=os.path.split(path)
+            if extra_info:
+                ex='%s/%s' % (e, extra_info)
+            else:
+                ex=e
+            return self.split_extra(p, ex, nodir)
     
     def isdir(self, path):
         raise NotImplementedError
@@ -495,6 +519,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.13  2002/07/24 01:53:26  smulloni
+# added FS method for finding extra path info
+#
 # Revision 1.12  2002/06/19 13:37:43  smulloni
 # some pychecker-inspired fixes.
 #

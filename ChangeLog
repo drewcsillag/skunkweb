@@ -1,3 +1,8 @@
+2002-07-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/vfs.py (FS.split_extra): added FS method for finding
+	extra path info.
+
 2002-07-23  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/util/cache_reaper.py.in: add @libdir@/pylibs to
