@@ -1,5 +1,7 @@
 2002-11-19    <smulloni@smullbola.smullyan.org>
 
+	* pylibs/formlib/state.py: some cleanup; not ready yet.
+
 	* test/formlib/htdocs/test3.html: another test.
 
 	* pylibs/formlib/form.py (Form.validate): errors are now kept as

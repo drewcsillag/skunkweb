@@ -4,24 +4,6 @@ from md5 import md5
 
 class InvalidStateException(Exception): pass
 
-class ArmorEncoder:
-    def __init__(self, nonce):
-        self.nonce=nonce
-        
-    def encode(self, thing):
-        s = cPickle.dumps(thing, 1)
-        hash = md5(self.nonce + s).digest()
-        outv = base64.encodestring(hash + s)
-        return ''.join(outv.split('\n'))
-
-    def decode(self, thingstr):
-        inv = base64.decodestring(thingstr)
-        hash, pick = inv[:16], inv[16:]
-        nhash = md5.md5(self.nonce + pick).digest()
-        if nhash != hash:
-            raise InvalidStateException, 'state has been tampered with'
-        return cPickle.loads(pick)
-    
 try:
     import Crypto.Cipher.AES as AES
 except ImportError:
@@ -32,9 +14,9 @@ if AES:
         def __init__(self, key, IV=None):
             self.key=key
             self.__key=md5(key).digest()
-            if IV=None:
+            if IV==None:
                 IV=self.key[:16].ljust(16)
-            self.aes=AES.new(self.__key, AES.MODE_CBC, IV)
+            self.IV=IV
 
         def _pad(self, thing):
             s='%dX%s' % (len(thing), thing)
@@ -43,33 +25,33 @@ if AES:
             return s.ljust(ls-m + AES.block_size)
 
         def _unpad(self, padded):
-            xind=s.find('X')
-            num=int(s[:xind])
-            return s[xind+1:xind+1+num]
+            xind=padded.find('X')
+            num=int(padded[:xind])
+            return padded[xind+1:xind+1+num]
          
 
         def encode(self, thing):
             thing=self._pad(thing)
-            return self.aes.encrypt(thing)
+            return AES.new(self.__key, AES.MODE_CBC, self.IV).encrypt(thing)
 
         def decode(self, encoded):
-            thing=self.aes.decrypt(encoded)
+            thing=AES.new(self.__key, AES.MODE_CBC, self.IV).decrypt(encoded)
             return self._unpad(thing)
+
             
 
 
 class InPageStateManager:
-    def __init__(self, nonce, stateVariable='_state'):
+    def __init__(self, nonce, stateEncoder=None, stateVariable='_state'):
         self.state = {'stack' : []}
-
-        #these are non-persisted state items
-        self.nonce = nonce
+        self.encoder=stateEncoder
         self.stateVariable=stateVariable
 
-        
     def write(self):
         s = cPickle.dumps(self.state, 1)
-        hash = md5.md5(self.nonce + s).digest()
+        if self.encoder:
+            s=self.encoder.encode(s)
+        hash = md5(self.nonce + s).digest()
         outv = base64.encodestring(hash + s)
         return ''.join(outv.split('\n'))
 
@@ -79,6 +61,8 @@ class InPageStateManager:
         nhash = md5.md5(self.nonce + pick).digest()
         if nhash != hash:
             raise InvalidStateException, 'state has been tampered with'
+        if self.encoder:
+            pick=self.encoder.decode(pick)
         self.state = cPickle.loads(pick)
 
     def setstate(self, cgiarguments):
