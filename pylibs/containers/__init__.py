@@ -22,3 +22,4 @@ a container for any container classes we might need to come up with.
 
 from fieldcontainer import FieldContainer
 from set import Set
+from treenode import TreeNode
