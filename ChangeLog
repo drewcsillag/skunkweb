@@ -1,3 +1,13 @@
+2003-04-03    <drew@loki.sai-office>
+
+	* pylibs/AE/Cache.py: added runOutOfCache and dontCacheSource
+	options
+
+	* docs/opman/opman.tex: added doc for runOutOfCache and 
+	dontCacheSource
+
+	* ACKS: added Hy Ginsberg
+
 2003-04-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/swmgr.in: You can now stop or restart the daemon
