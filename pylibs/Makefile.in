@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Makefile.in,v 1.8 2003/04/16 14:40:41 drew_csillag Exp $
+# $Id: Makefile.in,v 1.9 2003/04/16 20:35:30 smulloni Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -29,10 +29,10 @@ pylibs_dir	= @libdir@/pylibs
 skunk_bindir    = @bindir@
 
 # Python components which require cleaning 
-py_comps	= signal_plus skunklib uuid AE/cacheKey scopeable
+py_comps	= signal_plus skunklib uuid AE/cacheKey
 
 # Exclude from wide file search. Use | to separate entries
-exclude	= "CVS|string8859|pargen|skunkdoc"
+exclude	= "CVS|string8859|pargen|skunkdoc|scopeable"
 
 #
 # Who to install as and what modes to set
