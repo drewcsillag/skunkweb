@@ -1,3 +1,8 @@
+2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Makefile.in: fix for nasty bug: improper conditional 
+	tests (ifeq(@THING@, ' ') rather than ifeq(@THING@,) )
+
 2001-11-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/configure.in: use docroot, cache, docsdir, and make 
