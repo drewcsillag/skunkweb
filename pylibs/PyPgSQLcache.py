@@ -6,7 +6,8 @@
 #      README file.
 #   
 import string
-from PyPgSQL import PgSQL
+import sys
+from pyPgSQL import PgSQL
 from SkunkExcept import SkunkStandardError
 # The connect string dictionary 
 _users={}

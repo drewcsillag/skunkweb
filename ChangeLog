@@ -1,3 +1,9 @@
+2003-05-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyPgSQLcache.py: typo fixes.
+
+	* SkunkWeb/Services/pypgsqlcache.py: typo fix.
+
 2003-05-02    <drew@loki.sai-office>
 
 	* SkunkWeb/Services/web/protocol.py (HTTPConnection.response): 

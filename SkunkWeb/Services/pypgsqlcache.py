@@ -7,17 +7,17 @@
 ########################################################################
 
 from SkunkWeb import Configuration
-import PyPgSQLCache
+import PyPgSQLcache
 
 Configuration.mergeDefaults(
     PyPgSQLConnectParams = {},
     )
 
 for u, p in Configuration.PyPgSQLConnectParams.items():
-    PyPgSQLCache.initUser ( u, p )
+    PyPgSQLcache.initUser ( u, p )
 
 def rollback(*args):
-    for v in PyPgSQLCache._connections.values():
+    for v in PyPgSQLcache._connections.values():
         v.rollback()
 
 from requestHandler.requestHandler import CleanupRequest
