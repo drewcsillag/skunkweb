@@ -1,9 +1,15 @@
+2002-07-29  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/psp.py: added
+
 2002-07-28  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/pycgi.py (_fix): dumb error in determining
 	SCRIPT_NAME 
 
 2002-07-28  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/devel/devel.tex: revamping
 
 	* docs/paper-letter/Makefile, docs/html/Makefile: added stuff for
 	tutorial
