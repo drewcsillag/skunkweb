@@ -1,4 +1,6 @@
-2001-08-10  Drew Csillag  <drew@starmedia.net>
+2001-08-09  Drew Csillag  <drew@starmedia.net>
+
+	* docs/opman/opman.tex: almost done!!!
 
 	* pylibs/PyDO/oracleconn.py: now correctly uses the Oracle module
 	instead of the now-defunct SQL module
