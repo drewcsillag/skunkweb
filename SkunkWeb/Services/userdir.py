@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
+# $Id: userdir.py,v 1.1 2001/09/21 20:16:31 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:07:01 smulloni>
 ########################################################################
 import pwd
@@ -64,6 +64,8 @@ def doUserDirPre(connection, sessionDict):
         
         
 def doUserDirPost(job, sessionDict): #requestHandler.requestHandler.EndSession
+    if not Configuration.userDir:
+        return
     if not sessionDict.hasKey('UserDir'):
         return
     if not sessionDict['UserDir']:
@@ -71,6 +73,8 @@ def doUserDirPost(job, sessionDict): #requestHandler.requestHandler.EndSession
 
     Configuration.documentRoot = sessionDict['UserDirDocRoot']
     Configuration.compileCacheRoot = sessionDict['UserDirCC']
+    del sessionDict['UserDirCC'], sessionDict['UserDirDocRoot']
+    del sessionDict['UserDir']
     return
 
 def __initHooks():
