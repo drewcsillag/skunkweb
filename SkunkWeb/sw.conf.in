@@ -1,6 +1,6 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.20 2002/07/05 14:22:10 drew_csillag Exp $
+# $Id: sw.conf.in,v 1.21 2002/07/11 19:55:31 drew_csillag Exp $
 # Time-stamp: <2002-07-11 15:49:42 acsillag>
 
 ########################################################################
@@ -324,16 +324,16 @@ sys.path.append('@prefix@/sitelibs')
 # the accessLog logs access information, and the errorLog logs erroneous
 # conditions (mostly tracebacks)
 #
-# regularLog = '@prefix@/var/log/sw.log'
-# debugLog = '@prefix@/var/log/debug.log'
-# accessLog = '@prefix@/var/log/access.log'
-# errorLog = '@prefix@/var/log/error.log'
+# regularLog = '@localstatedir@/log/skunk/sw.log'
+# debugLog = '@localstatedir@/log/skunk/debug.log'
+# accessLog = '@localstatedir@/log/skunk/access.log'
+# errorLog = '@localstatedir@/log/skunk/error.log'
 
 ########################################################################
 # Location of where to put the pidFile that tells swmgr how to find the
 # running SkunkWeb server process
 #
-# pidFile = '@prefix@/var/run/sw.pid
+# pidFile = '@localstatedir@/run/sw.pid
 
 
 
@@ -425,7 +425,7 @@ sys.path.append('@prefix@/sitelibs')
 ########################################################################
 # The location of your mimetypes file
 #
-# mimeTypesFile = '@prefix@/etc/mime.types'
+# mimeTypesFile = '@sysconfdir@/mime.types'
 
 ########################################################################
 # If we cannot determine the mime type by examining the extension of the
@@ -575,7 +575,7 @@ sys.path.append('@prefix@/sitelibs')
 ########################################################################
 # For the FSSessionStoreImpl, the directory where pickle files should
 # be created
-# SessionHandler_FSSessionDir='@prefix@/var/run/skunksessions'
+# SessionHandler_FSSessionDir='@localstatedir@/run/skunksessions'
 
 ########################################################################
 # END sessionHandler CONFIG
@@ -638,6 +638,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.21  2002/07/11 19:55:31  drew_csillag
+# added bits about extcgi
+#
 # Revision 1.20  2002/07/05 14:22:10  drew_csillag
 # fixed typo in HTTPKeepAliveTimeout
 # 	(previously, the "a" in alive wasn't capitalized as it should've

@@ -65,7 +65,7 @@ for (opt, optval) in optlist:
     else: # opt in ('--config-files', '-c'):
         configFiles = optval.split(':')
 
-SkunkWebPath = '@prefix@/lib'
+SkunkWebPath = '@libdir@'
 if SkunkWebPath[0] != '@':
     sys.path.append(SkunkWebPath)
     

@@ -20,22 +20,20 @@
 #
 
 # 
-# The location where skunk is going to be installed
+# The locations where skunk is going to be installed.  
 #
-prefix		= @prefix@
-exec_prefix	= @exec_prefix@
-skunk_data_dir	= @prefix@/share
-skunk_var_dir	= @prefix@/var
+prefix		 = @prefix@
+exec_prefix	 = @exec_prefix@
+skunk_data_dir	 = @datadir@
+skunk_var_dir	 = @localstatedir@
 skunk_config_dir = @sysconfdir@
-skunk_bin_dir	= @bindir@
+skunk_bin_dir	 = @bindir@
+skunk_log_dir    = @LOGDIR@
 
 # List of components to install
 # XXX - it is important that pylibs is listed first, as other components do
 # depend on it
 components  	= pylibs @WITH_SKUNKWEB@ 
-
-# Can be overriden to allow easy package creation
-root		=
 
 # Owner of everything
 owner		= @OWNER@
@@ -85,8 +83,9 @@ install: make-tree
 
 make-tree:
 	@# Build the core tree
-	$(INSTALL) -d  $(prefix) $(skunk_config_dir) $(skunk_bin_dir) 
-
+	for dee in $(prefix) $(skunk_config_dir) $(skunk_bin_dir) $(skunk_log_dir) $(skunk_data_dir) $(skunk_var_dir); do \
+	    $(INSTALL) -d $$DESTDIR$$dee; \
+	done
 
 #
 # Some re-make rules

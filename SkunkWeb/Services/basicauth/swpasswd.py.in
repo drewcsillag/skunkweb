@@ -21,7 +21,7 @@ import sys
 import getopt
 import getpass
 
-sys.path.append('@prefix@/lib/pylibs')
+sys.path.append('@libdir@/pylibs')
 import Authenticator
 
 def help():

@@ -1,4 +1,5 @@
-#  
+# -*-python-*-
+# 
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      This program is free software; you can redistribute it and/or modify
@@ -15,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: LogObj.py,v 1.20 2001/08/01 01:43:53 smulloni Exp $
+#$Id: LogObj.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 ########################################################################
 
 """
@@ -29,6 +30,7 @@ import time
 import traceback
 import cStringIO
 import Logger
+import confvars
 #import mmlib.mmint
 
 class Redirector:
@@ -57,10 +59,10 @@ def redirectStdOutErr():
 ########################################################################        
 
 Configuration.mergeDefaults(
-    accessLog =  '%s/var/log/access.log' % Configuration.SkunkRoot,
-    errorLog =   '%s/var/log/error.log' % Configuration.SkunkRoot,
-    regularLog = '%s/var/log/sw.log' % Configuration.SkunkRoot,
-    debugLog =   '%s/var/log/debug.log' % Configuration.SkunkRoot,
+    accessLog =  confvars.DEFAULT_ACCESS_LOG,
+    errorLog =   confvars.DEFAULT_ERROR_LOG,
+    regularLog = confvars.DEFAULT_REGULAR_LOG,
+    debugLog =   confvars.DEFAULT_DEBUG_LOG,
     stampEveryLine = 1,
     initialDebugServices=[]
     )
@@ -97,6 +99,10 @@ Hooks.ChildStart.append(Logger.initLogStamp)
 
 ########################################################################
 # $Log: LogObj.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.20  2001/08/01 01:43:53  smulloni
 # modified Logger.py so Configuration.debugLog, accessLog, errorLog, and
 # regularLog can be scoped.

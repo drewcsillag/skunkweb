@@ -49,6 +49,12 @@ AC_ARG_WITH(docroot,
 DOCROOT=$withval], [
 DOCROOT=])
 
+AC_SUBST(LOGDIR)
+AC_ARG_WITH(logdir,
+[ --logdir   Specify default directory for log files (default <SkunkRoot>/var/log)], [
+LOGDIR=$withval], [
+LOGDIR=])
+
 AC_SUBST(CACHE)
 AC_ARG_WITH(cache,
 [ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
@@ -202,11 +208,22 @@ AC_PATH_PROG(LATEX, latex)
 AC_PATH_PROG(PDFLATEX, pdflatex)
 AC_PATH_PROG(DVIPS, dvips)
 
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+test "x$exec_prefix" = xNONE && exec_prefix=$prefix
+
+eval libdir=$libdir
+eval bindir=$bindir
+eval sysconfdir=$sysconfdir
+eval localstatedir=$localstatedir
+eval datadir=$datadir
+
+
 AC_CONFIG_SUBDIRS(SkunkWeb)
 
 AC_ADD_HELP([
 Additional options if building SkunkWeb:
   --with-docroot          Specify default docroot location 
+  --with-logdir           Specify default log location
   --with-cache            Specify default cache location
   --with-docsdir          Specify documentation location
   --with-webdoc           Install some sample content
@@ -224,7 +241,6 @@ Additional options if building SkunkWeb:
   --without-mod_skunkweb  Don't build mod_skunkweb
   --with-apxs=/path/apxs  Specify path to the apxs program
 ])
-
 
 AC_OUTPUT(Makefile pylibs/Makefile pylibs/skunkdoc/skunkdoc.py pylibs/skunkdoc/skunkdoc2html.py pylibs/skunkdoc/skunkdoc2latex.py docs/Makefile)
 dnl pylibs/mmlib/Setup)

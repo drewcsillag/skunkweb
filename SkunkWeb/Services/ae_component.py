@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ae_component.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
+# $Id: ae_component.py,v 1.2 2001/08/27 18:45:07 drew_csillag Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -47,14 +47,14 @@ def __initDebug():
 
 def __initConfig():
     from AE import cfg
-    from SkunkWeb import Configuration
+    from SkunkWeb import Configuration, confvars
     # set our defaults from AE defaults
     Configuration.mergeDefaults(
         documentRoot = "%s/docroot" % Configuration.SkunkRoot,
         compileCacheRoot = "%s/cache" % Configuration.SkunkRoot,
         componentCacheRoot = "%s/cache" % Configuration.SkunkRoot,
         failoverComponentCacheRoot = "%s/failoverCache" % Configuration.SkunkRoot,
-        mimeTypesFile = "%s/etc/mime.types" % Configuration.SkunkRoot,
+        mimeTypesFile = confvars.DEFAULT_MIME_TYPES_FILE_NAME,
         componentCommentLevel = 0,
         )
     dd = {}
@@ -177,6 +177,9 @@ __initHooks()
 
 ########################################################################
 # $Log: ae_component.py,v $
+# Revision 1.2  2001/08/27 18:45:07  drew_csillag
+# performance tweaks
+#
 # Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
 # take 2 of import
 #

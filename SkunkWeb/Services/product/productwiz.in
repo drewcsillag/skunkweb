@@ -22,11 +22,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # This script starts the product wizard (requires Tkinter).
-# $Id$
+# $Id: productwiz.in,v 1.1 2002/04/01 00:06:56 smulloni Exp $
 ########################################################################
-
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-bindir=@bindir@
 
 @bindir@/swpython -e "import product.productwiz as P; P.main()" &

@@ -1,4 +1,5 @@
-#  
+# -*-python-*-
+#
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      This program is free software; you can redistribute it and/or modify
@@ -15,8 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.2 2001/08/17 16:47:21 drew_csillag Exp $
-# Time-stamp: <01/04/16 14:10:32 smulloni>
+# $Id: Server.py,v 1.3 2002/06/05 20:29:20 drew_csillag Exp $
 ########################################################################
 
 ########################################################################
@@ -127,11 +127,11 @@ class SkunkWebServer(SocketMan):
         self.maxKillTime = Configuration.maxKillTime
             
 def _setConfigDefaults():
-
+    import confvars
     Configuration.mergeDefaults(
         numProcs = 15,
         maxKillTime = 5,
-        pidFile = "%s/var/run/sw.pid" % Configuration.SkunkRoot,
+        pidFile = confvars.DEFAULT_PID_FILE,
         pollPeriod = 5,
         maxRequests = 256,
         userModuleCleanup = 0,
@@ -152,6 +152,18 @@ svr.moduleSnapshot()
 
 ########################################################################
 # $Log: Server.py,v $
+# Revision 1.3  2002/06/05 20:29:20  drew_csillag
+# 	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind
+# 	us that in the event that we add an import, that we add that import
+# 	to _stupidfunc in the bootloader
+#
+# 	* SkunkWeb/SkunkWeb/bootloader.py.in(init): now has some logic
+# 	to produce a true module snapshot that should always do the right
+# 	thing so reload will work
+#
+# 	* SkunkWeb/skunkweb.py.in: adjusted for bootloader change so reload
+# 	should now work properly -- again
+#
 # Revision 1.2  2001/08/17 16:47:21  drew_csillag
 # fixed syntax warning
 #

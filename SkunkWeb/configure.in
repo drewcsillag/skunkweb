@@ -50,6 +50,12 @@ AC_ARG_WITH(docroot,
 DOCROOT=$withval], [
 DOCROOT=\${prefix}/docroot])
 
+AC_SUBST(LOGDIR)
+AC_ARG_WITH(logdir,
+[ --logdir   Specify default directory for log files (default <SkunkRoot>/var/log)], [
+LOGDIR=$withval], [
+LOGDIR=\${localstatedir}/log])
+
 AC_SUBST(CACHE)
 AC_ARG_WITH(cache,
 [ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
@@ -67,13 +73,6 @@ AC_ARG_WITH(group,
 [  --with-group=group      Make Skunk installation owned by group], [
 	GROUP=$withval], [
 	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
-
-dnl AC_SUBST(DCORACLE)
-dnl AC_SUBST(SW_PORT)
-dnl AC_ARG_WITH(port, 
-dnl [  --with-port=port    Configure AED daemon to listen on given port], [
-dnl 	    SW_PORT=$withval], [
-dnl 	    SW_PORT=9888;])
 
 AC_SUBST(WEBDOC)
 AC_ARG_WITH(webdoc, 
@@ -197,7 +196,19 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+test "x$exec_prefix" = xNONE && exec_prefix=$prefix
+
+eval libdir=$libdir
+eval bindir=$bindir
+eval sysconfdir=$sysconfdir
+eval localstatedir=$localstatedir
+eval datadir=$datadir
+eval LOGDIR=$LOGDIR
+eval DOCROOT=$DOCROOT
+eval CACHE=$CACHE
+
 AC_OUTPUT(Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
-Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py 
+Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py SkunkWeb/confvars.py
 util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
 Services/product/productwiz swcgi.py)
