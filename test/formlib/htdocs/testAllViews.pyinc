@@ -2,12 +2,12 @@ from formlib import *
 
 psswdFld = PasswordField('password', description="Password", size="40", maxlength="39")
 txtFld = TextField('textfield', description="Textfield", size="40", maxlength="39")
-btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="40", maxlength="39", value="Click Me")
+btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="40", maxlength="39", default="Click Me")
 fileFld = FileField('file', description="FileField", size="40")
-hdnFld = HiddenField('hidden', description="HiddenField", default="default", value="Hidden am I")
+hdnFld = HiddenField('hidden', description="HiddenField", default="default")
 imgFld = ImageField('image', description="ImageField", src="http://skunkweb.sourceforge.net/images/skunkWEB1_04.gif")
 btnFld = ButtonField("content", 'button', 'ButtonField', default='default') 
-txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value", value="don't show") 
+txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value")
 
 selFld = SelectField('select', 
                      ['singlestring', ('Non grouped value', 'non_grouped_value' ), ('Default', 'default'), 
