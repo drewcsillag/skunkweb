@@ -6,7 +6,7 @@
 #      README file.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.19 2003/05/01 20:45:52 drew_csillag Exp $
+# $Id: Makefile.in,v 1.20 2003/05/02 13:21:54 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -52,7 +52,7 @@ DEMO_DIRS=geeknews geeknews/dcomps gallery gallery/comp
 
 default:	build
 
-build:
+build:  swpython
 
 swpython: swpython.c
 
@@ -138,6 +138,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.20  2003/05/02 13:21:54  drew_csillag
+# added things for swpython
+#
 # Revision 1.19  2003/05/01 20:45:52  drew_csillag
 # Changed license text
 #
