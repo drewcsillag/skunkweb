@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: remote_client.py,v 1.7 2001/07/30 16:44:45 smulloni Exp $
+# $Id: remote_client.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
 # Time-stamp: <01/05/09 14:36:02 smulloni>
 ########################################################################
 
@@ -92,7 +92,7 @@ class SkunkWebRemoteComponentHandler(AE.Component.ComponentHandler):
                 and issubclass(unPickled[0], exceptions.Exception)
                 and isinstance(unPickled[1], exceptions.Exception)):       
                 raise getRemoteException(unPickled[1])
-        return unPickled
+        return unPickled, 1, 1
 
     def __parseComponentName(self, name):
         """
@@ -127,6 +127,10 @@ AE.Component.componentHandlers[SWRC_PROTOCOL]=SkunkWebRemoteComponentHandler()
 
 ########################################################################
 # $Log: remote_client.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/07/30 16:44:45  smulloni
 # fixed remote services to work with changed API of AE.Component.
 #
