@@ -23,8 +23,8 @@ rendering of forms and fields to AE components.
 """
 
 from AE.Component import callComponent, DT_REGULAR, NO
-
-from views import ViewableField, ViewableDomainField, ViewableForm
+from form import Form
+from views import ViewableField, ViewableDomainField, ViewableForm, Viewable
 
 class ComponentViewableMixin(object):
     def __init__(self,
