@@ -1,5 +1,5 @@
-# Time-stamp: <02/02/20 22:53:18 smulloni>
-# $Id: __init__.py,v 1.5 2002/02/21 00:15:39 smulloni Exp $
+# Time-stamp: <2002-07-09 11:37:45 acsillag>
+# $Id: __init__.py,v 1.6 2002/02/21 07:20:16 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -98,3 +98,12 @@ def _real_connect(connUser, connParams):
         raise SkunkStandardError, ('cannot connect to MySQL: %s' % 
                   (sys.exc_info()[1],))
     
+def _initStuff():
+    #here so that these will be imported ahead of time so that
+    #userModuleCleanup won't clobber them
+    import MySQLdb
+    from MySQLdb import connections, converters, cursors, sets, times
+    from MySQLdb import constants, _mysql
+    from MySQLdb.constants import CLIENT, CR, ER, FIELD_TYPE, FLAG, REFRESH
+    
+_initStuff()
