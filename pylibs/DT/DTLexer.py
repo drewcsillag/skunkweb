@@ -7,12 +7,11 @@
 #   
 import string
 import sys
-sys.path.append('..')
 import pcre
-
 import ErrorHandler
 import SkunkExcept
 from DTExcept import DTLexicalError
+import StringIO
 
 #regex for a quoted string (no backslach escaping)
 quotedStr="('(.*?)' | \"(.*?)\" | `(.*?)`)"
@@ -85,14 +84,13 @@ class DTToken:
         return self.text[self.start:self.end]
 
     def __repr__(self):
-        import string
-        tupvals=string.join(map(repr, self.tupargs),' ')
+        tupvals=' '.join(map(repr, self.tupargs))
         if tupvals:
             tupvals=' '+tupvals
         dl=[]
         for k,v in self.dictargs.items():
             dl.append('%s=%s' % (k, repr(v)))
-        dictvals=string.join(dl, ' ')
+        dictvals=' '.join(dl)
         if dictvals:
             dictvals=' '+dictvals
         close=self.isclose and '/' or ''
@@ -220,7 +218,9 @@ def findTags(text):
             state = backslash_save_state
 
         offset = offset + 1
-    if state != INIT:
+    # GOTLT should be an acceptable state for the file
+    # to terminate in
+    if state != INIT and state != GOTLT:
         md = {PLAINTAGTEXT: "text",
               SQUOT:    "in single quoted area",
               DQUOT:    "in double quoted area",
@@ -229,9 +229,10 @@ def findTags(text):
               BACKSLASH: "after backslash",
 	      INCOMMENT: "in comment"
               }
-        raise DTLexicalError( msg = "hit end of file %s in tag, beginning of "
-                "tag %s at" % (md[state], text[tagoffset:tagoffset+10]+"..."),
-                lineno = getLineno ( text, tagoffset ))
+        raise DTLexicalError(msg = "hit end of file %s in tag, beginning of "
+                             "tag %s at" % (md.get(state, "[unknown state]"),
+                                            text[tagoffset:tagoffset+10]+"..."),
+                             lineno = getLineno ( text, tagoffset ))
     else:
         ret.append([textoffset, offset, 0, text[textoffset:offset]])
     return ret
@@ -303,7 +304,6 @@ def processTag(tagString, text, st, end):
     return tagname, tupargs, dictargs
 
 def getLineno(text, offset):
-    import StringIO
     f=StringIO.StringIO(text)
     bread=0
     lineno=0

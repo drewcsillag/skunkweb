@@ -1,3 +1,8 @@
+2004-04-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/DT/DTLexer.py (findTags): now allows files to end
+	in "<".
+
 2004-04-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py: when checking for change of a file, now return
