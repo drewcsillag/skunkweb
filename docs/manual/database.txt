@@ -1,0 +1,89 @@
+===================
+The SkunkWeb Manual
+===================
+
+-------------------------
+Chapter : Database Access
+-------------------------
+
+:Author: Brian Olsen
+:Version: 0.1
+:Status: Draft
+
+.. contents:: Table Of Contents
+.. section-numbering::
+
+
+
+Introduction
+============
+
+    SkunkWeb allows developers to communicate with external DBMSs using standard Python DB-API compatible modules. You can use the database module directly, by creating and closing connections, but for situations where there is a lot of connections to the SkunkWeb server, this will be turn into a bottleneck. Therefore, SkunkWeb has the ability to cache database server connections, so the same connections are used across different requests. (SkunkWeb caches database connections, as opposed to pooling connections, where threaded servers might use. SkunkWeb opens a connection for each process lazily - if a database connection request is made and there is not an open connection in the process handling the request, a database connection is created and the connection remains until the child process dies.)
+
+    At the completion of each request, the current transaction is rollbacked, to make everything all tidy if nothing was explicitly commited - (you don't want uncommitted data to be committed at the next request!) This feature is optional for MySQL, and if you use a transactional table handler with MySQL, then you can set it to roll back.
+
+    Currently, SkunkWeb can cache connections to the MySQL, PostgreSQL, FirebirdSQL/Interbase and Oracle DBMSs. Adding new DBMSs is simple - read the last section, "Extending SkunkWeb" for more details.
+
+
+Setup And Configuration
+-----------------------
+
+MySQL
+~~~~~
+
+[TODO]
+
+PostgreSQL
+~~~~~~~~~~
+
+[TODO]
+
+
+FirebirdSQL/Interbase
+~~~~~~~~~~~~~~~~~~~~~
+
+[TODO]
+
+
+Oracle
+~~~~~~
+
+[TODO]
+
+
+Retrieving A Database Connection
+--------------------------------
+
+Retrieving a database connection is too simple - one line and it outputs the connection object for the relevant database module. You would use the getConnection() function to return a Connection object.
+
+The only parameter for getConnection() is the name of the connection parameters specified in sw.conf.
+
+    - For MySQL::
+        
+        import MySQL
+        connection = MySQL.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+    
+    - For PostgreSQL::
+    
+        import PostgreSql
+        connection = PostgreSql.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+    
+    - For FirebirdSQL/Interbase::
+    
+        import Firebird
+        connection = Firebird.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+    
+    - For Oracle::
+        
+        import Oracle
+        connection = Oracle.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+
+After retrieving the connection, you would use the connection methods that is compatible with the Python DB-API standard. The DB-API: http://www.python.org/peps/pep-0249.html.
