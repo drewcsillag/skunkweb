@@ -194,7 +194,3 @@ def sqlExec(connUser, stmt, start = 0, end = None, fudge = 0):
     desc = cur.fields()
     return ResultList(desc, results)
 
-if __name__ == '__main__':
-    initUser('drew', (('localhost', 'root', 'mor10enf'), 'test'))
-    getConnection('drew')
-    print sqlExec('drew', 'select * from foo')
