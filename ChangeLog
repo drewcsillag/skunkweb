@@ -1,5 +1,10 @@
 2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/configure.in, SkunkWeb/configure, configure.in,
+	configure: CACHE, DOCROOT, DOCSDIR and LOGDIR were not getting set
+	properly, The configure options for them now all begin with
+	"--with-".
+
 	* skunkweb.spec: incorporating SR's latest fixes to what I screwed
 	up.
 	(Requires): changing path of cache directory argument to cache reaper.

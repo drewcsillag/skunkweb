@@ -36,19 +36,19 @@ fi
 
 AC_SUBST(DOCROOT)
 AC_ARG_WITH(docroot,
-[ --docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
+[ --with-docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
 DOCROOT=$withval], [
 DOCROOT=\${prefix}/docroot])
 
 AC_SUBST(LOGDIR)
 AC_ARG_WITH(logdir,
-[ --logdir   Specify default directory for log files (default <SkunkRoot>/var/log)], [
+[ --with-logdir   Specify default directory for log files (default <SkunkRoot>/var/log)], [
 LOGDIR=$withval], [
 LOGDIR=\${localstatedir}/log])
 
 AC_SUBST(CACHE)
 AC_ARG_WITH(cache,
-[ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
+[ --with-cache     Specify default cache location (default <SkunkRoot>/cache)], [
 CACHE=$withval], [
 CACHE=\${prefix}/cache])
 

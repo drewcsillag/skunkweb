@@ -43,31 +43,31 @@ fi
 
 AC_SUBST(DOCROOT)
 AC_ARG_WITH(docroot,
-[ --docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
+[  --with-docroot          Specify default docroot location (default <SkunkRoot>/docroot)], [
 DOCROOT=$withval], [
 DOCROOT=])
 
 AC_SUBST(LOGDIR)
 AC_ARG_WITH(logdir,
-[ --logdir   Specify default directory for log files (default <SkunkRoot>/var/log)], [
+[  --with-logdir           Specify default directory for log files (default <SkunkRoot>/var/log)], [
 LOGDIR=$withval], [
 LOGDIR=])
 
 AC_SUBST(CACHE)
 AC_ARG_WITH(cache,
-[ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
+[  --with-cache            Specify default cache location (default <SkunkRoot>/cache)], [
 CACHE=$withval], [
 CACHE=])
 
 AC_SUBST(DOCSDIR)
 AC_ARG_WITH(docsdir,
-[ --docsdir    Specify location for documentation (default <SkunkRoot>/docs)], [
+[  --with-docsdir          Specify location for documentation (default <SkunkRoot>/docs)], [
 DOCSDIR=$withval], [
 DOCSDIR=])
 
 AC_SUBST(WITH_SKUNKWEB)
 AC_ARG_WITH(skunkweb, 
-[  --with-skunkweb       Install SkunkWeb as part of this installation (default yes)], [
+[  --with-skunkweb         Install SkunkWeb as part of this installation (default yes)], [
 	case $withval in
 	no) WITH_SKUNKWEB=;;
 	yes) WITH_SKUNKWEB=SkunkWeb;;
@@ -78,7 +78,7 @@ AC_ARG_WITH(skunkweb,
 # look for python
 AC_MSG_CHECKING([--with-python given])
 AC_ARG_WITH(python,
-[  --with-python=/path/python   Specify path to python executable],[
+[  --with-python=PATH      Specify path to python executable],[
 	AC_MSG_RESULT([yes $withval])
 	PYTHON=$withval],[
 	AC_MSG_RESULT([no, will look in \$PATH])
@@ -223,14 +223,10 @@ AC_CONFIG_SUBDIRS(SkunkWeb)
 
 AC_ADD_HELP([
 Additional options if building SkunkWeb:
-  --with-docroot          Specify default docroot location 
-  --with-logdir           Specify default log location
-  --with-cache            Specify default cache location
-  --with-docsdir          Specify documentation location
   --with-webdoc           Install some sample content
-  --with-sudo=/path/sudo  Specify path to sudo
+  --with-sudo=PATH        Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb
-  --with-apxs=/path/apxs  Specify path to the apxs program
+  --with-apxs=PATH        Specify path to the apxs program
   --with-runasroot        If you want to have SkunkWeb bind to low ports, add
                           this switch.  (see the userToRunAs and groupToRunAs
                           configuration variables)

@@ -15,11 +15,11 @@ ac_default_prefix=/usr/local/skunk
 ac_help="$ac_help
   --with-python=/path/python   Specify path to python executable"
 ac_help="$ac_help
- --docroot     Specify default docroot location (default <SkunkRoot>/docroot)"
+ --with-docroot     Specify default docroot location (default <SkunkRoot>/docroot)"
 ac_help="$ac_help
- --logdir   Specify default directory for log files (default <SkunkRoot>/var/log)"
+ --with-logdir   Specify default directory for log files (default <SkunkRoot>/var/log)"
 ac_help="$ac_help
- --cache     Specify default cache location (default <SkunkRoot>/cache)"
+ --with-cache     Specify default cache location (default <SkunkRoot>/cache)"
 ac_help="$ac_help
   --with-user=user        Make Skunk installation owned by user"
 ac_help="$ac_help
