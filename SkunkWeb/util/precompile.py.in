@@ -81,9 +81,10 @@ def compile_thing(i):
         except:
             print "compilation of %s failed" % pathname
         if ndr:
+            rdn = os.path.dirname(i)
             try: os.makedirs('%s/%s' % (ndr, rdn))
             except OSError: pass
-            open('%s/%s/%s' % (ndr, rdn, i), 'w').write('')
+            open('%s/%s' % (ndr, i), 'w').write('')
 
 def func(arg, dirname, fnames):
     rdn = dirname[ldr:]
