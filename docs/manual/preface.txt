@@ -1,1 +1,13 @@
-.. preface goes here
+SkunkWeb is a scalable, extensible, and easy-to-use Web application server written in Python. It is designed for
+handling both high-traffic sites and smaller sites. Its features include a powerful component model and an elegant
+templating language that encourages component-based design, highly configurable caching (on disk and/or in memory) of
+compiled templates and component output, message catalog support for i18n, and remote component calls. It can be used
+with Apache via an Apache module, or it can serve HTTP requests directly.
+
+SkunkWeb can be used to develop and manage large web applications. With a mix of performance-based features, such as caching, process management, etc., it makes it an ideal backend for serving dynamic content. SkunkWeb, being written in Python, provides the complete Python environment at the developer's perusal along with templating tools, excellent for web development in a skill-diverse development environment.
+
+SkunkWeb is based on the concept of components. Components can either be written in HTML, Python, a templating language or any of the listed. "Top-level" components, in SkunkWeb, are the things that wrap a number of different dynamic components and code together to form a response to the site user. Using components eases site development, in that it simplifies code reuse for web-specific development.
+
+The simple methodology in SkunkWeb allows developers and designers to get started developing their web applications quickly without having to be mired in technical details.
+
+This manual is split into two major sections: first, the tutorial-like section that discusses each feature in detail and the reference section which documents the functions in SkunkWeb.
