@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-12-20 12:37:19 drew> 
-#   $Id: TODO,v 1.20 2001/12/18 16:38:26 drew_csillag Exp $
+#   Time-stamp: <2001-12-21 09:27:06 drew> 
+#   $Id: TODO,v 1.21 2001/12/20 17:38:13 drew_csillag Exp $
 
 
 * - TODO
@@ -30,11 +30,12 @@ X fix any references to DateTime to mx.DateTime (or handle both)
 X update PyDO docs for sapdb
 ! vfs: path translation for archive files 
 ! update MySQL driver
-* sapdb service, package and caching connection from PyDO
+
 
 SkunkWeb 3.3
 ------------------------------
 * DAV support built on httpd;
+* sapdb service, package and caching connection from PyDO
 
 Future stuff
 ------------------------------
