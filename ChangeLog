@@ -1,3 +1,8 @@
+2001-09-24  Drew Csillag  <drew@starmedia.net>
+
+	* pylibs/AE/Executables.py: fixed idiocy bug introduced when
+	making print statements work in STML templates
+
 2001-09-21  Drew Csillag  <drew@starmedia.net>
 
 	* pylibs/DT/DTTags.py, pylibs/DT/DTCompilerUtil: now made
