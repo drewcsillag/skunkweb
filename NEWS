@@ -1,3 +1,7 @@
+Changes in 3.2.2
+========================================
+* The <:compargs:> tag can now be used in a block
+
 Changes in 3.2.1 
 ========================================
 * new auth service

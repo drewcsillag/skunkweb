@@ -1,3 +1,25 @@
+2002-06-07  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* All of this sections changes are for the fact that you previously
+	couldn't put a <:compargs:> tag (or any tag that fiddled with 
+	meta-info about the template) in a block tag.
+
+	* pylibs/DT/DTTags.py: 
+	    * added documentation for genCode in DTTag.
+	    * added meta argument to genCode methods of the for, if, while, 
+	      try and spool tags.
+	    * made so the above block tags call genCodeChild with the meta
+	      argument
+
+	* pylibs/DT/DTCompilerUtil.py(genCodeChild): made all arguments 
+	mandatory (see comment about DTC.py), as well as calls genCode on
+	Tag instances with the meta argument when they are block (as opposed
+	to empty) tags.
+
+	* pylibs/DT/DTC.py(compileTemplate): made all arguments mandatory
+	since a) it's always called that way and b) it wouldn't work if you
+	didn't anyway.
+
 2002-06-06  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/sample_webdocs/demo/geeknews/dcomps/lwndaily.pydcmp:
