@@ -1,13 +1,17 @@
 Supported Platforms
 ------------------------------
-SkunkWeb has is known to compile and run under the following operating
+SkunkWeb is known to compile and run under the following operating
 systems:
     Linux
     Solaris
     FreeBSD
+    HPUX 11
+    MacOS 10.2
+    Windows/Cygwin
 
-It should work on any reasonable version of Unix that Python works.
-It turns out that it appears to run on Windows under Cygwin.
+It should work on any reasonable version of Unix that runs Python 2.1
+or later.
+
 
 
 Prerequisites
@@ -49,16 +53,6 @@ configure options are also available:
 
 Additional options if building SkunkWeb:
   --with-webdoc           Install some sample content
-  --with-services=svcs    Specify the list of services to install
-                           space delimited list of services to install;
-                           valid names are:
-
-                           sessionHandler, requestHandler, remote,
-                           ae_component, remote_client, aecgi,
-                           httpd, basicauth, pars, web, templating,
-                           oracle, postgresql, mysql cookieauth
-                          Default is to install them all
-
   --with-sudo=/path/sudo  Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb
   --with-apxs=/path/apxs  Specify path to the apxs program
@@ -103,5 +97,5 @@ paper you're shooting for.  Then type:
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL,v 1.10 2002/07/10 18:51:07 drew_csillag Exp $
+$Id: INSTALL,v 1.11 2002/07/28 02:01:57 drew_csillag Exp $
 

@@ -1,3 +1,7 @@
+2003-05-02  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* INSTALL (systems): added to list of supported OSes.
+
 2003-05-02    <drew@loki.sai-office>
 
 	* SkunkWeb/sw.conf.in: added the long unmentioned 
