@@ -1,5 +1,5 @@
 #   Time-stamp: <2002-06-19 10:43:40 acsillag> 
-#   $Id: TODO,v 1.42 2002/06/19 14:03:47 smulloni Exp $
+#   $Id: TODO,v 1.43 2002/06/19 14:39:39 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -19,6 +19,8 @@ Push release to sourceforge
 # ncftpput -v upload.sourceforge.net /incoming foo.tar.gz
 Do Quick release
     https://sourceforge.net/project/admin/qrs.php?package_id=&group_id=32756
+update Freshmeat
+    http://freshmeat.net/add-release/16533/17283/
 
 
 SkunkWeb 3.3
