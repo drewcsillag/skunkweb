@@ -1,3 +1,9 @@
+2004-02-26    <drew@loki.sai.local>
+
+	* pylibs/SkunkExcept.py (SkunkSyntaxError.format): fix so that
+	doing things like <:args `foo`:> don't totally bomb, but you get a
+	reasonble error.
+
 2004-02-23  Drew Csillag  <drew@loki.sai.local>
 
 	* pylibs/AE/Executables.py (PythonExecutable.run): made so raising
