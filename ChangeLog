@@ -1,5 +1,13 @@
 2001-10-01  Drew Csillag  <drew@starmedia.net>
 
+	* SkunkWeb/sw.conf.in: added userdir config and defaultIndexHtml
+	stuff
+
+	* SkunkWeb/Services/templating/Handler.py: added functionality
+	for defaultIndexHtml
+
+	* docs/opman/opman.tex: added bit about defaultIndexHtml
+
 	* pylibs/PyDO/doc, pylibs/PyDO/example: Added docs re: scatterFetch*
 
 	* pylibs/PyDO/PyDO.py: moved scatterFetch* methods to static_ section

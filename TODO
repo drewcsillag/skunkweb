@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-09-21 16:11:31 drew> 
-#   $Id: TODO,v 1.13 2001/09/18 20:53:31 drew_csillag Exp $
+#   Time-stamp: <2001-10-01 10:52:39 drew> 
+#   $Id: TODO,v 1.14 2001/09/21 20:16:31 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -22,10 +22,15 @@ Do Quick release
 
 SkunkWeb 3.1
 ------------------------------
+* unix socket fixes
+
+SkunkWeb 3.2
+------------------------------
+* pluggable file retrieval system for AE (would have to rework pars)
+* DAV support built on httpd;
 
 Future stuff
 ------------------------------
-* pluggable file retrieval system for AE (would have to rework pars)
 * a means to pass arguments to a cachable component that do not become
   part of the cache key
 * ways to get expired and rendered flags via the component tags
@@ -49,7 +54,6 @@ Future stuff
     > The latter, yes, so apps other than SkunkWeb can use SW components.  And
     > just as important, so SW can make component calls to XML-RPC servers.
 * remote debugging (again!);
-* DAV support built on httpd;
 * SW products (combined par/service), with an swpython-based installer:
   wiki, bulletin board, and other standard web toys (the toys themselves
   would obviously not be part of the core);
@@ -58,7 +62,6 @@ Future stuff
   without knowing whether it is remote or, if remote, what host it is from.
   Would be useful for product deployment; this could be done with a component
   handler that delegates to other handlers depending on configuration options.
-
 
 
 Unknowns
@@ -95,6 +98,7 @@ N add a superteam service
 
 DONE
 ------------------------------
+X add semi-autoindex functionality
 X update PyDO/postconn docs about host|port thing
 X update PyDO/postconn docs about SERIAL columns
 X add host|port thing to pgenscript
