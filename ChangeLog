@@ -1,3 +1,9 @@
+2002-06-21  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c (get_stdin): changed
+	(temporarily!) the level for some notice messages that were
+	getting logged regardless of the configured LogLevel.
+
 2002-06-19  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* TODO: cleaned up, added and removed.
