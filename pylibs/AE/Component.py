@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.3 2001/08/09 22:53:40 drew_csillag Exp $
+# $Id: Component.py,v 1.4 2001/08/27 18:29:21 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -137,12 +137,12 @@ class DefaultComponentHandler(ComponentHandler):
                 raise SkunkStandardError, "cannot call include with cache enabled"
 
         if not cache:
-            DEBUG(COMPONENT, "call _render")
+            #DEBUG(COMPONENT, "call _render")
             ACCESS("rendering %s" % name)
             return _renderComponent(name, argDict, auxArgs, compType), 1, 0
 
         # cache is true
-        DEBUG(COMPONENT, "cache is true")
+        #DEBUG(COMPONENT, "cache is true")
     
         # will return None if src modtime is different than stored in component    
         mashed = argDict.copy()
@@ -152,10 +152,10 @@ class DefaultComponentHandler(ComponentHandler):
                                                       srcModTime)
 
         if not cached or cache == FORCE: # cache not available, or ignored
-            if cache == FORCE:
-                DEBUG(COMPONENT, 'cache is force')
-            else:
-                DEBUG(COMPONENT, "cache not available -- cached=%s" % cached)
+            #if cache == FORCE:
+            #    DEBUG(COMPONENT, 'cache is force')
+            #else:
+            #    DEBUG(COMPONENT, "cache not available -- cached=%s" % cached)
             # render
             ACCESS("rendering %s (cache=yes)" % name)
             return _renderComponentAndCache(name,
@@ -166,46 +166,46 @@ class DefaultComponentHandler(ComponentHandler):
                                             cached ), 1, 0
 
         # cache is available
-        DEBUG(COMPONENT, "cache available")
+        #DEBUG(COMPONENT, "cache available")
 
         if cached.valid or cache == OLD: # cache not expired?
-            if cache == OLD:
-                DEBUG(COMPONENT, 'cache %s, specified OLD'  % (
-                    cached.valid and 'ok' or 'expired'))
+            #if cache == OLD:
+            #    DEBUG(COMPONENT, 'cache %s, specified OLD'  % (
+            #        cached.valid and 'ok' or 'expired'))
+            #else: #cache is valid anyway
+            #    DEBUG(COMPONENT, "cache ok, using it")
+            #    if DEBUGIT(COMPONENT_TTL):
+            #        DEBUG(COMPONENT_TTL, "component %s" % name)
+            #        if cached.ttl >= 3600:
+            #            h = int(cached.ttl / 3600)
+            #            ttl = cached.ttl - h*3600
+            #            m = int(ttl / 60)
+            #            s = ttl - m*60
+            #            DEBUG(COMPONENT_TTL, "ttl %sh %sm %ss" % (h, m, s))
+            #        elif cached.ttl >= 60:
+            #            ttl = cached.ttl
+            #            m = int(ttl / 60)
+            #            s = ttl - m*60
+            #            DEBUG(COMPONENT_TTL, "ttl %sm %ss" % (m, s))
+            #        else:
+            #            DEBUG(COMPONENT_TTL, "ttl %ss" % cached.ttl)
+            ACCESS("using cached form of %s" % name)
+            if cached.valid:
+                expired = 0
             else:
-                DEBUG(COMPONENT, "cache ok, using it")
-            if DEBUGIT(COMPONENT_TTL):
-                DEBUG(COMPONENT_TTL, "component %s" % name)
-            if cached.ttl >= 3600:
-                h = int(cached.ttl / 3600)
-                ttl = cached.ttl - h*3600
-                m = int(ttl / 60)
-                s = ttl - m*60
-                DEBUG(COMPONENT_TTL, "ttl %sh %sm %ss" % (h, m, s))
-            elif cached.ttl >= 60:
-                ttl = cached.ttl
-                m = int(ttl / 60)
-                s = ttl - m*60
-                DEBUG(COMPONENT_TTL, "ttl %sm %ss" % (m, s))
-            else:
-                DEBUG(COMPONENT_TTL, "ttl %ss" % cached.ttl)
-                ACCESS("using cached form of %s" % name)
-                if cached.valid:
-                    expired = 0
-                else:
-                    expired = 1
-                return cached.out, 0, expired
+                expired = 1
+            return cached.out, 0, expired
 
         # cache is available but has expired
-        DEBUG(COMPONENT, "cache expired")
+        #DEBUG(COMPONENT, "cache expired")
 
         if not (cache == DEFER) or _doingDeferred: # non-deferred execution?
             ACCESS("rendering %s (cache=yes)" % name)
-            if not (cache == DEFER):
-                DEBUG(COMPONENT, "not deferred, rendering and caching")
-            else:
-                DEBUG(COMPONENT,
-                      "defer request overridden, rendering and caching now")
+            #if not (cache == DEFER):
+            #    DEBUG(COMPONENT, "not deferred, rendering and caching")
+            #else:
+            #    DEBUG(COMPONENT,
+            #          "defer request overridden, rendering and caching now")
             # render and cache
             return _renderComponentAndCache(name,
                                             argDict,
@@ -215,9 +215,9 @@ class DefaultComponentHandler(ComponentHandler):
                                             cached), 1, 1
 
         # deferred and cache is expired
-        DEBUG(COMPONENT, "deferred ttl was %s" % cached.ttl)
+        #DEBUG(COMPONENT, "deferred ttl was %s" % cached.ttl)
         if not cached.stale: # not stale? render after and return current
-            DEBUG(COMPONENT, "deferred and not stale, returning and rendering PF")
+            #DEBUG(COMPONENT, "deferred and not stale, returning and rendering PF")
             ACCESS("using cached form of %s (cache=yes, defer=yes)" % name)
             mashed = argDict.copy()
             mashed.update(auxArgs)
@@ -231,7 +231,7 @@ class DefaultComponentHandler(ComponentHandler):
             return cached.out, 0, 1
 
         # deferred, cache expired and stale
-        DEBUG(COMPONENT, "deferred and stale, rendering")
+        #DEBUG(COMPONENT, "deferred and stale, rendering")
         # render and cache
         ACCESS("rendering %s (cache=yes)" % name)
         return _renderComponentAndCache(name,
@@ -359,7 +359,7 @@ def _realRenderComponent( name, argDict, auxArgs, compType, srcModTime ):
                                + cfg.Configuration.defaultExpiryDuration )
     
     if compType != DT_INCLUDE:
-        DEBUG(COMPONENT, 'clearing the namespace!!! %s %s' % (DT_INCLUDE, compType))
+        #DEBUG(COMPONENT, 'clearing the namespace!!! %s %s' % (DT_INCLUDE, compType))
         namespace.clear()
         
     return out, expiration
@@ -384,6 +384,10 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.4  2001/08/27 18:29:21  drew_csillag
+# * pylibs/AE/Component.py(_realRenderComponent): only tracks
+# time if debug flag is set
+#
 # Revision 1.3  2001/08/09 22:53:40  drew_csillag
 # ok, I'm a moron...  Copied the argument list from the def: to the call,
 # default arguments included, which of course become keyword arguments....

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.1.1.1 2001/08/05 15:00:43 drew_csillag Exp $
+#$Id: Cache.py,v 1.2 2001/08/27 18:09:25 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -319,17 +319,17 @@ def _readCompileCacheRoot( name ):
 
 ## doc root access
 def _statDocRoot( name ):
-    DEBUG(CACHE, "statting doc root")
+    #DEBUG(CACHE, "statting doc root")
     path = _fixPath( cfg.Configuration.documentRoot, name )
-    DEBUG(WEIRD, "path is: %s" % path)
+    #DEBUG(WEIRD, "path is: %s" % path)
     return os.stat(path)
     
 def _getDocRootModTime( name ):
-    DEBUG(WEIRD, "docroot is: %s == %s" % (cfg.Configuration.documentRoot,
-                                           name))
-    DEBUG(CACHE, "statting doc root")
+    #DEBUG(WEIRD, "docroot is: %s == %s" % (cfg.Configuration.documentRoot,
+    #                                       name))
+    #DEBUG(CACHE, "statting doc root")
     path = _fixPath( cfg.Configuration.documentRoot, name )
-    DEBUG(WEIRD, "path is: %s" % path)
+    #DEBUG(WEIRD, "path is: %s" % path)
     # ctime always tracks mtime, but not vice versa, e.g.,
     #in the case of a file being moved.
     return _getLastChangeTime(path)
@@ -496,6 +496,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.2  2001/08/27 18:09:25  drew_csillag
+# performance tweaks
+#
 # Revision 1.1.1.1  2001/08/05 15:00:43  drew_csillag
 # take 2 of import
 #
