@@ -88,7 +88,7 @@ class Scopeable:
         return self._get_fridge()['defaults'].copy()
 
     def currentScopes(self):
-        return self._get_fridge()['currentScopes']
+        return self._get_fridge()['currentScopes'].copy()
 
     def scopeMatchers(self):
         return self._get_fridge()['scopeMatchers']
@@ -136,6 +136,7 @@ class Scopeable:
         del fridge['dictlist'][:]
         self.__dict__.clear()
         self.__dict__.update(fridge['defaults'])
+        self._get_fridge()['currentScopes'].clear()
 
     def addScopeMatchers(self, *paramMatchers):
         matchers=self.scopeMatchers()
