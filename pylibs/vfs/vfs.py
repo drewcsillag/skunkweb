@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/21 01:31:49 smulloni>
+# Time-stamp: <02/02/21 13:38:32 smulloni>
 
 ########################################################################
 #  
@@ -42,7 +42,7 @@ MST_CTIME=3
 
 VFSRegistry={}
 
-_keyRE=r'.*(\d+)$'
+_keyRE=re.compile(r'.*(\d+)$')
 
 def registerFS(fs, key='default'):
     for k, f in VFSRegistry.items():
@@ -480,6 +480,9 @@ class MultiFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.10  2002/02/21 18:47:16  smulloni
+# bug fix: had forgotten to compile a regex.
+#
 # Revision 1.9  2002/02/21 07:20:17  smulloni
 # numerous changes for product service and vfs, to support importing from the
 # latter.

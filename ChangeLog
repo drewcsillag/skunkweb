@@ -1,5 +1,8 @@
 2002-02-21  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/vfs/vfs.py (_keyRE): I forgot to compile this regex,
+	causing an error on swmgr restart.
+
 	* SkunkWeb/Services/product/loader.py: removed unnecessary
 	import. 
 
