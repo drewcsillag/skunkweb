@@ -38,7 +38,11 @@ congratulations page.
 If you built mod_skunkweb (to use with apache), add the contents of
 SkunkWeb/mod_skunkweb/httpd_conf.stub to the end of your httpd.conf
 (editing to taste).  Stop and start apache and hit it and check that
-you get the congratulations page.
+you get the congratulations page.  N.B. Chances are fair that if
+you are using Apache to front skunkweb, you can:
+   1) remove httpd from the services list in sw.conf
+   and
+   2) comment out HTTPListenPorts in sw.conf
 
 SkunkWeb, Smell the power!
 
@@ -56,8 +60,8 @@ Uses Python
 
 Extensible
 	* Relatively simple extension API
-	* can easily handle authentication, url building/parsing and custom
-	  tags
+	* can easily handle authentication, custom url building/parsing 
+          schemes and custom tags
 
 Encourages component based design
 	* more than just "include"
@@ -91,8 +95,7 @@ Documentation
 	* extensive documentation available in HTML, PostScript, PDF & text
           --well not yet, but getting there
 	* have automatic documentation tools to generate documentation for 
-	  STML templates and python modules as well as tools for writing 
-          manuals (but don't use the manual stuff, it sucks).
+	  STML templates (but don't use the manual stuff, it sucks).
 
 Process Model
         * Uses multi-process, versus multi-threading which makes better
