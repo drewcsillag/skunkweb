@@ -26,7 +26,7 @@
 This file documents the SkunkWeb Web Application Framework.
 
 \noindent
-Copyright (C) 2001 Andrew Csillag
+Copyright (C) 2001, 2002 Andrew Csillag
 
 \noindent
 Permission is granted to make and distribute verbatim copies of
@@ -2557,17 +2557,43 @@ and that's it.
 
 \section{The \texttt{CONNECTION} Object}
 \label{connectionobj}
-%%ATC-- LEFT OFF HERE
-\chapter{User Modules}
-\label{usermodules}
-The \texttt{site-libs} directory contains application-specific modules
-that (depending on the state of the \texttt{UserModuleCleanup}
-\texttt{templating.conf} configuration option) get cleaned out on a
-per-request basis.  The upshot of this is that this way you can do
-development on these modules without having to restart SkunkWeb each time
-you make a change.  Since \texttt{site-libs} is normally already in
-the import path, all you need to do is put stuff there and it is
-importable by the standard rules of Python.
+
+The \texttt{CONNECTION} object contains (duh) information that
+pertains to the current web request/response (i.e. connection).
+
+\begin{argdesc}
+\item[env] The CGI-like environment dictionary.
+\item[browser] A \texttt{Browser} object that contains... %%%ATC FIXME
+\item[method] The request method (same as \texttt{env['REQUEST_METHOD']}).
+\item[host] The hostname sent in the request headers.
+\item[args] The query arguments (either for GET or POST).
+\item[requestHeaders] A dictionary of request headers.
+\item[responseHeaders] A dictionary of headers to send in the response.
+\item[requestCookie] A \texttt{Cookie\footnote{see the documentation
+for the \texttt{Cookie} module in the Python Library Reference}}
+object corresponding to the cookie sent by the client.
+\item[responseCookie] A \texttt{Cookie} object representing the cookie
+to be sent to the client.
+\item[uri] The URI of the request.  This URI may have been subject to
+rewriting\footnote{Either via the rewrite service or other means} and
+may \emph{not} be the URI as the client sent it.
+\item[realUri] The URI of the request.  This URI has not been subject
+to the same rewriting as \texttt{uri}.  This is the URI as sent by the
+client.
+\item[extract_args] See \doref{tagargs}.
+\item[setContentType] A method taking a singe string argument that is
+a shortcut to set the \texttt{Content-Type} header.
+\item[setStatus] A method taking a single numeric status value for the
+HTTP response.
+\item[redirect] Takes a single URL argument which is the URL to
+redirect to.
+%%keep these here?
+%\item[reponse] Returns a string containing the HTTP response
+%\item[write] A method taking a single string argument that appends
+%that string to the current output.
+\end{argdesc}
+
+
 
 \cleardoublepage
 
