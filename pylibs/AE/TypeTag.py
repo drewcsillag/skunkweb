@@ -18,7 +18,7 @@
 """
 type tag - do run-time type checking
 """
-# $Id: TypeTag.py,v 1.2 2001/07/09 20:38:41 drew Exp $
+# $Id: TypeTag.py,v 1.1.1.1 2001/08/05 15:00:37 drew_csillag Exp $
 from CommonStuff import *
 from DT import DTExcept
 import types
@@ -38,7 +38,6 @@ class TypeTag(DTTag):
         vargSpec = DTCompilerUtil.getTempName()
         iterator = DTCompilerUtil.getTempName()
         
-        didanything = 0
         codeout.write(indent, '%s = None' % iterator)
         
         if not args.items():
