@@ -1,3 +1,8 @@
+2002-11-14    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/form.py: the field classes are now somewhat reasonable;
+	Form isn't there yet.
+
 2002-11-13    <smulloni@smullbola.smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args):

@@ -1,4 +1,5 @@
-import types
+from form import *
+from views import *
 
 # it would be *very* convenient to use properties here
 # (a Python 2.2 feature) -- so I'm thinking about not
@@ -37,49 +38,49 @@ import types
 # to do to create a form
 
     
-class Form(object):
-    def __init__(self,
-                 name=None,
-                 method='POST',
-                 fields=None):
-        self.name=name
-        self.method=method
-        if fields==None:
-            self.fields=[]
-        else:
-            self.fields=fields
+##class Form(object):
+##    def __init__(self,
+##                 name=None,
+##                 method='POST',
+##                 fields=None):
+##        self.name=name
+##        self.method=method
+##        if fields==None:
+##            self.fields=[]
+##        else:
+##            self.fields=fields
         
 
-    def _get_data(self):
-        # should gather all the data
-        # from the fields and return them
-        # as a dict -- TBD
-        pass
+##    def _get_data(self):
+##        # should gather all the data
+##        # from the fields and return them
+##        # as a dict -- TBD
+##        pass
 
-    def _set_data(self, data):
-        # should set the values of the fields
-        # from data (a dict) -- TBD
-        pass
+##    def _set_data(self, data):
+##        # should set the values of the fields
+##        # from data (a dict) -- TBD
+##        pass
 
-    data=property(_get_data, _set_data)
+##    data=property(_get_data, _set_data)
             
-    def validate(self):
-        # should call all validators
-        # and set the valid flags on all
-        # of them -- TBD
-        pass
+##    def validate(self):
+##        # should call all validators
+##        # and set the valid flags on all
+##        # of them -- TBD
+##        pass
 
-    def _reset(self):
-        # should clean the valid flags.
-        # should it also wipe out the field
-        # values?
+##    def _reset(self):
+##        # should clean the valid flags.
+##        # should it also wipe out the field
+##        # values?
 
-    def _is_valid(self):
-        if self.validate():
-            return 1
-        return 0
+##    def _is_valid(self):
+##        if self.validate():
+##            return 1
+##        return 0
 
-    valid=property(_is_valid)
+##    valid=property(_is_valid)
 
 
 

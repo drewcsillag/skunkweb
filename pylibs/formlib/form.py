@@ -18,20 +18,34 @@
 
 from containers import FieldContainer
 
+__all__=['UNDEF', 'Field', 'DomainField', 'Form']
+
+class _undef(object):
+    pass
+UNDEF=_undef()
+del _undef
+
 class Field(object):
     def __init__(self,
                  name,
-                 default=None,
-                 value=None):
+                 default=None):
         self.name=name
-        self.default=default
-        self.__value=value
-        # storing this here is not thrilling to me;
-        # Drew's errorview() avoids this....
-        # self.valid=1
+        self._set_default(default)
+        self.clearValue()
+
+    def _get_default(self):
+        return self.__default
+
+    def _set_default(self, default):
+        self.__default=default
+
+    def clearDefault(self):
+        self.__default=None
+
+    default=property(_get_default, _set_default)
         
     def _get_value(self):
-        if self.__value is not None:
+        if self.__value is not UNDEF:
             return self.__value
         else:
             return self.default
@@ -39,7 +53,47 @@ class Field(object):
     def _set_value(self, value):
         self.__value=value
 
+    def clearValue(self):
+        self.__value=UNDEF
+
     value=property(_get_value, _set_value)
+
+class DomainField(Field):
+    """
+    a variety of field in which the
+    the possible values of the field consist
+    of an enumeration or menu. 
+    """
+    def __init__(self, name, domain, default=None):
+        Field.__init__(self, name, default)
+        self._set_domain(domain)
+        
+    def _get_domain(self):
+        return self.__domain
+
+    def _set_domain(self, domain):
+        if self.default is not None and self.default not in domain:
+            raise ValueError, \
+                  "pre-existing default conflicts with new domain; "\
+                  "clear the default before setting domain"
+        self.__domain=domain
+
+    domain=property(_get_domain, _set_domain)
+
+    def _set_value(self, value):
+        if value not in self.domain:
+            raise ValueError, "value not present in domain"
+        Field._set_value(self, value)
+    
+    value=property(Field._get_value, _set_value)
+    
+    def _set_default(self, default):
+        if default is not None and default not in self.domain:
+            raise ValueError, "default value not present in domain"
+        Field._set_default(self, default)
+
+    default=property(Field._get_default, _set_default)        
+    
 
 class Form(object):
     def __init__(self,
@@ -63,22 +117,25 @@ class Form(object):
             if self.fields.has_key(k):
                 self.fields[k].value=v
 
-    def validate(self):
-        # should call all validators
-        # and set the valid flags on all
-        # of them -- TBD
-        pass
 
-    def _reset(self):
-        # should clean the valid flags.
-        # should it also wipe out the field
-        # values?  Probablee.
-        pass
+##    def validate(self):
+##        # should call all validators
+##        # and set the valid flags on all
+##        # of them -- TBD
+##        if 1:
+##            pass
 
-    def _is_valid(self):
-        if self.validate():
-            return 1
-        return 0
+##    def _reset(self):
+##        # should clean the valid flags.
+##        # should it also wipe out the field
+##        # values?  Probablee.
+##        if 0:
+##            print "thing is impossible"
 
-    valid=property(_is_valid)
+##    def _is_valid(self):
+##        if self.validate():
+##            return 1
+##        return 0
+
+##    valid=property(_is_valid)
 
