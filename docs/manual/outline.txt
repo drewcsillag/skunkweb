@@ -1,0 +1,125 @@
+==============================
+SkunkWeb Documentation Outline
+==============================
+
+Preface
+=======
+
+    - SkunkWeb Introduction
+    - What Does SkunkWeb Do?
+    - SkunkWeb Capabilities
+
+Chapter 1: Installation And Configuration
+=========================================
+
+    -Introduction 
+    - Prerequisites 
+        * Operating System Requirements 
+        * Hardware Requirements (Maybe for Performance Chapter?)
+        * Software Requirements 
+     - Installation 
+        * Obtaining The SkunkWeb Software 
+        * Building The SkunkWeb Software 
+        * Testing Your Installation 
+        * Starting and Stopping The SkunkWeb Server 
+        * SkunkWeb HTTP Server 
+        * mod_skunkweb 
+            - Apache Configuration 
+            - Running Apache With Other CGIs 
+        * swcgi
+
+Chapter 2: Performance
+======================
+
+    - Introduction
+    - Tuning The Core Server
+    - Persistent Connection Tuning (Database Server Connections)
+    - Caching
+        * How The Cache Is Managed
+        * Creating Cache Stores (this is a bit of a bundling of concepts, no?)
+        * Sharing The Cache
+        * Filesystem Tuning
+        * Flushing The Cache
+    
+Chapter 3: SkunkWeb Fundamentals
+================================
+
+    - Introduction
+    - Using Components
+   
+    (This is vague right now.)
+    
+Chapter 4: SkunkWeb API
+=======================
+
+    - Introduction 
+    - The Application Environment Component API 
+        * Understanding Components 
+        * File Extensions 
+        * Includes And Regular Components 
+        * Data Components 
+        * Remote Components 
+        * Component Cache Timeouts 
+        * The Component Stack 
+            - Component Stack Advice 
+        * Caching Functions 
+        * Logging 
+        * Message Catalogs 
+            - Uses Of Message Catalogs 
+            - Configuration Options 
+        * Miscellaneous Functions 
+        * Configuration Options For AE 
+            - General Parameters 
+            - Caching Parameters 
+            - MIME Types 
+            - Logging Parameters 
+        * Using Components in STML 
+    - The SkunkWeb HTTP API 
+        * HTTP Headers 
+        * HTTP Request Information 
+        * Cookies 
+        * Redirection 
+        * File Uploads 
+        * Browser Information 
+        * Session Management 
+            - Reaping Old Sessions With MySQL And PostgreSQL 
+            - Using The Session API 
+        * HTTP Authentication 
+        * CGI Services 
+    - Database Service Tools 
+        * Setup And Configuration 
+            - MySQL 
+            - PostgreSQL 
+            - Oracle 
+        * Retrieving A Database Connection 
+        
+        
+Chapter 5: Optional Services
+============================
+        
+    - Remote SkunkWeb Server Service
+    - URL Rewriting Service 
+    - Product Service
+
+Chapter 6: STML
+===============
+
+[This is basically an update of the earlier STML manual. Nothing of Note.]
+
+Chapter 7: SkunkWeb Internals
+=============================
+
+    - Server Startup
+    - Process Management
+    - Request Handling
+        - Hooks
+        - Page Execution
+    - Configuration
+    - Caching System
+    
+Chapter 8: Extending SkunkWeb
+=============================
+
+    - Creating STML Tags
+    - Creating Services
+    - Adding A Template Type
