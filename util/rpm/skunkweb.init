@@ -1,0 +1,94 @@
+#!/bin/bash
+#
+# Start/stop script for the SkunkWeb application framework.
+#
+# chkconfig: - 84 16
+# description: SkunkWeb is a Python-based web application framework.
+# pidfile: /var/run/pid.pid
+# config: /etc/skunkweb/sw.conf
+
+# settable variables
+SWMGRPATH=/usr/bin/swmgr
+PROG=SkunkWeb
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+start() {
+	#  set up pid file
+	if [ ! -f /var/run/sw.pid ]
+	then
+		touch /var/run/sw.pid
+		chown skunkweb:skunkweb /var/run/sw.pid
+		chmod 755 /var/run/sw.pid
+	fi
+
+	#  start daemon
+	echo -n "Starting ${PROG}: "
+	"${SWMGRPATH}" start
+
+	#  report success/failure
+	RETVAL="$?"
+	echo
+	if [ "${RETVAL}" -eq 0 ]
+	then
+		success "Starting ${PROG}"
+		touch /var/lock/subsys/skunkweb
+	else
+		failure "Starting ${PROG}"
+	fi
+	return "${RETVAL}"
+}
+stop() {
+	echo -n "Stopping ${PROG}: "
+	"${SWMGRPATH}" stop
+
+	#  report success/failure
+	RETVAL="$?"
+	echo
+	if [ "${RETVAL}" -eq 0 ]
+	then
+		success "Stopping ${PROG}"
+	else
+		failure "Stopping ${PROG}"
+	fi
+	rm -f /var/lock/subsys/skunkweb
+	return "${RETVAL}"
+}
+restart() {
+	echo -n "Restarting ${PROG}: "
+	"${SWMGRPATH}" restart
+
+	#  report success/failure
+	RETVAL="$?"
+	echo
+	if [ "${RETVAL}" -eq 0 ]
+	then
+		success "Restarting ${PROG}"
+	else
+		failure "Restarting ${PROG}"
+	fi
+	return "${RETVAL}"
+}
+
+# See how we were called.
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	configtest)
+		${SWMGRPATH} configtest
+		RETVAL=$?
+		;;
+	*)
+		echo $"Usage: $prog {start|stop|restart|configtest}"
+		exit 1
+esac
+
+exit $RETVAL

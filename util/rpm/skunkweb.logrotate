@@ -1,0 +1,9 @@
+/var/log/skunkweb/sw.log /var/log/skunkweb/debug.log /var/log/skunkweb/access.log /var/log/skunkweb/error.log {
+	missingok
+	notifempty
+	sharedscripts
+	postrotate
+		/bin/kill -HUP `cat /var/run/sw.pid 2>/dev/null` 2> /dev/null || true
+	endscript
+}
+
