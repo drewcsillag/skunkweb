@@ -29,8 +29,8 @@ Additional options if building SkunkWeb:
                            names are:
 
                            sessionHandler, requestHandler, remote, ae_component, 
-                           remote_client, aed_compat, aecgi, httpd,
-                           basicauth, oracle, pars, templating, web
+                           remote_client, aecgi, httpd, basicauth,
+                           oracle, pars, templating, web
 
   --with-sudo=/path/sudo  Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb

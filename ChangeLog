@@ -1,6 +1,7 @@
 2001-08-10  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* INSTALL: removed reference to aed_compat
+	* INSTALL, configure, configure.in (ac_help): removed reference to 
+	aed_compat
 
 2001-08-09  Drew Csillag  <drew@starmedia.net>
 
@@ -21,8 +22,8 @@
 
 2001-08-09  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB): fixed date parsing bug 
-	and several import problems
+	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB): fixed date 
+	parsing bug and several import problems
 
 2001-08-08  Drew Csillag  <drew@naxos.starmedia.net>
 	
