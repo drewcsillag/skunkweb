@@ -1,4 +1,11 @@
+Changes in 3.2.1 (not yet released)
+========================================
+* new cookie auth service
+* PyDO fix
+* Caching fix for stale 
+
 Changes in 3.2 beta 3
+========================================
 * added a product service and product-packaging utility, which permits components and python
   modules, including services, to be bundled together and deployed.  Requires MultiFS as the 
   documentRootFS, which is now a single FS.

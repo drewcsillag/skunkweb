@@ -1,5 +1,10 @@
 2002-04-17  Andrew Csillag  <drew@localhost.localdomain>
 
+	* NEWS: updating for what will be 3.2.1 
+
+	* pylibs/armor.py: added dearmor_detail so you can find out 
+	where something died
+
 	* configure, configure.in: added cookieauth stuff
 	
 	* SkunkWeb/configure, SkunkWeb/configure.in: added cookieauth stuff
