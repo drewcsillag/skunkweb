@@ -1,3 +1,14 @@
+2003-05-08    <drew@loki.sai-office>
+
+	* configure.in: now fails and exits if python is not found
+
+	* SkunkWeb/SkunkWeb/Server.py (addService): fix for HP/UX because it 
+	doesn't have seteuid
+
+	* SkunkWeb/swmgr.in: put quotes around $FAST to fix shell errors
+	and uses @SHELL@ instead of @BASH@ (not all of us are that
+	fortunate to be working on working OS's)
+
 2003-05-07    <drew@loki.sai-office>
 
 	* pylibs/AE/Cache.py (_dtCompileFunc): added noTagDebug option
