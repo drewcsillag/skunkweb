@@ -5,71 +5,45 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Author: smulloni $
-# $Revision: 1.1 $
-# Time-stamp: <01/05/04 15:28:13 smulloni>
+# Time-stamp: <03/06/05 10:09:33 smulloni>
 ########################################################################
+
 import cPickle
 from sessionHandler.Session import SessionStore
-from PyDO import *
 from SkunkWeb import Configuration
-from SkunkWeb.ServiceRegistry import SESSIONHANDLER
-from SkunkWeb.LogObj import DEBUG
+# from SkunkWeb.ServiceRegistry import SESSIONHANDLER
+# from SkunkWeb.LogObj import DEBUG
+import PyPgSQLcache
+from pyPgSQL.PgSQL import _quote
+import time
 
-PICKLE=Configuration.SessionHandler_PGPickleColumn
-TIMESTAMP=Configuration.SessionHandler_PGTimestampColumn
-ID=Configuration.SessionHandler_PGIDColumn
+class Store(SessionStore):
 
-_args={'host': Configuration.SessionHandler_PGHost,
-       'db': Configuration.SessionHandler_PGDB,
-       'user' : Configuration.SessionHandler_PGUser,
-       'pass' : Configuration.SessionHandler_PGPass}
-DBIInitAlias('sessionAlias',
-             'pydo:postgresql:%(host)s:%(db)s:%(user)s:%(pass)s' % _args)
+    setPickleSQL=("UPDATE %(table)s SET %(pickleCol)s='%(gherkin)s', %(timeCol)s = NULL"\
+                  "WHERE %(idCol)s=%(id)s")
 
-class _PGStore(PyDO):
-    connectionAlias='sessionAlias'
-    table=Configuration.SessionHandler_PGTable
-    fields=(
-        (ID, 'varchar(40)'),
-        (PICKLE, 'text'),
-        (TIMESTAMP, 'timestamp'))
-    unique=['id']
+    insertPickleSQL="INSERT INTO %(table)s (%(idCol)s, %(pickleCol)s) VALUES (%(id)s, %(gherkin)s)"
 
-    def updateValues(self, dict):
-        if not dict.has_key(TIMESTAMP):
-	    dict = dict.copy()
-	    dict[TIMESTAMP] = SYSDATE
-        return PyDO.updateValues(self, dict)    
 
-class PostgreSQLSessionStoreImpl(SessionStore):
+    reapSQL="DELETE FROM %(table)s WHERE CURRENT_TIME - INTERVAL '%(timeout)s SECONDS' > %(timeCol)s"    
 
-    def __init__(self, id):
-        tmp=_PGStore.getUnique(**{ID:id})
-        if tmp:
-            self.__pydo=tmp
-        else:
-            self.__pydo=_PGStore.new(**{ID:id, 'refetch':1})
-        DEBUG(SESSIONHANDLER,
-              "creating session with store: %s" % self.__pydo.items())
-    
-    def load(self):
-        self.__pydo[TIMESTAMP]=SYSDATE
-        self.__pydo.commit()
-        DEBUG(SESSIONHANDLER, str(self.__pydo.items()))
-        gherkin=self.__pydo[PICKLE]
-        if gherkin!=None:
-            return cPickle.loads(gherkin)
-        return {}
+    def getConnection(self):
+        return PyPgSQLcache.getConnection(Configuration.SessionHandler_PostgreSQLAlias)
 
-    def save(self, data):
-        self.__pydo[PICKLE]=cPickle.dumps(data)
-        self.__pydo.commit()
+    def escapeSQLString(self, s):
+        return _quote(s)
 
-    def delete(self):
-        self.__pydo.delete()
-    
-    def touch(self):
-        self.__pydo[TIMESTAMP]=SYSDATE
-        self.__pydo.commit()
-    
+    def _setPickle(self, sessionHash):
+        db=self.getConnection()
+        c=db.cursor()
+        args={'id' : self.__id,
+              'idCol' : self.idCol,
+              'pickleCol' : self.pickleCol,
+              'gherkin' : self.escapeSQLString(cPickle.dumps(sessionHash, 1)),
+              'timeCol' : self.timeCol,
+              'table': self.table}
+        c.execute(self.setPickleSQL % args)
+        if not c.rowcount:
+            c.execute(self.insertPickleSQL % args)
+        db.commit()
+        self._lastTouched=int(time.time())

@@ -5,9 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Author: smulloni $
-# $Revision: 1.6 $
-# Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
 from web.protocol import HTTPConnection
@@ -17,52 +14,77 @@ from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 import cPickle
 import uuid
 from SkunkWeb.LogObj import DEBUG, DEBUGIT, ERROR
+import Cookie
+import time
 
-# the key used, in cookie and/or in URL rewriting, for the session id.
-_sessionIDKey=Configuration.SessionIDKey
+class SessionError(Exception):
+    pass
 
-# the session timeout
-_timeout=Configuration.SessionTimeout
-
-# at least how long, in seconds, we will wait before reaping old sessions
-_reapInterval=Configuration.SessionReapInterval
-DEBUG(SESSIONHANDLER, "reap interval is %d" % _reapInterval)
+# python 2.1 compatibility
+if dict==type({}):
+    _dict=dict
+else:
+    from UserDict import UserDict as _dict
 
 
 ########################################################################
 # methods that gets inserted into the HTTPConnection class
 
-def getSession(self, create=0, **cookieParams):           
+def getSession(self,
+               create=0,
+               path=None,
+               domain=None,
+               secure=None):           
     '''
     returns the session associated with this request.
     If create, will create a new session if there is none.
     '''
-    # check cookieParam input
-    illegal=filter(lambda x:x not in ('path', 'domain', 'secure'),
-                   cookieParams.keys())
-    if illegal:
-        message="illegal keyword arguments for cookieParams: %s" % str(illegal)
-        raise ValueError, message
-        
-    if hasattr(self, '__userSession'):
-        DEBUG(SESSIONHANDLER, "session found: %s" % self.__userSession.__dict__)
-        return self.__userSession
+    # permit sessions to be turned off by leaving the session store null,
+    # but raise an exception if someone tries to access a session
+    if Configuration.SessionStore is None:
+        raise SessionError, "no session store enabled"
+    try:
+        sess= self.__userSession
+    except AttributeError:
+        pass
     else:
+        if sess:
+            return sess
+    DEBUG(SESSIONHANDLER, "session is None")
+    # session is None
+    
+    id=self.getSessionID(create)
+    if not id:
+        DEBUG(SESSIONHANDLER, "id is false for create: %s" % create)
+        return None
+
+    sess=self.__userSession=Session(id)
+
+    # test session - is it too old?
+
+    if sess.age() >= Configuration.SessionTimeout:
+        DEBUG(SESSIONHANDLER, "session is too old")
+        self.removeSession()
+        del self.__sessionID
         id=self.getSessionID(create)
         if not id:
             return None
-        else:
-            self.__userSession=Session(id)
-            if not self.requestCookie.has_key(_sessionIDKey):
-                self.responseCookie[_sessionIDKey]=id
-                
-                # initialize valid cookie params, if specified
-                morsel=self.responseCookie[_sessionIDKey]
-                for param in ('path', 'domain', 'secure'):
-                    val=cookieParams.get(param)
-                    if val:
-                        morsel[param]=val
-            return self.__userSession
+        sess=self.__userSession=Session(id)
+    
+    sesskey=Configuration.SessionIDKey
+    if (not self.requestCookie.has_key(sesskey)) or \
+           [x for x in (path, domain, secure) if x is not None]:
+        self.responseCookie[sesskey]=id
+
+        morsel=self.responseCookie[sesskey]
+        if path is not None:
+            morsel['path']=path
+        if domain is not None:
+            morsel['domain']=domain
+        if secure is not None:
+            morsel['secure']=secure
+
+    return self.__userSession
 
 def removeSession(self):
     '''
@@ -70,35 +92,40 @@ def removeSession(self):
     '''
     DEBUG(SESSIONHANDLER, "in removeSession()")
     self.getSession(0)
-    if hasattr(self, '__userSession'):
-        DEBUG(SESSIONHANDLER, "calling delete()")
-        self.__userSession.delete()
+
+    try:
+        sess=self.__userSession
+    except AttributeError:
+        pass
+    else:
+        if sess:
+            sess.delete()
         del self.__userSession
-    if self.responseCookie.has_key(_sessionIDKey):
-        del self.responseCookie[_sessionIDKey]
+    sesskey=Configuration.SessionIDKey
+    if self.requestCookie.has_key(sesskey):
+        self.responseCookie[sesskey]=""
+        self.responseCookie[sesskey]['expires']=Cookie._getdate(-10000000)
+
 
 def getSessionID(self, create=1):
     '''
     obtain the session id from the request cookie, or, if not
     available, create a new one.
     '''
-    if (DEBUGIT(SESSIONHANDLER)
-        and hasattr(self, 'requestCookie')
-        and self.requestCookie):
-        DEBUG(SESSIONHANDLER, str(self.requestCookie))
-    if not hasattr(self, '__sessionID'):
-        if (hasattr(self, 'requestCookie')
-            and self.requestCookie
-            and self.requestCookie.has_key(_sessionIDKey)):
-            self.__sessionID=self.requestCookie[_sessionIDKey].value
-        elif self.args.has_key(_sessionIDKey):
-            self.__sessionID=self.args[_sessionIDKey]
-        elif create:
-            self.__sessionID=uuid.uuid()
-        else:
-            return None
-    DEBUG(SESSIONHANDLER, 'session id: %s' % self.__sessionID)
-    return self.__sessionID
+    try:
+        return self.__sessionID
+    except AttributeError:
+        sesskey=Configuration.SessionIDKey        
+        try:
+            sid=self.requestCookie[sesskey].value
+        except KeyError:
+            # look in connection arguments for session id
+            sid=self.args.get(sesskey)
+        if sid is None and create:
+            sid=uuid.uuid()
+        if sid:
+            self.__sessionID=sid
+        return sid
 
 ####################################################################
 # hook for ServerStart
@@ -109,20 +136,20 @@ def mungeConnection(*args, **kw):
     inserts the getSession() and getSessionID() methods into the HTTPConnection class
     '''
     DEBUG(SESSIONHANDLER, "in mungeConnection")
-    setattr(HTTPConnection, "getSession", getSession)
-    setattr(HTTPConnection, "removeSession", removeSession)
-    setattr(HTTPConnection, "getSessionID", getSessionID)
+    HTTPConnection.getSession=getSession
+    HTTPConnection.removeSession=removeSession
+    HTTPConnection.getSessionID=getSessionID
 
 ####################################################################
 # hook for InitRequest
 
-def untouch(data, dict):
+def untouch(data, sessionDict):
     DEBUG(SESSIONHANDLER, "in untouch()")
-    if dict.has_key(CONNECTION):
-        conn=dict[CONNECTION]
+    conn=sessionDict.get(CONNECTION)
+    if conn:
         session=conn.getSession(0)
         if session:
-            session._touched=None
+            session.touched=None
 
 
 ####################################################################
@@ -133,16 +160,16 @@ def saveSession(requestData, sessionDict):
     if the connection contains modified session information, saves it
     '''
     DEBUG(SESSIONHANDLER, "in saveSession")
-    if sessionDict.has_key(CONNECTION):
-        connection=sessionDict[CONNECTION]
+    connection=sessionDict.get(CONNECTION)
+    if connection:
         session=connection.getSession(0)
         if session:
             if session.isDirty():
                 session.save()
-            else: session.touch()
+            else:
+                session.touch()
     else:
         DEBUG(SESSIONHANDLER, "no connection object found in sessionDict")
-
 
 def _getClass(fqcn): # fully qualified class name: package.module.fooClass
     lastDot=fqcn.rfind('.')   
@@ -164,74 +191,64 @@ def _getClass(fqcn): # fully qualified class name: package.module.fooClass
 ####################################################################
 # the Session class
 
-class Session:
+class Session(_dict):
  
-    def __init__(self, id):
-        self.__ID=id
+    def __init__(self, ID):
+        _dict.__init__(self)
+        self.ID=ID
         storageClass=_getClass(Configuration.SessionStore)
-        self.__store=storageClass(id)
-        self.__data=self.__store.load()
-        self.__dirty=None
+        self.store=storageClass(ID)
+        self.update(self.store.load())
+        self._dirty=None
         self._touched=None
-
-    def getID(self):
-        return self.__ID
-
-    def isDirty(self):
-        return self.__dirty
-
-    def setDirty(self, dirty):
-        self.__dirty=not not dirty
+        self._deleted=0
 
     def save(self):
-        self.__store.save(self.__data)
-        self.__dirty=None
+        if self._deleted:
+            # can't save a deleted session;
+            # raise an exception?
+            return
+        self.store.save(self)
+        self._dirty=None
         self._touched=1
 
     def delete(self):
-        self.__store.delete()
-
-    def keys(self):
-        return self.__data.keys()
-
-    def has_key(self, key):
-        return self.__data.has_key(key)
+        self.store.delete()
+        self._dirty=0
+        self._deleted=1
+                   
+    def age(self):
+        return int(time.time()) - self.store.lastTouched()
 
     def clear(self):
-        self.__data.clear()
-        self.__dirty=1
-
-    def __getitem__(self, key):
-        return self.__data[key]
+        _dict.clear(self)
+        self._dirty=1
 
     def __delitem__(self, key):
-        del self.__data[key]
-        self.__dirty=1
+        _dict.__delitem__(self, key)
+        self._dirty=1
 
-    def __len__(self):
-        return len(self.__data)
-
-    def update(self, dict):
-        self.__data.update(dict)
-        self.__dirty=1
-
-    def items(self):
-        return self.__data.items()
-
-    def values(self):
-        return self.__data.values()
+    def update(self, d):
+        _dict.update(self, d)
+        self._dirty=1
 
     def __setitem__(self, key, value):
-        self.__data[key]=value
-        self.__dirty=1
-
-    def get(self, key, default=None):
-        return self.__data.get(key, default)
+        _dict.__setitem__(self, key, value)
+        self._dirty=1
 
     def touch(self): 
         if not self._touched:
-            self.__store.touch()
+            self.store.touch()
         self._touched=1
+
+    def isDirty(self):
+        return self._dirty
+
+    def isDeleted(self):
+        return self._deleted
+
+    def isTouched(self):
+        return self._touched
 
 ########################################################################
 
@@ -254,76 +271,12 @@ class SessionStore:
 
     def touch(self):
         raise NotImplementedError
-    
-########################################################################
-# $Log: Session.py,v $
-# Revision 1.6  2001/12/08 02:09:56  smulloni
-# tweak to CONNECTION.getSession -- added optional kwargs for cookie
-# parameters passed to session cookie.
-#
-# Revision 1.5  2001/08/15 22:13:01  smulloni
-# tweaks to sessionHandler: fixed Session.get(), and added Session.setDirty()
-#
-# Revision 1.4  2001/08/14 05:12:46  smulloni
-# added a get() method to sessionHandler.Session.Session; fixed PyDO postgres
-# date conversion bug.
-#
-# Revision 1.3  2001/08/13 01:08:09  smulloni
-# added an evil boolean flag and an InitRequest hook to reset it.  These ensure
-# that a session store is only touched if the session has not already been
-# saved.  Unfortunately,  when a session is made dirty and then a
-# redirect is performed, the next request can be handled by another process
-# before the previous process is done persisting the session data, and the
-# best workaround at present is to manually save the session before the
-# redirect.  But this would have caused two database (or filesystem) hits
-# for that request alone, one to save the session and another to update its
-# timestamp; this change prevents that.
-#
-# Revision 1.2  2001/08/10 20:59:55  smulloni
-# fix to removeSession()
-#
-# Revision 1.1.1.1  2001/08/05 15:00:07  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.10  2001/07/25 13:34:31  smulloni
-# modified sessionHandler so that the SessionStore parameter is a string, not
-# a class; added comments to sw.conf.in for sessionHandler-related goodies.
-#
-# Revision 1.9  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.8  2001/05/04 20:04:40  smullyan
-# fix: sessionHandler needed to use SkunkWeb.constants;
-# fix: web.protocol (which no longer has a protocol in it, oy!) now
-# cleans up a little more carefully and no longer deletes the connection
-# object from sessionDict (I may recycle it)
-#
-# Revision 1.7  2001/04/25 20:18:46  smullyan
-# moved the "experimental" services (web_experimental and
-# templating_experimental) back to web and templating.
-#
-# Revision 1.6  2001/04/23 04:55:47  smullyan
-# cleaned up some older code to use the requestHandler framework; modified
-# all hooks and Protocol methods to take a session dictionary argument;
-# added script to find long lines to util.
-#
-# Revision 1.5  2001/04/11 20:47:11  smullyan
-# more modifications to the debugging system to facilitate runtime change of
-# debug settings.  Segfault in mmint.c fixed (due to not incrementing a
-# reference count in the coercion method).
-#
-# Revision 1.4  2001/04/02 22:31:41  smullyan
-# bug fixes.
-#
-# Revision 1.3  2001/04/02 00:54:18  smullyan
-# modifications to use new requestHandler hook mechanism.
-#
-# Revision 1.2  2001/03/29 20:17:11  smullyan
-# experimental, non-working code for requestHandler and derived services.
-#
-# Revision 1.1  2001/03/16 19:09:40  smullyan
-# service that provides session handling capabilities.
-#
-########################################################################
 
+    def lastTouched(self):
+        raise NotImplementedError
+
+    def age(self):
+        return int(time.time()) in self.lastTouched()
+    
+    def reap(self):
+        raise NotImplementedError

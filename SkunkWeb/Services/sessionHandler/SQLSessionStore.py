@@ -5,28 +5,26 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Author: drew_csillag $
-# $Revision: 1.1.1.1 $
-# $Id: SQLSessionStore.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
+# $Id: SQLSessionStore.py,v 1.2 2003/05/01 20:45:54 drew_csillag Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
 from SkunkWeb.LogObj import DEBUG
+from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 import Session
-from Session import SessionStore
 from SkunkWeb import Configuration
 import cPickle
 import time
-from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 
 ########################################################################
 # abstract session store implementation that uses a SQL database.
 
-class AbstractSQLSessionStore(SessionStore): 
+class AbstractSQLSessionStore(Session.SessionStore): 
     '''
-    an implementation of a session store which
-    is backed with a common or garden variety SQL database which supports blobs.
-    The table should look something like this MySQL table:
+
+    an implementation of a session store which is backed with a common
+    or garden variety SQL database which supports blobs.  The table
+    should look something like this MySQL table:
 
     +------------+---------------+------+-----+---------+-------+
     | Field      | Type          | Null | Key | Default | Extra |
@@ -37,217 +35,197 @@ class AbstractSQLSessionStore(SessionStore):
     +------------+---------------+------+-----+---------+-------+
 
     which can be created (in MySQL) with this statement:
-    CREATE TABLE Sessions (id VARCHAR(40) PRIMARY KEY, pickle LONGBLOB NOT NULL, accessTime TIMESTAMP);
+
+    CREATE TABLE Sessions (
+      id VARCHAR(40) PRIMARY KEY,
+      pickle LONGBLOB NOT NULL,
+      accessTime TIMESTAMP
+    );
 
     The entire session dictionary is inserted as one pickled blob. 
 
     To write a concrete SQLSessionStore:
 
-    * implement the getHost(), getUser(), getPass(), getDB(), getTable(), getIDCol(), getPickleCol(),
-    and getTimeCol() methods to obtain configurable information about the DB in question.
+    * implement escapeSQLString() to escape strings literals inside of
+    SQL.  (This approach is taken so that we don't need to know the
+    escaping style of any particular driver.)
 
-    * implement the execSql() method to actually execute SQL and return a result set.
-    A two-dimensional list is expected.
-
-    *implement escapeSQLString() to escape strings literals inside of SQL.
-
-    * implement the getGetPickleSQL(), getSetPickleSQL(), getReapSQL(), getTouchSQL,
-    and getDeleteSQL() methods to specify the SQL needed for the database in question.
-    Each of these methods should return a string in which the appropriate column names
-    and values are interpolated by keyword.  See the docstrings of the relevant methods
-    for which keywords are available.
-
-    * add code to initialize and manage the database connection.
+    * Shadow as appropriate the following class attributes:
+        
+        * getPickleSQL
+        * setPickleSQL
+        * reapSQL 
+        * touchSQL
+        * deleteSQL
+        * ageSQL
+        
+    to specify the SQL needed for the database in question.
 
     * if setPickle cannot be performed in one SQL statement with your database,
     override save().
 
-    * implemented lastReaped(), which should be an accessor method is no value is passed to it,
-    and a mutator if one is.
+    * implement getConnection(), return a database connection object.
+
     '''
-       
-    def getHost(self):
+
+    getPickleSQL="SELECT %(gherkin)s, %(timeCol)s FROM %(table)s WHERE %(idCol)s='%(id)s'"
+
+    setPickleSQL=("REPLACE INTO %(table)s "\
+                  "%(pickleCol)s = '%(gherkin)s', %(timeCol)s = NULL"\
+                  "WHERE %(idCol)s = '%(id)s' ")
+
+    touchSQL="UPDATE %(table)s SET %(timeCol)s=NULL WHERE %(idCol)s='%(id)s'" 
+
+    deleteSQL="DELETE FROM %(table)s WHERE %(idCol)s = '%(id)s'"
+
+    reapSQL="DELETE FROM %(table)s WHERE DATE_SUB(NOW(), "\
+             "INTERVAL %(timeout)s SECOND) > %(timeCol)s"
+
+    ageSQL="SELECT %(timeCol)s FROM %(table)s WHERE %(idCol)s=%(id)s"
+    
+    def getConnection(self):
         raise NotImplementedError
 
-    def getUser(self):
-        raise NotImplementedError
-
-    def getPass(self):
-        raise NotImplementedError
-
-    def getDB(self):
-        raise NotImplementedError
-
-    def getTable(self):
-        raise NotImplementedError
-
-    def getIDCol(self):
-        raise NotImplementedError
-
-    def getPickleCol(self):
-        raise NotImplementedError
-
-    def getTimeCol(self):
-        raise NotImplementedError
-        
-    def execSql(self, sql):
-        raise NotImplementedError
+    def execSql(self, sql, args=None):
+        try:
+            db=self.getConnection()
+            cursor=db.cursor()
+            cursor.execute(sql, args)
+            retval=cursor.fetchall()
+            cursor.close()
+            db.commit()
+            return retval
+        except Exception, e:
+            DEBUG(SESSIONHANDLER, "sql exception -- see error log")
+            logException()
+            try:
+                db.rollback()
+            except:
+                pass
 
     def escapeSQLString(self, string):
         raise NotImplementedError
 
-    def __init__(self, id):
-        self.__id=id 
-
-    def getTouchSQL(self):
-        """
-        SQL to update the timestamp for a given session id.
-        keywords available:
-        'table' : the table
-        'timeCol' : the time column
-        'idCol' : the id column
-        'id' : the session id
-        """
-        raise NotImplementedError
+    def __init__(self,
+                 id):
+        self.__id=id
+        self.table=Configuration.SessionHandler_SQLTable
+        self.idCol=Configuration.SessionHandler_SQLIDColumn
+        self.pickleCol=Configuration.SessionHandler_SQLPickleColumn
+        self.timeCol=Configuration.SessionHandler_SQLTimestampColumn
+        self._touched=int(time.time())
+        
+##        # for reaping to work correctly with scoping, it needs
+##        # to be keyed to the configuration values above
+##        self._reapKey='|'.join(self.table,
+##                               self.idCol,
+##                               self.pickleCol,
+##                               self.timeCol)
+##        try:
+##            self.__class__._lastReaped
+##        except AttributeError:
+##            self.__class__._lastReaped={self._reapKey: int(time.time())}
+##        else:
+##            try:
+##                self.__class__._lastReaped[self._reapKey]
+##            except KeyError:
+##                self.__class__._lastReaped[self._reapKey]=int(time.time())}
+        
     
     def touch(self):
         """
-        resets the timestamp for the session's corresponding record,
-        and, if reaping is enabled, removes any expired records
-        from the database if the reap interval has elapsed since the last reap.
+        resets the timestamp for the session's corresponding record.
         """
         DEBUG(SESSIONHANDLER, "in touch")
-        args={'table' : self.getTable(),
-              'timeCol' : self.getTimeCol(), 
-              'idCol' : self.getIDCol(), 
+        args={'table' : self.table,
+              'timeCol' : self.timeCol, 
+              'idCol' : self.idCol, 
               'id' : self.__id}
-        self.execSql(self.getTouchSQL() % args)
-        self._checkReap()        
+        self.execSql(self.touchSQL % args)
+        self._touched=int(time.time())
 
-    def getGetPickleSQL(self):
-        """
-        SQL to obtain the pickled session information for a given id.
-        keywords available:
-        'table' : the table
-        'idCol' : the id column
-        'id' : the session id
-        'gherkin' : the pickle-data column
-        """
-        raise NotImplementedError
-    
-    def __getPickle(self):
-        args={'table' : self.getTable(),
-              'idCol' : self.getIDCol(), 
+    def _getPickle(self):
+        args={'table' : self.table,
+              'idCol' : self.idCol,
+              'timeCol' : self.timeCol,
               'id' : self.__id,
-              'gherkin' : self.getPickleCol()}
-        resultSet=self.execSql(self.getGetPickleSQL() % args)
-        if resultSet and len(resultSet)>0 and len(resultSet[0])>0:
-            return cPickle.loads(resultSet[0][0])
+              'gherkin' : self.pickleCol}
+        resultSet=self.execSql(self.getPickleSQL % args)
+        if resultSet and resultSet[0]:
+            gherkin, tstamp=resultSet[0]
+            self._touched=tstamp
+            return cPickle.loads(gherkin)
         else:
-            return None
+            self._touched=int(time.time())
+            return {}
 
-    def getSetPickleSQL(self):
-        """
-        SQL to insert pickled session data for a given id.
-        keywords available:
-        'id' : the session id
-        'idCol' : the id column
-        'pickleCol' : the pickle column
-        'gherkin' : SQL-escaped pickled session information
-        'timeCol' : the timestamp column
-        'table' : the table
-        """
-        raise NotImplementedError
-
-    def __setPickle(self, sessionHash):
-        DEBUG(SESSIONHANDLER, "in __setPickle with sessionHash %s" % sessionHash)
+    def _setPickle(self, sessionHash):
         args={'id' : self.__id,
-              'idCol' : self.getIDCol(),
-              'pickleCol' : self.getPickleCol(),
+              'idCol' : self.idCol,
+              'pickleCol' : self.pickleCol,
               'gherkin' : self.escapeSQLString(cPickle.dumps(sessionHash, 1)),
-              'timeCol' : self.getTimeCol(),
-              'table': self.getTable()}
-        self.execSql(self.getSetPickleSQL() % args)
+              'timeCol' : self.timeCol,
+              'table': self.table}
+        self.execSql(self.setPickleSQL % args)
+        self._touched=int(time.time())
 
     def load(self):
-        self._checkReap()
-        return self.__getPickle() or {}
+        return self._getPickle()
 
     def save(self, data):
-        self.__setPickle(data)
-        # check if it is time to reap
-        self._checkReap()
+        self._setPickle(data)
+##        # check if it is time to reap
+##        self._checkReap()
 
-    def getDeleteSQL(self):
-        """
-        SQL to delete session data for a given id.
-        keywords available:
-        'id' : session id
-        'idCol' : the id column
-        'table' : the table
-        """
-        raise NotImplementedError
         
     def delete(self):
         DEBUG(SESSIONHANDLER, "in delete")
         args={'id' : self.__id,
-              'idCol' : self.getIDCol(),
-              'table' : self.getTable()}        
-        self.execSql(self.getDeleteSQL() % args)
+              'idCol' : self.idCol,
+              'table' : self.table}        
+        self.execSql(self.deleteSQL % args)
+        self._touched=int(time.time())
 
-    def _checkReap(self):
-        DEBUG(SESSIONHANDLER, "in _checkReap")
-        DEBUG(SESSIONHANDLER, "reap interval is %d" % Session._reapInterval)
-        DEBUG(SESSIONHANDLER, "last reaped: %d" % self.lastReaped())
-        if Session._reapInterval>0:
-            currentTime=int(time.time())
-            if currentTime>=(self.lastReaped() + Session._reapInterval):
-                self.reapOldRecords()
-                self.lastReaped(currentTime)
+##    def _checkReap(self):
+##        DEBUG(SESSIONHANDLER, "in _checkReap")
+##        DEBUG(SESSIONHANDLER, "reap interval is %d" % Session._reapInterval)
+##        if Session._reapInterval>0:
+##            currentTime=int(time.time())
+##            if currentTime>=(self.getLastReaped() + Session._reapInterval):
+##                self.reapOldRecords()
+##                self.setLastReaped(currentTime)
 
-    def getReapSQL(self):
-        """
-        SQL to remove expired session records
-        keywords available:
-        'timeCol' : timestamp column
-        'table' : the table
-        'timeout' : the session timeout
-        """
-        raise NotImplementedError
+##    def reapOldRecords(self):
+##        DEBUG(SESSIONHANDLER, "in reapOldRecords")
+##        args={'timeCol' : self.timeCol,
+##              'timeout' : Session._timeout,
+##              'table' : self.table}      
+##        self.execSql(self.reapSQL % args)
 
-    def reapOldRecords(self):
-        DEBUG(SESSIONHANDLER, "in reapOldRecords")
-        args={'timeCol' : self.getTimeCol(),
+##    def getLastReaped(self):
+##        return self.__class__._lastReaped[self._reapKey]
+
+##    def setLastReaped(self, newval):
+##        self.__class__._lastReaped[self._reapKey]=newval
+
+    def lastTouched(self):
+        return self._touched
+
+    
+##        currentTime=int(time.time())
+##        args={'id' : self.__id,
+##              'idCol' : self.idCol,
+##              'timeCol' : self.timeCol,
+##              'table' : self.table}
+##        retval=self.execSql(self.ageSQL % args)
+##        if retval and retval[0]:
+##            return currentTime-retval[0][0]
+##        else:
+##            return 0
+
+    def reap(self):
+        DEBUG(SESSIONHANDLER, "in reap()")
+        args={'timeCol' : self.timeCol,
               'timeout' : Session._timeout,
-              'table' : self.getTable()}      
-        self.execSql(self.getReapSQL() % args)
-
-    def lastReaped(self, newVal=None):
-        raise NotImplementedError
-
-########################################################################        
-# $Log: SQLSessionStore.py,v $
-# Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.6  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.5  2001/04/02 00:54:17  smullyan
-# modifications to use new requestHandler hook mechanism.
-#
-# Revision 1.4  2001/03/29 20:17:11  smullyan
-# experimental, non-working code for requestHandler and derived services.
-#
-# Revision 1.3  2001/03/16 21:20:18  smullyan
-# removed dead variable, _lastReaped, from SQLSessionStore
-#
-# Revision 1.2  2001/03/16 21:10:48  smullyan
-# fixed reaping, which I had inadvertently broken
-#
-# Revision 1.1  2001/03/16 19:09:40  smullyan
-# service that provides session handling capabilities.
-#
-########################################################################
-
+              'table' : self.table}      
+        self.execSql(self.reapSQL % args)
