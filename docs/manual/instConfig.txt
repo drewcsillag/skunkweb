@@ -26,51 +26,27 @@ Prerequisites
 Operating System Requirements
 -----------------------------
 
-SkunkWeb can be installed and used on any reasonable Unix-based
-system. SkunkWeb has been successfully built and installed on Solaris,
-Linux, FreeBSD, HPUX 11 and Mac OS X. However, any UNIX system that
-supports the most recent versions of Python can probably support
-SkunkWeb.
+SkunkWeb can be installed and used on any reasonable Unix-based system. SkunkWeb
+has been successfully built and installed on Solaris, Linux, FreeBSD, OpenBSD,
+HPUX 11 and Mac OS X. However, any UNIX system that supports the most recent
+versions of Python can probably support SkunkWeb.
 
-On Windows, SkunkWeb will only work under Cygwin, since Windows cannot
-fork multiple processes.
+On Windows, SkunkWeb will only work under Cygwin, since Windows cannot fork
+multiple processes.
 
 Hardware Requirements
 ---------------------
 
-This is a rough area to pinpoint, because the choice of hardware must
-reflect the specific needs of a particular web application. Will it be
-a high-traffic web site? How much caching is going on?
-
-Here is a few general pointers:
-
-- Processors: SkunkWeb was developed with multi-processing in
-  mind. If, given your situation, and the application you have on your
-  hands, you can add multiple processors to your serving
-  hardware. SkunkWeb will be able to fully utilize all the processors
-  since specific SkunkWeb processes can be executed using different
-  CPUs.
-
-- Disk space: you might need a lot of disk space if you are caching a
-  lot of data in SkunkWeb. It'd be best to figure the optimal amount of
-  disk space needed when preparing your hardware. Since disk space is
-  cheap, anyway though, this might not matter that much. Also, since you
-  can share caches, for example, your choices might be even simpler.
-
-
-Generally, it is up to the developer to decide what is the appropriate
-hardware for their situation. However, the above pointers refer to
-more production environments. If your hardware can run a Unix-based
-operating system, with a more recent version of Python, then it can
-run SkunkWeb.
-
+SkunkWeb has no particular hardware requirements per se.  Since it was developed
+specifically to scale well with multiple processors, if you have multiple
+processors available, they will be fully utilized.
 
 Software Requirements
 ---------------------
 
 The requirements are:
 
-- Python 2.1.1 or later, optionally with the crypt module installed.
+- Python 2.1.1 or later.
 - An ANSI C Compiler such as GNU gcc.
 - mx.DateTime - this is used for the caching mechanisms. This can be
   obtained at this URL: http://www.egenix.com/. 
