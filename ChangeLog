@@ -1,3 +1,9 @@
+2002-11-29  James Richards  <jrichards@satie.wnyc.org>
+
+	* test/formlib/unittests/validatestest.py (DateFieldUnitTest.testValidateSucceeds): Added a series of unittests for existing components in validates.py
+
+	* test/formlib/unittests/formtest.py (suite): minor formatting correction
+
 2002-11-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/aesencrypt.py: added command-line file
