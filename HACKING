@@ -1,0 +1,22 @@
+SkunkWeb/             -- The skunkweb server code proper
+         SkunkWeb     -- The skunkweb daemon
+         Services     -- Services that extend the skunkweb daemon
+         mod_skunkweb -- the Apache module that can be used to front the
+                         skunkweb daemon
+
+pylibs/            -- generally useful utility modules usable outside of
+                      skunkweb
+       DT          -- the templating engine proper
+       AE          -- the component rendering logic (includes the caching 
+                      logic)
+       Date        -- useful date functions
+       ProcessMgr  -- a simple forking process manager
+       SocketMan   -- uses ProcessMgr to provide a multi-process socket
+                      server
+       pargen      -- a parser generator
+       signal_plus -- allows you to block and unblock SIGTERM
+       skunk_lib   -- some utility functions for doing url stuff that
+                      was written in C for speed
+       uuid        -- generates universally unique identifiers
+       skunkdoc    -- generates docs for stml templates... kinda forget 
+                      that this exists
