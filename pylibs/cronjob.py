@@ -5,8 +5,8 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/06/03 09:19:27 smulloni>
-# $Id$
+# Time-stamp: <03/06/03 09:40:37 smulloni>
+# $Id: cronjob.py,v 1.1 2003/06/03 13:24:28 smulloni Exp $
 
 """
 a simple cron implementation.  
@@ -145,9 +145,6 @@ class CronLogger(object):
     """
     interface for logging the output from cron jobs.
     """
-    def __init__(self):
-        pass
-
     def out(msg):
         pass
 
