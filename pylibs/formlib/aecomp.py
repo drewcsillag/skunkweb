@@ -121,8 +121,7 @@ class ComponentValidator:
         return res or []
 
 class ComponentSubmitProcessor:
-    def __init__(self, form, comp_path):
-        self.form=form
+    def __init__(self, comp_path):
         self.comp_path=rectifyRelativeName(comp_path)
     def __call__(self, **kwargs):
         res=callComponent(self.comp_path,
