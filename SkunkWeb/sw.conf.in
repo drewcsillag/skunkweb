@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.10 2002/01/21 07:05:48 smulloni Exp $
-# Time-stamp: <02/02/07 01:44:31 smulloni>
+# $Id: sw.conf.in,v 1.11 2002/02/07 07:18:41 smulloni Exp $
+# Time-stamp: <02/02/15 00:47:31 smulloni>
 
 ########################################################################
 #
@@ -77,6 +77,10 @@
 #
 # mysql                   -- preloads the MySQL pylib and allows for
 #                            connection caching
+#
+# rewrite                 -- supports common url rewriting tasks and supplies a
+#                            more complex tasks to be performed by other services
+#                            by means of a hook framework.
 
 services = ['requestHandler',
             'aecgi',
@@ -419,6 +423,24 @@ userModuleCleanup = 1
 # notFoundTemplate = None
 
 ########################################################################
+# For the rewrite service: each rule specifies a replacement template
+# to be used in modifying a portion of connection.uri that is matched
+# by the regular expression. Any named groups in the matched regular
+# expression will be added to connection.args if rewriteMatchToArgs is 
+# true (the default).  For example:
+#
+# rewriteRules = [('test', r'^/rewrite/(?P<real>.*?)\.html', r"/\1.html")]
+# above rule will convert uri '/rewrite/any_name.html' to
+# '/any_name.html' and set connection.args['real'] to 'any_name'
+#
+# variables:
+# rewriteRules=[]
+# rewriteApplyAll=1
+# rewriteMatchToArgs=1
+
+# The variables defined by the rewrite service are not scopeable.
+
+########################################################################
 # FOR THE  sessionHandler SERVICE:
 ########################################################################
 
@@ -524,6 +546,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.11  2002/02/07 07:18:41  smulloni
+# documentRootFS is now a single instance.
+#
 # Revision 1.10  2002/01/21 07:05:48  smulloni
 # added hook for mime-type-specific request handlers.
 #

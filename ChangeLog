@@ -1,5 +1,10 @@
 2002-02-15  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sw.conf.in: added rewrite documentation.
+
+	* configure.in, configure, Skunkweb/configure.in, Skunkweb/configure: 
+	added rewrite to list of services
+
 	* FAQ: Added a faq entry about cgi directories that has been on the 
 	website for some while, but which I had forgotten to put here.
 
