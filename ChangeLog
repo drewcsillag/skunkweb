@@ -1,3 +1,11 @@
+2002-06-11  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/index.html: added bits
+	for python news
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/python.comp, 
+	SkunkWeb/sample_webdocs/demo/geeknews/dcomps/python.pydcmp:
+	added rdf suckers for python news
 
 2002-06-10  Jacob Smullyan  <jsmullyan@wnyc.org>
 
