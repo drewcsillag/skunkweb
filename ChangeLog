@@ -1,3 +1,8 @@
+2003-04-15  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/spreadcache.py: simple module for caching spread
+	mailboxes.
+
 2003-04-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/skunkweb.py.in, SkunkWeb/SkunkWeb/Server.py,
