@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.2 2002/04/14 01:38:09 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.3 2002/04/24 18:54:24 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -1271,6 +1271,10 @@ static int skunkweb_handler(request_rec* r)
     binbuffer *stdin_buf;
     skunkweb_server_config *conf;
 
+#ifndef APACHEV1
+    if (strcmp(r->handler,"skunkweb-handler"))
+	return DECLINED;
+#endif
     /* Get the configuration */
     conf=ap_get_module_config(r->server->module_config, &skunkweb_module);
 
