@@ -5,23 +5,22 @@ systems:
     Linux
     Solaris
 
-It should work on any reasonable version of Unix that Python and the mm 
-library works.  It *may* run on Windoze under Cygwin, but it hasn't been
-tested.
+It should work on any reasonable version of Unix that Python works.
+It *may* run on Windoze under Cygwin, but it hasn't been tested.
 
 
 Prerequisites
 ------------------------------
 Python 2.1.1 or later (2.1 works but is not GPL compatible)
   optionally compiled with the crypt module
-An ANSI C compiler
 Marc Andre Lemburg's eGenix mx Extensions
     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
-GNU xargs
+An ANSI C compiler
 GNU install 
-GNU bash
-MM library 
-    http://www.engelschall.com/sw/mm/
+
+GNU xargs (solaris xargs works ok too)
+GNU find (part of the GNU findutils) -- non-GNU ones may work too, but
+   we've had mixed results
 
 Optionally install apache.  Make sure you configure it with at least:
    --enable-module=so 
@@ -37,31 +36,32 @@ Installation
 Installing SkunkWeb should be rather painless since it makes use of
 GNU autoconf.  Just untar and run configure.  Make sure that apache's
 bin/ directory is in your path (or alternatively specify the
---with-apxs directive). Outside of the usual configure options, the
-following configure options are also available:
+--with-apxs directive) if you are going to build the mod_skunkweb
+Apache module. Outside of the usual configure options, the following
+configure options are also available:
 
   --with-skunkweb       Install SkunkWeb as part of this installation 
                         (default yes)
   --with-python=/path/python   Specify path to python executable
   --with-user=user        Make Skunk installation owned by user
   --with-group=group      Make Skunk installation owned by group
-  --with-mm=DIR           Location of mm library
 
 Additional options if building SkunkWeb:
   --with-webdoc           Install some sample content
-  --with-services=svcs    Specify the list of personalities to install
+  --with-services=svcs    Specify the list of services to install
                            space delimited list of personas to install, valid
                            names are:
 
                            sessionHandler, requestHandler, remote,
                            ae_component, remote_client, aed_compat,
                            aecgi, httpd, basicauth, pars,
-                           templating, web
+                           templating, web, oracle, posgresql, mysql
+                          Default is to install them all
 
   --with-sudo=/path/sudo  Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb
   --with-apxs=/path/apxs  Specify path to the apxs program
 
-Once ``configure'' has completed, simply type ``make install.''
+Once ``configure'' has completed, simply type ``make; make install''.
 
-$Id: INSTALL,v 1.1 2001/07/16 16:59:47 drew Exp $
+$Id: INSTALL,v 1.1.1.1 2001/08/05 14:58:15 drew_csillag Exp $

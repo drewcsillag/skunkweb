@@ -20,8 +20,8 @@ LICENSE
 
 README for SkunkWeb
 ------------------------------
-The installation instructions are in ``INSTALL''.  
-STML (Skunk Template Markup Language) and developer manuals are under
+The installation instructions are in ``INSTALL''.  STML (Skunk
+Template Markup Language) operations and developer manuals are under
 docs/.
 
 
@@ -36,8 +36,8 @@ congratulations page.
 
 If you built mod_skunkweb (to use with apache), add the contents of
 SkunkWeb/mod_skunkweb/httpd_conf.stub to the end of your httpd.conf
-(editing to taste).  (Re)Start apache and hit it and check that you
-get the congratulations page.
+(editing to taste).  Stop and start apache and hit it and check that
+you get the congratulations page.
 
 SkunkWeb, Smell the power!
 
@@ -65,7 +65,7 @@ Encourages component based design
 	* encouraged by caching options (see below)
 	* component output can be either HTML or Python objects
 	* can write components in either STML or Python
-	* can also call components on other skunk servers
+	* can also call components on other skunkweb servers
 	
 Message Catalogs
 	* makes multi-lingual sites much easier
@@ -84,10 +84,11 @@ Speed
 	* caching is flexible and as finite as your disk space
 	* components can be rendered after the response is sent if 
 	  a slightly stale version is available --- resulting in
-	  better response times
+	  better response times via deferred components
 
 Documentation
 	* extensive documentation available in HTML, PostScript, PDF & text
+          --well not yet, but getting there
 	* have automatic documentation tools to generate documentation for 
 	  STML templates and python modules as well as tools for writing 
           manuals (but don't use the manual stuff, it sucks).
