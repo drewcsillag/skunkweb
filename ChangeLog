@@ -2,6 +2,7 @@
 
 	* pylibs/xmlutils.py (XMLElement.walk): added walk() method to
 	XMLElement. 
+	(XMLElement.walk): fixed to actually do something.
 
 2002-12-04  Jacob Smullyan  <jsmullyan@wnyc.org>
 

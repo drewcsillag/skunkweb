@@ -298,7 +298,11 @@ class Form(object):
                 if e:
                     self.errors.extend(e)
 
-    def process(self, statemgr, argdict, formdict={}, ns={}):
+    def process(self, statemgr, argdict, formdict=None, ns=None):
+        if formdict is None:
+            formdict={}
+        if ns is None:
+            ns={}
         return self.processHook(self, statemgr, argdict, formdict, ns)
     
 def _getname(x):
