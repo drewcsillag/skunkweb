@@ -1,3 +1,13 @@
+2003-10-20 Brian Olsen <brian@qinternet.com>
+
+	* pylibs/PyDO/PyDO.py: Added "order", "limit", and "offset"
+	parameters to getSome(), getSomeSQL(), getTupleWhere() and
+	getSQLWhere(); they are used to use the respective SQL 
+	commands "ORDER BY", "LIMIT" and "OFFSET."
+
+	* pylibs/PyDO/PyDO2.py: Added "order", "limit" and "offset"
+	here; it is the same functionality as in PyDO.py.
+
 2003-09-15  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/PyDO2.py: Jeroen van Dongen's revision of PyDO2, 
