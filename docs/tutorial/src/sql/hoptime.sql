@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
- * Time-stamp: <02/11/02 16:01:31 smulloni> 
- * $Id: hoptime.sql,v 1.4 2002/11/01 17:54:17 smulloni Exp $
+ * Time-stamp: <02/11/12 09:02:04 smulloni> 
+ * $Id: hoptime.sql,v 1.5 2002/11/04 00:41:23 smulloni Exp $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;
@@ -185,6 +185,7 @@ DECLARE
   game_status TEXT;
   game_size INTEGER;
   user_id INTEGER; 
+  play_num INTEGER;
 BEGIN
   SELECT into game_status status FROM games WHERE id=game_id;
   IF NOT FOUND OR game_status <> ''playing'' THEN
@@ -193,10 +194,16 @@ BEGIN
 
   SELECT INTO game_size COUNT(*) FROM players where game=game_id;
 
-  SELECT INTO user_id 1+p.player % game_size FROM players p, moves m
+  SELECT INTO play_num (1+p.play_number) % game_size FROM players p, moves m
     WHERE m.player=p.player
     AND m.game=game_id
     ORDER BY m.entered DESC LIMIT 1;
+  IF NOT FOUND THEN
+    play_num=0;
+  END IF;
+  SELECT INTO user_id player FROM players 
+    WHERE game=game_id
+    AND play_number=play_num;
   RETURN user_id;
 END;
 ' LANGUAGE 'plpgsql';

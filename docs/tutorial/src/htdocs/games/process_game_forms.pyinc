@@ -1,0 +1,94 @@
+import hoptime.hopapi as H
+from templating.MailServices import sendmail
+from templating.UrlBuilder import url
+
+#def sendmail ( to_addrs, subj, msg, 
+#               from_addr = Configuration.FromAddress ):
+
+def validate_text(text):
+    # this should do various things, like check the length
+    # and whether it contains any nasty html or script tags.
+    # for right now, anything non-blank will do.
+    if text.strip():
+        return text
+    return None
+
+move_msg='''
+It\'s your turn to write!
+
+Please make your move as soon
+as possible at this url:
+
+%s
+
+Thank you!
+
+The Hoptime Crew'''
+
+owner_move_msg='''
+A move has been made in a game you administer.
+
+The current state of the game is viewable here:
+
+%s
+
+The Hoptime Crew'''
+
+def notify_move(conn, game):
+    # send out an email to the next user
+    u=game.getNextPlayer()
+    guri=uri(conn.uri, need_full=1)
+    if u:
+        sendmail(u['email'],
+                 'Hoptime: %s' % game['title'],
+                 move_msg % guri)
+    # if the owner is not the next player, send
+    # the owner a message, too.
+    if game['owner']!=u['id']:
+        u=game.getOwner()
+        if u:
+            sendmail(u['email'],
+                     'Hoptime: %s' % game['title'],
+                     owner_move_msg % guri)
+                 
+
+def process(conn, game_id):
+    action=conn.args.get('action')
+    if None==game_id:
+        raise "Oy"
+    game=H.Games.getUnique(id=game_id)
+    if not game:
+        raise "Oy"
+
+    if action=='join':
+        game.addPlayer(conn.hoptimeUser)
+        game.commit()
+
+    elif action=='start':
+        try:
+            game.start()
+        except H.GameStateException:
+            game.rollback()
+            return
+        game.commit()
+
+    elif action=='edit':
+        pass
+    elif action=='publish':
+        pass
+    elif action=='trash':
+        pass
+
+    elif action=='move':
+        text=validate_text(conn.args.get('content_append'))
+        if text:
+            conn.hoptimeUser.move(game, text)
+            H.commit()
+            notify_move(conn, game)
+            
+        
+submitted=CONNECTION.method=='POST'
+if submitted:
+    process(CONNECTION, id)
+        
+        

@@ -1,0 +1,29 @@
+<:compargs game show_form=`None`:>
+<p>This is where you actually play the game.  It should, 
+first, show the current state of the game, preferably with 
+annotations to show who made what move and when (but that 
+involves presentational niceties so I'll defer it); then show
+a text area where new text can be placed. </p>
+
+<p>There should be some restrictions on what can be posted.  
+First of all, no markup, I presume, and no script tags.  Empty
+submissions do not count -- you cannot "pass"; and there might be a 
+maximum length restriction as well.</p>
+
+<p>The form processing is handled in /games/process_game_forms.pyinc, 
+which should handle all forms for the game page.
+
+<:set current_content `game.getText()`:>
+<:if `current_content`:>
+ <div class="gametext"><pre><:val `current_content` fmt=html:></pre></div>
+ <hr />
+<:else:>
+ <p><i>No text yet entered</i></p>
+<:/if:>
+<:if `show_form`:>
+<form method="POST">
+<textarea name="content_append" rows="20" cols="60" wrap="no"></textarea><br />
+<:hidden action=move:>
+<input type="submit" value="submit text" />
+</form>
+<:/if:>

@@ -1,1 +1,46 @@
-something should go here.
+<:compargs game user:>
+<:#:>
+general information about the game, for every registered 
+user to see 
+<:/#:>
+<:component /comp/game_summary.comp game=`game` show_status=`1`:>
+<:set player `game.getPlayerForId(user['id'])`:>
+<:set status `game['status']`:>
+<:if `player`:>
+   <:#:>
+   information about the game for the player to see.
+   first, is the player the game owner? 
+   what is the status of the game?
+   <:/#:>
+   <:set owner `game.getOwner()`:>
+   <:set isowner `player['player']==owner['id']`:>
+
+   <:if `status=='editing' and isowner`:>
+      <:#:>show edit screen<:/#:>
+      <:component game_edit.comp:>
+      <h4>EDIT PAGE FOR GAME GOES HERE</h4>
+  <:elif `status=='playing'`:>
+     <:set show_form `player['player']==game.getNextPlayerId()`:>
+      <:#:>show play screen<:/#:>
+      <:component move.comp game=`game` show_form=`show_form`:>
+  <:elif `status=='joining' and isowner`:>
+     <form method="POST">
+       <input type="submit" value="start play" />
+       <:hidden game_id=`game['id']` action=start:>
+     </form>
+  <:/if:>
+<:elif `status=='joining'`:>
+  <form method="POST">
+    <input type="submit" value="join this game" />
+    <:hidden game_id=`game['id']` action=join:>
+  </form>
+    
+<:/if:>
+  
+
+  
+      
+
+
+
+

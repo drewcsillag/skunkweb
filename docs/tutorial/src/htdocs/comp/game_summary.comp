@@ -1,4 +1,4 @@
-<:compargs game:>
+<:compargs game show_status=`None`:>
 <:doc:>
  
 A template that renders a game for display, for use in a list of games.
@@ -18,6 +18,9 @@ A template that renders a game for display, for use in a list of games.
   by <:component /comp/user.comp user=`owner`:><br />
 <:if `game['description']`:>
 <:val `game['description']`:><br />
+<:/if:>
+<:if `show_status`:>
+  Game Status: <:val `game['status']`:><br />
 <:/if:>
 Players: <ol class="player_list">
   <:for `players` p:>

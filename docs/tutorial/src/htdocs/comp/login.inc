@@ -1,5 +1,6 @@
 <:component /comp/logo.comp 
             uri=`CONNECTION.realUri`:>
+<:default raiseOK `None`:>
 
 <:if `not CONNECTION.hoptimeUser`:>
   <:args lusername password:>
@@ -12,9 +13,12 @@
 <:if `not CONNECTION.hoptimeUser`:>
   <p><:component /comp/login_form.comp  
                  title=`submitted and "Login Incorrect" or "Login"`
-                 action=`CONNECTION.uri`
+                 action=`CONNECTION.realUri`
                  cache=yes:>
      <:url /register.html text="register":></p>
+<:elif `raiseOK`:>
+  <:import auth OK:>
+  <:raise `OK`:>
 <:else:>
   <p>You are logged in as
     <strong>
@@ -23,6 +27,7 @@
                 cache="yes":>
     </strong>.
     <:url /logout.html text="logout":></p>
+
 <:/if:>
 
 

@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/01 17:18:38 smulloni>
-# $Id: hopauth.py,v 1.2 2002/11/01 17:54:17 smulloni Exp $
+# Time-stamp: <02/11/10 14:01:32 smulloni>
+# $Id: hopauth.py,v 1.3 2002/11/04 00:41:23 smulloni Exp $
 
 """
 support for authenticating hoptime users
@@ -19,7 +19,7 @@ class HoptimeAuth(A.CookieAuthBase, A.RespAuthBase):
         A.CookieAuthBase.__init__(self,
                                   'hoptime_auth',
                                   'Ingabook Forsmythe',
-                                  {})
+                                  {'path' : '/'})
 
     def validate(self, username, password):
         user=H.Users.getUnique(username=username)
@@ -51,27 +51,27 @@ class HoptimeAuth(A.CookieAuthBase, A.RespAuthBase):
 
 
 
-# user-space function -- can be called from templates
-def process_auth(conn, username, password, vals=None):
-    """
-    processes login.  conn is a HttpConnection object;
-    username, password, and vals should be taken from
-    conn.args (using whatever forms keys are employed).
-    Four outcomes:
-       if the argument vals in not none and the ahuth check
-          is ok, raise OK
-       if vals is not true and 
-    """
-    # don't allow GET logins
-    if conn.method=='POST' and None not in (username, password):
-        authorized=A.getAuthorizer().login(conn,
-                                           username,
-                                           password)
-        if authorized:
-            conn.hoptimeUser=authorized
-            if vals:
-                conn.args=cPickle.loads(base64.decodestring(vals))
-                raise A.OK
-            return 1
-        return 0
-    return -1
+### user-space function -- can be called from templates
+##def process_auth(conn, username, password, vals=None):
+##    """
+##    processes login.  conn is a HttpConnection object;
+##    username, password, and vals should be taken from
+##    conn.args (using whatever forms keys are employed).
+##    Four outcomes:
+##       if the argument vals in not none and the ahuth check
+##          is ok, raise OK
+##       if vals is not true and 
+##    """
+##    # don't allow GET logins
+##    if conn.method=='POST' and None not in (username, password):
+##        authorized=A.getAuthorizer().login(conn,
+##                                           username,
+##                                           password)
+##        if authorized:
+##            conn.hoptimeUser=authorized
+##            if vals:
+##                conn.args=cPickle.loads(base64.decodestring(vals))
+##                raise A.OK
+##            return 1
+##        return 0
+##    return -1

@@ -1,3 +1,25 @@
+2002-11-12    <smulloni@smullbola.smullyan.org>
+
+	* docs/tutorial/src: (many files) various changes, still very rough
+	and incomplete.
+
+	* pylibs/argextract.py: Since this code looks like it might get used
+	outside of CONNECTION, I'm moving it to its own module.
+
+2002-11-10    <smulloni@smullbola.smullyan.org>
+
+	* SkunkWeb/Services/rewrite.py: Moved rewrite hook by default to
+	HaveConnection, which occurs before scoping takes place. Added
+	Configuration variable, rewriteBeforeScope, to control this (if it
+	has a false value, rewrite will take place in PreHandleConnection,
+	as before, but it defaults to 1).  I can see arguments for both
+	places, but in my case I found it troubling that auth and rewrite
+	were using the same hook, although I wasn't actually see bugs
+	result from it.
+
+	* docs/tutorial/src/htdocs/games/game.comp: It is now possible to 
+	add text to a story.
+
 2002-11-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py (getMessageCatalog): a fix for relative paths

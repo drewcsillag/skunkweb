@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/03 23:24:20 smulloni> 
-# $Id: hopapi.py,v 1.4 2002/11/04 00:41:23 smulloni Exp $
+# Time-stamp: <02/11/12 09:08:19 smulloni> 
+# $Id: hopapi.py,v 1.5 2002/11/07 19:34:17 smulloni Exp $
 
 import PyDO
 import sys
@@ -115,6 +115,9 @@ class Games(_hoptimebase):
     def getOwner(self):
         return Users.getUnique(id = self['owner'])
 
+    def getPlayerForId(self, user_id):
+        return Players.getUnique(game=self['id'], player=user_id)
+
     def getUsers(self):
         return self.joinTable('id',
                               "players",
@@ -143,7 +146,7 @@ class Games(_hoptimebase):
             c.execute(sql)
             t=c.fetchone()
             c.close()
-            return t
+            return t and t[0] or ""
 
     def start(self):
         if self['status']=='joining':
@@ -167,17 +170,22 @@ class Games(_hoptimebase):
     def trash(self):
         self['status']='trashed'
 
-    def getNextPlayer(self):
+    def getNextPlayerId(self):
         if self['status'] != 'playing':
             return None
         sql="SELECT get_next_turn(%s)" % self['id']
-        c.getDBI().conn.cursor()
+        c=getDBI().conn.cursor()
         c.execute(sql)
         u=c.fetchone()
-        if not u:
-            return None
-        else:
-            return Users.getUnique(id=u)
+        if u:
+            return u[0]
+        return None
+    
+    def getNextPlayer(self):
+        id=self.getNextPlayerId()
+        if id is not None:
+            return Users.getUnique(id=id)
+
 
     def getMoveCount(self):
         sql="SELECT count(*) FROM moves where game=%s" % self['id']
@@ -249,7 +257,7 @@ class Users(_hoptimebase):
                                       self['firstname'],
                                       self['middlename'],
                                       self['lastname']]))
-                        
+
 
 class Stories(_hoptimebase):
     table='stories'
