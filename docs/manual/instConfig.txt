@@ -1226,3 +1226,11 @@ make a directory in the cache that won't be stepped on and move the
 other directories in the cache into the newly created directory. Then
 remove the new directory (which may take a bit of time depending on
 the size of the cache).
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 80
+   End:
