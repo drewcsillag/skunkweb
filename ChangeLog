@@ -1,3 +1,10 @@
+2003-04-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/swmgr.in: You can now stop or restart the daemon
+	without running swpython if you pass swmgr the "-f" option (and if
+	your pid file is in the configured default, which is likely); also
+	improved usage text a tad.
+
 2003-03-31    <drew@loki.sai-office>
 
 	* SkunkWeb/Services/httpd/protocol.py (HTTPMethodRequestParser._getEnv):

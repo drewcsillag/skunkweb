@@ -17,11 +17,10 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 #
-# This is the manager script for AED. Can be used to automate 
-# startup / shutdown procedures for the Skunk Application Environment 
-# Daemon :-). 
+# This is the manager script for SkunkWeb, used for stopping,
+# starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.2 2002/07/25 17:29:15 drew_csillag Exp $
+# $Id: swmgr.in,v 1.3 2002/07/25 19:21:35 drew_csillag Exp $
 
 umask 002
 
@@ -78,19 +77,58 @@ function run_as_user
 function get_pid_file
 {
     run_as_user @bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
+    # echo @localstatedir@/run/sw.pid
 }
 
-if [ "$1" = '-r' ]
-then
-    RUNASROOT=root
-    echo "If you want to make it so swmgr always starts skunkweb as root,"
-    echo "edit swmgr and change the line where it says RUNASROOT=user"
-    echo "and make it say RUNASROOT=root"
-    echo
-    echo "In addition, to restart and stop skunkweb you must use the -r"
-    echo "option when skunkweb was started with -r"
-    shift
-fi
+
+function usage 
+{
+    echo "Usage: `basename $0` [options] {start|stop|restart}"
+    echo "Options:"
+    echo "    -h     print this message and exit"
+    echo "    -f     fast stop or restart; doesn't run swpython"
+    echo "           to find the pid file"
+    echo "           to determine location of pid file"
+    echo "    -r     start skunkweb as root so it can bind to a low port"
+    exit 1
+}
+
+
+while getopts "hrf" ARG
+do
+  case ${ARG} in
+  h)
+     usage
+     ;;
+  r)
+     RUNASROOT=root
+     echo "If you want to make it so swmgr always starts skunkweb as root,"
+     echo "edit swmgr and change the line where it says RUNASROOT=user"
+     echo "and make it say RUNASROOT=root"
+     echo
+     echo "In addition, to restart and stop skunkweb you must use the -r"
+     echo "option when skunkweb was started with -r"
+     ;;
+  f)
+     FAST=1
+     ;;
+  esac
+done
+     
+
+#if [ "$1" = '-r' ]
+#then
+#    RUNASROOT=root
+#    echo "If you want to make it so swmgr always starts skunkweb as root,"
+#    echo "edit swmgr and change the line where it says RUNASROOT=user"
+#    echo "and make it say RUNASROOT=root"
+#    echo
+#    echo "In addition, to restart and stop skunkweb you must use the -r"
+#    echo "option when skunkweb was started with -r"
+#    shift
+#fi
+
+shift $(($OPTIND - 1))
 
 # See how we were called.
 case "$1" in
@@ -106,13 +144,16 @@ case "$1" in
 	;;
   stop)
 	echo "Stopping SkunkWeb..."
-	PIDFILE=`get_pid_file`
-	#        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
-
-	if [ -z "$PIDFILE" ]
-	then
-	    echo "run of swpython to determine pidfile failed!"
-            exit 1
+        if ! [ -z $FAST ]
+        then
+          PIDFILE=@localstatedir@/run/sw.pid
+        else
+	  PIDFILE=`get_pid_file`
+          if [ -z "$PIDFILE" ]
+	  then
+	      echo "run of swpython to determine pidfile failed!"
+              exit 1
+          fi
         fi
 	if [ ! -f $PIDFILE ] 
 	then
@@ -129,12 +170,16 @@ case "$1" in
   restart)
         # Send the HUP signal
 	echo "Restarting SkunkWeb..."
-	PIDFILE=`get_pid_file`
-	#        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
-	if [ -z "$PIDFILE" ]
-	then
-	    echo "run of swpython to determine pidfile failed!"
-            exit 1
+        if ! [ -z $FAST ]
+        then
+          PIDFILE=@localstatedir@/run/sw.pid
+        else
+	  PIDFILE=`get_pid_file`
+          if [ -z "$PIDFILE" ]
+	  then
+	      echo "run of swpython to determine pidfile failed!"
+              exit 1
+          fi
         fi
 	if [ ! -f $PIDFILE ] 
 	then
@@ -142,16 +187,14 @@ case "$1" in
 	    exit 1
 	fi
 	PID=`cat $PIDFILE`
-
 	# Kill -HUP 
 	run_as_user kill -HUP $PID
 
 	echo "SkunkWeb restarted"
 	;;
   *)
-	echo "Usage: $0 -r {start|stop|restart}"
-	echo "    -r     start skunkweb as root so it can bind to a low port"
-	exit 1
+        usage
+        ;;
 esac
 
 exit 0
