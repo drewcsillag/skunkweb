@@ -2,24 +2,18 @@ import pprint
 from formlib import *
 from formlib.form import CompositeField
 from formlib.views import TextField, SubmitField, ViewableForm, ViewableCompositeField, isviewable, ViewableFieldProxy 
+from formlib.validates import InternationalAddressField
 
-addr1 = TextField('1', description="Address 1", default="default", size="20", maxlength="39", required=1)
-addrpst = TextField('postal', description="Postal Code", default=None, size="20", required=1)
-sbmtFld = SubmitField("submit", default="Submit Thyself", description="SubmitField")
-
-flds = [ addr1, addrpst, sbmtFld ]
-prxyflds = [ViewableFieldProxy('addrproxy', addr1), ViewableFieldProxy('addrpstproxy', addrpst), ViewableFieldProxy('sbmtFldproxy', sbmtFld)]
-
-cmpFld = ViewableCompositeField('composite', description='Address Composite Field', componentFields=flds, setable=1)
+addFld = InternationalAddressField('intadd', 'An International Address', defaultState='NY', defaultCountry='US') 
+flds = [ addFld ]
 
 def validate(form):
     pass
 
-form = ViewableForm(name="testAllViews", method="POST", fields=[cmpFld], validators=[validate])
-form2 = ViewableForm(name="test2", method="POST", fields=prxyflds, validators=[validate])
+form = ViewableForm(name="testAllViews", method="POST", fields=[addFld], validators=[validate])
 
 print 'COMPOSITE FORM INTERNALS<br/>'
-cmpFld = form.fields['composite']
+cmpFld = form.fields['intadd']
 print 'keys:', form.fields.keys(), '<br />'
 print 'COMPOSITE FIELD IS A COMPOSITE FIELD:', isinstance(cmpFld, CompositeField)
 print '<br />COMPOSITE IS SETABLE:', cmpFld.setable, '<br />'
