@@ -1,4 +1,4 @@
-Changes in 3.2.1 (not yet released)
+Changes in 3.2.1 
 ========================================
 * new auth service
 * Assorted PyDO fixes, notably support for more PostgreSQL types
