@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.2 2001/08/27 18:16:30 drew_csillag Exp $
+# $Id: Logger.py,v 1.3 2002/06/27 21:20:47 drew_csillag Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -132,7 +132,9 @@ def logException():
                 traceback.print_tb(sys.exc_info()[2], file = x)
             except:
                 #should I do os.kill(9 (or 15), os.getpid()) ???
-                x.write("Ok, we're fubar!!!\n")
+                x.write("Ok, we're fubar!!! %s\n" %
+                        str(map(str, sys.exc_info())))
+
                 
         text = x.getvalue()
         text += "\n%s: %s" % exc_info[:2]
@@ -143,6 +145,10 @@ def logException():
 
 ########################################################################
 # $Log: Logger.py,v $
+# Revision 1.3  2002/06/27 21:20:47  drew_csillag
+# the logger now handles some really bizarre cases that shouldn't ever
+#   happen in reality (but of course have).
+#
 # Revision 1.2  2001/08/27 18:16:30  drew_csillag
 # removed spurious import
 #
