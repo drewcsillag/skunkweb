@@ -1,5 +1,11 @@
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/SkunkWeb/Server.py (_setConfigDefaults): setting default
+	value for runInForeground here, not in bootloader.py.
+
+	* SkunkWeb/SkunkWeb/bootloader.py.in (init): the default value for
+	runInForeground shouldn't be set here.
+
 	* pylibs/scope.py: added "freeze" and "unfreeze" methods
 	that store the scoped values in self.__dict__ and clean them
 	out, respectively.

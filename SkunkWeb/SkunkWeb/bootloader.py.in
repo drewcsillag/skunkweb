@@ -1,6 +1,6 @@
 # -*-python-*-
-# $Id: bootloader.py.in,v 1.6 2002/07/25 17:26:18 drew_csillag Exp $
-# Time-stamp: <03/04/12 23:13:51 smulloni>
+# $Id: bootloader.py.in,v 1.7 2003/04/13 03:35:34 smulloni Exp $
+# Time-stamp: <03/04/18 12:52:53 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -40,9 +40,8 @@ def init(configFiles, SkunkRoot):
     import KickStart
     #get the configuration module
     from SkunkWeb import Configuration
-    #set default for skunkroot, runInForeground
-    Configuration.mergeDefaults(SkunkRoot = SkunkRoot, 
-                                runInForeground = 0)
+    #set default for skunkroot
+    Configuration.mergeDefaults(SkunkRoot = SkunkRoot)
 
     #do stupid function to import modules so our module snapshot will be
     #complete since we have to grab it before the configuration is loaded
