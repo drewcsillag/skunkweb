@@ -1,18 +1,22 @@
 Changes in 3.4b2
 ========================================
-* build system revised to work with Python 2.3a1.
+* fix to argextract handling of kwargs.
+* fix to vfs import hook's handling of packages.
+* build system revised to work with Python 2.3a1; probably
+  works on Cygwin now without adjustment (anyone want to 
+  test that?)
 * fixes for mysql support in PyDO.
 * more rewrite enhancements.
 * STML's HTML helper tags are now XHTML-compliant by default.
+* fix for sessionHandler's FSSessionStore.
+* fix for xmlrpchandler's system.methodSignature implementation.
 
 Changes in 3.4b1
 ========================================
 * an ftp filesystem for the vfs (vfs.ftpfs).
 * a very simple xhtml generation library (ecs, named
   after Apache's similarly named Java library).
-* a library for processing and managing html forms (formlib);
-  although new, this may be retired in favor of using Ian Bicking's 
-  FunFormKit.
+* a library for processing and managing html forms (formlib).
 * an xmlrpc support module (xmlrpchandler).
 * support for scoping on server port (SERVER_PORT).
 * fixes for PyDO and swcgi.
