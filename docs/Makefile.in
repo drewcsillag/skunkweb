@@ -41,5 +41,9 @@ all:
 SkunkWebIPC10.dvi: SkunkWebIPC10.tex SkunkWebIPC10.bib
 	$(LATEX) SkunkWebIPC10
 	bibtex SkunkWebIPC10
-        $(LATEX) SkunkWebIPC10
-        $(LATEX) SkunkWebIPC10
+	$(LATEX) SkunkWebIPC10
+	$(LATEX) SkunkWebIPC10
+
+clean: 
+	-rm -f SkunkWebIPC10.aux SkunkWebIPC10.bbl SkunkWebIPC10.blg
+	-rm -f SkunkWebIPC10.dvi SkunkWebIPC10.log
