@@ -94,7 +94,7 @@ AC_ARG_WITH(services,
                            ae_component aecgi basicauth httpd mysql oracle
                            postgresql product remote remote_client requestHandler
                            rewrite sessionHandler templating web fcgiprot 
-                           userdir cookieauth], [
+                           userdir auth], [
 	SERVICES=$withval], [
 	SERVICES="ae_component aecgi basicauth httpd mysql oracle postgresql product remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir cookieauth";])
 
