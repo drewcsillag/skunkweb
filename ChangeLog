@@ -1,3 +1,11 @@
+2002-11-19    <smulloni@smullbola.smullyan.org>
+
+	* test/formlib/htdocs/test3.html: another test.
+
+	* pylibs/formlib/form.py (Form.validate): errors are now kept as
+	part of the form's state.  (Form.submit): to submit a form, you
+	now call "submit(data)"; it resets and validates for you.
+
 2002-11-18    <smulloni@smullbola.smullyan.org>
 
 	* test/formlib/htdocs/test2.html: second simple test created and

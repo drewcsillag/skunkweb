@@ -144,6 +144,7 @@ class Form(object):
                                    storelists=0)
         self.validators=validators or []
         self.submitted=None
+        self.errors={}
 
     def getData(self):
         d={}
@@ -157,18 +158,27 @@ class Form(object):
             if f:
                 f.value=v
 
+    def submit(self, data):
+        self.reset()
+        self.setData(data)
+        self.submitted=1
+        self.validate()
+
     def reset(self):
         for f in self.fields:
             f.clearValue()
+        self.submitted=0
+        self.errors={}
 
     def validate(self):
         errors={}
-        for l in (self.fields, self.validators):
-            for v in l:
-                e=v.validate(self)
+        for l in ([f.validate for f in self.fields], self.validators):
+            for func in l:
+                e=func(self)
                 if e:
                     errors.update(e)
-        return errors
+        self.errors=errors
+
 
 
 

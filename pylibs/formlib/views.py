@@ -445,7 +445,6 @@ class ViewableForm(Viewable, Form):
         Viewable.__init__(self, **view_attrs)
 
     def getView(self):
-        errors=self.submitted and self.validate() or {}
         elem=ecs.Form()
         if self.method:
             elem.setAttribute('method', self.method)
@@ -456,14 +455,14 @@ class ViewableForm(Viewable, Form):
         elem.attributes.update(self.view_attrs)
         table=ecs.Table()
         table.addElement('\n')
-        top_level_error=errors.get(self)
+        top_level_error=self.errors.get(self)
         if top_level_error:
             em=ecs.Em(top_level_error).setAttribute('class', 'form_error')
             tr=ecs.Tr().addElement(ecs.Td(em).setAttribute('colspan', '2'))
             table.addElement(tr)
             table.addElement('\n')
         for f in self.fields:
-            msg=errors.get(f)
+            msg=self.errors.get(f)
             if msg:
                 em=ecs.Em(msg).setAttribute('class', 'form_error')
                 td=ecs.Td(em).setAttribute('colspan', '2')

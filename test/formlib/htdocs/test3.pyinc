@@ -1,0 +1,56 @@
+from formlib import *
+fields=[TextField('username',
+                  description="Username",
+                  size="40"),
+        SelectField('fruit',
+                    [('exotic',['pomegranate',
+                               'uglifruit',
+                               'tamarind',
+                               'lychee']),
+                     ('citrus', ['orange',
+                                 'lemon',
+                                 'lime',
+                                 'grapefruit']),
+                     'apple',
+                     'watermelon',
+                     'grape'],
+                    description='Your Preferred Fruits',
+                    multiple=1,
+                    size=15),
+        ButtonGroupField('shipmethod',
+                         ['tossed',
+                          'hurled',
+                          'UPS',
+                          'steam locomotive',
+                          'FedEx',
+                          'pony express'],
+                         description='Shipping Method',
+                         default='UPS'),
+        SubmitField(value="Submit"),
+        ]
+
+def validate(form):
+    errors={}
+    if form.fields.has_key('username') \
+           and form.fields['username'].value=='bizarre':
+        errors[form.fields['username']]='No bizarre usernames, please'
+    if errors:
+        errors[form]='There were errors with your submission, fruitcake.'
+    return errors
+form=ViewableForm(name="test2",
+                  method="POST",
+                  fields=fields,
+                  validators=[validate])
+import ecs
+if CONNECTION.method=='POST':
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("Listen up, goofball!")
+    else:
+        print ecs.H3("Thanks for your form submission.  You are now my friend.")
+else:
+    print
+    print ecs.H3("Whatever you do, don't print \"bizarre\" for your username.")
+    print
+print
+print form.getView()
