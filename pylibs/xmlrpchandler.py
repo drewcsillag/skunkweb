@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/08 14:01:52 smulloni>
-# $Id: xmlrpchandler.py,v 1.3 2002/10/08 17:41:04 smulloni Exp $
+# Time-stamp: <02/10/08 14:04:27 smulloni>
+# $Id: xmlrpchandler.py,v 1.4 2002/10/08 18:02:33 smulloni Exp $
 
 """
 a module for serving XMLRPC from SkunkWeb.
@@ -160,8 +160,8 @@ class XMLRPCServer:
             
         params, method=xmlrpclib.loads(sys.stdin.read(bytelen))
         result=self.dispatch(method, params)
-        methodresponse=not isinstance(result, xmlrpclib.Fault)
-        response=xmlrpclib.dumps(result, methodresponse)
+        mres=not isinstance(result, xmlrpclib.Fault)
+        response=xmlrpclib.dumps(result, methodresponse=mres)
         
         print "Content-Type: text/xml"
         print "Content-Length: %d" % len(response)
