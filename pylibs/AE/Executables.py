@@ -5,13 +5,13 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Executables.py,v 1.11 2003/04/19 14:19:35 smulloni Exp $
+#$Id: Executables.py,v 1.12 2003/05/01 20:45:58 drew_csillag Exp $
 import sys
 import cStringIO
 import copy
 
 from SkunkExcept import *
-from DT import DT_REGULAR, DT_DATA, DT_INCLUDE
+from DT import DT_REGULAR, DT_DATA, DT_INCLUDE, DTExcept
 
 import MimeTypes
 import Cache
@@ -72,6 +72,9 @@ class PythonExecutable:
                 if self.compType != DT_DATA:
                     raise
                 return val
+
+            except DTExcept.DTHaltError:
+                pass
                 
             if self.compType in ( DT_REGULAR, DT_INCLUDE ):
                 output = outputIO.getvalue()
