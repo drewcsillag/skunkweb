@@ -97,9 +97,9 @@ For Paper formats
 --------------------
 Go to either docs/paper-letter or docs/paper-a4 depending on what size
 paper you're shooting for.  Then type:
-	make <docname>/<docname>.<ext>
+	make <docname>.<ext>
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL,v 1.7 2002/04/24 19:22:59 drew_csillag Exp $
+$Id: INSTALL,v 1.8 2002/05/09 19:09:13 drew_csillag Exp $
 
