@@ -3,6 +3,7 @@ Changes in 3.2.1 (not yet released)
 * new cookieauth service
 * PyDO fixes
 * Caching fix for stale 
+* Now works with Apache 2!
 
 Changes in 3.2 beta 3
 ========================================
