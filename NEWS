@@ -1,3 +1,17 @@
+Changes in 3.2.4
+========================================
+* auth service fix when using multiple auth schemes simultaneously --
+  BACKWARD INCOMPATIBLE CHANGE AHEAD---
+  If you customized the login/logout pages copied from the auth
+  service directory, NOTE THE FOLLOWING CHANGE!!
+  change the <:import SkunkWeb Configuration:> to <:import auth:>
+  change the Configuration.authAuthorizer bits to auth.getAuthorizer().
+  If you copied them and didn't change them, recopy them.
+* the logger now handles some really bizarre cases that shouldn't ever
+  happen in reality (but of course have, or I wouldn't have fixed
+  them).  Oh the benefits of a machine with bad memory to make you
+  test for things that shouldn't happen.
+
 Changes in 3.2.3
 ========================================
 * added support for the SCGI Protocol 

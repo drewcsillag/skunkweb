@@ -1,3 +1,19 @@
+2002-06-27  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/Logger.py: the logger now handles some really bizarre
+	cases that shouldn't ever happen in reality (but of course have).
+
+	* SkunkWeb/Services/auth/__init__.py,
+	SkunkWeb/Services/auth/login.html,
+	SkunkWeb/Services/auth/logout.html:
+	
+	fixed so that you can have two different auth schemes going at the
+	same time in different dirs and still have it all work.
+
+2002-06-26  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* 3.2.3 cut
+
 2002-06-25  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* DT.py (DT.__call__): made so the __[thd] namespaces won't get
@@ -10,12 +26,13 @@
 	* pylibs/AE/Component.py: made it so the componentStack gets
 	trimmed properly.  When adding frames, we used to blindly append
 	to the componentStack which was fine unless an exception was
-	handled, in which case, there was extra stuff in the
-	componentStack (the frame that blew the exception).  Now, if the
-	topOfComponentStack is a valid index into the componentStack (due
-	to a caught exception), we replace from the top to the end of the
-	stack with a list containing the new frame, thus removing any
-	frame residues left from caught exceptions.
+	handled, in which case, there might have been extra stuff in the
+	componentStack (the frame that blew the exception and those frames
+	between the exception raise and the handling of the exception).
+	Now, if the topOfComponentStack is a valid index into the
+	componentStack (due to a caught exception), we replace from the
+	top to the end of the stack with a list containing the new frame,
+	thus removing any frame residues left from caught exceptions.
 
 2002-06-24  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
