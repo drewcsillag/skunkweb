@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.2 2001/08/06 17:16:04 smulloni Exp $
+# $Id: __init__.py,v 1.3 2001/08/06 20:52:44 smulloni Exp $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package
@@ -48,6 +48,16 @@ def __initConfig():
         SessionHandler_MySQLPickleColumn='pickle',
         SessionHandler_MySQLTimestampColumn='accessTime',
 
+        # the same, for PostgreSQLSessionStoreImpl
+        SessionHandler_PGHost='localhost',
+        SessionHandler_PGUser='sessionHandler',
+        SessionHandler_PGPass='sessionPass',
+        SessionHandler_PGDB='sessionStore',
+        SessionHandler_PGTable='Sessions',
+        SessionHandler_PGIDColumn='id',
+        SessionHandler_PGPickleColumn='pickle',
+        SessionHandler_PGTimestampColumn='accesstime',
+        
         # directory where pickle files are stored (for FSSessionStore)
         SessionHandler_FSSessionDir=os.path.join(Configuration.SkunkRoot, 'var/run/skunksessions'),
         
@@ -81,6 +91,9 @@ __initSession()
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.3  2001/08/06 20:52:44  smulloni
+# fixed typo
+#
 # Revision 1.2  2001/08/06 17:16:04  smulloni
 # adding session store that uses pickle files in the local filesystem.
 #
