@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.5 2002/10/09 20:47:19 smulloni Exp $
-# Time-stamp: <02/10/21 23:00:00 smulloni>
+# $Id: ftpfs.py,v 1.6 2002/10/22 03:01:59 smulloni Exp $
+# Time-stamp: <02/10/22 16:54:52 smulloni>
 
 ########################################################################
 #  
@@ -34,6 +34,8 @@ import sys
 import os
 import cStringIO
 import ftplib
+import types
+import socket
 
 try:
     import ftpparse
@@ -155,16 +157,42 @@ class FTPFile:
             self.__readall('b' in self.mode)
 
 if _have22:
+
+
+    def _robustify(func):
+        def robuster(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except ftplib.error_temp:
+                self=args[0]
+                try:
+                    self.login(self.user,
+                               self.passwd,
+                               self.acct)
+                except (socket.error, IOError):
+                    self.connect(self.host, self.port)
+                    self.login(self.user,
+                               self.passwd,
+                               self.acct)
+                return func(*args, **kwargs)
+        return robuster
+        
     class _robustmeta(type):
         def __new__(self, classname, bases, classdict):
-            robustlist=classdict.get('robust')
-            robustify=classdict.get('robustify')
+            robustlist=classdict.get('robust', [])
             
-            if robustlist and robustify:
-                for mname in robustlist:
-                    m=classdict.get(mname)
-                    if m and isinstance(m, types.FunctionType):
-                        classdict[mname]=robustify(m)
+            for mname in robustlist:
+                m=classdict.get(mname)
+                if not m:
+                    for b in bases:
+                        if hasattr(b, mname):
+                            m=getattr(b, mname)
+                            break
+                    
+                if m:
+                    classdict[mname]=_robustify(m)
+                else:
+                    print type(m)
             return type.__new__(self, classname, bases, classdict)
 
     class FtpConnection(ftplib.FTP, object):
@@ -186,26 +214,6 @@ if _have22:
             self.passwd=passwd
             self.acct=acct
             ftplib.FTP.login(self, user, passwd, acct)
-
-        def robustify(func):
-            def robuster(*args, **kwargs):
-                try:
-                    func(*args, **kwargs)
-                except ftplib.error_temp:
-                    self=args[0]
-                    try:
-                        self.login(self.user,
-                                   self.passwd,
-                                   self.acct)
-                    except (socket.error, IOError):
-                        self.connect(self.host, self.port)
-                        self.login(self.user,
-                                   self.passwd,
-                                   self.acct)
-                return func(*args, **kwargs)
-            return robuster
-
-        robustify=staticmethod(robustify)
 
         robust=['retrbinary',
                 'retrlines',
