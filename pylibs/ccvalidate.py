@@ -6,12 +6,12 @@
 #      README file.
 #   
 # Time-stamp: <03/05/09 22:38:04 smulloni>
-# $Id$
+# $Id: ccvalidate.py,v 1.1 2003/05/10 02:39:38 smulloni Exp $
 
 """
 contains a function for validating credit card numbers.
 Supported card types are MasterCard, Visa, Amex, Diners Club,
-Carte Blance, Disvoer, En Route, and JCB.
+Carte Blanche, Discover, En Route, and JCB.
 
 """
 
