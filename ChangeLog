@@ -1,3 +1,8 @@
+2002-07-15  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/Services/extcgi.py (_dispenv): made it 2.1 compliant,
+	and removed the if statment that should always be true.
+
 2002-07-12  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/Services/templating/pil_preload.py: imports the
