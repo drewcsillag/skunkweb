@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/05 14:15:25 smulloni>
+# Time-stamp: <02/02/05 17:17:50 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001, 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -27,8 +27,8 @@ class ShelfPathPropertyStore(PathPropertyStore):
     def __init__(self, dbname):
         self.__dbname=dbname
         try:
-            import gdbm
-            gdbm.open(dbname, 'c')
+            import dbhash
+            dbhash.open(dbname, 'c')
         except:
             shelve.open(dbname)
 
@@ -69,10 +69,6 @@ class ShelfPathPropertyStore(PathPropertyStore):
         db=self.__db()
         return db.has_key(path) and db[path].has_key(property)
 
-    def haspath(self, path):
-        path=_normpath(path)
-        return self.__db().has_key(path)
-
     def delproperty(self, path, property):
         path=_normpath(path)
         db=self.__db()
@@ -82,6 +78,9 @@ class ShelfPathPropertyStore(PathPropertyStore):
             
 ########################################################################
 # $Log$
+# Revision 1.5  2002/02/06 04:45:22  smulloni
+# switched to preferring dbhash
+#
 # Revision 1.4  2002/02/05 19:22:24  smulloni
 # bug fix to AE/Executables.py;
 # alternate normpath function in skunklib;

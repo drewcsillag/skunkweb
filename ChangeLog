@@ -1,5 +1,9 @@
 2002-02-05  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/vfs/shelfProps.py (ShelfPathPropertyStore.properties):
+	removed haspath(), left in by mistake; switched from gdbm to
+	bsddb. 
+
 	* SkunkWeb/Services/sessionHandler/FSSessionStore.py
 	(FSSessionStoreImpl.reapOldRecords): fixed typo that caused it to
 	crash; also moved one line out of a loop. 
