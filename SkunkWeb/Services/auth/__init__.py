@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2002/04/30 02:59:16 drew_csillag Exp $
-# Time-stamp: <02/05/14 13:24:21 smulloni>
+# $Id: __init__.py,v 1.3 2002/05/14 17:37:53 smulloni Exp $
+# Time-stamp: <02/05/15 12:18:56 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -20,7 +20,7 @@
 #   
 
 from SkunkWeb import Configuration, ServiceRegistry
-from SkunkWeb.LogObj import DEBUG, logException
+from SkunkWeb.LogObj import DEBUG, ERROR, logException
 from requestHandler.protocol import PreemptiveResponse
 import AE.Cache
 import AE.Component
@@ -359,6 +359,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.3  2002/05/14 17:37:53  smulloni
+# bug fix
+#
 # Revision 1.2  2002/04/30 02:59:16  drew_csillag
 # added more documentation in
 # 	the comment describing authorizer objects as well as did a few

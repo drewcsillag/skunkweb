@@ -1,5 +1,7 @@
 2002-05-15  Jacob Smullyan  <jsmullyan@wnyc.org>
 
+	* SkunkWeb/Services/auth/__init__.py: importing ERROR
+
 	* SkunkWeb/configure.in: add auth to list of services.
 
 2002-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
