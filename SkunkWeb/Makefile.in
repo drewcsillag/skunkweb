@@ -6,7 +6,7 @@
 #      README file.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.18 2003/04/16 14:40:41 drew_csillag Exp $
+# $Id: Makefile.in,v 1.19 2003/05/01 20:45:52 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -53,7 +53,10 @@ DEMO_DIRS=geeknews geeknews/dcomps gallery gallery/comp
 default:	build
 
 build:
-install:
+
+swpython: swpython.c
+
+install: swpython
 	$(INSTALL) -d $$DESTDIR$(sw_dir) $$DESTDIR$(services_dir) $$DESTDIR$(pid_dir) $$DESTDIR$(log_dir) \
 	$$DESTDIR$(docroot) $$DESTDIR$(cache)
 
@@ -62,7 +65,8 @@ install:
 	    $(INSTALL_DATA) $$f $$DESTDIR$(skunklib)/$$f; \
 	done
 
-	$(INSTALL) -m 0755 swpython.py $$DESTDIR$(skunk_bindir)/swpython
+	$(INSTALL) -m 0755 swpython $$DESTDIR$(skunk_bindir)/swpython
+	$(INSTALL) -m 0755 swpython.py $$DESTDIR$(skunk_bindir)/swpython.py
 	$(INSTALL) -m 0755 swcgi.py $$DESTDIR$(skunk_bindir)/swcgi
 	$(INSTALL) -m 0755 skunkweb.py $$DESTDIR$(skunk_bindir)/skunkweb
 	$(INSTALL) -m 0755 swmgr $$DESTDIR$(skunk_bindir)/swmgr
@@ -134,6 +138,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.19  2003/05/01 20:45:52  drew_csillag
+# Changed license text
+#
 # Revision 1.18  2003/04/16 14:40:41  drew_csillag
 # portability things for hpux
 #

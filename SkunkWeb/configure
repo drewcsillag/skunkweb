@@ -1791,7 +1791,7 @@ ac_given_INSTALL="$INSTALL"
 trap 'rm -fr `echo "Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
 Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py SkunkWeb/confvars.py
 util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
-Services/product/productwiz swcgi.py" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+Services/product/productwiz swcgi.py swpython.c" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -1889,7 +1889,7 @@ cat >> $CONFIG_STATUS <<EOF
 CONFIG_FILES=\${CONFIG_FILES-"Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
 Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py SkunkWeb/confvars.py
 util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
-Services/product/productwiz swcgi.py"}
+Services/product/productwiz swcgi.py swpython.c"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
