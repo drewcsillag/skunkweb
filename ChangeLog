@@ -1,5 +1,14 @@
 2002-11-13    <smulloni@smullbola.smullyan.org>
 
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args):
+	now use argextract.
+
+	* pylibs/formlib/form.py: start of clean-up, using
+	fieldcontainer.py. 
+
+	* pylibs/containers/fieldcontainer.py (FieldContainer): added
+	a "storelists" property.
+
 	* pylibs/containers/__init__.py: created a package for containers,
 	in anticipation of eventually needing to write more of them.
 

@@ -1,3 +1,6 @@
+########################################################################
+# $Id: protocol.py,v 1.15 2002/09/30 20:02:27 smulloni Exp $
+# Time-stamp: <02/11/12 14:56:13 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -15,8 +18,6 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.14 2002/05/09 18:51:55 drew_csillag Exp $
-# Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
 from SkunkExcept import SkunkCriticalError
@@ -35,6 +36,7 @@ import time
 import types
 import browser
 from SkunkWeb.Hooks import KeyedHook
+import argextract
 
 headersOnlyMethods=['HEAD'] 
 headersOnlyStatuses=[100, 101, 102, 204, 304]
@@ -136,37 +138,7 @@ class HTTPConnection:
 
         This is supposed to be equivalent to the <:args:> tag in STML.
         """
-        
-        d={}
-        for i in args:
-            d[i]=self.args.get(i)
-        for k, v in kwargs.items():
-            #default=None
-            if callable(v):
-                converter=v
-                default=None
-            elif type(v) in (types.TupleType, types.ListType):
-                vlen=len(v)
-                if vlen not in (1, 2) or not callable(v[0]):
-                    raise ValueError, \
-                          "inappropriate conversion/default specification: %s" % str(v)
-                converter=v[0]
-                if vlen==2:
-                    default=v[1]
-                else:
-                    default=None
-            else:
-                default=None
-                converter=None
-            val=self.args.get(k, default)
-            if val != default and converter != None:
-                try:
-                    d[k]=converter(val)
-                except:
-                    d[k]=None
-            else:
-                d[k]=val
-        return d
+        return argextract.extract_args(self, *args, **kwargs)
 
     def _initHeaders(self):
         self.requestHeaders = HeaderDict(self._requestDict['headers'])
@@ -402,6 +374,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.15  2002/09/30 20:02:27  smulloni
+# support for scoping based on SERVER_PORT.
+#
 # Revision 1.14  2002/05/09 18:51:55  drew_csillag
 # Server: header juggling
 #

@@ -26,8 +26,12 @@ class FieldContainer(list):
     a list with a read-only dict interface.
     The keys of the dict are determined by a
     function supplied by the user at construction-time.
-    The dict interface returns for each key a list of
-    items with that key, or raises a KeyError.
+    If the constructor argument storelists is true,
+    the dict interface returns for each key a list of
+    items with that key, or raises a KeyError; otherwise,
+    it returns a single item for each key and raises a
+    ValueError if you try to add another item with the
+    same key to the list. 
 
     While the list is fully mutable, and changes to
     the list are reflected by the dict interface,
@@ -56,32 +60,41 @@ class FieldContainer(list):
     
     """
 
-    __slots__=['_FieldContainer__d', 'fieldmapper']
+    __slots__=['_FieldContainer__d', 'fieldmapper', 'storelists']
 
-    def __new__(self, seq=None, fieldmapper=None):
+    def __new__(self, seq=None, fieldmapper=None, storelists=1):
         return list.__new__(self, seq)
 
-    def __init__(self, seq=None, fieldmapper=None):
-        list.__init__(self, seq)
+    def __init__(self, seq=None, fieldmapper=None, storelists=1):
+        list.__init__(self, seq or [])
         if fieldmapper is None:
             self.fieldmapper=lambda x: x
         else:
             self.fieldmapper=fieldmapper
         self.__d={}
+        self.storelists=storelists
         if seq:
             for s in seq:
                 self.__register_field(s)
 
     def __register_field(self, field):
         k=self.fieldmapper(field)
-        self.__d.setdefault(k, [])
-        self.__d[k].append(field)
+        if self.storelists:
+            self.__d.setdefault(k, [])
+            self.__d[k].append(field)
+        else:
+            if self.__d.has_key(k):
+                raise ValueError, "cannot add a duplicate key"
+            self.__d[k]=field
 
     def __unregister_field(self, field):
         k=self.fieldmapper(field)
-        flist=self.__d[k]
-        flist.remove(field)
-        if not flist:
+        if self.storelists:
+            flist=self.__d[k]
+            flist.remove(field)
+            if not flist:
+                del self.__d[k]
+        else:
             del self.__d[k]
 
     def __getitem__(self, key):
@@ -113,7 +126,7 @@ class FieldContainer(list):
 
     def __getslice__(self, i, j):
         x=list.__getslice__(self, i, j)
-        return self.__class__(x, self.fieldmapper)
+        return self.__class__(x, self.fieldmapper, self.storelists)
 
     def __setslice__(self, i, j, seq):
         old=list.__getslice__(self, i, j)

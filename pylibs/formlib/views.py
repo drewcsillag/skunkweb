@@ -1,24 +1,23 @@
+# this needs another go-through, to
+# unify selects/buttongroups (& then validation).
+# Someone might also want to group together
+# a buttongroup and a text field with the same
+# name (Other: <textfield>), so nothing
+# should be done to make that hard to do,
+# although we don't need to rush to implement it.
 
-# HIGHLY PROVISIONAL.
+from form import Field
 
-class Field(object):
+class ViewableField(Field):
     def __init__(self,
                  name,
                  default=None,
-                 domain=None,
                  value=None,
                  **view_attrs):
-        self.name=name
+        Field.__init__(self, name, default, value)
         self.view_attrs=view_attrs
-        self.valid=1
-        self.domain=domain
-        self.default=default
-        self.value=value
         
-    def getView(self):
-        pass
-
-class InputField(Field):
+class InputField(ViewableField):
     type=None
         
     def getView(self):
@@ -30,23 +29,27 @@ class InputField(Field):
         elem.attributes.update(self.view_attrs)
         return elem
 
-class DomainFieldGroup(Field):
+class DomainFieldGroup(ViewableField):
     def __init__(self,
                  name,
                  domain,
                  default=None,
+                 value=None,
                  **view_attrs):
-        Field.__init__(self, name, domain, default,**view_attrs)
-        self.subfields=[self._getWidget(x) for x in self.domain]
+        Field.__init__(self, name, default, value, **view_attrs)
+        self._subfields=[self._getWidget(x) for x in self.domain]
         
     def _getWidget(self):
+        """
+        a subclass should specify what widget to create here.
+        """
         raise NotImplemented
     
     def getView(self):
         elem=ecs.Span()
         elem.attributes.update(self.view_attrs)
         for v in self.domain:
-            elem.addElement(self._getWidgets.getView())
+            elem.addElement(self._subfields.getView())
         return elem
 
 class PasswordField(InputField):
@@ -76,7 +79,7 @@ class SubmitField(InputField):
 class ImageField(InputField):
     type="image"
 
-class ButtonField(Field):
+class ButtonField(ViewableField):
     def __init__(self, name, value, content=[], **view_attrs):
         Field.__init__(self, name, value, **view_attrs)
         self.content=content
@@ -93,7 +96,7 @@ class ButtonField(Field):
         return elem
         
 
-class TextAreaField(Field):
+class TextAreaField(ViewableField):
         
     def getView(self):
         elem=ecs.Textarea()
@@ -147,9 +150,10 @@ class SelectOptionGroup(object):
             elem.addElement(o.getView())
         return elem
     
-class SelectField(Field):
+class SelectField(ViewableField):
     def __init__(self,
                  name=None,
+                 default=None,
                  multiple=None,
                  options=[],
                  **view_attrs):
