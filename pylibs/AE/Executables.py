@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.7 2002/02/05 19:22:24 smulloni Exp $
+#$Id: Executables.py,v 1.8 2002/04/30 12:44:33 smulloni Exp $
 import sys
 import cStringIO
 import copy
@@ -65,6 +65,7 @@ class PythonExecutable:
         namespace['ReturnValue'] = Exceptions.ReturnValue
         namespace.update(auxVars)
         namespace.update(argDict)
+        namespace['__name__'] = '__main__'
         self.namespace = namespace
         return namespace
     
