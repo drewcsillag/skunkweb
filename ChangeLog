@@ -1,3 +1,9 @@
+2004-04-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Cache.py: when checking for change of a file, now return
+	the max of ctime and mtime, to support smbfs shares where the ctime
+	isn't updated correctly.
+
 2004-03-18  Drew Csillag  <drew@loki.sai.local>
 
 	* pylibs/SocketMan/SocketMan.py (SocketMan.retrying_bind): added

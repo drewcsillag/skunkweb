@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.24 2004/01/11 03:56:30 smulloni Exp $
+#$Id: Cache.py,v 1.25 2004/01/15 18:20:06 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -339,9 +339,11 @@ def _getCompileCacheModTime(name):
     DEBUG(CACHE, "statting compile cache")
     path = _fixPath(Configuration.compileCacheRoot, name + "c")
     try:
-        return os.stat(path)[stat.ST_CTIME] 
+        s=os.stat(path)
     except:
         return -1
+    else:
+        return max(s[stat.ST_CTIME], s[stat.ST_MTIME])
 
 def _readCompileCacheRoot(name):
     DEBUG(CACHE, "reading compile cache")
@@ -367,7 +369,7 @@ def _statDocRoot(name):
     
 def _getDocRootModTime(name):
     path, fs, st=_getPathFSAndMinistat(name)
-    return st[vfs.MST_CTIME]
+    return max(st[vfs.MST_MTIME], st[vfs.MST_CTIME])
         
 def _readDocRoot(name):
     DEBUG(CACHE, "reading doc root")
