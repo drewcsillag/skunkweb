@@ -1,5 +1,10 @@
 2002-07-25  Andrew Csillag  <drew@localhost.localdomain>
 
+	* SkunkWeb/sample_webdocs/demo/geeknews/index.html: commented out
+	lwn related stuff as it is closing it's doors on 8/1/02
+
+	* configure, configure.in: added stuff pertaining to --with-runasroot
+
 	* SkunkWeb/skunkweb.py.in: put in safety check so that if skunkweb
 	is started by root, and the installation owner is not root and
 	userToRunAs is *not* set, we refuse to run.
