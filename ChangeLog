@@ -1,5 +1,15 @@
 2002-07-25  Andrew Csillag  <drew@localhost.localdomain>
 
+	* SkunkWeb/skunkweb.py.in: put in safety check so that if skunkweb
+	is started by root, and the installation owner is not root and
+	userToRunAs is *not* set, we refuse to run.
+
+	* SkunkWeb/swmgr.in: added -r option so you can make it as if you
+	specified --with-runasroot during configuration
+
+	* SkunkWeb/sw.conf.in: made it so that if you specify --with-runasroot,
+	it will auto-set the userToRunAs and groupToRunAs
+
 	* pylibs/Logger.py (logException): now adds exception info
 
 	* SkunkWeb/SkunkWeb/bootloader.py.in (_stupidfunc): added pwd and grp

@@ -1,5 +1,7 @@
-Changes in 3.2.4
+Changes in 3.3
 ========================================
+* now can have skunkweb started as root (can set who you actually want
+  it to run as) so you can bind to low ports
 * new extcgi service so you can run CGI's from SkunkWeb!
 * fixed userModuleCleanup bugs when using MySQL service and/or used
   <:img:> tag with PIL installed.
