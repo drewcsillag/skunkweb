@@ -3,3 +3,11 @@ Changes from 3.0 to 3.1
 * Major performance tweaks.  Should now be about 30% faster overall.
 * Now supports FastCGI
 * PyDO improvements (mainly PostgreSQL related)
+* new service - userdir - which makes it so that requests to /~user/foo
+  will go to <users_home_directory>/public_html/foo
+* print statements in <:call:> tags now work.
+* <:call:> tag now handles multiline expr argument properly.  Now you
+  can do things like:
+<:call `def foo(x):
+   return 'the value is %s' % x
+print foo(3)`:>

@@ -1,5 +1,9 @@
 2001-09-21  Drew Csillag  <drew@starmedia.net>
 
+	* pylibs/DT/DTTags.py, pylibs/DT/DTCompilerUtil: now made
+	it so that if you have a multi-line <:call:> tag, you don't have
+	to have the ':> on it's own line for it to work.
+
 	* pylibs/DT/DTCompilerUtil.py, pylibs/AE/Executables.py: made
 	so print statements in templates now work.
 
