@@ -1,3 +1,13 @@
+Changes in 3.2 beta 1
+========================================
+* pars removed (since we have zipfs and tarfs, pars is redundant)
+* vfs fixes
+* new vfs properties
+* sapdb fix - Ulrich Eck
+* remote component call exception fix
+* beginnings of a test suite
+* static/PyDO now *actually* works on Python 2.2
+
 Changes in 3.2 beta 0
 ========================================
 * remote component fixes
