@@ -1,3 +1,9 @@
+2004-03-02    <drew@loki.sai.local>
+
+	* SkunkWeb/Services/auth/__init__.py (SessionAuthBase): now you
+	can pass path, domain and secure to the constructor to set the 
+	appropriate parameters on the session cookie
+
 2004-03-01  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in (HTTPKeepaliveTimeout): document new default
