@@ -1,10 +1,10 @@
-# Time-stamp: <01/09/04 14:39:44 smulloni>
-# $Id: scope.py,v 1.2 2001/09/04 17:23:55 smulloni Exp $
+# Time-stamp: <01/09/04 23:40:37 smulloni>
+# $Id: scope.py,v 1.3 2001/09/04 18:41:00 smulloni Exp $
 ########################################################################
 
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
-                      Jacob Smullyan <smulloni@smullyan.org>
+#                      Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
