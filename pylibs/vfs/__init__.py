@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <2002-01-22 11:23:43 drew>
+# Time-stamp: <2002-01-28 10:28:09 drew>
 
 ########################################################################
 #  
@@ -24,5 +24,4 @@ from rosio import RO_StringIO
 from vfs import MST_SIZE, MST_ATIME, MST_MTIME, MST_CTIME, \
      VFSException, FS, LocalFS, PathPropertyStore, MultiFS
 from zipfs import ZipFS
-from parfs import ParFS
 from tarfs import TarFS
