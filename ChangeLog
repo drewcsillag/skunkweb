@@ -1,3 +1,15 @@
+2001-10-19  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* 3.1.2 cut
+
+        * pylibs/PyDO/postconn.py: fixed bug where getting a NULL value
+	for a float column would blow things up
+
+
+2001-10-11  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* 3.1.1 cut
+
 2001-10-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/userdir.py (doUserDirPost): fixed typo.
