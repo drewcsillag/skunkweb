@@ -1,3 +1,8 @@
+2003-05-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/ccvalidate.py: a module for verifying the format
+	of credit card numbers.
+
 2003-05-08    <drew@loki.sai-office>
 
 	* SkunkWeb/util/precompile.py.in (func): now continues if a
