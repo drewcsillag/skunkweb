@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/04/18 16:26:41 smulloni>
+# Time-stamp: <03/04/18 16:35:42 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -115,14 +115,13 @@ def _add_usertracking_cookie(conn, sessionDict):
                     if not Configuration.usertrackingExpiresAbsolute:
                         v=getattr(Configuration, c)
                         if v is not None:
-                            morsel[a]=v+time.time()
+                            morsel[a]=Cookie._getdate(v)
                         continue
                 v=getattr(Configuration, c)
                 if v is not None:
                     morsel[a]=v
             DEBUG(USERTRACKING, str(morsel))
             DEBUG(USERTRACKING, str(conn.responseCookie[cookiename]))
-            #conn.responseCookie[cookiename]=morsel
 
 
 def WebtrendsCookie(conn):
