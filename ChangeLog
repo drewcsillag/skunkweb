@@ -1,28 +1,45 @@
+2002-11-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/pickleProps.py: several typo corrections.
+
 2002-11-24  James Richards  <jrichards@satie.wnyc.org>
 
-	* test/formlib/htdocs/testValidates.pyinc: added test for required IntField, DoubleField and DateField
+	* test/formlib/htdocs/testValidates.pyinc: added test for required
+	IntField, DoubleField and DateField
 
-	* test/formlib/htdocs/testAllViews.pyinc: added tests of required fields for TextField and ButtonGroupField
+	* test/formlib/htdocs/testAllViews.pyinc: added tests of required
+	fields for TextField and ButtonGroupField
 
-	* pylibs/formlib/views.py (ViewableField.__init__): added raising of ValueError if 'value' key is present in view_attrs: setting value on a Viewable item during construction conflicts with the notion of a default value and introduces programmer confusion into the forms API
+	* pylibs/formlib/views.py (ViewableField.__init__): added raising
+	of ValueError if 'value' key is present in view_attrs: setting
+	value on a Viewable item during construction conflicts with the
+	notion of a default value and introduces programmer confusion into
+	the forms API
 
-	* pylibs/formlib/__init__.py: added import of all from validates module
+	* pylibs/formlib/__init__.py: added import of all from validates
+	module
 
-	* pylibs/formlib/validates.py: added superclass validation check to IntField, DoubleField and DateField
+	* pylibs/formlib/validates.py: added superclass validation check
+	to IntField, DoubleField and DateField
 
-	* pylibs/formlib/views.py: added support for required fields to ViewableField and ViewableDomainField
+	* pylibs/formlib/views.py: added support for required fields to
+	ViewableField and ViewableDomainField
 	
 
 2002-11-23  James Richards  <jrichards@satie.wnyc.org>
 
-	* testAllViews.pyinc (fields): Removing setting of value in view attributes
+	* testAllViews.pyinc (fields): Removing setting of value in view
+	attributes
 
 2002-11-22  James Richards  <jrichards@satie.wnyc.org>
 
-	* test/formlib/htdocs/testAllViews.pyinc: Added the tests for the rest of the viewable components
+	* test/formlib/htdocs/testAllViews.pyinc: Added the tests for the
+	rest of the viewable components
 
-	* pylibs/formlib/views.py (SelectField.__doc__): added documentation to SelectField for a bit more clarity in usage
-	(TextAreaField.__init__): Added check to prevent value attribute from being incorrectly added to textarea HTML fields 
+	* pylibs/formlib/views.py (SelectField.__doc__): added
+	documentation to SelectField for a bit more clarity in usage
+	(TextAreaField.__init__): Added check to prevent value attribute
+	from being incorrectly added to textarea HTML fields 
 
 2002-11-22 <heiho1@mac.com>
 
