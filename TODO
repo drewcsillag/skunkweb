@@ -1,5 +1,5 @@
-#   Time-stamp: <2002-06-18 17:05:26 acsillag> 
-#   $Id: TODO,v 1.39 2002/05/10 16:22:15 smulloni Exp $
+#   Time-stamp: <2002-06-18 17:07:10 acsillag> 
+#   $Id: TODO,v 1.40 2002/06/18 21:00:43 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -34,7 +34,8 @@ NEW CODING:
 
 DOCS
 * a doc on the website that tells of the protocol frontends we support --
-  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami
+  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami and what databases 
+  are supported.
 * probably expand the above doc to the marketing bullet-points -- perhaps
   a whitepaper too?
 
@@ -42,19 +43,10 @@ SkunkWeb 3.3
 ------------------------------
 * testing framework built using product service (so client scripts 
   can know the location of server-side components they call)
-? DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
-? convert from using Makefile.pre.in to using distutils to build
-  and install our C modules 
 * support for running python cgis persistently, for running viewcvs, 
   mailman scripts, etc.
 * make PyDO separate release use distutils also for install
-? dynamic scoping: to implement things like "if a url matches
-  r'/~(\w)/(.*)', make Configuration.documentRootFS be
-  LocalFS(os.path.expanduser('~%s') % username)" 
-? ZODB FS implementation.
-? sessionHandler's FSSessionStore rewritten to use VFS.
-? image handling service, built on basis of mime-type-specific handlers
 * reintroduce hot-debugging as an optional configuration dependency;
   write extension module using Pyrex?
 * Xitami adapter for SkunkWeb -- see webpages/xitami/index12.htm under the
@@ -62,6 +54,18 @@ SkunkWeb 3.3
 * Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
   (at least in 4.0.4) under jk/doc
 * rewrite enhancements
+? Quixote support - is it feasable given how it works?
+* PSP support
+
+? DAV support built on httpd
+? convert from using Makefile.pre.in to using distutils to build
+  and install our C modules 
+? dynamic scoping: to implement things like "if a url matches
+  r'/~(\w)/(.*)', make Configuration.documentRootFS be
+  LocalFS(os.path.expanduser('~%s') % username)" 
+? ZODB FS implementation.
+? sessionHandler's FSSessionStore rewritten to use VFS.
+? image handling service, built on basis of mime-type-specific handlers
 
 Future stuff
 ------------------------------
