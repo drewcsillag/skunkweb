@@ -20,23 +20,26 @@ from containers import FieldContainer
 
 __all__=['UNDEF', 'Field', 'DomainField', 'Form']
 
-class _undef(object):
-    pass
-UNDEF=_undef()
-del _undef
+UNDEF=object()
 
 class Field(object):
     def __init__(self,
                  name,
-                 default=None):
+                 default=None,
+                 multiple=0):
         self.name=name
-        self._set_default(default)
+        self.__multiple=multiple
+        if default==None:
+            self.clearDefault()
+        else:
+            self._set_default(default)
         self.clearValue()
 
     def _get_default(self):
         return self.__default
 
     def _set_default(self, default):
+        self.checkValue(default)
         self.__default=default
 
     def clearDefault(self):
@@ -51,12 +54,28 @@ class Field(object):
             return self.default
 
     def _set_value(self, value):
+        self.checkValue(value)
         self.__value=value
 
     def clearValue(self):
         self.__value=UNDEF
 
     value=property(_get_value, _set_value)
+    
+    def _get_multiple(self):
+        return self.__multiple
+
+    multiple=property(_get_multiple)
+
+    def checkValue(self, value):
+        isseq=isinstance(value, list) or isinstance(value, tuple)
+        if self.multiple and not isseq:
+            raise ValueError, "value must be a sequence for this field"
+        elif isseq and not self.multiple:
+            raise ValueError, "value cannot be a sequence for this field"
+
+    def validate(self, form=None):
+        pass
 
 class DomainField(Field):
     """
@@ -64,15 +83,15 @@ class DomainField(Field):
     the possible values of the field consist
     of an enumeration or menu. 
     """
-    def __init__(self, name, domain, default=None):
-        Field.__init__(self, name, default)
-        self._set_domain(domain)
+    def __init__(self, name, domain, default=None, multiple=0):
+        self.__domain=domain
+        Field.__init__(self, name, default, multiple)
         
     def _get_domain(self):
         return self.__domain
 
     def _set_domain(self, domain):
-        if self.default is not None and self.default not in domain:
+        if self.default is not None and not self.in_domain(self.default, domain):
             raise ValueError, \
                   "pre-existing default conflicts with new domain; "\
                   "clear the default before setting domain"
@@ -80,33 +99,45 @@ class DomainField(Field):
 
     domain=property(_get_domain, _set_domain)
 
-    def _set_value(self, value):
-        if value not in self.domain:
-            raise ValueError, "value not present in domain"
-        Field._set_value(self, value)
-    
-    value=property(Field._get_value, _set_value)
-    
-    def _set_default(self, default):
-        if default is not None and default not in self.domain:
-            raise ValueError, "default value not present in domain"
-        Field._set_default(self, default)
+    def in_domain(self, value, domain=None):
+        if not domain:
+            domain=self.domain
+        if value in domain:
+            return 1
+        if self.multiple and \
+               (isinstance(value, list) or isinstance(value, tuple)):
+            return reduce(lambda x, y: x and y,
+                          [i in domain for i in value])
+        return 0
 
-    default=property(Field._get_default, _set_default)        
-    
+    def checkValue(self, value):
+        """
+        determines whether the value is permissible for the field.
+        This is not meant to perform validation of user input,
+        but to prevent programmatic errors.
+        """
+        Field.checkValue(self, value)
+        if not self.in_domain(value):
+            raise ValueError, "value not present in domain"
+           
 
 class Form(object):
     def __init__(self,
                  name=None,
                  method='POST',
-                 fields=None):
+                 action="",
+                 fields=None,
+                 validators=None):
         self.name=name
         self.method=method
+        self.action=action
         self.fields=FieldContainer(fields or [],
                                    fieldmapper=lambda x: x.name,
                                    storelists=0)
+        self.validators=validators or []
+        self.submitted=None
 
-    def getData():
+    def getData(self):
         d={}
         for k, v in self.fields.iteritems():
             d[k]=v.value
@@ -114,28 +145,28 @@ class Form(object):
 
     def setData(self, data):
         for k, v in data.iteritems():
-            if self.fields.has_key(k):
-                self.fields[k].value=v
+            f=self.fields.get(k)
+            if f:
+                f.value=v
+
+    def reset(self):
+        for f in self.fields:
+            f.clearValue()
+
+    def validate(self):
+        errors={}
+        for l in (self.fields, self.validators):
+            for v in l:
+                e=v.validate(self)
+                if e:
+                    errors.update(e)
+        return errors
 
 
-##    def validate(self):
-##        # should call all validators
-##        # and set the valid flags on all
-##        # of them -- TBD
-##        if 1:
-##            pass
 
-##    def _reset(self):
-##        # should clean the valid flags.
-##        # should it also wipe out the field
-##        # values?  Probablee.
-##        if 0:
-##            print "thing is impossible"
 
-##    def _is_valid(self):
-##        if self.validate():
-##            return 1
-##        return 0
 
-##    valid=property(_is_valid)
-
+    
+        
+        
+        

@@ -106,7 +106,7 @@ class FieldContainer(list):
         return self.__d.get(key, default)
 
     def __setitem__(self, index, item):
-        if not isinstance(key, int):
+        if not isinstance(index, int):
             raise TypeError, "cannot set items by key, only by index"
         try:
             x=list.__getitem__(self, index)
