@@ -1,3 +1,30 @@
+2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/prompt.py: fixed niggly bug
+
+	* pylibs/IOTO.py: removed unused import
+
+	* pylibs/Config.py: removed a few unused imports
+
+	* pylibs/BasicAuth.py: fixed a few stupid bugs
+
+	* pylibs/Authenticator.py: removed unused variable
+
+	* pylibs/ErrorHandler.py: fixed typo, was raising CriticalError and
+	should've been SkunkCriticalError
+
+	* pylibs/AE/cfg.py: fixed typo
+
+	* pylibs/AE/TypeTag.py: Had unused didanything variable -- removed
+
+	* pylibs/AE/InitTags.py: was missing an import of SkunkExcept
+
+	* pylibs/AE/ComponentTag.py: removed a useless import
+	of string module
+
+	* pylibs/AE/Cache.py: fixed a DEBUG msg pointed out by 
+	pychecker and changed a string.atoi to int()
+
 2002-06-17  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* configure.in, configure, SkunkWeb/configure.in,
