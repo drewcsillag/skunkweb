@@ -451,7 +451,7 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                 # +GEB
                 out.write('    def set%s(self, item):\n' % singular(oside))
                 out.write('        if item == None:\n')
-                for m in r.theirAttrs:
+                for m in r.myAttrs:
                     out.write("            self['%s'] = None\n" % m)
                 out.write('        else:\n')
                 for m, t in map(None, r.theirAttrs, r.myAttrs):
