@@ -1,5 +1,5 @@
 /* 
- * $Id: _scope.c,v 1.7 2001/09/09 02:37:41 smulloni Exp $ 
+ * $Id: _scope.c,v 1.8 2001/09/18 19:06:50 drew_csillag Exp $ 
  * Time-stamp: <2001-09-18 10:02:53 drew>
  */
 
@@ -219,7 +219,7 @@ static PyObject *Scopeable_saveMash(PyObject *self, PyObject *args) {
     return NULL;
   }
   /* ATC */
-  m = Scopeable_mash(self, args)
+  m = Scopeable_mash(self, args);
   PyObject_SetAttrString(self, MASH, m);
   Py_DECREF(m);
   /* /ATC */
@@ -487,6 +487,9 @@ void init_scope(void) {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.8  2001/09/18 19:06:50  drew_csillag
+ * refcounting fixes
+ *
  * Revision 1.7  2001/09/09 02:37:41  smulloni
  * performance enhancements, removal of sundry nastinesses and erasure of
  * reeking rot.
