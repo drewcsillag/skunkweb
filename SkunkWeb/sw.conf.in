@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.22 2002/07/11 22:57:00 smulloni Exp $
-# Time-stamp: <02/07/12 12:19:32 smulloni>
+# $Id: sw.conf.in,v 1.23 2002/07/15 15:07:09 smulloni Exp $
+# Time-stamp: <2002-07-18 15:24:19 acsillag>
 
 ########################################################################
 #
@@ -23,6 +23,13 @@
 #
 ########################################################################
 
+########################################################################
+# If you want to be able to start skunkweb as root (so it can bind to
+# port 80) but want it to run as a different user/group, set these to
+# appropriate values.
+#
+# userToRunAs = "@OWNER@"
+# groupToRunAs = "@GROUP@"
 
 ########################################################################
 # services you want to load.
@@ -280,7 +287,7 @@ sys.path.append('@prefix@/sitelibs')
 # The directory that is used to hold templates, images, msgcats, comps,
 # etc.
 #
-# documentRoot = '@DOCROOT@'
+documentRoot = '@DOCROOT@'
 
 ########################################################################
 # What filesystem implementations to use to search for resources.
@@ -638,6 +645,11 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.23  2002/07/15 15:07:09  smulloni
+# various changes: configuration (DOCROOT); new sw.conf directive (File);
+# less spurious debug messages from rewrite; more forgiving interface to
+# MsgCatalog.
+#
 # Revision 1.22  2002/07/11 22:57:00  smulloni
 # configure changes to support other layouts
 #
