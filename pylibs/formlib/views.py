@@ -15,8 +15,8 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
-
-from form import Field, DomainField, Form, FormError
+from containers import FieldContainer
+from form import Field, DomainField, Form, FormError, _getname
 from containers import Set
 import ecs
 
@@ -509,6 +509,11 @@ class ViewableForm(Viewable, Form):
         self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
         Form.__init__(self, name, method, action, enctype, flatfields, validators, processors)
         Viewable.__init__(self, **view_attrs)
+
+    def setFields(self, fields):
+        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
+        Form.setFields(self, flatfields)
+
 
     def generateLayout(self, fields):
         """\
