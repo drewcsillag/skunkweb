@@ -7,7 +7,7 @@
 
 	* pylibs/formlib/form.py (CompositeField._setData): typo fix
 
->>>>>>> 1.438
+
 2003-05-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* 3.4b3 release cut.
