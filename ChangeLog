@@ -1,3 +1,18 @@
+2003-04-19  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/MsgCatalog.py,
+	SkunkWeb/Services/templating/MailServices.py,
+	SkunkWeb/Services/ae_component.py, pylibs/AE/MimeTypes.py,
+	pylibs/AE/Executables.py, pylibs/AE/Component.py,
+	pylibs/AE/Cache.py: changed method names to be compatible with
+	Scopeable.
+
+	* pylibs/ConfigLoader.py (loadConfig): now use scope.Scopeable
+	directly, without the silly subclass.
+
+	* pylibs/scope.py: a new implementation, much faster (by an order
+	of ten or more) than the old.
+
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/usertracking.py (_add_usertracking_cookie):
