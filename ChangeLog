@@ -1,3 +1,13 @@
+2003-01-12  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/pypgsqlconn.py: first draft of pypgsql PyDO driver,
+	submitted by "John Pydo".
+
+2003-01-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PostgreSql/__init__.py: whitespace normalization; removed
+	some dead code.
+
 2003-01-10  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/dispatcher.py (Goto, Push, Pop): added optional

@@ -24,11 +24,12 @@ class SYSDATE: pass
 ##############################
 _driverConfig = {
     #driver name   module name    class in module
-    'mysql':       ('mysqlconn',  'PyDOMySQL'),
-    'oracle':      ('oracleconn', 'PyDOOracle'),
-    'postgresql':  ('postconn',   'PyDOPostgreSQL'),
-    'sapdb':       ('sapdbconn',  'PyDOsapdb'),
-    'sqlite':      ('sqliteconn', 'PyDOSqlite'),
+    'mysql':       ('mysqlconn',   'PyDOMySQL'),
+    'oracle':      ('oracleconn',  'PyDOOracle'),
+    'postgresql':  ('postconn',    'PyDOPostgreSQL'),
+    'pypgsql':	   ('pypgsqlconn', 'PyDOPostgreSQL'),
+    'sapdb':       ('sapdbconn',   'PyDOsapdb'),
+    'sqlite':      ('sqliteconn',  'PyDOSqlite'),
     }
 _loadedDrivers = {}
 
