@@ -1,3 +1,9 @@
+2003-12-27  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* pylibs/ecs/xhtml.py (parse): now use HTMLParser rather than
+	expat, so html entity references are now tolerated (although
+	treated as strings).
+
 2003-12-24  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
 	* pylibs/skunk/__init__.py, pylibs/skunk/date/__init__.py,

@@ -1,5 +1,5 @@
-# Time-stamp: <02/12/13 13:29:19 smulloni>
-# $Id: xhtml.py,v 1.5 2002/12/13 18:34:10 smulloni Exp $
+# Time-stamp: <2003-12-27 23:18:32 smulloni>
+# $Id: xhtml.py,v 1.6 2003/05/01 20:46:01 drew_csillag Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -187,16 +187,67 @@ for k in CONTAINER_ELEMENTS:
 del _makeClass
 
 
-if hasattr(xmlutils, 'ExpatParser'):
-    class XHTMLParser(xmlutils.ExpatParser):
-        def __init__(self):
-            xmlutils.ExpatParser.__init__(self, elementClassRegistry)
+import HTMLParser as _h
+from xmlutils import makeElement, XMLElement
 
-    def parse(xhtmlstring):
-        p=XHTMLParser()
-        p.parse(xhtmlstring)
-        return p.document
+class XHTMLParser(_h.HTMLParser):
+    def __init__(self):
+        _h.HTMLParser.__init__(self)
+        self.__stack=[]
+        self.document=None
+        self.elementClassRegistry=elementClassRegistry
+  
+    def handle_starttag(self, tag, attrs):
+        elem=makeElement(tag, self.elementClassRegistry)
+        elem.OPEN=1
+        if not self.document:
+            self.document=elem
+        for k, v in attrs:
+            elem.setAttribute(k, v)
+        self.__stack.append(elem)
 
-    __all__.append(parse.__name__)
+    def handle_data(self, data):
+        self.__stack.append(data)
+
+    def handle_entityref(self, ref):
+        self.__stack.append('&%s;' % ref)
+
+    def handle_endtag(self, tag):
+        # find matching tag
+        i=-1
+        stackLen=len(self.__stack)
+        while stackLen+i >= 0:
+            p=self.__stack[i]
+            if isinstance(p, XMLElement) and hasattr(p, 'OPEN'):
+                # found element
+                postind=stackLen+i+1
+                popped=self.__stack[postind:]
+                map (lambda x, y=p: y.addChild(x), popped)
+                delattr(p, 'OPEN')
+                self.__stack=self.__stack[:postind]
+                break
+            else:
+                i-=1
+
+
+def parse(xhtmlstring):
+    p=XHTMLParser()
+    p.feed(xhtmlstring)
+    p.close()
+    return p.document
+
+__all__ . append(parse.__name__)
+
+## if hasattr(xmlutils, 'ExpatParser'):
+##     class XHTMLParser(xmlutils.ExpatParser):
+##         def __init__(self):
+##             xmlutils.ExpatParser.__init__(self, elementClassRegistry)
+
+##     def parse(xhtmlstring):
+##         p=XHTMLParser()
+##         p.parse(xhtmlstring)
+##         return p.document
+
+##     __all__.append(parse.__name__)
                     
 
