@@ -31,7 +31,6 @@ import sys
 from socket import *
 import errno
 import select
-import fcntl
 import random
 
 def readWTimeout(sock, length, timeout):
