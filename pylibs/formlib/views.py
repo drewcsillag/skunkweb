@@ -480,6 +480,11 @@ class ViewableForm(Viewable, Form):
                  fields=None,
                  validators=None,
                  **view_attrs):
+        
+        for tstFld in fields:
+            if isinstance(tstFld, list) or isinstance(tstFld, tuple):
+                pass
+            
         Form.__init__(self, name, method, action, enctype, fields, validators)
         Viewable.__init__(self, **view_attrs)
 
