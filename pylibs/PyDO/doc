@@ -35,11 +35,11 @@ or
 For SAPdb, currently only the non-caching form is available:
     pydo:sapdb:<DATABASE>[@<HOSTNAME>] <USER> <PASSWORD>[:verbose]
 
-For MySQL, which hasn't been tested all that much, only the non-caching
-version is currently available.  If there is demand I can do it, I just
-don't have mysql installed anywhere convienient for me to test.
-
-    pydo:mysql:normal_mysql_connect_string
+For MySQL, connection arguments can be either a connect string of the
+form pydo:host:db:user:passwd, or a dictionary consisting either of
+arguments to pass to the MySQLdb connect() method or the key
+"cacheUser", which will then be used to retrieve the connection from
+the cache in the MySQL package.
 
 Inheritance Semantics
 ------------------------------
