@@ -1,3 +1,13 @@
+2001-12-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/UrlBuilder.py (image): the <:img:>
+	tag will now determine the width and height of the image if the url
+	is local and PIL (Python Imaging Library) is installed, and neither
+	height and width attributes have been specified in the tag.
+
+	* pylibs/AE/Cache.py (_openDocRoot): added method that returns 
+	an open file object.
+
 2001-11-18  Jacob Smullyan  <smulloni@skunk.org>
 
 	* skunkweb.spec: added spec for RPM.  probably doesn't work yet (I won't know

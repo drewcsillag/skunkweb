@@ -16,8 +16,31 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 import string
+import sys
 import types
 from static import *
+import operators
+
+##_oldField=operators.FIELD
+##class FIELD(_oldField):
+##    def __init__(self, fieldname):
+##        _oldField.__init__(self, fieldname)
+##        # look into PyDO object calling this one, if any
+##        frame=sys._getframe(1)
+##        print frame.f_locals
+##        callingSelf=frame.f_locals.get('self')
+##        self.dbtype=None
+##        self.dbi=None
+##        if callingSelf:
+##            print "found calling self: %s" % callingSelf
+##            if hasattr(callingSelf, '__class__'):
+##                callingClass=callingSelf.__class__
+##                print "calling class: %s" % callingClass
+##                self.dbtype=callingClass.fieldDict.get(self.fieldname)
+##                self.dbi=callingClass.getDBI()
+
+##operators.FIELD=FIELD
+##del FIELD
 
 PyDOError = "PyDO.Error"
 
@@ -320,10 +343,42 @@ class PyDO(PyDOBase):
         sql, values = apply( self.getSomeSQL, (), kw)
         if not kw:
             sql = sql[:-7]
-
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
         return map(self, results)
+
+    def static_getSomeWhere(self, *args, **kw):
+        andValues=list(args)
+        for k, v in kw.items():
+            andValues.append(operators.EQ(operators.FIELD(k), v))
+        andlen=len(andValues)
+        if andlen > 1:
+            daOp=operators.AND(*andValues)
+        elif andlen==1:
+            daOp=andValues[0]
+        else:
+            daOp=None
+        sql=(daOp and daOp.asSQL()) or ''
+        return self.getSQLWhere(sql)
+
+    def static_getTupleWhere(self, opTuple, **kw):
+        if kw:
+            _and=['AND', opTuple]
+            for k, v in kw.items():
+                _and.append(('=', FIELD(k), v))
+            opTuple=tuple(_and)
+        sql=operators.tupleToSQL(opTuple)
+        return self.getSQLWhere(sql)
+
+    def static_getSQLWhere(self, sql, values=()):
+        base=self._baseSelect()
+        if sql:
+            sql="%s WHERE %s" % (base, sql)
+        else:
+            sql=base
+        conn = self.getDBI()
+        results = conn.execute(sql, values, self.fieldDict)
+        return map(self, results)        
     
     def static_new(self, refetch = None, **kw):
         """create and return a new data class instance using the values in

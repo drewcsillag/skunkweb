@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: UrlBuilder.py,v 1.6 2001/07/09 20:38:40 drew Exp $
+# $Id: UrlBuilder.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -36,6 +36,17 @@ import skunklib
 from SkunkExcept import *
 import AE.Component
 from web.protocol import Redirect
+from SkunkWeb.LogObj import DEBUG
+from SkunkWeb.ServiceRegistry import TEMPLATING
+
+# for img tag, try to import PIL (to get default image width and height)
+try:
+    import PIL.Image as Image
+    import AE.Cache as Cache
+    _havePIL=1
+except:
+    _havePIL=0
+
 
 def _genUrl ( path, query = {}, need_full = 0, noescape=None ):
     """
@@ -99,6 +110,14 @@ def image ( path, queryargs = None, kwargs={}, noescape = None  ):
     """
     Create an image tag
     """
+    if _havePIL and not path.startswith('http://'):
+        lckws=map(string.lower, kwargs.keys())
+        if not filter(lambda x: x in ('height', 'width'), lckws):
+            try:
+                im=Image.open(Cache._openDocRoot(path))
+                kwargs['width'], kwargs['height']=im.size
+            except:
+                DEBUG(TEMPLATING, "failed to read doc root for path %s" % path)
 
     ret = '<img src="%s"%s>' % (_genUrl(path, query = queryargs, 
                                 noescape=noescape), _genKwArgs(kwargs))
@@ -154,6 +173,10 @@ def hidden ( dict ):
 
 ########################################################################
 # $Log: UrlBuilder.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:11  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.6  2001/07/09 20:38:40  drew
 # added licence comments
 #

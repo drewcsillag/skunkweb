@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Handler.py,v 1.2 2001/09/21 20:16:31 drew_csillag Exp $
+# $Id$
 
 import AE.Cache
 import AE.Component
@@ -24,9 +24,11 @@ import AE.Error
 import AE.Executables
 from SkunkWeb import Configuration
 import stat
+import sys
 from SkunkWeb.LogObj import ERROR, DEBUG
 from web.protocol import Redirect
 from SkunkWeb.ServiceRegistry import TEMPLATING
+import vfs
 
 Configuration.mergeDefaults(
     indexDocuments = ['index.html'],
@@ -65,31 +67,31 @@ def _pathSlashRedirect(connObj):
     return connObj.response()
 
 def requestHandler(connObj, sessionDict):
+    fixPath=AE.Cache._fixPath
     uri = connObj.uri
-
     try:
         DEBUG(TEMPLATING, "statting %s" % uri)
-        st = AE.Cache._statDocRoot(uri)
+        fixed, fs, st=AE.Cache._getPathFSAndMinistat(uri)
         connObj.statInfo = st
     except:
         return
     
-    if stat.S_ISDIR(st[stat.ST_MODE]): # if a directory fix uri as appropriate
-        DEBUG(TEMPLATING, "%s is a directory" % uri)
-        if not uri:
-            DEBUG(TEMPLATING, "no uri, / redirecting")
-            return _pathSlashRedirect(connObj)
-        elif uri[-1] != '/':
+    # if a directory fix uri as appropriate
+    if fs.isdir(fixed):
+        DEBUG(TEMPLATING, "%s is a directory" % fixed)
+        if (not uri) or uri[-1] != '/':
             DEBUG(TEMPLATING, "doesn't end in / redirecting")
             return _pathSlashRedirect(connObj)
         else:
             DEBUG(TEMPLATING, "looping over indexDocuments")
             for i in Configuration.indexDocuments:
-                s = "%s%s" % (uri, i)
+                s = "%s%s" % (uri, i)         
                 DEBUG(TEMPLATING, "trying %s" % i)
+                fixed=fixPath(Configuration.documentRoot, s)
+
                 try:
                     st = None
-                    st = AE.Cache._statDocRoot(s)
+                    st = fs.ministat(fixed)
                 except:
                     DEBUG(TEMPLATING, "nope")
                 else:
@@ -97,6 +99,11 @@ def requestHandler(connObj, sessionDict):
                     connObj.statInfo = st
                     break
             if not st: #no index document exists
+                if Configuration.defaultIndexHtml:
+                    s = Configuration.defaultIndexHtml
+                    st = AE.Cache._statDocRoot(uri)
+                else:
+                    return
                 if Configuration.defaultIndexHtml:
                     s = Configuration.defaultIndexHtml
                     st = AE.Cache._statDocRoot(uri)
@@ -120,9 +127,7 @@ def requestHandler(connObj, sessionDict):
     #to pass it through, ignore and let the plain handler do it
     if mimeType not in Configuration.interpretMimeTypes:
         return
-
-    modTime = st[stat.ST_MTIME]
-
+    modTime =st[vfs.MST_CTIME]
     if mimeType == 'application/x-python':
         mimeType = 'text/html'
 
