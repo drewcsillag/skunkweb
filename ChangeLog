@@ -1,5 +1,8 @@
 2003-05-12  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* docs/stmlrefer/stmlrefer.tex (subsection{Using the
+	\texttt{duration} argument}): fixing incorrect import statement.
+
 	* SkunkWeb/sw.conf.in: added comment about runInForeground.
 
 2003-05-09  Jacob Smullyan  <smulloni@smullyan.org>
