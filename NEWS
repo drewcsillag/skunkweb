@@ -1,5 +1,9 @@
 Changes in 3.4b4
 =================
+* security fixes: cross-site scripting vulnerability in default
+  404 page repaired (was including the literal uri in the page output);
+  httpd service had been vulnerable to paths escaping the document root, 
+  now isn't.
 * better support for directory layout configuration options.
 * vfs filesystems have a new method, "find_path", for cascading
   filesystems.
