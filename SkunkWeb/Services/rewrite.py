@@ -1,5 +1,5 @@
-# Time-stamp: <03/02/05 09:42:33 smulloni>
-# $Id: rewrite.py,v 1.13 2003/01/29 22:18:48 smulloni Exp $
+# Time-stamp: <03/04/28 11:28:01 smulloni>
+# $Id: rewrite.py,v 1.14 2003/02/07 19:56:24 smulloni Exp $
 
 ########################################################################
 #  
@@ -69,16 +69,15 @@ By default, all of your rewrite rules will be applied, one by one.
 But if you want it to stop after the first match, set
 ``Configuration.rewriteApplyAll`` to a false value.
 
-This API is subject to change; in particular, the hooks may be dropped
-altogether, and the method signatures of rewriters may be simplified by
-dropping the ``key`` parameter to ``rewrite()``.
-
+This service used to contain a series of hooks and the ability
+to use them to manipulate the list of rewrite rules at runtime.
+These were relatively expensive and seemed to offer little functionality,
+so they have been removed.
 """
 
 from SkunkWeb import ServiceRegistry, Configuration, constants
 ServiceRegistry.registerService('rewrite')
 from SkunkWeb.LogObj import DEBUG, logException
-from hooks import Hook
 from SkunkWeb.ServiceRegistry import REWRITE
 import re
 import sys
@@ -91,14 +90,7 @@ def _fixPath(root, path):
 Configuration.mergeDefaults(rewriteBeforeScope=1,
                             rewriteRules = [],
                             rewriteApplyAll = 1,
-                            rewriteMatchToArgs=1,
-                            rewriteEnableHooks=0)
-
-PreRewriteMatch=Hook()
-PostRewriteMatch=Hook()
-PreRewrite=Hook()
-PostRewrite=Hook()
-PreRewriteCleanup=Hook()
+                            rewriteMatchToArgs=1)
 
 _sre_pattern_type=type(re.compile('foo'))
 
@@ -128,7 +120,7 @@ class Redirect(DynamicRewriter):
     def __init__(self, url_template):
         self.url_template=url_template
 
-    def rewrite(self, match, connection, sessionDict, key):
+    def rewrite(self, match, connection, sessionDict):
         url=match.expand(self.url_template)
         connection.redirect(url)
         raise PreemptiveResponse, connection.response()
@@ -155,7 +147,7 @@ class Status404(DynamicRewriter):
     """
     def __init__(self, handler=fourOhFourHandler):
         self.handler=handler
-    def rewrite(self, match, connection, sessionDict, key):
+    def rewrite(self, match, connection, sessionDict):
         raise PreemptiveResponse, self.handler(connection,
                                                sessionDict)
 
@@ -178,7 +170,7 @@ class ExtraPathFinder(DynamicRewriter):
         self.add_info_to_args=add_info_to_args
         self.path_info_var_name=path_info_var_name
 
-    def rewrite(self, match, connection, sessionDict, key):
+    def rewrite(self, match, connection, sessionDict): 
         fs=Configuration.documentRootFS
         (path, info)=fs.split_extra(_fixPath(Configuration.documentRoot, connection.uri))
         if not path:
@@ -246,9 +238,9 @@ class RewriteCond:
         
 ########################################################################
 
-def _dorewrite(match, connection, sessionDict, replacement, key):
+def _dorewrite(match, connection, sessionDict, replacement): 
     if hasattr(replacement, 'rewrite'):
-        replacement.rewrite(match, connection, sessionDict, key)
+        replacement.rewrite(match, connection, sessionDict)
     else:
         if callable(replacement):
             connection.uri=match.re.sub(replacement, connection.uri)
@@ -258,9 +250,6 @@ def _dorewrite(match, connection, sessionDict, replacement, key):
         if groupdict:
             if Configuration.rewriteMatchToArgs:
                 connection.args.update(groupdict)
-            if Configuration.rewriteEnableHooks:
-                sessionDict['rewriteRules'][key].update(groupdict)
-
 
 def _dorewriteloop(connection, sessionDict, rules):
     for p, r in rules:
@@ -271,30 +260,9 @@ def _dorewriteloop(connection, sessionDict, rules):
 
         m = _getcompiled(p).search(connection.uri)
         if m is not None:
-            if Configuration.rewriteEnableHooks:
-                key=(p, r)
-                sessionDict['rewriteRules'][key] = {}
-                sessionDict['rewriteCurrentRule'] = key
-                try:
-                    DEBUG(REWRITE, 'executing PreRewrite hook')
-                    PreRewrite(connection, sessionDict)
-                    DEBUG(REWRITE, 'survived PreRewrite hook')
-                except:
-                    logException()
 
-            _dorewrite(m, connection, sessionDict, r, (p, r))
+            _dorewrite(m, connection, sessionDict, r)
 
-            if Configuration.rewriteEnableHooks:
-                try:
-                    DEBUG(REWRITE, 'executing PostRewrite hook')
-                    PostRewrite(connection, sessionDict)
-                    DEBUG(REWRITE, 'survived PostRewrite hook')
-                except:
-                    logException()
-                try:
-                    del sessionDict['rewriteCurrentRule']
-                except KeyError:
-                    pass
             if not Configuration.rewriteApplyAll:
                 break
     
@@ -303,44 +271,9 @@ def _rewritePre(connection, sessionDict):
     """
     hook for web.protocol.PreHandleConnection
     """
-    if Configuration.rewriteEnableHooks:
-        sessionDict['rewriteRules'] = {}
-        try:
-            DEBUG(REWRITE, 'executing PreRewriteMatch hook')
-            PreRewriteMatch(connection, sessionDict)
-            DEBUG(REWRITE, 'survived PreRewriteMatch hook')
-        except:
-            logException()
     rules = Configuration.rewriteRules
-    if Configuration.rewriteEnableHooks:
-        if sessionDict.has_key('rewriteAddRules'):
-            for newRule in sessionDict['rewriteAddRules']:
-                # optional 3rd element in tuple specifies index
-                # for placement in rules
-                if len(newRule) > 2 and newRule[2] <= len(rules):
-                    rules.insert(newRule[2], newRule[:2])
-                else:
-                    rules.append(newRule)
     _dorewriteloop(connection, sessionDict, rules)
     
-
-def _rewritePost(requestData, sessionDict):
-    """
-    hook for requestHandler.requestHandler.CleanupRequest
-    """
-    if Configuration.rewriteEnableHooks:
-        try:
-            DEBUG(REWRITE, 'executing PreRewriteCleanup hook')
-            PreRewriteCleanup(requestData, sessionDict)
-            DEBUG(REWRITE, 'survived PreRewriteCleanup hook')
-        except:
-            logException()
-        try:
-            del sessionDict['rewriteRules']
-        except KeyError:
-            pass
-
-
 def __initHooks():
     import web.protocol as wp
     import SkunkWeb.constants as sc
@@ -351,7 +284,6 @@ def __initHooks():
     else:
         hook=wp.PreHandleConnection
     hook.addFunction(_rewritePre, jobGlob)
-    rh.CleanupRequest.addFunction(_rewritePost, jobGlob)
 
 __initHooks()
 

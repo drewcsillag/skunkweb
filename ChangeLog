@@ -1,3 +1,9 @@
+2003-04-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/rewrite.py: removed hooks entirely and
+	the configuration variable that determined whether they were executed;
+	removed the "key" parameter from rewriters.
+
 2003-04-23  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/MySQL/__init__.py (cleanUser): closing connection
