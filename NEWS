@@ -1,5 +1,7 @@
 Changes in 3.3
 ========================================
+* minor change to handling of python code files (__name__ == '__main__'),
+  so precompiled Cheetah templates work.
 * the build process was revised to facilitate changing the installed
   directory structure using standard configure options; FHS-compliant
   packaging and installation is now feasible.

@@ -1,3 +1,9 @@
+2002-07-31  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/AE/Executables.py (PythonExecutable.mergeNamespaces): now
+	sets __name__ to '__main__' in the python namespace so, specifically,
+	Cheetah Templates will now work.
+
 2002-07-29  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/devel/devel.tex (section{Linkage Services}): added note
