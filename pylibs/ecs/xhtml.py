@@ -1,12 +1,11 @@
-# Time-stamp: <02/08/28 16:46:15 smulloni>
-# $Id$
+# Time-stamp: <02/08/29 10:52:31 smulloni>
+# $Id: xhtml.py,v 1.1 2002/08/28 20:53:28 smulloni Exp $
 
 # a library similar in intent to HTMLGen or Java's ECS, but quite minimal.
 # Should generate valid XHTML.
 
 import xmlutils
 import new
-import keyword
 
 class Element(xmlutils.XMLElement):
     """
@@ -25,37 +24,6 @@ class Element(xmlutils.XMLElement):
             for k, v in attributes.items():
                 self.setAttribute(k, v)          
 
-    """
-    an alias for addChild()
-    """
-    addElement=xmlutils.XMLElement.addChild
-
-    def getElementsByAttribute(self, attr, val, limit=1):
-        """
-        returns a list of elements with an attribute with the name
-        given by attr and a value V where, if val is not callable,
-        V = val, or if val is callable, where val(V) is true.  limit
-        is the maximum number of elements to return; if limit is < 1,
-        all matching elements will be returned.
-        """
-        if callable(val):
-            f=val
-        else:
-            f=lambda x, v=val: x==v
-        result=[]
-        self._private_getElementsByAttribute(attr, f, limit, result)
-        return result
-               
-
-    def _private_getElementsByAttribute(self, attr, valfunc, limit, result):
-        if self.hasAttribute(attr) and valfunc(self.getAttribute(attr)):
-            result.append(self)
-        if 0 < limit and limit <= len(result):
-            return
-        for child in self.getChildren():
-            if isinstance(child, Element):
-                child._private_getElementsByAttribute(attr, valfunc, limit, result)
-        
                                   
     def getElementById(self, id):
         """
@@ -187,12 +155,10 @@ CONTAINER_ELEMENTS=['a',
 
 __all__=[]
 
+elementClassRegistry={}
+
 def _makeClass(elemName, empty):
-        
-    if keyword.iskeyword(elemName) or __builtins__.has_key(elemName):
-        kname=elemName+'_'
-    else:
-        kname=elemName
+    kname=elemName.capitalize()
     if empty:
         bases=(EmptyElement,)
     else:
@@ -200,6 +166,7 @@ def _makeClass(elemName, empty):
     kl=new.classobj(kname, bases, {})
     kl.name=elemName
     globals()[kname]=kl
+    elementClassRegistry[elemName]=lambda x, y=None, k=kl: k()
     __all__.append(kname)
 
 for k in EMPTY_ELEMENTS:
@@ -209,4 +176,17 @@ for k in CONTAINER_ELEMENTS:
 
 del _makeClass
 
+
+if hasattr(xmlutils, 'ExpatParser'):
+    class XHTMLParser(xmlutils.ExpatParser):
+        def __init__(self):
+            xmlutils.ExpatParser.__init__(self, elementClassRegistry)
+
+    def parse(xhtmlstring):
+        p=XHTMLParser()
+        p.parse(xhtmlstring)
+        return p.document
+
+    __all__.append(parse.__name__)
                     
+

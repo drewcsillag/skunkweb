@@ -1,3 +1,14 @@
+2002-08-29  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/xmlutils.py (makeElement): modified parser so it could
+	produce different element classes depending on element name and
+	elementClassRegistry. (XMLElement.getChildrenByAttribute): moved
+	this here from ecs.xhtml; also added method aliases getElement,
+	getElements, getElementsByAttribute.
+
+	* pylibs/ecs/xhtml.py (parse): added parse method that returns
+	a tree of Elements given an xhtml string.
+
 2002-08-28  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/xmlutils.py (XMLElement.__str__): now adds spaces in

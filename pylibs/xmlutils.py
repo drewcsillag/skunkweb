@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/08/28 13:50:53 smulloni>
+# Time-stamp: <02/08/29 10:22:31 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -37,16 +37,17 @@ try:
         takes an input xml string and produces a corresponding XMLElement (deposited in the 'document' attribute).
         Currently ignores comments, CDATA, processing instructions, etc.
         """
-        def __init__(self):
+        def __init__(self, elementClassRegistry={}):
             self.__parser=expat.ParserCreate()
             self.__parser.StartElementHandler=self.start
             self.__parser.EndElementHandler=self.end
             self.__parser.CharacterDataHandler=self.data
             self.__stack=[]
             self.document=None
+            self.elementClassRegistry=elementClassRegistry
             
         def start(self, tag, attrs):
-            elem=makeElement(tag)
+            elem=makeElement(tag, self.elementClassRegistry)
             elem.OPEN=1
             if not self.document:
                 self.document=elem
@@ -87,13 +88,15 @@ except ImportError:
             
 XMLNS_ATTR='xmlns'
 
-def makeElement(fullElementName):
+def makeElement(fullElementName, elementClassRegistry={}):
+    classFactory=elementClassRegistry.get(fullElementName, XMLElement)
     colonIndex=fullElementName.find(':')
     if colonIndex==-1:
-        return XMLElement(fullElementName)
+        return classFactory(fullElementName)
     else:
-        return XMLElement(fullElementName[colonIndex+1:],
-                          fullElementName[:colonIndex])
+        
+        return classFactory(fullElementName[colonIndex+1:],
+                            fullElementName[:colonIndex])
 
 class XMLElement:
     def __init__(self,
@@ -137,7 +140,7 @@ class XMLElement:
                 if self.empty:
                     buff.append(' />')
                 else:
-                    buff.append("> </%s>" % self.name)
+                    buff.append("></%s>" % self.name)
             else:
                 buff.append('/>')
         return ''.join(buff)
@@ -177,6 +180,36 @@ class XMLElement:
         # for convenience
         return self
 
+    def getChildrenByAttribute(self, attr, val, limit=1):
+        """
+        returns a list of elements with an attribute with the name
+        given by attr and a value V where, if val is not callable,
+        V = val, or if val is callable, where val(V) is true.  limit
+        is the maximum number of elements to return; if limit is < 1,
+        all matching elements will be returned.
+        """
+        if callable(val):
+            f=val
+        else:
+            f=lambda x, v=val: x==v
+        result=[]
+        self._private_getChildrenByAttribute(attr, f, limit, result)
+        return result
+
+    def _private_getChildrenByAttribute(self, attr, valfunc, limit, result):
+        if self.hasAttribute(attr) and valfunc(self.getAttribute(attr)):
+            result.append(self)
+        if 0 < limit and limit <= len(result):
+            return
+        for child in self.getChildren():
+            if isinstance(child, XMLElement):
+                child._private_getChildrenByAttribute(attr, valfunc, limit, result)
+
+    # aliases 
+    addElement=addChild
+    getElements=getChildren
+    getElementsByAttribute=getChildrenByAttribute
+
     def getNamespace(self, namespaceCode=None):
         if not namespaceCode:
             namespaceCode=self.namespaceCode
@@ -213,6 +246,9 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.4  2002/08/29 14:59:06  smulloni
+# added xhtml parser and moved some code from ecs.xhtml to xmlutils.
+#
 # Revision 1.3  2002/08/28 20:55:27  smulloni
 # some tweaks for xhtml compatibiity.
 #
