@@ -2099,25 +2099,81 @@ a common task performed by web applications.
 
 \section{\texttt{<:sendmail:>}}
 \label{tagsendmail}
-\texttt{<:sendmail to_addrs subject msg [from_addr]:>}
+\texttt{<:sendmail to_addrs subject msg [from_addr] [extended]:>}
 
 The \texttt{to_addrs} parameter is a list of strings 
-(or a single string) containing the email address(es). The
+(or a single string) containing the recipients email address(es). The
 \texttt{subject} argument is a 
 string containing the subject line. The \texttt{msg} argument contains
-the entire message body as a single string. The \texttt{from_addr} argument
-is an optional string with the email address of the sender, 
-and it defaults to the address in the
-\texttt{FromAddress} configuration variable.
-
+the entire message as a single string. It's possible to have a message
+with or without headers in the msg parameter. The \texttt{from_addr} argument
+is an optional string with the email address of the sender,
+and it defaults to the address in the \texttt{FromAddress}
+configuration variable. Beware that this address must be valid and
+reachable from the Internet (or within your organization in case of
+an intranet application). The address is also used as envelope
+sender except if one is given in \texttt{extended}.\\
+\texttt{extended} is one or many additional keyword arguments that are
+described later.
 
 To do the equivalent in Python components:
 \begin{verbatim}
 import templating.MailServices
 templating.MailServices.sendmail ( 
-    to_addrs, subject, msg, from_addr )
+    to_addrs, subject, msg, from_addr [, extended] )
 \end{verbatim}
 
+% For a more practical explanation and some real life examples
+% see the document ``Sending mail with SkunkWeb''.
+
+The \texttt{sendmail} function (and the equivalent tag) will raise a
+\texttt{templating.MailServices.MailError} on any mail failure.
+
+The From: and To: headers are always built from supplied parameters.
+If they are present in \texttt{msg} they are overwritten.
+Cc: and Bcc: headers in the supplied mail text are not touched
+and not used.
+
+The sendmail tag adds a correct Date: header, ensures that
+the From: header is set and generates a Message-Id: header if
+necessary. If the raw parameter (in \texttt{extended}) is true,
+these headers are not touched.
+
+The additional keyword arguments (\texttt{extended}) may be the following:
+\begin{argdesc}
+  \item[to\_name] a string that is used in the To: header directly.
+    It is merged with to\_addrs if the there is only one value for
+    to\_addrs. If there are multiple to_addrs, it is used
+    literally and may then contain an address too. Because headers
+    are only allowed to contain 7bit data a given character set
+    is applied to this parameter. At the moment only
+    ASCII and iso-8859-1 are supported.
+  \item[from\_name] A string that is merged with from_addr in the
+    From: header. This header also has to contain only 7bit data,
+    so a given character set is used for it. The same restriction as
+    with to\_name applies.
+  \item[envelope\_sender] The sender address that is used in the
+    SMTP dialogue. This address gets possible bounces (returned
+    mails that couldn't be delivered). The parameter is a string.
+  \item[charset] A string that describes the character set
+    of the message itself and some headers (Subject:, From:, To:).
+    At the moment only \texttt{iso-8859-1} and \texttt{us-ascii}
+    are supported because of limitations in the rfc822 module.
+    The default is \texttt{us-ascii}.
+  \item[encoding] A string that defines the encoding method for
+    the message body. The encoding is applied if given, so don't
+    specify one if your message is already encoded. Possible values
+    are \texttt{base64}, \texttt{7bit}, \texttt{8bit} and
+    \texttt{quoted-printable}.\\
+    When 7bit is used, the MIME headers (Mime-Version,
+    Content-Encoding and Content-Type are not set (and deleted
+    if present in \texttt{msg}). The default value is \texttt{7bit}.
+  \item[raw] This parameter is interpreted as True or False.
+    If this parameter is set to ``True'' the content of the message
+    is not altered in any way. In this case the \texttt{envelope\_sender}
+    has to be set, the receivers are taken from \texttt{to_addrs} as
+    usual.
+\end{argdesc}
 
 \chapter{Text Messages with Message Catalogs}
 \label{stmlrefmsg}
