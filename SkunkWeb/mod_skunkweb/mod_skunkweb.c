@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.7 2001/07/30 20:12:45 drew Exp $
+ *  $Id: mod_skunkweb.c,v 1.1.1.1 2001/08/05 15:00:23 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -123,10 +123,7 @@
 /* when apache 2.0 becomes common usage, delete stuff between
    #if APACHEV1 and the #else and leave stuff between #else and #endif
 */
-
-#ifndef APACHE_RELEASE
-#error ACK!
-#else
+#ifdef APACHE_RELEASE
 #if APACHE_RELEASE < 20000000
 #define APACHEV1 1
 
@@ -134,24 +131,35 @@
 #define SK_AP_RERROR2(mark, level, req, str, arg1) ap_log_rerror(mark, level, req, str, arg1)
 #define SK_AP_RERROR3(mark, level, req, str, arg1, arg2) ap_log_rerror(mark, level, req, str, arg1, arg2)
 #define SK_AP_RERROR4(mark, level, req, str, arg1, arg2, arg3) ap_log_rerror(mark, level, req, str, arg1, arg2, arg3)
+#endif
+#endif
 
-#else
-#include <apr/apr_compat.h>
-#include <apr/apr_strings.h>
+#ifndef APACHEV1
+/*OK, APACHE 2.0*/
 #include <netdb.h>
+#include <apr_strings.h>
+#define ap_push_array apr_array_push
+#define ap_make_array apr_array_make
 #define ap_table_entry_t apr_table_entry_t
 #define ap_table_get apr_table_get
+#define ap_table_set apr_table_set
 #define ap_file_t apr_file_t
 #define ap_finfo_t apr_finfo_t
 #define ap_stat apr_stat
-#define ap_open apr_open 
+#define ap_open apr_file_open 
+#define ap_palloc apr_palloc
+#define ap_array_header_t apr_array_header_t
+#define ap_table_elts apr_table_elts
+#define ap_array_pstrcat apr_array_pstrcat
 
+#define ap_psprintf apr_psprintf
+#define ap_pstrndup apr_pstrndup
+#define ap_pstrdup apr_pstrdup
 #define SK_AP_RERROR1(mark, level, req, str) ap_log_rerror(mark, level, 0, req, str)
 #define SK_AP_RERROR2(mark, level, req, str, arg1) ap_log_rerror(mark, level, 0, req, str, arg1)
 #define SK_AP_RERROR3(mark, level, req, str, arg1, arg2) ap_log_rerror(mark, level, 0, req, str, arg1, arg2)
 #define SK_AP_RERROR4(mark, level, req, str, arg1, arg2, arg3) ap_log_rerror(mark, level, 0, req, str, arg1, arg2, arg3)
 
-#endif
 #endif
 
 
@@ -415,13 +423,14 @@ static void send_email ( request_rec *r, const char *msg, ap_array_header_t *to 
 /* log a critical error condition and display a page if available */
 static int critical_error ( request_rec *r, const char *desc )
 {
-#ifdef APACHEV1 /*if 1.3.x*/
+#ifdef APACHEV1
     FILE *error_file;
     struct stat st;
-#else /* apache 2.x */
-    ap_file_t *error_file;
-    ap_finfo_t st;
+#else
+    apr_file_t *error_file;
+    apr_finfo_t finfo;
 #endif
+
     skunkweb_server_config *conf;
     char *buf;
     char vbuf[2048];
@@ -457,13 +466,11 @@ static int critical_error ( request_rec *r, const char *desc )
 #ifdef APACHEV1
         if ( (error_file = fopen ( conf->error_doc, "r" )) )	
 #else
-        if (( ap_open ( &error_file, conf->error_doc, APR_READ, 0, r->pool )) )
+	if ( apr_file_open (&error_file, conf->error_doc, APR_READ, 0777, 
+			    r->pool))
 #endif
-
         {
-#ifndef APACHEV1
 	    int bytes_sent;
-#endif
             /* Set the content type */
             r->content_type = "text/html";
 
@@ -472,9 +479,9 @@ static int critical_error ( request_rec *r, const char *desc )
             fstat ( fileno ( error_file ), &st );
             ap_set_content_length ( r, st.st_size );
 #else
-	    ap_stat(&st, conf->error_doc, r->pool);
-            ap_set_content_length ( r, st.size );
-#endif
+	    apr_stat(&finfo, conf->error_doc, APR_FINFO_CSIZE, r->pool);
+	    ap_set_content_length ( r, finfo.size );
+#endif		
 
             /* Make sure the response is not cached in any way */
             ap_table_set ( r->headers_out, "Pragma", "no-cache" );
@@ -490,13 +497,12 @@ static int critical_error ( request_rec *r, const char *desc )
 #ifdef APACHEV1
             ap_send_fd ( error_file, r );
 #else
-	    ap_send_fd ( error_file, r, 0, st.size, &bytes_sent);
+	    ap_send_fd ( error_file, r, 0, finfo.size, &bytes_sent);
 #endif
 
 #ifdef APACHEV1
             fclose ( error_file );
 #endif
-
             return OK;
         }
         else
@@ -929,7 +935,9 @@ static void make_socket(request_rec *r,
     else /* it's a TCP socket */
     {
 	struct sockaddr_in *inaddr;
+#ifdef APACHEV1
 	struct hostent *hostaddr;
+#endif
 	int i;
 	int coloff = -1;
 	char *hostname;
@@ -962,9 +970,18 @@ static void make_socket(request_rec *r,
 	inaddr->sin_family = AF_INET;
 	hostname = ap_pstrdup(r->pool, address);
 	hostname[coloff] = 0;
+#ifdef APACHEV1
 	hostaddr = ap_pgethostbyname(r->pool, hostname);
 	memcpy( (char*)&inaddr->sin_addr, hostaddr->h_addr, 
 		hostaddr->h_length);
+#else
+	{
+	    apr_sockaddr_t sa;
+	    apr_getservbyname(&sa, hostname);
+	    memcpy( (char*)&inaddr->sin_addr, &(sa.sa.sin.sin_addr),
+		    sa.salen);
+	}
+#endif
 	*saddrlen = sizeof(struct sockaddr_in);
 	*sock = socket(AF_INET, SOCK_STREAM, 0);
 	*saddr = (struct sockaddr*)inaddr;
@@ -1084,11 +1101,12 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
 	/* if not first time around and there are failover hosts,
 	   try one of them */
 	if (retries != conf->retries)
+	{
 	    if (conf->failover_hosts->nelts)
 		make_retry_sockaddr(r, conf, &sock, &addr, &addrlen);
 	    else
 		make_socket(r, conf->aedsockaddr, &sock, &addr, &addrlen);
-
+	}
         /*connect*/
 #ifdef DEBUG
         SK_AP_RERROR1 ( APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
