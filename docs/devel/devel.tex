@@ -2,7 +2,7 @@
 \usepackage{makeidx}
 \usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
 \title{The SkunkWeb Developers Guide}
-\author{Drew Csillag}
+\author{Drew Csillag and Jacob Smullyan}
 \release{3.0}
 \setshortversion{3}
 \makeindex
@@ -50,7 +50,7 @@ are preserved on all copies.
 \chapter{Introduction}
 This is the intro
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Core Services}
 The core services that SkunkWeb supplies are (intentionally) fairly minimal. 
 The services provided are:
@@ -69,99 +69,10 @@ Configuration proceeds by first checking to see if a \verb!-c! or
 \verb!--config-files=! option was specified (as a colon delimited list
 of configuration files to read), if not, a configuration-time
 hardcoded default is used.  A namespace is set up with a small amount
-of preloaded stuff \footnote{The \texttt{Location} ``directive'' is loaded and the default \texttt{SkunkRoot} is set}
+of preloaded stuff \footnote{The \texttt{Scope} ``directives'' is loaded and the default \texttt{SkunkRoot} is set}
 (and the configuration files executed (they're
 Python programs really) in this namespace in the order given on the
 command line (if given).
-
-
-The configuration variables that the main bootloader understands are:
-
-\begin{datadesc}{services}
- A Python list of services to load. \nolocation
-\end{datadesc}
-\begin{datadesc}{SkunkRoot}
- A directory to which many paths are relative to.
-Defaults to the installation root. \nolocation
-\end{datadesc}
-\begin{datadesc}{numProcs} The number of child processes to maintain.  Defaults
-to 15.  If set to 1, it will not detach from the controlling
-terminal. \nolocation 
-\end{datadesc}
-\begin{datadesc}{maxKillTime} The number of seconds to wait for children to die
-during a stop or restart before we kill them with \texttt{SIGKILL}.
-Defaults to 5 seconds. \nolocation
-\end{datadesc}
-\begin{datadesc}{pidFile} The location of a file in which to put the process id
-of the parent process. 
-Defaults to the file \mskunkroot{/var/sw.pid}. \nolocation
-\end{datadesc}
-\begin{datadesc}{pollPeriod}  The frequency of which to check for dead children
-and spawn new ones.  Defaults to 5. \nolocation
-\end{datadesc}
-\begin{datadesc}{maxRequests}
-The maximum number of requests a child will handle before committing
-suicide (and subsequently being reincarnated anew by the parent).
-Defaults to 256.  Can be set to never recycle if \texttt{maxRequests}
-is false (i.e. \None\ or 0, etc.). \nolocation
-\end{datadesc}
-\begin{datadesc}{userModuleCleanup}
-Boolean specifying whether to unload any modules loaded during the
-handling of a socket connection.  Default is false.
-\end{datadesc}
-\begin{datadesc}{accessLog} The location of where to put the component access
-information.  Defaults to \mskunkroot{/logs/access.log}.  If set to
-\None, no access log will be created. \nolocation
-\end{datadesc}
-\begin{datadesc}{errorLog} The location of where to put the error log
-information.  Defaults to \mskunkroot{/logs/error.log}.  If set to
-\None, no error log will be created. \nolocation
-\end{datadesc}
-\begin{datadesc}{regularLog} The location of where to log normal, but significant
-events.  Defaults to \mskunkroot{/logs/sw.log}.  If set to
-\None, no regular log will be created. \nolocation
-\end{datadesc}
-\begin{datadesc}{debugLog} The location of where to put debug information, if
-any.  Defaults to \mskunkroot{/logs/debug.log}.  If set to
-\None, no debug log will be created. \nolocation
-\end{datadesc}
-\begin{datadesc}{debugFlags} A bitmask of debug events that your are interested
-in (see the shipped \texttt{sw.conf} file for specific flags).
-Default is 0. 
-\end{datadesc}
-
-
-\label{location}
-The \Location{} function loaded in the configuration file is used to
-set configuration variables based on the location, where location is
-loosely defined as the request URI in the case that SkunkWeb is being
-used to server web requests, since the configuration overlaying is
-actually done by the \texttt{web} service at present, but other
-services may enable it also.
-
-A typical use of the \Location{} function is as follows\footnote{This
-example assumes use of the \texttt{basicauth} service}:
-\begin{verbatim}
-Location('/foob.html',
-         basicAuthName='foo test',
-         basicAuthFile='/home/drew/devel/skunk/SkunkWeb/'
-                       'Services/basicauth/pwd'
-         )
-\end{verbatim}
-
-This says: ``If the request URI starts with \verb!foob.html!, set
-\texttt{basicAuthName} to \verb!'foo test'! and \texttt{basicAuthFile}
-to \verb!/home/drew/devel/skunk/SkunkWeb/Services/basicauth/pwd!''.
-
-The first argument to \Location{} is (assuming use of the \texttt{web}
-service) a URI prefix for which it applies, and subsequent keyword
-arguments are assignments to configuration variables that should take
-place for the location in question. 
-
-The \Location{} directive though, doesn't work for every configuration
-variable.  Configuration variables that don't work with \Location{}
-have the notation \nolocation next to them in their descriptions.
-
 
 \subsection{The \texttt{SkunkWeb.Configuration} ``Module''}
 
@@ -315,52 +226,13 @@ Called in the child process just after the \texttt{fork()}
 \end{datadesc}
 
 
-\section{\swpython}
-\NOTE{NEEDS ATTENTION}
-The \swpython{} program is just a symlink to the bootloader.  The
-bootloader checks \texttt{sys.argv[0]} and if it happens to be
-\swpython{}, instead of starting the multi-process server framework,
-it starts an interactive Python interpreter session instead, or if a
-filename argument was supplied to \swpython{}, it executes the file in
-lieu of starting the interactive interpreter.  \NOTE{command line
-switches}
-\index{\swpython}
-
-\section{\texttt{swmgr}}
-\NOTE{NEEDS ATTENTION}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{The \texttt{web} Service}
 \index{services!\texttt{web}}
 The \texttt{web} service, is short provides base request phase
 handling (extendable/configurable via hooks), an \connection\ object
 and socket connectivity to 
 Apache (via \texttt{mod\_skunkweb}).
-
-
-\section{Configuration}
-
-The configuration parameters are (all two of them):
-
-\begin{datadesc}{DocumentTimeout} How long the request handling may 
-take (with exception to the \texttt{RequestFailed} hook) before we
-interrupt and kick back an error.  Defaults to 30. \nolocation
-\end{datadesc}
-\begin{datadesc}{WebListenPorts} 
-a list of port specifications that the web service should listen to.
-Defaults to \verb!['TCP:localhost:9888']!.  The port specifications
-are defined as follows:
-\begin{itemize}
-
-\item To specify a TCP socket, the spec is:
-\texttt{'TCP:\textit{hostname}:\textit{portnumber}} whereby if
-\texttt{hostname} is empty, it will bind to all addresses available.
-\item The spec:
-\texttt{'UNIX:\textit{path}:\textit{octal\_permissions}'} specifies a
-Unix domain socket whose location is \texttt{path} and whose file
-permissions are \texttt{octal\_permissions}.
-\end{itemize}
-\nolocation
-\end{datadesc}
 
 
 \section{Protocol}
@@ -499,7 +371,7 @@ connObj.responseHeaders['Content-Type'] = arg
 \begin{methoddesc}{response}{} Returns a string containing the full text of the response.
 \end{methoddesc}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{The \texttt{templating} Service}
 \index{services!\texttt{templating}}
 The main raison d'\^etre of the \texttt{templating} service is to
@@ -507,103 +379,6 @@ integrate the \texttt{AE} library (see Appendix \ref{aelib}, page
 \pageref{aelib}).  The \texttt{AE} library, in short, is responsible
 for the component rendering, caching and message catalog facilities
 that are generally the reason for using SkunkWeb in the first place.
-
-\section{Configuration}
-
-\begin{datadesc}{indexDocuments} If the URI is a directory, which files (in
-order) to look for to show.  Defaults to \verb!['index.html']!.
-\end{datadesc}
-\begin{datadesc}{documentRoot} Location of web document sources.  The default
-location is \mskunkroot{/docroot}.
-\end{datadesc}
-\begin{datadesc}{compileCacheRoot}  Where to store cached compiled
-objects.  The default location is \mskunkroot{/cache}.
-\end{datadesc}
-\begin{datadesc}{componentCacheRoot}  Where to store the cached output of
-components.  Defaults to \mskunkroot{/cache}.
-\end{datadesc}
-\begin{datadesc}{numServers} If splitting the component cache across
-multiple file servers, the number of servers you are using, see Section
-\ref{ccdist}, page \pageref{ccdist} for details.   Default is 0.
-\end{datadesc}
-\begin{datadesc}{failoverComponentCacheRoot} If \texttt{numServers} is greater
-than 0, the location of a local disk area to be used for component
-cache if one of the file servers fails.  Default is
-\mskunkroot{/failoverCache}.
-\end{datadesc}
-\begin{datadesc}{maxDeferStale} The maximum amount of time, past a cached
-components expiration that the output will still be used if called in
-deferred mode, specified in seconds.  Default is 3600 seconds.
-\end{datadesc}
-\begin{datadesc}{deferAdvance} How many seconds to temporarily extend
-the life of an expired component when deferred execution will take
-place specified in seconds.  Default is 30.
-\end{datadesc}
-\begin{datadesc}{failoverRetry} How long should we use the failover cache after
-a compile cache failure before checking the main compile cache again,
-specified in seconds.  Default is 30.
-\end{datadesc}
-\begin{datadesc}{useCompileMemoryCache} Boolean specifying whether or not to
-cache compiled objects in memory.  Default is 0.
-\end{datadesc}
-\begin{datadesc}{findCommand} Path to GNU find.  Default is
-\verb!/usr/bin/find!. 
-\end{datadesc}
-\begin{datadesc}{sedCommand} Path to \texttt{sed}.  Default is \verb!/bin/sed!.
-\end{datadesc}
-\begin{datadesc}{xargsCommand} Path to \texttt{xargs}.  Default is
-\verb!/usr/bin/xargs!. 
-\end{datadesc}
-\begin{datadesc}{fgrepCommand} Path to \texttt{fgrep}.  Defalut is \verb!/bin/fgrep!.
-\end{datadesc}
-\begin{datadesc}{defaultDefer} Boolean specifying whether all cached component
-calls are deferred by default.  Default is 0.
-\end{datadesc}
-\begin{datadesc}{defaultExpiryDuration} If a cached component didn't specify a
-cache lifetime, the duration of the components validity specified in
-seconds.  Default is 30.
-\end{datadesc}
-\begin{datadesc}{fallbackToCache} If rendering of a cached component raises
-an exception, if true, will use the previously cached version if
-available.  Default is \None.
-\end{datadesc}
-\begin{datadesc}{strictMessageCatalogs} When set to false, fetching a
-non-existant message from the message catalog won't raise an
-exception, but will return a message saying ``no such message''.
-Default is 1.
-\end{datadesc}
-\begin{datadesc}{templateMimeTypes} A Python list of mime types that the
-component engine will treat as templates.  Default is
-\texttt{['text/html', 'text/plain']} 
-\end{datadesc}
-\begin{datadesc}{mimeTypesFile} File that holds the file extension to mime type
-mapping.  Default is \mskunkroot{/etc/mime.types}.
-\end{datadesc}
-\begin{datadesc}{defaultMimeType} The mime type to return in the event that the
-mime type can not be determined.  Default is
-\texttt{application/octet-stream}. 
-\end{datadesc}
-\begin{datadesc}{hideMimeTypes} List of mime types of documents (based on file
-extension) that shouldn't be web accessible.  Default is:
-\begin{verbatim}
-[
-    "text/x-stml-component",
-    "text/x-stml-python-component",
-    "text/x-stml-data-component",
-    "text/x-stml-python-data-component",
-]
-\end{verbatim}[N]
-\end{datadesc}
-\begin{datadesc}{interpretMimeTypes}
-A list of mime types that will be interpreted if accessed via the web.
-If not interpreted, will be sent in raw form.  Default is:
-\begin{verbatim}
-[
-    "text/html",
-    "application/x-python"
-]
-\end{verbatim}[N]
-\end{datadesc}
 
 
 \section{API}
@@ -633,8 +408,6 @@ This function returns nothing on success, and raises a
 \texttt{MailError} on any mail failure. 
 
 \end{funcdesc}
-
-
 
 
 
@@ -695,52 +468,8 @@ used for the \texttt{VALUE} arguments.
 \NOTE{NEEDS ATTENTION}
 \label{ccdist}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{The \texttt{pars} Service}
-\index{services!\texttt{pars}}
-The \texttt{pars} service is present to allow you to maintain the
-docroot \'al\`a java-style/\texttt{CLASSPATH}, sorta.  It allows you
-to store items that would normally be required to be in the docroot,
-in special archive files called par files.  So instead of just looking
-in the docroot for docroot items, it first looks in the par files
-specified in th \texttt{parFiles} configuration variable and only
-then, if \texttt{parFallthrough} is specified, look in the docroot.
-
-\section{Configuration}
-\begin{datadesc}{parFiles} An ordered list of parfiles to search for items
-normally found in the \texttt{documentRoot}.  Defaults to the empty
-list. \nolocation
-\end{datadesc}
-\begin{datadesc}{parFallthrough} Whether or not to actually fall through to the
-\texttt{documentRoot} if the parfile search fails.
-\end{datadesc}
-
-\section{The \texttt{par.py} Archive Tool}
-The \texttt{par.py} program is used to create and extract files from
-\PAR\ files.  It has three modes of operation: create, list and
-extract.
-
-To create \PAR\ files, type:
-\begin{verbatim}
-python par.py c parfile_to_create.par file_or_dir1 file_or_dir2 ...
-\end{verbatim}
-
-To list the contents of \PAR\ files, type:
-\begin{verbatim}
-python par.py t parfile_to_list.par
-\end{verbatim}
-
-To extract tho contents of \PAR\ files, you can either extract
-everything or extract only certain files.  To extract everything,
-type:
-\begin{verbatim}
-python par.py x parfile_to_extract.par
-\end{verbatim}
-
-Otherwise,
-\begin{verbatim}
-python par.py x parfile_to_extract.par file_or_dir1 file_or_dir2 ...
-\end{verbatim}
-
 
 \section{The \PAR\ File Format}
 The \PAR\ file format is quite simple.  What it is is a Python
@@ -759,51 +488,12 @@ offset, stat_info = archDict[filename]
 contents = dataArea[offset:offset + stat_info[stat.ST_SIZE]]
 \end{verbatim}
 
-
-\chapter{The \texttt{oracle} Service}
-\index{services!\texttt{oracle}}
-The \texttt{oracle} service exists to 
-speed up stored procedure calls (by prefetching their signatures) and
-to cache database connections by preloading and providing an interface
-to the \texttt{SQL} module.
-
-\section{Configuration}
-
-\begin{datadesc}{OracleConnectStrings} A dictionary of connection
-alias to oracle connection strings. \nolocation
-\end{datadesc}
-\begin{datadesc}{OracleProcedurePackageLists} A dictionary of connection alias to
-stored procedure package names to preload on server start. \nolocation
-\end{datadesc}
-
-
-\section{API}
-Provides interface to \texttt{SQL} module.  Consult
-the pylibs manual for details.
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{The \texttt{basicauth} Service}
 \index{services!\texttt{basicauth}}
 
 The \texttt{basicauth} service provides a basic authentication
 mechanism for browser based authentication.
-
-\section{Configuration}
-
-The \Location{} ``directive'' mentioned in Section \ref{location},
-page \pageref{location} is often used in conjunction with the
-\texttt{basicauth} service to provide access control to some subset of
-the docroot.
-
-\begin{datadesc}{basicAuthName} The ``realm'' to use in the
-\verb!WWW-Authenticate! header when accessing a protected area.
-\end{datadesc}
-\begin{datadesc}{basicAuthFile} The file to use for determining valid
-user/password combinations.
-\end{datadesc}
-
 
 \section{API}
 The \texttt{basicauth} service adds a few things to the
@@ -835,39 +525,7 @@ asked for it interactively.
 \end{argdesc}
 
 
-
-\chapter{The \texttt{vhost} Service}
-\index{services!\texttt{vhost}}
-
-The \texttt{vhost} service allows you to service more than one
-host/port combination from one running SkunkWeb server.  You don't
-need to use the \texttt{vhost} service if all of the host/port combos
-that point to a runnig SkunkWeb server are supposed to show the same
-content, it is only when they are supposed to show host/port specific
-content.
-
-The way this is achieved is by prepending the host (and if other than
-the default, port) to the uri.  Thus if you want to have specific
-content for a host/port combo \verb!foo.bar.com:8080!, the first part
-of the uri (and as such, path in the docroot) would be
-\verb!foo.bar.com:8080!.  If you are unsure of what the uri gets
-prefixed with, you can turn on the \texttt{VHOST} debugging flag and
-look in the debug log.
-
-This way if you have \Location\ directives in the configuration file,
-you just prepend the requisite host/port thing to the path name.  For
-example:
-\begin{verbatim}
-   Location('technet-dev.starmedia.com/', parFallthrough = 1)
-\end{verbatim}
-This would tell the \texttt{pars} personality (presuming you are using
-it, that is) that for all accesses, if the host is
-\verb!technet-dev.starmedia.com!, the \texttt{parFallthrough} feature
-will be on.
-
-That's it.  Really.
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Writing A Service}
 
 uri rewriting likely in web.HaveConnection
