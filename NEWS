@@ -7,6 +7,7 @@ Changes in 3.2.3
   second after a timeout occurs)
 * now should build with non-GNU makes (specifically BSD make)
 * many fixes -- thanks to pychecker!
+* fixed error handling weirdnesses
 
 Changes in 3.2.2
 ========================================

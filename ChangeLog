@@ -1,3 +1,22 @@
+2002-06-25  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* DT.py (DT.__call__): made so the __[thd] namespaces won't get
+	hosed if an include throws an exception -- moved the unstore
+	call into the finally: block
+	
+	* pylibs/AE/Error.py (logException): undid "fix" to make it so that
+	we didn't get extra stuff in the tag traceback
+
+	* pylibs/AE/Component.py: made it so the componentStack gets
+	trimmed properly.  When adding frames, we used to blindly append
+	to the componentStack which was fine unless an exception was
+	handled, in which case, there was extra stuff in the
+	componentStack (the frame that blew the exception).  Now, if the
+	topOfComponentStack is a valid index into the componentStack (due
+	to a caught exception), we replace from the top to the end of the
+	stack with a list containing the new frame, thus removing any
+	frame residues left from caught exceptions.
+
 2002-06-24  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* SkunkWeb/Makefile.in, SkunkWeb/configure, SkunkWeb/configure.in,
