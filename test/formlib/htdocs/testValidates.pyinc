@@ -1,0 +1,30 @@
+from formlib import *
+
+intFld = IntegerField('integer', description="IntegerField", size="40")
+dblFld = DoubleField('double', description="DoubleField", size="40")
+dtFld = DateField('date', description="DateField", size="40")
+reqIntFld = IntegerField('requiredinteger', description="Required IntegerField", size="40", required=1)
+reqDblFld = DoubleField('requireddouble', description="Required DoubleField", size="40", required=1)
+reqDtFld = DateField('requireddate', description="Required DateField", size="40", required=1)
+sbmtFld = SubmitField("submit", description="SubmitField")
+
+fields=[intFld, dblFld, dtFld, reqIntFld, reqDblFld, reqDtFld, sbmtFld]
+
+def validate(form):
+    pass
+
+form = ViewableForm(name="testValidates", method="POST", fields = fields, validators=[validate])
+
+import ecs
+if CONNECTION.method == "POST":
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  Values were:")
+        for fld in form.fields:
+            print "%s -> %s:%s" % (fld.description, fld.name, fld.value)
+            print ecs.Br()
+        print ecs.Hr()
+
+print form.getView()    
