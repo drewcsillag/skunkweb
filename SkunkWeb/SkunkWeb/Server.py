@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.3 2002/06/05 20:29:20 drew_csillag Exp $
+# $Id: Server.py,v 1.4 2002/07/11 22:57:00 smulloni Exp $
 ########################################################################
 
 ########################################################################
@@ -31,6 +31,9 @@ import LogObj
 import signal
 import sys
 from SkunkWeb.ServiceRegistry import CORE
+import pwd
+import os
+import grp
 
 class SkunkWebServer(SocketMan):
     def __init__(self):
@@ -79,6 +82,17 @@ class SkunkWebServer(SocketMan):
 
     def run(self):
         import Hooks
+
+        #now make sure that the kids can't setuid back to root
+        if hasattr(Configuration, 'groupToRunAs'):
+            gid = grp.getgrnam(Configuration.groupToRunAs)[2]
+            os.setgid(gid)
+
+        if hasattr(Configuration, 'userToRunAs'):
+            uid = pwd.getpwnam(Configuration.userToRunAs)[2]
+            os.seteuid(os.getuid())
+            os.setuid(uid)
+            
         Hooks.ChildStart()
         SocketMan.run(self)
         
@@ -142,8 +156,17 @@ def start():
     svr.mainloop()
 
 def addService(sockAddr, func):
-    svr.addConnection(sockAddr, func)
-
+    reset = None
+    
+    if os.getuid() != os.geteuid():
+        reset = os.geteuid() #uid to switch back to
+        os.seteuid(0)
+    try:
+        svr.addConnection(sockAddr, func)
+    finally: # make sure we go back to the initial user
+        if reset is not None:
+            os.seteuid(reset)
+    
 ########################################################################
 
 _setConfigDefaults()
@@ -152,6 +175,9 @@ svr.moduleSnapshot()
 
 ########################################################################
 # $Log: Server.py,v $
+# Revision 1.4  2002/07/11 22:57:00  smulloni
+# configure changes to support other layouts
+#
 # Revision 1.3  2002/06/05 20:29:20  drew_csillag
 # 	* SkunkWeb/SkunkWeb/Server.py: added comment at the top to remind
 # 	us that in the event that we add an import, that we add that import
