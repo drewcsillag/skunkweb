@@ -1,5 +1,5 @@
-# Time-stamp: <02/08/12 11:21:55 smulloni>
-# $Id: sqliteconn.py,v 1.2 2002/08/09 03:14:21 smulloni Exp $
+# Time-stamp: <02/08/12 11:34:50 smulloni>
+# $Id: sqliteconn.py,v 1.3 2002/08/12 15:25:45 smulloni Exp $
 #  
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
 #                     Andrew T. Csillag <drew_csillag@geocities.com>
@@ -89,9 +89,7 @@ class PyDOSqlite:
         self.conn.rollback()
 
     def getAutoIncrement(self, name):
-        cur=self.conn.cursor()
-        cur.execute('select max(rowid) from %s' % name)
-        return int(cur.fetchone()[0])
+        return self.conn.db.sqlite_last_insert_rowid()
     
     def typeCheckAndConvert(self, value, attributeName, attrDbType):
         """check values type to see that it is valid and subsequently

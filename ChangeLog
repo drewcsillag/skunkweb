@@ -1,5 +1,10 @@
 2002-08-12  Jacob Smullyan  <jsmullyan@wnyc.org>
 
+	* pylibs/PyDO/sqliteconn.py (PyDOSqlite.getAutoIncrement): I
+	forgot that the CVS version of pysqlite exposed the function that
+	returns the last insert rowid; now am using it and solved my
+	auto-increment problem.
+
 	* pylibs/static.py (Sissubclass): patch (from Drew) so that it
 	returns 0 rather than inappropriately raising an exception.
 
