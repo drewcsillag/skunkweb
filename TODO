@@ -1,5 +1,6 @@
-#   Time-stamp: <2001-12-14 13:08:35 drew> 
+#   Time-stamp: <01/12/10 00:05:22 smulloni> 
 #   $Id: TODO,v 1.17 2001/11/07 01:26:46 smulloni Exp $
+
 
 * - TODO
 - - low priority
@@ -22,10 +23,11 @@ Do Quick release
 
 SkunkWeb 3.2
 ------------------------------
-* pluggable file retrieval system for AE (would have to rework pars)
+X pluggable file retrieval system for AE (would have to rework pars)
 * DAV support built on httpd;
-* CGI adaptor (in place of mod_skunkweb, etc.)
-! configure refinements (js)
+X CGI adaptor (in place of mod_skunkweb, etc.)
+X! configure refinements (js) 
+! vfs: path translation for archive files 
 ! update MySQL driver
 * fix any references to DateTime to mx.DateTime (or handle both)
 
@@ -43,7 +45,7 @@ Future stuff
   but I've got to imagine there's more to it than that).
 * tags which make javascript easier to live with
 * precompiled .par files
-* allow site-libs to be in .par files
+@ allow site-libs to be in .par files
 * other uses for swpython
 
 * an XML-RPC component handler;
