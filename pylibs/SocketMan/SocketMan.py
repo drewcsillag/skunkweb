@@ -73,7 +73,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
                     sock, addr = s.accept()
                     sock.setblocking(1)
                 except socket.error, (err, errstr):
-                    if err != errno.EAGAIN:
+                    if err not in [errno.EAGAIN, errno.EWOULDBLOCK]:
                         raise
                 else:
                     have_connection = 1
