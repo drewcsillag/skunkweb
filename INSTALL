@@ -4,6 +4,7 @@ SkunkWeb has is known to compile and run under the following operating
 systems:
     Linux
     Solaris
+    FreeBSD
 
 It should work on any reasonable version of Unix that Python works.
 It turns out that it appears to run on Windows under Cygwin.
@@ -101,5 +102,5 @@ paper you're shooting for.  Then type:
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL,v 1.8 2002/05/09 19:09:13 drew_csillag Exp $
+$Id: INSTALL,v 1.9 2002/06/07 15:14:31 drew_csillag Exp $
 

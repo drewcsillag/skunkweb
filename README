@@ -1,6 +1,6 @@
 LICENSE
 ------------------------------ 
- Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
+ Copyright (C) 2001 Andrew T. Csillag <drew_csillag@yahoo.com>,
                     Jacob Smullyan <smulloni@smullyan.org>
  
      This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,21 @@ you are using Apache to front skunkweb, you can:
    2) comment out HTTPListenPorts in sw.conf
 
 SkunkWeb, Smell the power!
+
+Bugs
+------------------------------
+Yep, we probably got a few hanging out.  Send email to either myself
+(Drew Csillag), Jacob Smullyan (see addresses above), or better yet,
+the mailing list.  You can either join the list (please do!) at
+    http://lists.sourceforge.net/lists/listinfo/skunkweb-list
+Or if you don't want to join the list, you can send email to
+skunkweb-list@lists.sourceforge.net.
+
+Support
+------------------------------
+Currently, you have a few options:
+   * use the mailing list
+   * Contact Drew Csillag <drew_csillag@yahoo.com> for rate information
 
 (from docs/Pitch)
 What is it?
