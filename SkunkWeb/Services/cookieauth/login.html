@@ -25,7 +25,32 @@
 
    <:/#:>
 
-    ACK!    ATC--FIXME
+    <:args vals:>
+    <:if `vals is None`:> 
+    	<:#:> 
+    	We actually weren't the ultimate destination for username and password,
+    	so package up args and don't say the password was incorrect
+    	<:/#:>
+
+    	<:import cPickle:>
+    	<:import base64:>
+    	<:call `vals=base64.encodestring(cPickle.dumps(CONNECTION.args))`:>
+    <:else:>
+      <:#:>  
+      Ok, auth stuff is bogus, yell, and pass through vals
+      <:/#:>
+      <font color=red>Password Incorrect!</font> 
+    <:/if:>
+    <form action="<:val `CONNECTION.uri`:>" method=post>
+    Username: <input type=text name=username><BR>
+    Password: <input type=password name=password><BR>
+    <input type=submit>
+
+    <:#:>stow any args that were put to us for the original thing<:/#:>
+    <:hidden vals=`vals`:> 
+
+    </form>
+
 
 
   <:else:>
