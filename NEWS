@@ -9,6 +9,8 @@ Changes in 3.4b4
 * spool tag has new option, "comments", that controls componentCommentLevel
   within the spool.
 * firebird connection cache added.
+* "oneshot" hook functions.
+* overhaul of sessionHandler service.
 
 Changes in 3.4b3
 ========================================

@@ -1,5 +1,8 @@
 2003-07-18  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/sessionHandler: all modules in the package
+	overhauled to support scoping.
+
 	* SkunkWeb/Services/requestHandler/requestHandler.py,
 	SkunkWeb/Services/web/protocol.py (_processRequest): : commented
 	out debug statements in the main loop.

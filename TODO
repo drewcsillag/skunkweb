@@ -1,5 +1,5 @@
-#   Time-stamp: <2003-05-02 15:53:44 drew> 
-#   $Id: TODO,v 1.46 2003/05/02 17:35:24 smulloni Exp $
+#   Time-stamp: <03/07/19 13:06:37 smulloni> 
+#   $Id: TODO,v 1.47 2003/05/05 15:56:19 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -22,6 +22,15 @@ Do Quick release
 update Freshmeat
     http://freshmeat.net/add-release/16533/17283/
 
+
+SkunkWeb 3.4
+------------
+* urls in html-helper tags should htmlquote ampersands in querystrings
+* session handler -- many changes, needs completion, checking in, testing
+? cronjobs
+* gentoo ebuild
+* formlib: options are passed in a different order to SelectFields than
+  to ButtonGroupFields
 
 SkunkWeb 3.3
 ------------------------------

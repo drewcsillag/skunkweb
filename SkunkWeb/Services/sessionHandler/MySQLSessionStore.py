@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# Time-stamp: <03/07/18 15:05:26 smulloni>
+# Time-stamp: <03/07/18 18:57:52 smulloni>
 
 ########################################################################
 # a MySQL implementation
@@ -24,6 +24,9 @@ class Store(AbstractSQLSessionStore):
 
     def escapeSQLString(self, string):
         return MySQLdb.escape_string(string)
+
+    def marshalTimeStamp(self, tstamp):
+        return tstamp.ticks()
 
 
 

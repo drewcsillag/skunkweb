@@ -5,11 +5,11 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SQLSessionStore.py,v 1.3 2003/07/18 18:28:26 smulloni Exp $
+# $Id: SQLSessionStore.py,v 1.4 2003/07/18 19:56:18 smulloni Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
-from SkunkWeb.LogObj import DEBUG
+from SkunkWeb.LogObj import DEBUG, logException
 from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 import Session
 from SkunkWeb import Configuration
@@ -54,6 +54,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
         
         * getPickleSQL
         * setPickleSQL
+        * insertPickleSQL
         * reapSQL 
         * touchSQL
         * deleteSQL
@@ -61,18 +62,16 @@ class AbstractSQLSessionStore(Session.SessionStore):
         
     to specify the SQL needed for the database in question.
 
-    * if setPickle cannot be performed in one SQL statement with your database,
-    override save().
-
     * implement getConnection(), return a database connection object.
 
     """
 
-    getPickleSQL="SELECT %(gherkin)s, %(timeCol)s FROM %(table)s WHERE %(idCol)s='%(id)s'"
+    setPickleSQL=("UPDATE %(table)s SET %(pickleCol)s='%(gherkin)s', %(timeCol)s = NULL "\
+                  "WHERE %(idCol)s='%(id)s'")
 
-    setPickleSQL=("REPLACE INTO %(table)s "\
-                  "%(pickleCol)s = '%(gherkin)s', %(timeCol)s = NULL"\
-                  "WHERE %(idCol)s = '%(id)s' ")
+    insertPickleSQL="INSERT INTO %(table)s (%(idCol)s, %(pickleCol)s) VALUES ('%(id)s', '%(gherkin)s')"
+
+    getPickleSQL="SELECT %(gherkin)s, %(timeCol)s FROM %(table)s WHERE %(idCol)s='%(id)s'"
 
     touchSQL="UPDATE %(table)s SET %(timeCol)s=NULL WHERE %(idCol)s='%(id)s'" 
 
@@ -115,23 +114,6 @@ class AbstractSQLSessionStore(Session.SessionStore):
         self.timeCol=Configuration.SessionHandler_SQLTimestampColumn
         self._touched=int(time.time())
         
-##        # for reaping to work correctly with scoping, it needs
-##        # to be keyed to the configuration values above
-##        self._reapKey='|'.join(self.table,
-##                               self.idCol,
-##                               self.pickleCol,
-##                               self.timeCol)
-##        try:
-##            self.__class__._lastReaped
-##        except AttributeError:
-##            self.__class__._lastReaped={self._reapKey: int(time.time())}
-##        else:
-##            try:
-##                self.__class__._lastReaped[self._reapKey]
-##            except KeyError:
-##                self.__class__._lastReaped[self._reapKey]=int(time.time())}
-        
-    
     def touch(self):
         """
         resets the timestamp for the session's corresponding record.
@@ -144,6 +126,9 @@ class AbstractSQLSessionStore(Session.SessionStore):
         self.execSql(self.touchSQL % args)
         self._touched=int(time.time())
 
+    def marshalTimeStamp(self, tstamp):
+        raise NotImplementedError
+
     def _getPickle(self):
         args={'table' : self.table,
               'idCol' : self.idCol,
@@ -153,30 +138,36 @@ class AbstractSQLSessionStore(Session.SessionStore):
         resultSet=self.execSql(self.getPickleSQL % args)
         if resultSet and resultSet[0]:
             gherkin, tstamp=resultSet[0]
-            self._touched=tstamp
+            self._touched=self.marshalTimeStamp(tstamp)
             return cPickle.loads(gherkin)
         else:
             self._touched=int(time.time())
             return {}
 
     def _setPickle(self, sessionHash):
+        db=self.getConnection()
+        c=db.cursor()
         args={'id' : self.__id,
               'idCol' : self.idCol,
               'pickleCol' : self.pickleCol,
               'gherkin' : self.escapeSQLString(cPickle.dumps(sessionHash, 1)),
               'timeCol' : self.timeCol,
               'table': self.table}
-        self.execSql(self.setPickleSQL % args)
-        self._touched=int(time.time())
+        sql=self.setPickleSQL % args
+        DEBUG(SESSIONHANDLER, sql)
+        c.execute(self.setPickleSQL % args)
+        if not c.rowcount:
+            sql=self.insertPickleSQL % args
+            DEBUG(SESSIONHANDLER, sql)
+            c.execute(self.insertPickleSQL % args)
+        db.commit()
+        self._lastTouched=int(time.time())
 
     def load(self):
         return self._getPickle()
 
     def save(self, data):
         self._setPickle(data)
-##        # check if it is time to reap
-##        self._checkReap()
-
         
     def delete(self):
         DEBUG(SESSIONHANDLER, "in delete")
@@ -186,42 +177,8 @@ class AbstractSQLSessionStore(Session.SessionStore):
         self.execSql(self.deleteSQL % args)
         self._touched=int(time.time())
 
-##    def _checkReap(self):
-##        DEBUG(SESSIONHANDLER, "in _checkReap")
-##        DEBUG(SESSIONHANDLER, "reap interval is %d" % Session._reapInterval)
-##        if Session._reapInterval>0:
-##            currentTime=int(time.time())
-##            if currentTime>=(self.getLastReaped() + Session._reapInterval):
-##                self.reapOldRecords()
-##                self.setLastReaped(currentTime)
-
-##    def reapOldRecords(self):
-##        DEBUG(SESSIONHANDLER, "in reapOldRecords")
-##        args={'timeCol' : self.timeCol,
-##              'timeout' : Session._timeout,
-##              'table' : self.table}      
-##        self.execSql(self.reapSQL % args)
-
-##    def getLastReaped(self):
-##        return self.__class__._lastReaped[self._reapKey]
-
-##    def setLastReaped(self, newval):
-##        self.__class__._lastReaped[self._reapKey]=newval
-
     def lastTouched(self):
         return self._touched
-
-    
-##        currentTime=int(time.time())
-##        args={'id' : self.__id,
-##              'idCol' : self.idCol,
-##              'timeCol' : self.timeCol,
-##              'table' : self.table}
-##        retval=self.execSql(self.ageSQL % args)
-##        if retval and retval[0]:
-##            return currentTime-retval[0][0]
-##        else:
-##            return 0
 
     def reap(self):
         DEBUG(SESSIONHANDLER, "in reap()")
