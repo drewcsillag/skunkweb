@@ -1,8 +1,8 @@
 # $Id$
-# Time-stamp: <02/08/29 10:22:31 smulloni>
+# Time-stamp: <02/08/29 11:36:27 smulloni>
 
 ######################################################################## 
-#  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
+#  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -246,6 +246,9 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.5  2002/08/29 15:37:10  smulloni
+# add/revised copyright notice and license
+#
 # Revision 1.4  2002/08/29 14:59:06  smulloni
 # added xhtml parser and moved some code from ecs.xhtml to xmlutils.
 #
