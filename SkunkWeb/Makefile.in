@@ -6,7 +6,7 @@
 #      README file.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.20 2003/05/02 13:21:54 drew_csillag Exp $
+# $Id: Makefile.in,v 1.21 2003/05/02 14:15:00 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -27,6 +27,8 @@ log_dir		= @LOGDIR@
 pid_dir		= $(localstate_dir)/run
 components 	= @MOD_SKUNKWEB@ Services
 
+CC=@CC@
+CFLAGS=@CFLAGS@
 
 docroot = @DOCROOT@
 cache = @CACHE@
@@ -91,7 +93,7 @@ install: swpython
 	fi
 	$(INSTALL_DATA) ../pylibs/AE/mime.types $$DESTDIR$(conf_dir)/mime.types
 	$(INSTALL) -d $$DESTDIR$(util_dir)
-	for f in cache_reaper.py vicache.py; do \
+	for f in cache_reaper.py vicache.py precompile.py; do \
 	    $(INSTALL) -m 0755 util/$$f $$DESTDIR$(util_dir)/$$f; \
 	done
 
@@ -138,6 +140,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.21  2003/05/02 14:15:00  drew_csillag
+# swpython.c fix
+#
 # Revision 1.20  2003/05/02 13:21:54  drew_csillag
 # added things for swpython
 #
