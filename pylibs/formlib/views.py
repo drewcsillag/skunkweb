@@ -481,14 +481,43 @@ class ViewableForm(Viewable, Form):
                  validators=None,
                  **view_attrs):
         
-        for tstFld in fields:
-            if isinstance(tstFld, list) or isinstance(tstFld, tuple):
-                pass
-            
-        Form.__init__(self, name, method, action, enctype, fields, validators)
+        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
+        Form.__init__(self, name, method, action, enctype, flatfields, validators)
         Viewable.__init__(self, **view_attrs)
 
-    def getView(self):
+    def generateLayout(self, fields):
+        """\
+        Iterates over the given list of fields and generates a "layout" which is a listing of the names of fields listed
+        in the order which they will appear on screen.
+
+        Returns (layout, maxDepth, fields)
+
+        where
+        
+        layout = a possibly nested list of field names
+        maxDepth = the length of the longest sublist of fields
+        field = a flat [one-dimensional] list of the fields for the form, necessary for Form construction 
+        """
+        maxDepth = 1 # the longest sublist of fields
+        flds = []
+        layout = []
+        for tstfld in fields:
+            if isinstance(tstfld, list) or isinstance(tstfld, tuple):
+                sublst = []
+                if len(tstfld) > maxDepth:
+                    maxDepth = len(tstfld)
+                for subfld in tstfld:
+                    flds.append(subfld)
+                    sublst.append(subfld.name)
+                layout.append(sublst)    
+            else:         
+                flds.append(tstfld)
+                layout.append(tstfld.name)
+
+        return (layout, maxDepth, flds)        
+
+
+    def getView(self): 
         elem=ecs.Form()
         if self.method:
             elem.setAttribute('method', self.method)
@@ -502,27 +531,40 @@ class ViewableForm(Viewable, Form):
         top_level_error=self.errors.get(self)
         if top_level_error:
             em=ecs.Em(top_level_error).setAttribute('class', 'form_error')
-            tr=ecs.Tr().addElement(ecs.Td(em).setAttribute('colspan', '2'))
+            tr=ecs.Tr().addElement(ecs.Td(em).setAttribute('colspan', str(2 * self.maxDepth)))
             table.addElement(tr)
             table.addElement('\n')
-        for f in self.fields:
-            msg=self.errors.get(f)
-            if msg:
-                em=ecs.Em(msg).setAttribute('class', 'form_error')
-                td=ecs.Td(em).setAttribute('colspan', '2')
-                table.addElement(ecs.Tr().addElement(td))
-            tr=ecs.Tr()
-            if f.description:
-                tr.addElement(ecs.Td().addElement(f.description))
-                tr.addElement(ecs.Td().addElement(f.getView()))
-            else:
-                td=ecs.Td().addElement(f.getView()).setAttribute('colspan', '2')
-                tr.addElement(td)
+        for tstFnm in self.layout:
+            tr=ecs.Tr() 
+            if isinstance(tstFnm, list) or isinstance(tstFnm, tuple):
+                self.handleList(tstFnm, tr, table)
+            else: 
+                self.handleField(self.fields[tstFnm], tr, table)
             table.addElement(tr)
             table.addElement('\n')
+
         elem.addElement('\n')
         elem.addElement(table)
         elem.addElement('\n')
         return elem
 
 
+    def handleField(self, f, tr, table):
+        msg=self.errors.get(f)
+        if msg:
+            em=ecs.Em(msg).setAttribute('class', 'form_error')
+            td=ecs.Td(em).setAttribute('colspan', '2')
+            table.addElement(ecs.Tr().addElement(td))
+
+        if f.description:
+            tr.addElement(ecs.Td().addElement(f.description))
+            tr.addElement(ecs.Td().addElement(f.getView()))
+        else:
+            td=ecs.Td().addElement(f.getView()).setAttribute('colspan', '2')
+            tr.addElement(td)
+
+
+    def handleList(self, list, tr, table):
+        for fnm in list:
+            fld = self.fields[fnm]
+            self.handleField(fld, tr, table)
