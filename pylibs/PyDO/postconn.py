@@ -215,24 +215,31 @@ def _dateConvertFromDB(d):
         return None
     for format in ('%Y-%m-%d', #  Y/M/D
                    '%H:%M:%S', #  hh:mm:ss
-                   '%H:%M'):   #  hh:mm
+                   '%H:%M',    #  hh:mm
+                   '%Y-%m'):   #  Y-M
         try:
             return DateTime.strptime(d, format)
         except:
             pass
-    dashind = d.rfind('-')
+    dashind = max(d.rfind('-'), d.rfind('+'))
     tz = d[dashind:]
     d = d[:dashind]
+
+    #maybe it has a miliseconds ?
+    dotind = string.rfind(d, '.')
+    if dotind > 0:
+        d = d[:dotind]
 
     try:
         return DateTime.strptime(d, '%H:%M:%S'), tz # timetz
     except:
         pass
-    try:
+    if 1:#try:
         # why is tz returned above and not here?
         return DateTime.strptime(d, '%Y-%m-%d %H:%M:%S') # full date
-    except: 
-        raise
+    #except: 
+    #    pass
+
 
 def _timeConvertFromDB(t):
     if t==None:
