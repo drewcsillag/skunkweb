@@ -16,12 +16,16 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # an object that transforms itself depending on its environment.
-# $Id: scope.py,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
+# $Id: scope.py,v 1.2 2001/09/04 19:12:57 smulloni Exp $
 # Time-stamp: <01/05/04 11:01:26 smulloni>
 ########################################################################
 
 """
-This module is deprecated, as it is very slow; use the faster 'scopeable' package.
+This module used to be deprecated, because we though, incorrectly,
+that it was much slower than the C version (scopeable).  In fact,
+that was a profiling error; the C version was only very slightly faster,
+and after making a small optimization here, the Python version is now
+considerably faster than the C. 
 """
 
 import fnmatch
@@ -29,7 +33,6 @@ import types
 import re
 
 class Scopeable:
-    
     def __init__(self, dict={}):
         self.__dictList=[dict]
         self.matchers=[]
@@ -45,11 +48,7 @@ class Scopeable:
             defaultDict=newDict
         """
         for dict in args:
-            if type(dict)==types.DictType:
                 self.__mergeDefaults(dict)
-            else:
-                raise TypeError, "expected a DictType argument, got %s" \
-                      % type(dict)
         self.__mergeDefaults(kw)
 
     def __mergeDefaults(self, dict):
@@ -57,11 +56,13 @@ class Scopeable:
         self.__dictList[-1]=dict
 
     def __getattr__(self, attr):
-        if attr == '__all__':
-            return self._mash().keys()        
         for d in self.__dictList:
-            if d.has_key(attr):
+            try:
                 return d[attr]
+            except KeyError:
+                continue
+        if attr=='__all__':
+            return self.mash().keys()
         raise AttributeError, attr
 
     def defaults(self):
@@ -289,6 +290,9 @@ def test2(**kw):
 
 ########################################################################
 # $Log: scope.py,v $
+# Revision 1.2  2001/09/04 19:12:57  smulloni
+# integrated scopeable package into SkunkWeb.
+#
 # Revision 1.1.1.1  2001/08/05 15:00:26  drew_csillag
 # take 2 of import
 #
