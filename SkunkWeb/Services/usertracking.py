@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/03/11 22:47:34 smulloni>
+# Time-stamp: <03/03/12 15:26:13 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -19,12 +19,31 @@
 #   
 ########################################################################
 
-"""
+r"""
 provides cookie-based usertracking, for logging packages
 like WebTrends.
 
 Perhaps this should also (optionally) perform logging,
 rather than relying on apache to do it.... TBD
+
+If you want to log this cookie inside apache, but don't want to log
+every single cookie the client might send, this apache configuration
+will be helpful.  Assuming that the default cookie name, SKUNKTREK_ID,
+is in use, put this in some appropriate place in your apache conf
+files:
+
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} SKUNKTREK_ID=([^;]+)
+  RewriteRule .* [E=SKUNKTREK_ID:%1]
+
+This creates an environmental variable with the same value as the
+usertracking cookie.  Then log using a log format like this:
+
+  LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{SKUNKTREK_ID}e" cookie-combined
+
+Note that this only logs *incoming* cookies.  This means that clients who
+don't accept cookies won't generate spurious usertracking ids in the apache
+logs, which is apparently a problem with apache's mod_usertrack.
 """
 
 from SkunkWeb import Configuration, ServiceRegistry

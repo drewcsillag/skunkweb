@@ -1,3 +1,8 @@
+2003-03-12  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/usertracking.py: added some comments about 
+	apache configuration (for cookie logging).
+
 2003-03-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/usertracking.py: added default cookie name.
