@@ -404,6 +404,11 @@ are entered/exited.
 \item[3] show component name, argument names and values
 \end{description}
 Default is 0
+\item[runOutOfCache] causes the system to not actually read any of the
+source files as long as there is a compiled version in the cache,
+even if they change.
+\item[dontCacheSource] causes the system to not include any source
+code in the compile cache files.
 \end{argdesc}
 
 
