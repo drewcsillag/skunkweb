@@ -514,21 +514,25 @@ class ViewableForm(Viewable, Form):
                  processors=[],
                  **view_attrs):
         
-        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
+        #self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
         Form.__init__(self,
                       name,
                       method,
                       action,
                       enctype,
-                      flatfields,
+                      fields,
                       validators,
                       processors)
         Viewable.__init__(self, **view_attrs)
 
-    def setFields(self, fields):
-        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
-        Form.setFields(self, flatfields)
+    def _get_fields(self):
+        return self._fields
 
+    def _set_fields(self, fields):
+        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
+        Form._set_fields(self, flatfields)
+
+    fields=property(_get_fields, _set_fields)
 
     def generateLayout(self, fields):
         """\
@@ -635,10 +639,11 @@ class ViewableForm(Viewable, Form):
         numErrs = 0
         msgs=self.errors.get(fld)
         if msgs:
-            msg='<br />'.join([x.errormsg for x in msgs])
+            msg='\n'.join([x.errormsg for x in msgs])
             numErrs = numErrs + 1
             em=ecs.Em(msg).setAttribute('class', 'form_error')
-            td=ecs.Td(em).setAttribute('colspan', '2')
+            pr = ecs.Pre(em)
+            td=ecs.Td(pr).setAttribute('colspan', '2')
             tr.addElement(td)
         return numErrs    
 

@@ -151,15 +151,24 @@ class Form(object):
         self.method=method
         self.action=action
         self.enctype=enctype
-        self.fields=FieldContainer(fields or [],
-                                   fieldmapper=_getname,
-                                   storelists=0)
+        self._set_fields(fields)
         self.validators=validators or []
         self.processHook=Hook(processors)
         self.submitted=None
         self.errors=FieldContainer(fieldmapper=_getfield,
                                    storelists=1)
         self.state=None
+
+    def _get_fields(self):
+        return self._fields
+
+    def _set_fields(self, fields):
+        self._fields=FieldContainer(fields or [],
+                                    fieldmapper=_getname,
+                                    storelists=0)
+
+    fields=property(_get_fields, _set_fields)
+
 
     def getData(self):
         d={}
