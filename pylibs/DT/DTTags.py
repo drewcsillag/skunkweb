@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTTags.py,v 1.1 2001/08/05 15:00:52 drew_csillag Exp $
+# $Id: DTTags.py,v 1.2 2001/08/10 17:59:30 drew_csillag Exp $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 
@@ -629,18 +629,26 @@ class ImportTag(DTTag):
                          modules = [ string ] )
     def genCode(self, indent, codeout, tagreg, tag):
         DTCompilerUtil.tagDebug(indent, codeout, tag)
-        oargs = args = DTUtil.tagCall(tag, ['module', ('items', 'None')])
+        oargs = args = DTUtil.tagCall(tag, ['module', ('items', 'None'),
+                                            ('as', 'None')])
         args = DTCompilerUtil.pyifyArgs(tag, args)
         module = DTCompilerUtil.checkName(tag, 'module', args['module'],
                                           oargs['module'])
 
+        if oargs['as'] != None:
+            asname = DTCompilerUtil.checkName(tag, 'as', args['as'],
+                                              oargs['as'])
+            asStr = " as %s" % asname
+        else:
+            asStr = ''
+            
         if oargs['items'] != None:
             items = DTCompilerUtil.checkName('import', 'items', args['items'],
                                              oargs['items'])
-            codeout.write(indent, 'from %s import %s' % (
-                module, string.join(string.split(items),',')))
+            codeout.write(indent, 'from %s import %s%s' % (
+                module, string.join(string.split(items),','), asStr))
         else:
-            codeout.write(indent, 'import %s' % module)
+            codeout.write(indent, 'import %s%s' % (module, asStr))
 
 class SetTag(DTTag):
     def __init__(self):
@@ -671,8 +679,12 @@ class DocTag ( GenericCommentTag ):
 
 ########################################################################
 # $Log: DTTags.py,v $
-# Revision 1.1  2001/08/05 15:00:52  drew_csillag
-# Initial revision
+# Revision 1.2  2001/08/10 17:59:30  drew_csillag
+# added as
+#
+# Revision 1.1.1.1  2001/08/05 15:00:52  drew_csillag
+# take 2 of import
+#
 #
 # Revision 1.72  2001/07/09 20:38:41  drew
 # added licence comments
