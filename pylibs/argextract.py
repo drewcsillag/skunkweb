@@ -17,7 +17,7 @@
 ######################################################################## 
 
 
-def extract_args(argsrc, args, kwargs):
+def extract_args(argsrc, *args, **kwargs):
     """
     extracts and returns a dictionary of the specified fields
     from argsrc.  args are argument names to look for; they

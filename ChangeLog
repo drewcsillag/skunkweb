@@ -1,3 +1,10 @@
+2002-12-04  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/argextract.py: oops, so was this.
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args):
+	oops, this was broken.
+
 2002-12-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/formlib/views.py, pylibs/formlib/form.py: fixed several
