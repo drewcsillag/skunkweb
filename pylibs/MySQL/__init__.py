@@ -1,4 +1,4 @@
-# Time-stamp: <2002-07-09 11:37:45 acsillag>
+# Time-stamp: <2002-07-10 13:49:26 acsillag>
 # $Id: __init__.py,v 1.6 2002/02/21 07:20:16 smulloni Exp $
 
 ########################################################################
@@ -92,11 +92,11 @@ def getConnection(connUser):
     return db
 
 def _real_connect(connUser, connParams):
-    try:
+    #try:
         return MySQLdb.connect(**connParams)
-    except MySQLdb.MySQLError:
-        raise SkunkStandardError, ('cannot connect to MySQL: %s' % 
-                  (sys.exc_info()[1],))
+    #except MySQLdb.MySQLError:
+    #    raise SkunkStandardError, ('cannot connect to MySQL: %s' % 
+    #              (sys.exc_info()[1],))
     
 def _initStuff():
     #here so that these will be imported ahead of time so that
