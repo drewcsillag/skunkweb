@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.3 2002/07/19 16:21:02 smulloni Exp $
+# $Id: __init__.py,v 1.4 2003/05/01 20:45:54 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:07:01 smulloni>
 ########################################################################
 
@@ -30,6 +30,9 @@ def __initTags():
     import HTMLTags
     for i in ['UrlTag', 'ImageTag', 'FormTag', 'HiddenTag', 'RedirectTag']:
         tagRegistry.addTag(getattr(HTMLTags, i)())
+    import SafeSpoolTag
+    tagRegistry.removeTag('spool')
+    tagRegistry.addTag(SafeSpoolTag.SafeSpoolTag())
     
 def _formatException(exc_text, sessionDict):
     return exc_text
@@ -58,6 +61,9 @@ SkunkWeb.LogObj.LOG("templating service loaded")
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.4  2003/05/01 20:45:54  drew_csillag
+# Changed license text
+#
 # Revision 1.3  2002/07/19 16:21:02  smulloni
 # removed spurious dependencies on aecgi from httpd and templating by
 # moving the RequestFailed hook into requestHandler.
