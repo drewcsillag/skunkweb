@@ -26,3 +26,4 @@ from _translate import *
 from _normheader import *
 #import C version of the posix os.path.normpath
 from _normpath import *
+#from os.path import normpath

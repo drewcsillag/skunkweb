@@ -17,89 +17,138 @@
 */   
 
 #include "Python.h"
+
 static PyObject*
 normpath(PyObject* self, PyObject* arg)
 {
-    char* path;
+    char *path;
     int len;
-    struct part {
-	char* start;
+    struct str {
+	char *s;
 	int len;
     };
-    struct part* parts;
-    struct part* newparts;
-    int i;
-    int arused=0;
-    int newpartsused=0;
-    char *newout;
-    int newoutoff = 0;
-    PyObject* ret;
 
+    struct str *parts;
+    int partslen = 0;
+
+    struct str *newparts;
+    int newpartslen = 0;
+
+    char *newpath;
+    int newpathlen = 0;
+
+    int i;
+    int lastpartstart = 0;
+
+    PyObject *ret;
     if (!PyArg_ParseTuple(arg, "s#", &path, &len))
 	return NULL;
-    
-    parts = (struct part*)malloc(sizeof(struct part) * len);
-    newparts = (struct part*)malloc(sizeof(struct part) * len);
-    newout = (char*)malloc(len);
 
-    /*basically, do a string.split of path into parts[]*/
-    if (path[0] != '/')
-    {
-	parts[arused++].start=path;
-    }
+#undef DEBUG
+    parts = (struct str*)malloc( sizeof(struct str) * len );
+    newparts = (struct str*)malloc( sizeof(struct str) * len );
+    newpath = (char*)malloc( sizeof(char) * len + 1);
+    
+    /* do the string.split */
     for (i = 0; i < len; i++)
     {
 	if (path[i] == '/')
 	{
-	    parts[arused].start =  &path[i+1];
-	    if (arused)
-		parts[arused-1].len = (parts[arused].start - 
-		    parts[arused-1].start) - 1;
-	    arused++;
+	    parts[partslen].s = path+lastpartstart;
+	    parts[partslen].len = i - lastpartstart;
+	    lastpartstart = i;
+	    partslen++;
 	}
     }
-    parts[arused-1].len = ((path + len) - parts[arused-1].start);
-
-    
-    for (i = 0; i < arused; i++)
+    parts[partslen].s = path+lastpartstart;
+    parts[partslen].len = i - lastpartstart;
+    partslen++;
+#ifdef DEBUG
     {
-	/*if just a slash or /., ignore */
-	if (!strncmp("", parts[i].start, parts[i].len)
-	    || !strncmp(".", parts[i].start, parts[i].len))
+	char temp[80];
+	for (i = 0; i < partslen; i++)
+	{
+	    strncpy(temp, parts[i].s, parts[i].len);
+	    temp[parts[i].len] = 0;
+	    printf("len %d - %s\n", parts[i].len, temp);
+	}
+	puts("");
+    }
+#endif
+
+    /* handle path stuff */
+    for (i = 0; i < partslen; i++)
+    {
+	if (!strncmp(parts[i].s, "/", parts[i].len)
+	    || !strncmp(parts[i].s, "/.", parts[i].len)
+	    || !strncmp(parts[i].s, ".", parts[i].len))
 	    continue;
-	/*if .., trim off the last one added*/
-	if (!strncmp("..", parts[i].start, parts[i].len)
-	    && newpartsused)
-	    newpartsused--;
+	if (!strncmp(parts[i].s, "/..", parts[i].len)
+	    || !strncmp(parts[i].s, "..", parts[i].len))
+	{
+	    if (newpartslen > 0)
+		newpartslen--;
+	    continue;
+	}
+	if (parts[i].s[0] == '/') /*trim off leading slashes*/
+	{
+	    newparts[newpartslen].s = parts[i].s+1;
+	    newparts[newpartslen].len = parts[i].len-1;
+	}
 	else
 	{
-	    newparts[newpartsused].start = parts[i].start;
-	    newparts[newpartsused++].len = parts[i].len;
+	    newparts[newpartslen].s = parts[i].s;
+	    newparts[newpartslen].len = parts[i].len;
 	}
-    }      
-
-    if (path[0] == '/')
-    {
-	newoutoff = 1;
-	newout[0] = '/';
+	newpartslen++;
     }
 
-    /*build new path string*/
-    for (i = 0; i < newpartsused; i++)
+#ifdef DEBUG
     {
-	memcpy(newout + newoutoff, newparts[i].start, newparts[i].len);
-	newoutoff += newparts[i].len;
-	if (i < (newpartsused-1))
+	char temp[80];
+	for (i = 0; i < newpartslen; i++)
 	{
-	    memcpy(newout + newoutoff, "/", 1);
-	    newoutoff++;
+	    strncpy(temp, newparts[i].s, newparts[i].len);
+	    temp[newparts[i].len] = 0;
+	    printf("len %d - %s\n", newparts[i].len, temp);
 	}
+	puts("");
     }
-    newout[newoutoff] = '\0';
-    ret = PyString_FromStringAndSize(newout, newoutoff);
+#endif
+
+    /* glue shit back together */
+    /*if path had a leading slash, the new one should too */
+    if (path[0] == '/') 
+    {
+	newpath[0] = '/';
+	newpathlen = 1;
+    }
+    for (i = 0; i < newpartslen; i++)
+    {
+	memcpy(newpath + newpathlen, newparts[i].s, newparts[i].len);
+	newpathlen += newparts[i].len;
+
+	if (i < (newpartslen -1 ))
+	{
+	    memcpy(newpath + newpathlen, "/", 1);
+	    newpathlen++;
+	}
+
+    }
+    if (path[len-1] == '/')
+    {
+	memcpy(newpath + newpathlen, "/", 1);
+	newpathlen++;
+    }
+    newpath[newpathlen] = 0;
+#ifdef DEBUG
+    printf("newpath=%s\n", newpath);
+    printf("newpathlen = %d len = %d\n", newpathlen, len);
+#endif 
+    ret = PyString_FromStringAndSize(newpath, newpathlen);
+    free(newpath);
     free(parts);
     free(newparts);
-    free(newout);
     return ret;
 }
 
