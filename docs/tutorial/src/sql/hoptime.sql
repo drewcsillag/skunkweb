@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
- * Time-stamp: <02/09/30 11:31:29 smulloni> 
- * $Id$
+ * Time-stamp: <02/09/30 15:43:06 smulloni> 
+ * $Id: hoptime.sql,v 1.2 2002/09/30 15:44:34 smulloni Exp $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;
@@ -135,17 +135,10 @@ game INTEGER NOT NULL UNIQUE REFERENCES games,
 story text NOT NULL,
 published DATETIME);
 
-CREATE OR REPLACE FUNCTION concat(TEXT, TEXT)
-RETURNS TEXT
-AS '
-BEGIN
-  RETURN $1 || $2;
-END;
-' LANGUAGE 'plpgsql';
 
 /* concatenates text columns */
 CREATE AGGREGATE cat(
-  sfunc=concat,
+  sfunc=textcat,
   basetype=text,
   stype=text,
   initcond='');
