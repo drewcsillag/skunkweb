@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: userdir.py,v 1.1 2001/09/21 20:16:31 drew_csillag Exp $
+# $Id: userdir.py,v 1.2 2001/09/21 20:39:56 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:07:01 smulloni>
 ########################################################################
 import pwd
@@ -63,7 +63,7 @@ def doUserDirPre(connection, sessionDict):
         return
         
         
-def doUserDirPost(job, sessionDict): #requestHandler.requestHandler.EndSession
+def doUserDirPost(sessionDict): #requestHandler.requestHandler.EndSession
     if not Configuration.userDir:
         return
     if not sessionDict.hasKey('UserDir'):
