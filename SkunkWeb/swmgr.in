@@ -21,7 +21,7 @@
 # startup / shutdown procedures for the Skunk Application Environment 
 # Daemon :-). 
 #
-# $Id: swmgr.in,v 1.4 2001/07/09 20:38:40 drew Exp $
+# $Id: swmgr.in,v 1.1.1.1 2001/08/05 14:59:30 drew_csillag Exp $
 
 umask 002
 
@@ -35,8 +35,11 @@ SWOPTIONS=""
 
 SWSTART="${bindir}/skunkweb $SWOPTIONS"
 
-# User SkunkWeb should be running as
+# User SkunkWeb stuff is owned by
 USER=@OWNER@
+
+# User SkunkWeb should be running as
+RUNASROOT=@RUNASROOT@
 
 # Path to sudo executable, if exists
 SUDO=@SUDO@
@@ -46,9 +49,9 @@ ENV="ORACLE_HOME=$ORACLE_HOME LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib 
 
 function run_as_user 
 {
-    prog=$*
+    #prog=$*
 
-    if [ `$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"` != "$USER" ]
+    if [ `$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"` != "$RUNASROOT" ]
     then
         # Check if sudo exists
 	if [ "$SUDO" = "" ]
@@ -58,18 +61,23 @@ function run_as_user
         fi
 
         # Need to sudo
-	if $SUDO -u $USER echo -n > /dev/null
+	if $SUDO -u $RUNASROOT echo -n > /dev/null
 	then
 	    echo -n
         else
-	    echo "Cannot sudo to user '$USER', fix and retry!" >&2
+	    echo "Cannot sudo to user '$RUNASROOT', fix and retry!" >&2
 	    exit 1
         fi
 
-	$SUDO -u $USER env $ENV $prog
+	$SUDO -u $RUNASROOT env $ENV "$@"
     else
-        env $ENV $prog
+        env $ENV "$@"
     fi
+}
+
+function get_pid_file
+{
+    run_as_user @bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
 }
 
 # See how we were called.
@@ -86,7 +94,8 @@ case "$1" in
 	;;
   stop)
 	echo "Stopping SkunkWeb..."
-        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
+	PIDFILE=`get_pid_file`
+	#        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
 
 	if [ -z "$PIDFILE" ]
 	then
@@ -108,7 +117,8 @@ case "$1" in
   restart)
         # Send the HUP signal
 	echo "Restarting SkunkWeb..."
-        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
+	PIDFILE=`get_pid_file`
+	#        PIDFILE=`@bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'` 
 	if [ -z "$PIDFILE" ]
 	then
 	    echo "run of swpython to determine pidfile failed!"
