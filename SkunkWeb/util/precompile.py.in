@@ -8,6 +8,7 @@
 #      README file.
 #   
 from AE import MimeTypes, Executables
+from AE.Cache import getMessageCatalog
 from SkunkWeb import Configuration
 import os
 import sys
@@ -70,11 +71,11 @@ def compile_thing(i):
     if exe:
         pathname = i# '%s/%s' % (rdn, i)
         cache_file = Configuration.compileCacheRoot+"/"+pathname+"c"
-        print "deleting cache file", cache_file
+        #print "deleting cache file", cache_file
         try:
             os.unlink(cache_file)
 	except os.error, x:
-	    print "non-fatal: unable to delete cache file:", x 
+	    pass #print "non-fatal: unable to delete cache file:", x 
 
         print "compiling %s" % pathname
         try:
@@ -87,6 +88,28 @@ def compile_thing(i):
             except OSError: pass
             open('%s/%s' % (ndr, i), 'w').write('')
 
+    elif mimetype in ('application/x-complex-message-catalog',
+                      'application/x-simple-message-catalog'):
+
+        pathname = i
+        cache_file = Configuration.compileCacheRoot+"/"+pathname+"c"
+        #print "deleting cache file", cache_file
+        try:
+            os.unlink(cache_file)
+	except os.error, x:
+	    pass #print "non-fatal: unable to delete cache file:", x 
+        try:
+            getMessageCatalog(i)
+            print "compiled catalog %s" % i
+        except:
+            print "error compiling message catalog %s" % i
+
+        if ndr:
+            rdn = os.path.dirname(i)
+            try: os.makedirs('%s/%s' % (ndr, rdn))
+            except OSError: pass
+            open('%s/%s' % (ndr, i), 'w').write('')
+            
     elif ndr: # shadow docroot but non-template file, copy.. blah blah
         rdn = os.path.dirname(i)
         #what's the mode
