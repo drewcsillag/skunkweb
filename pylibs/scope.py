@@ -112,6 +112,7 @@ class Scopeable:
         dl=fridge['dictlist'][:]
         dl.reverse()
         D=self.__dict__
+        defaults=fridge['defaults']
         for k in popped.keys():
             del D[k]
             for d in dl:
@@ -122,6 +123,13 @@ class Scopeable:
                 else:
                     D[k]=v
                     break
+            try:
+                v=defaults[k]
+            except KeyError:
+                pass
+            else:
+                D.setdefault(k, v)
+                
 
     def trim(self):
         fridge=self._get_fridge()
