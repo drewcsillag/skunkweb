@@ -7,7 +7,7 @@
 #################################
 
 %define name skunkweb
-%define version 3.4b3+
+%define version 20030524
 %define release 1
 
 #  locate python executable
@@ -16,7 +16,7 @@
 #  location to apxs executable
 %define apxspath /usr/sbin/apxs
 
-%define apache $(if [ "${config_apache}" != auto ]; then echo ${config_apache}; else echo $(apxspath} -q TARGET; fi}
+%define apache %(if [ "${config_apache}" != auto ]; then echo %{config_apache}; else echo %{apxspath} -q TARGET; fi)
 
 %define apachemodprefix (if [ "${apache}" = httpd ]; then echo .libs/; fi)
 
