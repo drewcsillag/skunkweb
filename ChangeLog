@@ -1,3 +1,8 @@
+2003-12-29  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* pylibs/AE/CacheTag.py: now use skunk.date.timeutil rather than
+	Date.Timeutil
+
 2003-12-27  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/ecs/xhtml.py (parse): now use HTMLParser rather than
