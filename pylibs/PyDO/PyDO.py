@@ -324,9 +324,15 @@ class PyDO(PyDOBase):
             sql = sql[:-7]
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
-        return map(self, results)
+        if type(results)==types.ListType:
+            return map(self, results)
+        else:
+            return []
 
     def static_getSomeWhere(self, *args, **kw):
+        """
+        
+        """
         andValues=list(args)
         for k, v in kw.items():
             andValues.append(operators.EQ(operators.FIELD(k), v))
@@ -342,11 +348,11 @@ class PyDO(PyDOBase):
 
     def static_getTupleWhere(self, opTuple, **kw):
         if kw:
-            _and=['AND', opTuple]
+            _and=opTuple and ['AND', opTuple] or []
             for k, v in kw.items():
                 _and.append(('=', FIELD(k), v))
             opTuple=tuple(_and)
-        sql=operators.tupleToSQL(opTuple)
+        sql=opTuple and operators.tupleToSQL(opTuple) or ''
         return self.getSQLWhere(sql)
 
     def static_getSQLWhere(self, sql, values=()):
@@ -357,6 +363,8 @@ class PyDO(PyDOBase):
             sql=base
         conn = self.getDBI()
         results = conn.execute(sql, values, self.fieldDict)
+        if not results:
+            return []
         return map(self, results)        
     
     def static_new(self, refetch = None, **kw):
