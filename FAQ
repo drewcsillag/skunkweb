@@ -1,3 +1,27 @@
+The SkunkWeb FAQ
+
+NOTE: the anwers to questions 1,2,3,4 may be out of date!!!!
+
+1) SkunkWeb/WebWare comparison
+2) SkunkWeb/Zope comparison
+3) SkunkWeb/Mason comparison
+4) SkunkWeb/PHP comparison
+5) Is there any way of allowing [some] files to be passed straight through, 
+   without compiling them?
+6) Is there any way for a pydcmp to get hold of the value of docroot?
+7) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
+   server or virtual host? SkunkWebExclude doesn't work!
+8) My sw.conf file is unmanageable!  Can I break it up into several files?
+9) How do I get at what in CGI land would be PATH_INFO?
+10) I wan't to make the <:val:> tag shorter like ASP/PSP.  
+11) Is it possible to add to a list of file extensions which types of
+    top-level documents SkunkWeb can process?
+12) I want to run multiple virtual servers. 
+
+
+----------------------------------------------------------------------
+
+
 1) Marcos Sánchez Provencio <rapto@arrakis.es> asked:  
   I think that the closest project to skunkweb is webware. They seem to
   share objectives. Is it not possible to join them? What are the
@@ -244,3 +268,73 @@ will also give you this if you compare a requested path with the
 filesystem; but SkunkWeb does not by default populate the PATH_INFO
 environmental variable.
 
+10) I wan't to make the <:val:> tag shorter like ASP/PSP.  
+
+There are a couple of solutions here.  First you can make a <:v:> tag
+(to save typing val), by creating a service that contains:
+
+    from DT import DTTags
+    
+    class VTag(DTTags.ValTag):
+        def __init__(self):
+            DTTag.__init__(self, 'v', isempty = 1)
+    
+    from AE.Cache import tagRegistry
+    tagRegistry.addTag(VTag())
+    from SkunkWeb import ServiceRegistry
+    ServiceRegistry.registerService('vtag')
+
+In addition, you can get rid of the space between the v and the backtick, e.g.
+    <:v`foo`:>
+
+Or alternatively, if you use emacs, the following code will make it so
+if you hit M-c, it will insert <:val ``:> with the cursor positioned
+between the backticks.
+
+(fset 'insert-val-tag
+   [?< ?: ?v ?a ?l ?  ?` ?` ?: ?> left left left])
+(global-set-key "\M-c" 'insert-val-tag)
+
+
+11) Is it possible to add to a list of file extensions which types of
+top-level documents SkunkWeb can process?
+
+Yes!
+
+Let's say you want css files to contain STML (as briefly discussed here:
+http://sourceforge.net/mailarchive/message.php?msg_id=2675074).
+ 
+In sw.conf, change the definitions of *both* templateMimeTypes and
+interpretMimeTypes to include text/css:
+ 
+templateMimeTypes = ['text/html',
+                     'text/plain',
+                     'text/css']
+ 
+interpretMimeTypes = ["text/html",
+                      "application/x-python",
+                      'text/css']
+ 
+If you are using a mimetype that isn't listed in <skunkroot>/etc/mime.types,
+add the mimetype to that file, too.  Don't forget to restart before you
+test it.
+ 
+However, if you wanted to use a different file extension to be text/html
+(say, '.stml') then I believe all you would have to do is add that
+extension to mime.types.
+ 
+
+12) I want to run multiple virtual servers. 
+
+Obviously, you have to configure them at the Apache level (assuming
+you're using mod_skunkweb) and enable SkunkWeb processing for them.
+Then, add the following (editing as appropriate) to your sw.conf.
+
+Scope(Host('foo.org',
+            documentRoot='/home/foo/public_html',
+            componentCacheRoot='/path/to/foo-cache',
+            compileCacheRoot='/path/to/foo-cache'))
+Scope(Host('bar.org',
+            documentRoot='/home/bar/public_html',
+            componentCacheRoot='/path/to/bar-cache',
+            compileCacheRoot='/path/to/bar-cache'))
