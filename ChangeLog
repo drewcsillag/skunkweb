@@ -1,3 +1,15 @@
+2002-06-12  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* docs/stmlrefer/stmlrefer.tex: added bit about timeout rethrow
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py(SIGALRMHandler):
+	now logs an error and resets the alarm before it throws the
+	timeout exception, so that in the event that somebody has a
+	catchall except: and thus would catch the timeout exception, we'll
+	reraise SIGALRM every second in the hopes that at some point,
+	they'll miss it.  Also lets the template try to deal with timeouts
+	a bit better should they choose to do so.
+
 2002-06-11  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/stmlrefer/stmlrefer.tex: Should be in good shape now.
