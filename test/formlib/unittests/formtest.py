@@ -1,6 +1,6 @@
 import unittest
 from formlib import *
-from formlib.form import FieldProxy
+from formlib.form import FieldProxy, CompositeField
 
 class FieldUnitTest(unittest.TestCase):
     def __init__(self, aStr):
@@ -32,7 +32,9 @@ class FieldUnitTest(unittest.TestCase):
             self.assertRaises(ValueError, self.notMultiple.checkValue(['1','2']))
         except ValueError:
             pass #expected
-        assert isinstance(self.isMultiple.checkValue('1'), list), "multiple checkValue failed to convert '1' to list" 
+        assert isinstance(self.isMultiple.checkValue('1'), list), "multiple checkValue failed to convert '1' to list"
+
+        
 class FieldProxyUnitTest(unittest.TestCase):
     def __init__(self, aStr):
         unittest.TestCase.__init__(self, aStr)
@@ -75,9 +77,57 @@ class DomainFieldUnitTest(unittest.TestCase):
         #ensure that the default is in the domain
         defVal = self.defaultDomain.default
         assert self.defaultDomain.checkValue(defVal) == defVal, "Default domain value not in domain!: %s" % (defaultDomain.default)
+
             
-                     
+class CompositeFieldUnitTest(unittest.TestCase):
+    """\
+    Tests the characteristics of a form.CompositeField: proxied component fields, default composite value, ability to
+    assign an arbitrary value composer, read only nature of composite value
+    """
+    def myValueComposer(self, fldList):
+        retInt = 0
+        for fld in fldList:
+            try:
+                retInt = retInt + int(fld.value)
+            except:
+                continue
+        return retInt
+
+
+    def __init__(self, aStr):
+        self.tstFields = [
+            Field('1', 'The first component', default='1'),
+            Field('2', 'The second component', default='2'),
+            Field('3', 'The third component', default='3')
+            ]
+        # uses the default value composer
+        self.dfltCmpFld = CompositeField('composite', 'I am a composite of many fields', componentFields=self.tstFields)
+        self.intCmpFld = CompositeField('composite', 'I am a composite of many fields which compose to an int value', componentFields=self.tstFields, valueComposer=self.myValueComposer)
+        unittest.TestCase.__init__(self, aStr)
+
+
+    def testComponentNames(self):
+        for fld in self.dfltCmpFld.components:
+            assert fld.name in ['composite_1', 'composite_2', 'composite_3']
+
+        for fld in self.intCmpFld.components:
+            assert fld.name in ['composite_1', 'composite_2', 'composite_3']
+
+    def testImmutableValue(self):
+        try:
+            self.dfltCmpFld.value='bogus'
+        except AttributeError:
+            return
+
+        raise "CompositeField had assignable value"
         
+
+    def testValueComposer(self):
+        print self.dfltCmpFld.value, self.intCmpFld.value
+        assert self.dfltCmpFld.value == "1" + '\n' + "2" + '\n' + "3" + '\n'
+        assert self.intCmpFld.value == 6
+        
+
 class FormUnitTest(unittest.TestCase):
     """\
     Tests the basic characteristics of a form.Form: submission, resetting, get/set data, and validation.
@@ -171,6 +221,9 @@ def suite():
     suite.addTest(FormUnitTest('testValidate'))
     suite.addTest(FieldProxyUnitTest('testName'))
     suite.addTest(FieldProxyUnitTest('testFieldProxying'))
+    suite.addTest(CompositeFieldUnitTest('testComponentNames'))
+    suite.addTest(CompositeFieldUnitTest('testImmutableValue'))    
+    suite.addTest(CompositeFieldUnitTest('testValueComposer'))
     return suite
     
 if __name__ == "__main__":
