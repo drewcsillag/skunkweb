@@ -243,6 +243,11 @@ def _dateConvertFromDB(d):
             return DateTime.strptime(dt, '%H:%M:%S'), tz # timetz
         except:
             pass
+        try:
+            return DateTime.strptime(dt, '%Y-%m-%d %H:%M:%S'), tz
+        except:
+            pass
+        
     raise DateTime.Error, "could not parse datetime: %s" % d
 
 

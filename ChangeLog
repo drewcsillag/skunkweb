@@ -1,5 +1,9 @@
 2002-10-02  Jacob Smullyan  <jsmullyan@wnyc.org>
 
+	* pylibs/PyDO/postconn.py (_dateConvertFromDB): my earlier fix
+	broke something else.  This date parsing business should be done
+	better.
+
 	* pylibs/xmlrpchandler.py (XMLRPCServer._multicall): added
 	system.multicall ("boxcarring") support; reworked the dispatching
 	mechanism; now use standard fault codes; added workaround for
