@@ -1,6 +1,10 @@
 2002-06-18  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
-	* SkunkWeb/sample_webdocs/demo/gallery/index.html, SkunkWeb/sample_webdocs/demo/index.html, SkunkWeb/sample_webdocs/demo/geeknews/index.html, SkunkWeb/sample_webdocs/index.html:  added bit so that favicon.ico will show up in mozilla
+	* SkunkWeb/sample_webdocs/demo/gallery/index.html, 
+	SkunkWeb/sample_webdocs/demo/index.html, 
+	SkunkWeb/sample_webdocs/demo/geeknews/index.html, 
+	SkunkWeb/sample_webdocs/index.html:  added bit so that favicon.ico 
+	will show up in mozilla
 
 	* SkunkWeb/Makefile.in: added bit for favicon.ico
 
@@ -10,7 +14,8 @@
 	Had a reference to AED that would get hit when sending a message
 	via SMTP would fail.
 
-        * pylibs/parfile.py: removed, as it's been useless for a while now
+	* pylibs/parfile.py(foo): removed, as it's been useless for a while 
+	now.
 
 	* pylibs/AE/ComponentTag.py: use of __args__ would cause an error
 	(used == instead of =)!
