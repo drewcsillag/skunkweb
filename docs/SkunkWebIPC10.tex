@@ -4,7 +4,7 @@
 \documentclass[twocolumn]{article}
 \usepackage{path}
 \author{Drew Csillag\thanks{\texttt{drew\_csillag@geocities.com}}}
-\title{The SkunkWeb\thanks{\texttt{http://skunkweb.sourceforge.net}}\ Web Application Server}
+\title{The SkunkWeb\thanks{\texttt{http://skunkweb.sourceforge.net}}\ \ Web Application Server}
 \bibliographystyle{plain}
 \begin{document}
 \maketitle
@@ -12,17 +12,18 @@
 
 \section*{Abstract}
 This paper describes SkunkWeb, a web application server tool box
-written in Python\cite{python}.  While in essence, merely a
-multi-process socket server, when all glued together forms a robust,
-scalable, extendible and easy to use application server.  The caching
-abilities make it an ideal application server for high volume websites
-as well as small websites on meager hardware.
+written in Python\cite{python}.  In essence, it's merely a
+multi-process socket server.  However when all glued together,
+SkunkWeb forms a robust, scalable, extendible and easy to use
+application server.  The caching abilities make it an ideal
+application server for high volume websites as well as small websites
+on more meager hardware.
 
 \section{Why We Did It}
-Before I started on writing SkunkWeb, of course I examined the
-available open and non-open soure application servers.  I was
-generally dissatisfied at what I found, as the templating languages
-were either constraining for the experts in the shop or too
+Before I started writing SkunkWeb, I obviously examined the
+available open and non-open source application servers.  I was
+generally dissatisfied, as the templating languages
+were either too constraining for the experts in the shop, too
 complicated for the non-experts, or the overall performance
 characteristics of the server were unacceptable.
 
@@ -33,11 +34,11 @@ characteristics of the server were unacceptable.
 
 Being a large web shop, we needed two major things from a web
 application server: a good templating language, and true enterprise
-abilities (scalability vertically as well as horizontally, reliability
+abilities (vertical as well as horizontal scalability, reliability
 and robustness).
 
-Since we couldn't find what we needed, we did what everybody else on
-the planet in a web shop does... we did it ourselves.
+Since we couldn't find what we needed, we did what every other web
+shop on the planet would do... we did it ourselves.
 
 \section{Philosophy}
 The main Skunk philosophies are:
@@ -46,7 +47,8 @@ The main Skunk philosophies are:
 ourselves) to take it all, but should allow people to take only the
 pieces they need to get their jobs done.
 \item[simplicity] Unnecessary complexity leads down the road to
-insanity.  Do the simple thing unless you can truly justify it.
+insanity.  Do the simple thing unless you can truly justify a need to
+the contrary.
 \end{description}
 
 \section{Goals}
@@ -76,10 +78,10 @@ it's hands on.
 
 Forking processes instead of threads makes a number of things simpler.
 Reliability is simplified because if a child dies (due to core dump or
-other abnormal exit), the parent will just spawn another.  If it
-leaks resources (memory, file descriptors, etc.) there is a maximum
-request count so that the child will eventually commit suicide and
-release them.  The kids can pretty much do whatever they
+other abnormal exit), the parent will just spawn another.  If it leaks
+resources (memory, file descriptors, etc.) there is a maximum request
+count so that the child will eventually commit suicide and release the
+resources.  The kids can pretty much do whatever they
 want\footnote{kids have it so easy these days... :)} and the parent is
 the only thing able to crash the whole server.  Since the parent is
 easy to take care of (it's mainloop is simple) the server will rarely
@@ -101,14 +103,14 @@ threaded environment.
 
 The database connection pooling can be mitigated in a few ways.
 SkunkWeb can cache the database connection on a per process basis
-which is often enough.  In the event you cannot afford one
-connection per process, you can use remote components (I'll get to
-them in a minute) to a dedicated ``database server'' servicing all of
-the database queries via remote component calls.  It's a bit more work
-to do it that way, but it's likely to pay off.  As it turns out, since
-you can cache database results using data components (see section
-\ref{components}) in the ``database server'', the database issue
-becomes less of an issue you may have originally thought it would.
+which is often enough.  In the event you cannot afford one connection
+per process, you can use remote components to a dedicated ``database
+server'' servicing all of the database queries via remote component
+calls.  It's a bit more work to do it that way, but it's likely to pay
+off.  As it turns out, since you can cache database results using data
+components (see section \ref{components}) in the ``database server'',
+the database issue becomes less of an issue you may have originally
+thought it would.  More on remote components later.
 
 \section{Communication}
 SkunkWeb can use either TCP or UNIX domain sockets for the
@@ -126,8 +128,8 @@ Given that (3) only happens in the largest of installations, (1) and
 (2) are good enough reasons for using UNIX sockets.  If you are going
 to run Apache on other boxes, TCP is really the only choice, but
 \texttt{mod\_skunkweb} can be told to fail over to another host if
-SkunkWeb becomes unavailable for some reason.  This rarely, if ever
-happens. Really.  Except when the whole machine goes away.
+SkunkWeb becomes unavailable for some reason.  This rarely happens, if
+ever.  Really.  Except when the whole machine goes away.
 
 We presume Apache is the web server front-ending SkunkWeb, but as the
 Skunk philosophy would indicate, anything speaking the SkunkWeb
@@ -156,7 +158,7 @@ if one of the NFS servers die.
 Any serious web application server needs a templating
 language\footnote{a programmer can't live on servlets alone :)}.
 After shopping around a bit, I found something all of them had in
-common was... they stink.  All of the ones I saw were either some
+common was... they stank.  All of the ones I saw were either some
 variant of ASP\cite{asp} (e.g. JSP\cite{jsp}, PSP\cite{psp}, etc.), or
 an emasculated tag-based language (e.g. DTML\cite{dtml},
 CFML\cite{cfml}, etc.).  The ASP variants have the problem of
@@ -177,7 +179,7 @@ was:
 \begin{itemize}
 \item Make regular Python code easy to load from STML, so you didn't
 have to do \emph{everything} in STML.
-\item Write a STML to Python byte-code compiler.
+\item Write an STML to Python byte-code compiler.
 \end{itemize}
 
 The first item was easy, add an import tag.  This way you put your
@@ -334,10 +336,10 @@ Thus the system call load is significantly reduced.
 
 %should this be a starred section?
 \section{Conclusion}
-SkunkWeb and its predecessors have been in continuous production use
-at StarMedia since 1999 and has proven itself over and over again to
+SkunkWeb and its predecessors have been used in continuous production 
+at StarMedia since 1998 and has proven over and over again to
 be a scalable, robust\footnote{and many other buzzwords} application
-server its users have found better than the
+server which its users have found better than the
 alternatives\footnote{``All app servers suck, SkunkWeb just sucks
 less''}.
 
