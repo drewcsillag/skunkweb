@@ -113,7 +113,7 @@ class ComponentValidator:
     def __init__(self, comp_path):
         self.comp_path=rectifyRelativeName(comp_path)
     def __call__(self, form):
-        res=callComponent(comp_path,
+        res=callComponent(self.comp_path,
                           argDict={'form' : form},
                           compType=DT_DATA,
                           cache=NO)
