@@ -1,4 +1,10 @@
 Changes in 3.4b4
+=================
+* better support for directory layout configuration options.
+* vfs filesystems have a new method, "find_path", for cascading
+  filesystems.
+
+Changes in 3.4b3
 ========================================
 * vfs.LocalFS now follows symlinks by default.
 * new usertracking service.
@@ -61,6 +67,7 @@ Changes in 3.4b4
 * new pylibs: jsutils (marshals Python data to Javascript) and ccvalidate 
   (credit card validation)
 * improved templating.MailServices and <:sendmail:> tag.
+
 
 Changes in 3.4b2
 ========================================
