@@ -1,5 +1,7 @@
-If you are going to use oracle, you need the DCOracle and SQL pacakges
--- available in the skunk package tarball under skunk/pylibs.
+If you are going to use oracle, you need the DCOracle and Oracle
+pacakges the Oracle package is available in the skunk package tarball
+under skunk/pylibs.  DCOracle is available from the zope.org site at:
+    http://www.zope.org/Products/DCOracle
 
 If you are going to use PostgreSQL, build and install the Python
 interface located in it the PostgreSQL build tree under the

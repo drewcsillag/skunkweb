@@ -345,12 +345,19 @@ If the object no longer exists, it raises an appropriate error.
 
 Deleting An object
 ------------------------------
-
 We're now done with this user object and want to dispose of it from
 the database.  Using the delete method it issues an appropriate DELETE
 query to the database.  Since it needs a unique row, the usual things
 related to uniqueness mentioned above apply.
 
+
+Committing and Rollback
+------------------------------
+Each PyDO object contains the two methods commit() and rollback().
+These, in turn call the corresponding methods on their database
+connection.  Normally there is little room for confusion, but in the
+case of using multiple database connections simultaneously, this could
+be a bit more confusing on what exactly is getting committed.
 
 Summary
 ------------------------------
