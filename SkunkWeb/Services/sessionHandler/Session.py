@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # $Author: smulloni $
-# $Revision: 1.3 $
+# $Revision: 1.4 $
 # Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
@@ -179,6 +179,9 @@ class Session:
     def isDirty(self):
         return self.__dirty
 
+    def setDirty(self, dirty):
+        self.__dirty=not not dirty
+
     def save(self):
         self.__store.save(self.__data)
         self.__dirty=None
@@ -221,7 +224,7 @@ class Session:
         self.__data[key]=value
         self.__dirty=1
 
-    def get(self, key, default):
+    def get(self, key, default=None):
         return self.__data.get(key, default)
 
     def touch(self): 
@@ -253,6 +256,10 @@ class SessionStore:
     
 ########################################################################
 # $Log: Session.py,v $
+# Revision 1.4  2001/08/14 05:12:46  smulloni
+# added a get() method to sessionHandler.Session.Session; fixed PyDO postgres
+# date conversion bug.
+#
 # Revision 1.3  2001/08/13 01:08:09  smulloni
 # added an evil boolean flag and an InitRequest hook to reset it.  These ensure
 # that a session store is only touched if the session has not already been

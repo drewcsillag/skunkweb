@@ -1,3 +1,9 @@
+2001-08-15  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): made "default" argument 
+	default to None.
+	(Session.setDirty): added mutator for the dirty property
+
 2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): added check for None value 
