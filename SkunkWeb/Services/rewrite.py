@@ -1,5 +1,5 @@
-# Time-stamp: <03/04/28 11:28:01 smulloni>
-# $Id: rewrite.py,v 1.14 2003/02/07 19:56:24 smulloni Exp $
+# Time-stamp: <03/04/28 11:35:26 smulloni>
+# $Id: rewrite.py,v 1.15 2003/04/28 15:31:16 smulloni Exp $
 
 ########################################################################
 #  
@@ -109,7 +109,7 @@ def _getcompiled(regex):
 ########################################################################
 
 class DynamicRewriter:
-    def rewrite(self, match, connection, sessionDict, key):
+    def rewrite(self, match, connection, sessionDict): #, key):
         pass
 
 
