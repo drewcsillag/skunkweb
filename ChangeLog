@@ -1,3 +1,15 @@
+2002-07-19  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/templating/__init__.py (__initHooks),
+	SkunkWeb/Services/httpd/protocol.py: now import RequestFailed
+	from requestHandler, not aecgi.
+
+	* SkunkWeb/Services/aecgi.py: import RequestFailed from
+	requestHandler.protocol, for backwards compatibility.
+
+	* SkunkWeb/Services/requestHandler/protocol.py: moved
+	RequestFailed here from aecgi.py.
+
 2002-07-15  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/AE/MsgCatalog.py: MessageCatalogs now have a hasMessage()

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: aecgi.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
+# $Id: aecgi.py,v 1.2 2002/05/24 20:56:20 smulloni Exp $
 # Time-stamp: <01/05/04 17:32:39 smulloni>
 ########################################################################
 
@@ -23,14 +23,13 @@ from SkunkWeb import Configuration, ServiceRegistry, Hooks
 from SkunkWeb.LogObj import DEBUG
 import requestHandler.protocol
 import requestHandler.requestHandler
+from requestHandler.protocol import RequestFailed
 import SocketScience
 
 import marshal
 
 ServiceRegistry.registerService('aecgi')
 AECGI=ServiceRegistry.AECGI
-
-RequestFailed=Hooks.KeyedHook()
 
 class AecgiProtocol(requestHandler.protocol.Protocol):
     """
@@ -87,6 +86,9 @@ if Configuration.AecgiListenPorts:
 
 ########################################################################
 # $Log: aecgi.py,v $
+# Revision 1.2  2002/05/24 20:56:20  smulloni
+# now add request handlers in ServerStart hook
+#
 # Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
 # take 2 of import
 #

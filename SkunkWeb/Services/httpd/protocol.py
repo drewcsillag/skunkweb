@@ -15,12 +15,11 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.4 2002/02/14 14:57:06 smulloni Exp $
+# $Id: protocol.py,v 1.5 2002/05/09 18:51:55 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
-from requestHandler.protocol import Protocol, PreemptiveResponse
-from aecgi import RequestFailed
+from requestHandler.protocol import Protocol, PreemptiveResponse, RequestFailed
 from web.protocol import _http_statuses, HaveConnection, HandleConnection
 from SkunkWeb.ServiceRegistry import HTTPD
 from SkunkWeb.LogObj import DEBUG, ACCESS
@@ -536,6 +535,9 @@ HaveConnection.addFunction(_seekTerminus, jobGlob)
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.5  2002/05/09 18:51:55  drew_csillag
+# Server: header juggling
+#
 # Revision 1.4  2002/02/14 14:57:06  smulloni
 # fix for 404 logging and basic authentication
 #

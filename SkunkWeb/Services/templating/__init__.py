@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
+# $Id: __init__.py,v 1.2 2002/01/21 07:05:48 smulloni Exp $
 # Time-stamp: <01/05/04 13:07:01 smulloni>
 ########################################################################
 
@@ -48,7 +48,7 @@ def __initHooks():
     import SkunkWeb.constants as skc
     import Handler
     from web.protocol import HandleConnection
-    from aecgi import RequestFailed
+    from requestHandler.protocol import RequestFailed
     jobGlob=skc.TEMPLATING_JOB+'*'
     HandleConnection.addFunction(Handler.requestHandler, jobGlob)
     HandleConnection.addFunction(Handler.plainHandler, jobGlob)
@@ -68,6 +68,9 @@ SkunkWeb.LogObj.LOG("templating service loaded")
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2002/01/21 07:05:48  smulloni
+# added hook for mime-type-specific request handlers.
+#
 # Revision 1.1.1.1  2001/08/05 15:00:11  drew_csillag
 # take 2 of import
 #
