@@ -1111,6 +1111,12 @@ the story, either:
 that may block.
 \end{enumerate}
 
+\strong{FLASH!} As of SkunkWeb 3.2.3, the document timeout exception
+will be reraised every second after a timeout occurs, so while you
+still need to be careful (say you have an operation that times out,
+wrapped in a \texttt{try:} block with a catchall \texttt{except:} in a
+while loop), you don't have to be quite as careful.
+
 \section{\texttt{<:raise:>}}
 \label{tagraise}
 
