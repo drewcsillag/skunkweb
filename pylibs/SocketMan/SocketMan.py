@@ -28,7 +28,7 @@ import sys
 import cStringIO
 import traceback
 import os
-
+import stat
     
 class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
     def __init__(self, maxRequests=None, *args, **kw):
@@ -125,22 +125,39 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
 
     def addConnection(self, addrspec, handler_func):
         if addrspec[0] == 'TCP':
-            s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-            s.setblocking( 0 )
-            s.setsockopt ( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setblocking(0)
+            s.setsockopt (socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             # Make sure the socket will be closed on exec
-            fcntl.fcntl ( s.fileno(), FCNTL.F_SETFD, 1 )
+            fcntl.fcntl (s.fileno(), FCNTL.F_SETFD, 1)
             s.bind(addrspec[1:])
             s.listen(5)
         elif addrspec[0] == 'UNIX':
-            s = socket.socket( socket.AF_UNIX, socket.SOCK_STREAM )
-            s.setblocking( 0 )
+            try:
+                pathstat=os.stat(addrspec[1])
+            except OSError:
+                pathstat=None
+            if pathstat:
+                # oops, file exists; is it a UNIX socket?
+                if stat.S_ISSOCK(pathstat[0]):
+                    # yes, delete it and start over;
+                    # let any exception propagate
+                    os.unlink(addrspec[1])
+                else:
+                    # if you've got something else there,
+                    # I'm not going to delete it.
+                    raise IOError, \
+                          "file exists where unix "\
+                          "socket is to be created: %s" % addrspec[1]
+                    
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.setblocking(0)
             # Make sure the socket will be closed on exec
-            fcntl.fcntl( s.fileno(), FCNTL.F_SETFD, 1 )
-            s.bind( addrspec[1] )
+            fcntl.fcntl(s.fileno(), FCNTL.F_SETFD, 1)
+            s.bind(addrspec[1])
             if len(addrspec) == 3:
                 os.chmod(addrspec[1], addrspec[2])
-            s.listen( 5 )
+            s.listen(5)
         else:
             raise ValueError, "unknown bind address type"
         self.socketMap[s] = handler_func, addrspec

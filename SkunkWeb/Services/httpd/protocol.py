@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.5 2002/05/09 18:51:55 drew_csillag Exp $
+# $Id: protocol.py,v 1.6 2002/07/19 16:21:02 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -177,8 +177,16 @@ class HTTPMethodRequestParser:
                 headers): 
         
         # parse the requestURI
-        match=pathRE.match(urllib.unquote(requestURI))                        
-        peeraddress, peerport=sock.getpeername()
+        match=pathRE.match(urllib.unquote(requestURI))
+        sockname=sock.getsockname()
+        if isinstance(sockname, str):
+            # unix socket; we'll set the serverPort to 0
+            serverPort=0
+            peeraddress='127.0.0.1'
+            peerport=0
+        else:
+            serverPort=sockname[1]
+            peeraddress, peerport=sock.getpeername()
         
         env={ 'GATEWAY_INTERFACE': 'CGI/1.1',
               # possibly the following should come from somewhere else
@@ -187,7 +195,7 @@ class HTTPMethodRequestParser:
               'SERVER_SOFTWARE' : 'SkunkWeb %s' % Configuration.SkunkWebVersion,
               # this protocol version that called the script
               'SERVER_PROTOCOL': httpVersion, 
-              'SERVER_PORT' : sock.getsockname()[1],
+              'SERVER_PORT' : serverPort,
               'REQUEST_METHOD': methodName,
               # ??? what to do here? SkunkWeb/Apache is wrong here
               #'PATH_INFO' : '',
@@ -206,7 +214,7 @@ class HTTPMethodRequestParser:
         
         # the following, as it involves a potentially expensive DNS lookup,
         # is optional.
-        if Configuration.lookupHTTPRemoteHost:
+        if Configuration.lookupHTTPRemoteHost and serverPort!=0:
             env['REMOTE_HOST']= socket.gethostbyaddr(peeraddress)
             
         # put in conventional values that duplicate info in headers
@@ -306,8 +314,6 @@ def _healHeaders(raw):
             joined.append(h)
     return joined
 
-#def _fixHeaderName(name):
-#    return '-'.join([x.capitalize() for x in name.split('-')])
 import skunklib
 _fixHeaderName=skunklib.normheader
 
@@ -454,40 +460,8 @@ class HTTPProtocol(Protocol):
                                            httpVersion)
 
         sockfile.close()
-        #return (self._getJob(requestData), requestData)
         return requestData
 
-#    def marshalResponse(self, response, sessionDict):
-#
-#        # the status header needs to be pulled out of the
-#        # response and  stuck in the http status line.
-#        # how about a more efficient way of doing this? IMPROVE ME
-#        httpVersion=sessionDict.get(constants.HTTP_VERSION, '')
-#        statusLine='%s %s\r\n'
-#        status='200 OK'
-#        lines=[]
-#        newRes=''
-#        reslen=0
-#        DEBUG(HTTPD, "in marshalResponse with response %s" % response)
-#        
-#        if response==None:
-#            response=''
-#        for line in response.split('\r\n'):
-#            reslen+=2+len(line)
-#            if line=='':
-#                newRes+='\r\n'+response[reslen:]
-#                break
-#            else:
-#                match=HTTPProtocol.statusRE.match(line)
-#                if match:
-#                    status=match.group('status')
-#                    DEBUG(HTTPD, "found status: \"%s\"" % status)                    
-#                else:                   
-#                    newRes+=line+'\r\n' 
-#                
-#        completeResponse=(statusLine % (httpVersion, status)).lstrip() + newRes
-#        DEBUG(HTTPD, "complete response is %s" % completeResponse)
-#        return completeResponse
 
     def _fixHeader(self, s):
         '''
@@ -533,70 +507,3 @@ class HTTPProtocol(Protocol):
 jobGlob=constants.WEB_JOB+'*'
 HaveConnection.addFunction(_seekTerminus, jobGlob)
 
-########################################################################
-# $Log: protocol.py,v $
-# Revision 1.5  2002/05/09 18:51:55  drew_csillag
-# Server: header juggling
-#
-# Revision 1.4  2002/02/14 14:57:06  smulloni
-# fix for 404 logging and basic authentication
-#
-# Revision 1.3  2001/09/07 16:40:44  smulloni
-# improved handling of SERVER_NAME
-#
-# Revision 1.2  2001/08/28 11:38:47  drew_csillag
-# now uses normheader
-#
-# Revision 1.1.1.1  2001/08/05 15:00:01  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.12  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.11  2001/05/04 18:38:48  smullyan
-# architectural overhaul, possibly a reductio ad absurdum of the current
-# config overlay technique.
-#
-# Revision 1.10  2001/04/25 20:18:45  smullyan
-# moved the "experimental" services (web_experimental and
-# templating_experimental) back to web and templating.
-#
-# Revision 1.9  2001/04/24 21:43:02  smullyan
-# fixed bug in httpd.protocol (was accidentally removing line return after
-# HTTP response line, producing weirdness).  Removed call of deprecated
-# method of config object in remote.__init__.py; added list of configuration
-# variables that need to be documented to sw.conf.in.
-#
-# Revision 1.8  2001/04/23 22:53:54  smullyan
-# added support for keep-alive.  Fixed server name (I had left out "SkunkWeb"
-# and only included the version).
-#
-# Revision 1.7  2001/04/23 20:17:16  smullyan
-# removed SKUNKWEB_SERVER_VERSION, which I found was redundant; fixed typo in
-# httpd/protocol; renamed "debugServices" configuration variable to
-# "initialDebugServices".
-#
-# Revision 1.6  2001/04/23 18:52:55  smullyan
-# basicauth repaired.
-#
-# Revision 1.5  2001/04/23 17:30:07  smullyan
-# basic fixes to basic auth and httpd; added KeepAliveTimeout to requestHandler,
-# using select().
-#
-# Revision 1.4  2001/04/23 04:55:43  smullyan
-# cleaned up some older code to use the requestHandler framework; modified
-# all hooks and Protocol methods to take a session dictionary argument;
-# added script to find long lines to util.
-#
-# Revision 1.3  2001/04/20 21:49:52  smullyan
-# first working version of http server, still more rough than diamond.
-#
-# Revision 1.2  2001/04/19 21:44:56  smullyan
-# added some detail to sw.conf.in; added SKUNKWEB_SERVER_VERSION variable to
-# SkunkWeb package; more preliminary work on httpd service.
-#
-# Revision 1.1  2001/04/18 22:46:25  smullyan
-# first gropings towards a web server.
-#
-########################################################################
