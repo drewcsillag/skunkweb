@@ -1,0 +1,23 @@
+import hoptime.hopapi as H
+        
+def getGames(hopuser, statuses=None):
+    gamedict={}
+    for game in hopuser.getAllPlayedGames():
+        status=game['status']
+        if statuses and status not in statuses:
+            continue
+        gamedict.setdefault(status, [])
+        gamedict[status].append(game)
+    for gamelist in gamedict.itervalues():
+        gamelist.sort(lambda x, y: cmp(y['created'], x['created']))
+    return gamedict
+
+# one required argument, hopuser (a hoptime.hopapi.Users instance),
+# and one optional argument, statuses, a list of game statuses you
+# you are interested in.
+
+try:
+    statuses
+except:
+    statuses=None
+raise ReturnValue, getGames(hopuser, statuses)
