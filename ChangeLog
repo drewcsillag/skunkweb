@@ -1,3 +1,10 @@
+2002-06-06  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* SkunkWeb/sample_webdocs/demo/geeknews/dcomps/lwndaily.pydcmp:
+	fixed so uses urlopen
+
+	* 3.2.1 cut.
+
 2002-06-06  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/operators.py (SET): now works with sets of length 1.
