@@ -21,15 +21,17 @@ class InPageStateManager:
                  nonce,
                  stateEncryptor=None,
                  stateVariable='_state'):
-        self.state = FieldContainer(fieldmapper=_getname,
+        self.stack = FieldContainer(fieldmapper=_getname,
                                     storelists=0)
-        self.encryptor=stateEncryptor
-        self.stateVariable=stateVariable
+        self.state = {}
+        self.formname=None
+        self.encryptor = stateEncryptor
+        self.stateVariable = stateVariable
 
     def write(self):
-        s = cPickle.dumps(self.state, 1)
+        s = cPickle.dumps((self.formname, self.stack, self.state), 1)
         if self.encryptor:
-            s=self.encryptor.encrypt(s)
+            s = self.encryptor.encrypt(s)
         hash = md5.md5(self.nonce + s).digest()
         outv = base64.encodestring(hash + s)
         return ''.join(outv.split('\n'))
@@ -41,8 +43,8 @@ class InPageStateManager:
         if nhash != hash:
             raise InvalidStateException, 'state has been tampered with'
         if self.encryptor:
-            pick=self.encryptor.decrypt(pick)
-        self.state = cPickle.loads(pick)
+            pick = self.encryptor.decrypt(pick)
+        (self.formname, self.stack, self.state) = cPickle.loads(pick)
 
     def set_state(self, cgiarguments):
         try:
@@ -51,13 +53,17 @@ class InPageStateManager:
             return
         self.read(statestr)
         
-    def push(self, form):
-        self.state.append(form)
+    def push_form(self, form):
+        self.stack.append(form)
 
-    def pop(self):
-        return self.state.pop()
+    def pop_form(self):
+        return self.stack.pop()
 
-    def peek(self):
-        return self.state[-1]
+    def peek_form(self):
+        if self.stack:
+            return self.stack[-1]
+
+    def clear(self):
+        self.state.clear()
         
 __all__=['InvalidStateException', 'InPageStateManager']

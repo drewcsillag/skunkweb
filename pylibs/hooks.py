@@ -1,5 +1,5 @@
-# Time-stamp: <02/02/10 16:30:25 smulloni>
-# $Id$
+# Time-stamp: <02/11/22 17:29:36 smulloni>
+# $Id: hooks.py,v 1.1 2002/02/14 02:58:25 smulloni Exp $
 
 ########################################################################
 #  
@@ -22,10 +22,13 @@
 #   
 ########################################################################
 
-from UserList import UserList
+try:
+    list
+except NameError:
+    from UserList import UserList as list
 from fnmatch import fnmatchcase
 
-class Hook(UserList):
+class Hook(list):
     def __call__(self, *args, **kw):
         for i in self:
             ret = i(*args, **kw)
@@ -104,5 +107,9 @@ class SearchablePairList:
             self.orderedPairs.insert(index, (key, value))
 
 ########################################################################
-# $Log$
+# $Log: hooks.py,v $
+# Revision 1.1  2002/02/14 02:58:25  smulloni
+# moved hooks into a pylib; added some logging to templating handler, and minor fix
+# to web service.
+#
 ########################################################################

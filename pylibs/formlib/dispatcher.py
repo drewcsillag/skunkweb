@@ -1,206 +1,142 @@
-class Action(object): pass
+# Time-stamp: <02/11/25 10:04:02 smulloni>
+# $Id$
 
-class Goto(Action):
-    action='GOTO'
+
+class Goto:
     def __init__(self, formname):
         self.formname=formname
+        
+    def dispatch(self,
+                 form,
+                 state,
+                 argdict,
+                 formdict,
+                 ns):
+        form.submit(argdict)
+        if form.errors:
+            return form
+        form.process(argdict, state, ns)
+        return formdict[self.formname]
 
-class Pop(Action):
-    action='POP'
-    
-class Push(Action):
-    action='PUSH'
-    def __init__(self, formname):
+class Pop:
+    def dispatch(self,
+                 form,
+                 state,
+                 argdict,
+                 formdict,
+                 ns):
+        form.submit(argdict)
+        if form.errors:
+            return form
+        form.process(argdict, state, ns)
+        return state.pop_form()
+
+class Push:
+    def __init__(self, formname, valid=0):
         self.formname=formname
+        self.valid=valid
+        
+    def dispatch(self,
+                 form,
+                 state,
+                 argdict,
+                 formdict,
+                 ns):
+        if self.valid:
+            form.submit(argdict)
+                if form.errors:
+                    return form
+        state.push_form(form)
+        return formdict[self.formname]
 
-class Stage(object):
-
-    def __init__(self, name):
-        self.name=name
-
-    def next(self):
-        pass
-
-class Dispatcher(object):
-    def __init__(self, stages, statemgr, start=None, flowmgr=None):
-        self.stages={}
-        for s in stages:
-            if self.stages.has_key(s.name):
-                raise ValueError, "duplicate stage: %s" % s.name
-            self.stages[s.name]=s
-        if not start:
-            start=stages[0].name
+class End:
+    def dispatch(self,
+                 form,
+                 state,
+                 argdict,
+                 formdict,
+                 ns):
+        form.submit(argdict)
+        if form.errors:
+            return form
+        
+class FormDispatcher:
+    def __init__(self,
+                 statemgr,
+                 forms,
+                 flowmgr=None,
+                 stateVariable='_state'):
+        self.forms=FieldContainer(forms,
+                                  fieldmapper=_getname,
+                                  storelists=0)
         self.statemgr=statemgr
-        if not self.statemgr.state:
-            self.statemgr.push((start, {}))
+        if flowmgr is None:
+            flowmgr=LinearFlowManager(self.forms)
         self.flowmgr=flowmgr
+        self.stateVariable=stateVariable
 
     def dispatch(self, argdict, ns):
+        # extract the state
         self.statemgr.set_state(argdict)
-        stage=self.statemgr.peek()
-        
-        
-        
+        # identify the form being submitted.
+        if self.statemgr.formname:
+            form=self.forms[self.statemgr.formname]
             
-        
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-class FormSet:
-    def __init__(self, forms, initformname, statemgr, formFlow = None):
-        """
-        forms is the list of form objects
-        initformname is the first form in the flow
-        formFlow is a dict of 'from form name': 'to form name'
-        """
-        self.forms = {}
-        for i in forms:
-            self.forms[i.name] = i
-        self.statemgr = statemgr
-        statemgr.push(initformname)
-        self.formFlow = formFlow
-
-    def _split_fields(self, cgiargdict):
-        """finds form qualified arguments """
-        d = {}
-        for k, v in cgiargdict:
-            bits = k.split('.')
-            if len(bits) == 2 and self.forms.has_key(bits[0]):
-                formdict = d.get(bits[0])
-                if formdict is None:
-                    d[bits[0]] = formdict = {}
-                formdict[k] = v
-            else:
-                otherdict = d.get('_others')
-                if otherdict is None:
-                    otherdict = d['_others'] = {}
-                d['_others'][k] = v
-                
-    def dispatch(self, cgiargdict, ns):
-        """
-        call with CONNECTION.args and globals() -- or some other ns dict
-        you want accessible from the view method
-        """
-        self.state.setstate(cgiargdict)
-        formname = self.state.peek()
-        form = self.forms[formname]
-        if form is None:
-            raise "InvalidFormName", formname
-
-        formFields = self._split_fields(cgiargdict)
-        #otherwise is post from existing form
-        form.argMunge(cgiargdict, self.state)
-        form.fillDefaults(cgiargdict, self.state)
-
-        #stuff form fields into the state here
-        for i in form.fields:
-            blank = ()
-            item = cgiargdict.get('%s.%s' % (formname, i.name), blank)
-            if item is not blank: 
-                state[i.name] = item
-                
-        invalidFields = form.validate(cgiargdict, self.state)
-
-        if invalidFields:
-            self.state.invalidFields = invalidFields
-            return form.view(self.state, ns)
-
-        # ok, all is fine thus far, which form to go to now?
-        if self.formFlow:
-            what_to_do = self.formFlow[formname]
-            if not isinstance(f, Action):
-                what_to_do = what_to_do(cgiargdict, self.state)
+        # if there isn't one, return the start form.
         else:
-            what_to_do = form.next(cgiargdict, self.state)
-            
-        if (what_to_do.action == 'POP' or what_to_do.action == 'GOTO'):
-            self.state.invalidOtherFields = self.validate(cgiargdict, form)
-            if self.state.invalidOtherFields: #validate entire set
-                return form.view(self.state, ns)
-            
-            ret = form.submit(cgiargdict, self.state) #do submit
+            form=self.flowmgr.getStartForm()
+            form.reset()
+            return form
+        # get the next action.
+        action=self.flowmgr.next(form, argdict, ns)
 
-            if ret: #if true, a submission error occurred
-                return form.errorview(cgiargdict, self.state, ret, ns)
-            else:
-                if what_to_do.action == 'GOTO':
-                    nextformname = what_to_do.target
-                    
-                else:
-                    self.state.pop()
-                    nextformname = self.state.peek()
-                    
-                self.state.pop()
-                self.state.push(nextformname)
-                return self.forms[nextformname].view(self.state, ns)
-
-        elif what_to_do.action == 'PUSH':
-            nextformname = what_to_do.target
-            self.state.push(nextformname)
-            return self.forms[nextformname].view(self.state, ns)
-
-        else:
-            raise 'CommandError', ret
-
-    def validate(self, cgiargdict, form):
-        pass
-
-
-
+        # get the next form, if any
+        form=action.dispatch(form,
+                             self.statemgr,
+                             argdict,
+                             self.forms,
+                             ns)
+        if form:
+            # update the state with the new form name
+            self.statemgr.formname=form.name
+            # set the new state in the form's stateVariable 
+            form.fields[self.stateVariable].value=self.statemgr.write()
+        return form
     
-class AutoForm:
-    def __init__(self, name, fields):
-        self.name = name
-        self.fields = fields
-
-    def argMunge(self, cgiargdict, state):
-        args = []
-        kwargs = {}
-        for field in self.fields:
-            name = field.name
-            argext = field.argsExtractor
-            if argext is None:
-                args.append(name)
-            else:
-                kwargs[name] = argext
-        d = extractargs(cgiargdict, args, kwargs)
-        cgiargdict.update(d)
-
-    def fillDefaults(self, cgiargdict, state):
-        pass
-
-    def validate(self, cgiargdict, state):
-        pass
-
-    def submit(self, cgiargdict, state):
-        pass
-
-    def view(self, state, ns):
-        sl =['<form method=POST enctype="multipart/form-data">']
-        for i in self.fields:
-            sl.append(i.asHTML(state, ns))
-        sl.append(state.asHTML())
-        sl.append('</form>')
-        return '\n'.join(sl)
-            
-class AutoFormField:
-    def __init__(self, fieldName, widget, argsExtractor = None):
-        self.name = fieldName
-        self.widget = widget
-        self.argsExtractor = None
-
-    def asHTML(self, state, ns):
-        return self.widget.asHTML(state, ns)
+##        # if it is a PUSH, push the current form on the stack, retrieve
+##        # the push action's requested form, and return it.
+##        if what_to_do.action == 'PUSH':
+##            if what_to_do.valid:
+##                # request is for the form to be
+##                # valid before a push (not the default)
+##                form.submit(argdict)
+##                if form.errors:
+##                    return form
+##            self.statemgr.push_form(form)
+##            return self.forms[what_to_do.formname]
+##        # if it is a POP or a GOTO, do the submit/process cycle
+##        elif what_to_do.action in('GOTO', 'POP'):
+##            form.submit(argdict)
+##            if form.errors:
+##                return form
+##            form.process(argdict, self.statemgr, ns)
+##            # if a POP,  pop the stack and return what is popped
+##            if what_to_do.action=='POP':
+##                return self.statemgr.pop_form()
+##            else:
+##                # GOTO the requested form
+##                return self.forms[what_to_do.formname]
 
 
+class LinearFlowManager(object):
+    def __init__(self, formlist):
+        self.formlist=formlist
+
+    def getStartForm(self):
+        return self.formlist[0]
+
+    def next(self, form, argdict, ns):
+        ind=self.formlist.index(form) + 1
+        if ind < len(self.formlist):
+            return Goto(self.formlist[ind])
+        return End()

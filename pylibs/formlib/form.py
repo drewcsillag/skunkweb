@@ -17,6 +17,7 @@
 ########################################################################
 
 from containers import FieldContainer
+from hooks import Hook
 
 __all__=['UNDEF', 'Field', 'DomainField', 'Form']
 
@@ -77,8 +78,9 @@ class Field(object):
         
     def validate(self, form=None):
         """\
-        Override to return a mapping where the key is the subclass instance failing validation
-        and the value is a message indicating the validation failure
+        Override to return a mapping where the key is the
+        subclass instance failing validation and the
+        value is a message indicating the validation failure
         """
         pass
 
@@ -102,7 +104,8 @@ class DomainField(Field):
         return self.__domain
 
     def _set_domain(self, domain):
-        if self.default is not None and not self.in_domain(self.default, domain):
+        if self.default is not None \
+               and not self.in_domain(self.default, domain):
             raise ValueError, \
                   "pre-existing default conflicts with new domain; "\
                   "clear the default before setting domain"
@@ -139,7 +142,8 @@ class Form(object):
                  action="",
                  enctype=None,
                  fields=None,
-                 validators=None):
+                 validators=None,
+                 processors=[]):
         self.name=name
         self.method=method
         self.action=action
@@ -148,8 +152,10 @@ class Form(object):
                                    fieldmapper=_getname,
                                    storelists=0)
         self.validators=validators or []
+        self.processHook=Hook(processors)
         self.submitted=None
         self.errors={}
+        self.state=None
 
     def getData(self):
         d={}
@@ -174,7 +180,8 @@ class Form(object):
             f.clearValue()
         self.submitted=0
         self.errors={}
-
+        self.state=None
+        
     def validate(self):
         errors={}
         for l in ([f.validate for f in self.fields], self.validators):
@@ -184,12 +191,16 @@ class Form(object):
                     errors.update(e)
         self.errors=errors
 
+    def process(self, argdict, statemgr, ns):
+        # this needs to have some arguments; for instance,
+        # if the form needs to change the state of another form,
+        # as in the case of a recursive edit (where one form
+        # fills in a value in another).  For now I'm passing
+        # in more or less everything available in the dispatcher.
+        return self.processHook(self, argdict, statemgr, ns)
+    
+    def next(self):
+        pass
+
 def _getname(x):
     return x.name
-
-
-
-    
-        
-        
-        

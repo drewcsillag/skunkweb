@@ -6,7 +6,7 @@ usernmfld = TextField('username', description="Username", size="40", maxlength="
 passwordfld = PasswordField('password', description="Password", size="40", maxlength="39")
 
 # hidden cookie to track client side list of visited programs
-visitedfld =  HiddenField('visited', value="Resident Evil,The Hudsucker Proxy,Wizard of Oz")
+visitedfld =  HiddenField('visited', default="Resident Evil,The Hudsucker Proxy,Wizard of Oz")
 
 #regular address info
 firstnmfld = TextField('firstname', description="First Name", size="40") 
@@ -17,7 +17,7 @@ provincefld = TextField('province', description="Province (if outside US)", size
 countryfld =  SelectField('country', [('Canada', 'CN'), ('Mexico', 'MX'),('United States', 'US')],
                       description='Your Country', default='US', multiple=0,  size=1)
 postalfld = TextField('postal', description="Postal Code", size="40")
-subfld = SubmitField(value="Submit")
+subfld = SubmitField(default="Submit")
 
 
 fields=[usernmfld, passwordfld, visitedfld, firstnmfld, lastnmfld, statefld, provincefld, countryfld, postalfld, subfld]

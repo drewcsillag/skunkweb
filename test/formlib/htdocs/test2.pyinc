@@ -16,7 +16,7 @@ fields=[SelectField('fruit',
                           'pony express'],
                          description='Shipping Method',
                          default='UPS'),
-        SubmitField(value="Submit"),
+        SubmitField(default="Submit"),
         ]
 form=ViewableForm(name="test2",
                   method="POST",

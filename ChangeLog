@@ -1,3 +1,8 @@
+2002-11-25    <smulloni@smullbola.smullyan.org>
+
+	* test/formlib/htdocs/test{1-4}.pyinc: changed value view_attr to
+	default in several places.
+
 2002-11-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/pickleProps.py: several typo corrections.
@@ -30,6 +35,20 @@
 
 	* testAllViews.pyinc (fields): Removing setting of value in view
 	attributes
+
+2002-11-23    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/form.py (FormDispatcher.dispatch): first stab at a
+	dispatcher, based on Drew's code but fitting in with the new model.
+
+2002-11-22    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/form.py (Form.submit): added a process hook; now
+	the form can actually do something besides validate itself!
+	Hurray!
+
+	* pylibs/hooks.py: now use list rather than UserList as a base
+	class for Hook in python 2.2.
 
 2002-11-22  James Richards  <jrichards@satie.wnyc.org>
 
