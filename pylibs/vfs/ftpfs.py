@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.4 2002/10/06 03:54:42 smulloni Exp $
-# Time-stamp: <02/10/09 16:44:29 smulloni>
+# $Id: ftpfs.py,v 1.5 2002/10/09 20:47:19 smulloni Exp $
+# Time-stamp: <02/10/21 23:00:00 smulloni>
 
 ########################################################################
 #  
@@ -164,7 +164,7 @@ if _have22:
                 for mname in robustlist:
                     m=classdict.get(mname)
                     if m and isinstance(m, types.FunctionType):
-                        classdict[m]=robustify(m)
+                        classdict[mname]=robustify(m)
             return type.__new__(self, classname, bases, classdict)
 
     class FtpConnection(ftplib.FTP, object):

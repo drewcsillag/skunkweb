@@ -1,3 +1,7 @@
+2002-10-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/ftpfs.py (FTPFile.__new__): fatal typo in metaclass.
+
 2002-10-09  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/vfs/ftpfs.py (FTPFile.connect): fatal bug -- left out
