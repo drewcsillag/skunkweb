@@ -1,3 +1,8 @@
+2002-07-28  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/paper-letter/Makefile, docs/html/Makefile: added stuff for
+	tutorial
+
 2002-07-28  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/PyDO/PyDO.tex (chapter{Operators}): more information about
