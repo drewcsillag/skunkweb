@@ -154,6 +154,8 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
                     if retrycount == 0:
                         raise
                     time.sleep(1)
+                else:
+                    break
                     
             if len(addrspec) == 3:
                 os.chmod(addrspec[1], addrspec[2])

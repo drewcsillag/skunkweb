@@ -1,3 +1,8 @@
+2004-03-15  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/SocketMan/SocketMan.py (SocketMan.addConnection): now
+	break out of the retry loop if the socket bind succeeds.
+
 2004-03-15  Drew Csillag <drew@loki.sai.local>
 
 	* pylibs/SocketMan/SocketMan.py (SocketMan.addConnection): now
