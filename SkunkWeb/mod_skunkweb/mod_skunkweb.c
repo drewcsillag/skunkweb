@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.3 2002/04/24 18:54:24 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.4 2002/05/07 19:21:47 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -373,6 +373,7 @@ typedef struct skunkweb_server_config
     int retries;
     char *error_doc;
     int timeout;
+    char expose; /*whether or not to add the SkunkWeb/VV str to Server header*/
     ap_array_header_t *emails;
     ap_array_header_t *excludes;
     ap_array_header_t *failover_hosts;
@@ -470,7 +471,9 @@ static int critical_error ( request_rec *r, const char *desc )
 			    r->pool))
 #endif
         {
+#ifndef APACHEV1
 	    int bytes_sent;
+#endif
             /* Set the content type */
             r->content_type = "text/html";
 
@@ -1425,7 +1428,7 @@ static const char* set_skunkweb_connect_timeout(cmd_parms *parms, void *dummy,
 
 /*sets error email in server config*/
 static const char* set_skunkweb_error_email ( cmd_parms *parms, void *dummy,
-                                           const char *arg)
+					      const char *arg)
 {
     server_rec *s=parms->server;
     skunkweb_server_config *conf;
@@ -1441,7 +1444,7 @@ static const char* set_skunkweb_error_email ( cmd_parms *parms, void *dummy,
 }
 
 static const char* set_skunkweb_excludes ( cmd_parms *parms, void *dummy,
-					const char *arg )
+					   const char *arg )
 {
     server_rec *s = parms->server;
     skunkweb_server_config *conf;
@@ -1456,7 +1459,7 @@ static const char* set_skunkweb_excludes ( cmd_parms *parms, void *dummy,
 }
 
 static const char* set_skunkweb_failover_hosts ( cmd_parms *parms, void *dummy,
-					      const char *arg )
+						 const char *arg )
 {
     server_rec *s = parms->server;
     skunkweb_server_config *conf;
@@ -1469,7 +1472,19 @@ static const char* set_skunkweb_failover_hosts ( cmd_parms *parms, void *dummy,
 
     return NULL;
 }
-    
+
+static const char* set_skunkweb_expose ( cmd_parms *parms, void *dummy,
+					 const char *arg )
+{
+    server_rec *s = parms->server;
+    skunkweb_server_config *conf;
+
+    conf = (skunkweb_server_config *)ap_get_module_config(s->module_config, 
+							  &skunkweb_module);
+    conf->expose = (int)arg;
+    return NULL;
+}
+
 /* create the server config */
 #ifdef APACHEV1
 static void* skunkweb_server_cfg_create(pool *p, server_rec *s)
@@ -1483,6 +1498,7 @@ static void* skunkweb_server_cfg_create(apr_pool_t *p, server_rec *s)
 
     /*    a->hostname = DEFAULT_HOST; 
 	  a->port = DEFAULT_PORT;*/
+    a->expose = 1;
     a->aedsockaddr = DEFAULT_ADDR;
     a->retries = DEFAULT_RETRIES;
     a->error_doc = DEFAULT_ERROR_DOC;
@@ -1493,7 +1509,24 @@ static void* skunkweb_server_cfg_create(apr_pool_t *p, server_rec *s)
     a->timeout = 1000000; /* 1 second */
     return (void *) a;
 }
-
+#ifdef APACHEV1
+static void skunkweb_init_handler(server_rec *s, pool *p)
+#else
+static int skunkweb_init_handler(apr_pool_t *p, apr_pool_t *plog, 
+				 apr_pool_t *ptemp, server_rec *s)
+#endif
+{
+    skunkweb_server_config *conf;
+    conf = (skunkweb_server_config *)ap_get_module_config(s->module_config, 
+							  &skunkweb_module);
+    if (conf->expose)
+#ifdef APACHEV1
+	ap_add_version_component("SkunkWeb/" SW_VERSION);
+#else
+        ap_add_version_component(p, "SkunkWeb/" SW_VERSION);
+    return OK;
+#endif
+}
 /*the module definition*/
 #ifdef APACHEV1
 /*the command registry*/
@@ -1516,6 +1549,9 @@ static command_rec skunkweb_cmds[] =
     { "SkunkWebConnectTimeout", set_skunkweb_connect_timeout, NULL, RSRC_CONF, TAKE1,
       "number of milliseconds to wait for a connect to succeed before "
       "retrying"},
+    { "SkunkWebExpose", set_skunkweb_expose, NULL, RSRC_CONF, FLAG,
+      "whether or not to show the SkunkWeb version string in the Server "
+      "header"},
     { NULL }
 };
 
@@ -1529,7 +1565,7 @@ static handler_rec skunkweb_handlers[] =
 
 module skunkweb_module = {
    STANDARD_MODULE_STUFF,
-   NULL,                        /* initializer */
+   skunkweb_init_handler,       /* initializer */
    NULL,                        /* dir config creater */
    NULL,                        /* dir merger --- default is to override */
    skunkweb_server_cfg_create,     /* server config */
@@ -1570,12 +1606,17 @@ static const command_rec skunkweb_cmds[] =
 		    RSRC_CONF, "other host/ports (form of host:port) to try "
 		    "in the event of a connection failure to primary "
 		    "SkunkWebHost"),
+    AP_INIT_FLAG("SkunkWebExpose", set_skunkweb_expose, NULL, RSRC_CONF,
+		 "whether or not to show the SkunkWeb version string in the "
+		 "Server header"),
     { NULL }
 };
 
 static void register_hooks(apr_pool_t *p)
 {
     ap_hook_handler(skunkweb_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_post_config(skunkweb_init_handler, NULL, NULL, APR_HOOK_MIDDLE);
+ 
 }
 
 module skunkweb_module = {

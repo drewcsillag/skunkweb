@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.3 2001/09/07 16:40:44 smulloni Exp $
+# $Id: protocol.py,v 1.4 2002/02/14 14:57:06 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -30,6 +30,9 @@ import re
 import urllib
 import socket
 
+##NEW
+import rfc822
+import cStringIO
 # the below takes a url and looks for the following nice goodies:
 # path (anything before the following)
 # params (anything after a semicolon and before a question or hash mark)
@@ -350,18 +353,6 @@ class HTTPProtocol(Protocol):
     implements the server side of the HTTP protocol, in order to serve
     web requests directly
     """
-##    # job specifier stuff below pasted from AecgiProtocol.
-##    # I wonder whether to move this job-specifier code to Protocol,
-##    # or to an intermediate subclass. -- js Fri Apr 13 14:11:05 2001
-##    def __init__(self, jobSpecifier):
-##        self.jobSpecifier=jobSpecifier
-##        self.handlers={}
-
-##    def _getJob(self, requestData):
-##        if callable(self.jobSpecifier):
-##            return apply(self.jobSpecifier, [requestData])
-##        else:
-##            return self.jobSpecifier
     def __init__(self):
         self.handlers={}
         
@@ -467,38 +458,60 @@ class HTTPProtocol(Protocol):
         #return (self._getJob(requestData), requestData)
         return requestData
 
+#    def marshalResponse(self, response, sessionDict):
+#
+#        # the status header needs to be pulled out of the
+#        # response and  stuck in the http status line.
+#        # how about a more efficient way of doing this? IMPROVE ME
+#        httpVersion=sessionDict.get(constants.HTTP_VERSION, '')
+#        statusLine='%s %s\r\n'
+#        status='200 OK'
+#        lines=[]
+#        newRes=''
+#        reslen=0
+#        DEBUG(HTTPD, "in marshalResponse with response %s" % response)
+#        
+#        if response==None:
+#            response=''
+#        for line in response.split('\r\n'):
+#            reslen+=2+len(line)
+#            if line=='':
+#                newRes+='\r\n'+response[reslen:]
+#                break
+#            else:
+#                match=HTTPProtocol.statusRE.match(line)
+#                if match:
+#                    status=match.group('status')
+#                    DEBUG(HTTPD, "found status: \"%s\"" % status)                    
+#                else:                   
+#                    newRes+=line+'\r\n' 
+#                
+#        completeResponse=(statusLine % (httpVersion, status)).lstrip() + newRes
+#        DEBUG(HTTPD, "complete response is %s" % completeResponse)
+#        return completeResponse
+
+    def _fixHeader(self, s):
+        '''
+        utility function for formatting headers in a consistent manner.
+        '''
+        return '-'.join([i.capitalize() for i in s.split('-')])
+
     def marshalResponse(self, response, sessionDict):
-
-        # the status header needs to be pulled out of the
-        # response and  stuck in the http status line.
-        # how about a more efficient way of doing this? IMPROVE ME
         httpVersion=sessionDict.get(constants.HTTP_VERSION, '')
-        statusLine='%s %s\r\n'
-        status='200 OK'
-        lines=[]
-        newRes=''
-        reslen=0
-        DEBUG(HTTPD, "in marshalResponse with response %s" % response)
+        respp = rfc822.Message(cStringIO.StringIO(response))
+        status = respp.getheader('status')
+        server = respp.getheader('server')
+        if not status:
+            status = "200 OK"
+        else:
+            del respp['status']
+        if not server:
+            respp['server'] = 'SkunkWeb %s' % Configuration.SkunkWebVersion
+        resl = ["%s %s" % (httpVersion, status)]
+        for k,v in respp.items():
+            resl.append("%s: %s" % (self._fixHeader(k), v))
+        return "\r\n".join(resl)+"\r\n\r\n"+respp.fp.read()
         
-        if response==None:
-            response=''
-        for line in response.split('\r\n'):
-            reslen+=2+len(line)
-            if line=='':
-                newRes+='\r\n'+response[reslen:]
-                break
-            else:
-                match=HTTPProtocol.statusRE.match(line)
-                if match:
-                    status=match.group('status')
-                    DEBUG(HTTPD, "found status: \"%s\"" % status)                    
-                else:                   
-                    newRes+=line+'\r\n' 
-                
-        completeResponse=(statusLine % (httpVersion, status)).lstrip() + newRes
-        DEBUG(HTTPD, "complete response is %s" % completeResponse)
-        return completeResponse
-
     def marshalException(self, exc_text, sessionDict):
         res=RequestFailed(constants.WEB_JOB, exc_text, sessionDict)
         if res:
@@ -523,6 +536,9 @@ HaveConnection.addFunction(_seekTerminus, jobGlob)
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.4  2002/02/14 14:57:06  smulloni
+# fix for 404 logging and basic authentication
+#
 # Revision 1.3  2001/09/07 16:40:44  smulloni
 # improved handling of SERVER_NAME
 #

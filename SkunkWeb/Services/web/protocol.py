@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.12 2002/05/03 15:53:10 smulloni Exp $
+# $Id: protocol.py,v 1.13 2002/05/03 21:09:44 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -171,7 +171,7 @@ class HTTPConnection:
     def _initHeaders(self):
         self.requestHeaders = HeaderDict(self._requestDict['headers'])
         self.responseHeaders = HeaderDict({
-            'Server': 'SkunkWeb %s' % Configuration.SkunkWebVersion,
+            #'Server': 'SkunkWeb %s' % Configuration.SkunkWebVersion,
             'Date': str(Date.HTTPDate(time.time())),
             'Status': '200 OK'
             })
@@ -399,6 +399,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.13  2002/05/03 21:09:44  smulloni
+# fix for dealing with exotic content-types in the request
+#
 # Revision 1.12  2002/05/03 15:53:10  smulloni
 # fix to deal with cgi.py's little problems; made the merging of querystring into post data optional.
 #

@@ -43,3 +43,7 @@ SkunkWebErrorEmails	@OWNER@@localhost
 # which is 2 minutes -- BLEAH!  (default is 1 second = 1000 milliseconds)
 #
 # SkunkWebConnectTimeout 1000
+
+# Whether or not to include SkunkWeb/<version> in the Server header of Apache
+# Default is On
+# SkunkWebExpose On

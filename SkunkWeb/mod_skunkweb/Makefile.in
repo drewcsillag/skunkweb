@@ -18,11 +18,11 @@
 #
 # The makefile for the mod_skunkweb module
 #
-# $Id: Makefile.in,v 1.3 2001/12/20 17:35:34 drew_csillag Exp $
+# $Id: Makefile.in,v 1.4 2002/04/24 19:17:08 drew_csillag Exp $
 
 # This is a useful script provided by apache to compile shared modules
 APXS=@APXS@
-CFLAGS=@CFLAGS@ -Wall -D_GNU_SOURCE @DEFS@
+CFLAGS=@CFLAGS@ -Wall -D_GNU_SOURCE @DEFS@ -DSW_VERSION='\"@SW_VERSION@\"'
 owner		= @OWNER@
 group		= @GROUP@
 INSTALL		= @INSTALL@ -o $(owner) -g $(group)
