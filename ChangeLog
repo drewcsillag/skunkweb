@@ -1,5 +1,8 @@
 2004-01-10  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
+	* SkunkWeb/Services/templating/Handler.py: bug fix: now hide .inc
+	and .pyinc files from requests! 
+
 	* pylibs/AE/Cache.py (_genCacheKey): use different cachekey
 	function if key files aren't being written.  I think this works,
 	but it needs testing.

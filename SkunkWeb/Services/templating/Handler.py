@@ -1,5 +1,5 @@
-# Time-stamp: <2003-12-29 23:22:28 smulloni>
-# $Id: Handler.py,v 1.12 2003/09/08 00:24:18 smulloni Exp $
+# Time-stamp: <2004-01-10 23:04:49 smulloni>
+# $Id: Handler.py,v 1.13 2004/01/11 03:57:58 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -31,6 +31,8 @@ Configuration.mergeDefaults(
         "text/x-stml-python-component",
         "text/x-stml-data-component",
         "text/x-stml-python-data-component",
+        "text/x-stml-include",
+        "text/x-stml-python-include"
         ],
     interpretMimeTypes = [
         "text/html",
