@@ -1,5 +1,5 @@
 #   Time-stamp: <2001-08-09 23:14:11 drew> 
-#   $Id: TODO,v 1.4 2001/08/09 22:16:54 drew_csillag Exp $
+#   $Id: TODO,v 1.5 2001/08/10 03:14:54 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -22,6 +22,11 @@ Do Quick release
 
 SkunkWeb 3.0
 ------------------------------
+* make so if there are permissions problems in the docroot it gives a more
+  descriptive error message.
+* fix msg on swmgr start
+/usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration
+  def reload(self):
 * fix devel doc -- remove config stuff, api only
 * finish rewrite of the operations manual
 * security audit on rcc code
