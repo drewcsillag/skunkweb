@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.15 2002/04/17 19:27:13 drew_csillag Exp $
-# Time-stamp: <2002-04-29 16:36:47 drew>
+# $Id: sw.conf.in,v 1.16 2002/04/29 21:11:14 drew_csillag Exp $
+# Time-stamp: <2002-04-29 22:10:01 drew>
 
 ########################################################################
 #
@@ -195,11 +195,11 @@ sys.path.append('@prefix@/sitelibs')
 
 # auth variables -- can be done globally but most likely will be
 # scoped e.g.
+# BTW: you really would only uncomment one of the following groups.
 # Scope(Location("/demo",
 
 #               # the basic auth authorizer 
 #               authAuthorizer='auth.BasicAuth',
-
 #               authAuthorizerCtorArgs=(
 #                   #the authentication name or realm that will show up
 #                   #in the browser's login box
@@ -234,8 +234,6 @@ sys.path.append('@prefix@/sitelibs')
 #               authAuthorizerCtorArgs=(
 #                   #the key in the session where the username will be stored
 #                   'username',
-#                   #the key in the session where the password will be stored
-#                   'password',
 #                   #the file (administered with swpasswd) where the username
 #                   #password info is stored
 #                   '/usr/local/skunk/var/AUTHDB',
@@ -616,6 +614,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.16  2002/04/29 21:11:14  drew_csillag
+# changed re:cookieauth/auth
+#
 # Revision 1.15  2002/04/17 19:27:13  drew_csillag
 # updated for cookieauth
 #
