@@ -24,11 +24,13 @@
 from form import FormErrorMessage, _defaultValueComposer
 from views import TextField, ViewableCompositeField, SelectField
 import time
+import operator
 
 __all__=['IntegerField',
          'DoubleField',
          'DateField',
-         'InternationalAddressField']
+         'InternationalAddressField',
+         'ISBNField']
 
 ########################################################################
 # Validating fields
@@ -445,3 +447,24 @@ COUNTRY_CODES = [
             ('Zambia', 'ZM'),
             ('Zimbabwe', 'ZW'),
         ]
+
+def check_isbn(isbn):
+	isbn=filter(lambda c: c != '-', isbn)
+	if len(isbn)<> 10:
+		return
+	weights=range(2, 11)
+	weights.reverse()
+	l=[z * int(c) for c, z in zip(isbn, weights)]
+	x=reduce(operator.add, l) % 11
+	checkdigit='0123456789X0'[(11-x)]
+	return checkdigit==isbn[-1]
+
+
+class ISBNField(TextField):
+    "Restricts validated input to legal ISBNs"
+    def validate(self, form=None):
+        errorlist= TextField.validate(self) or []
+        if self.value:
+            if not check_isbn(self.value):
+                errorlist.append(FormErrorMessage(self, "invalid ISBN"))
+        return errorlist    

@@ -1,3 +1,7 @@
+2003-03-04 Jacob Smullyan <smulloni@smullyan.org>
+
+	* pylibs/formlib/validates.py (ISBNField): added a field
+	for inputting ISBNs.
 
 2003-03-03 Jacob Smullyan <smulloni@smullyan.org>
 
