@@ -1,3 +1,8 @@
+2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/Hooks.py (KeyedHook.__call__): better fix
+	to DEBUG import problem.
+
 2001-08-12  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* configure, configure.in, SkunkWeb/Makefile.in,
@@ -5,6 +10,12 @@
 	pylibs/Makefile.in: Now no longer require GNU install.  Remove all
 	places where it was called with -D
 
+2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/PostgreSQLSessionStore.py, 
+	SkunkWeb/Services/sessionHandler/__init__.py: added a PostgreSQL-
+	based session store, this time using PyDO.
+	
 2001-08-11  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* docs/stmlrefer/stmlrefer.tex: added doc about the new as
