@@ -15,6 +15,7 @@ Changes in 3.4 final
 * fixes for sapdb and unicode in PyDO.
 * new AE.Cache options, runOutOfCache and dontCacheSource.
 * can be run in the foreground (for use with daemontools).
+* ported to HP/UX 11
 
 Changes in 3.4b2
 ========================================

@@ -1,3 +1,28 @@
+2003-04-16    <drew@loki.sai-office>
+
+	* pylibs/Makefile.in (install): on HPUX, for reasons that are
+	totally opaque to me, install-sh does not work unless you run it
+	as "sh $(INSTALL)...", but just here... !??!!?
+
+	* SkunkWeb/SkunkWeb/Server.py: now deals ok when os does not
+	have the seteuid or setegid functions
+
+	* SkunkWeb/skunkweb.py.in (mods): now deals ok when os does not
+	have the seteuid or setegid functions
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py (_processRequest) 
+	(_sendResponse): fixes to ignore non-erroneous exceptions (i.e.
+	those where the connection dies).
+
+2003-04-11    <drew@loki.sai-office>
+
+	* pylibs/SocketMan/SocketMan.py: now checks for EWOULDBLOCK on
+	accept() error.
+
+	* SkunkWeb/Makefile.in, SkunkWeb/Services/Makefile.in,
+	pylibs/Makefile.in: portability fixes for PH/UX, er, HP/UX, er,
+	really shitty Unix
+
 2003-04-15  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/spreadcache_service.py: tiniest possible service
