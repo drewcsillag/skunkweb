@@ -1,5 +1,9 @@
 2001-08-10  Drew Csillag  <drew@starmedia.net>
-
+	* SkunkWeb/Services/templating/HTMLTags.py: fixed redirect tag.  It
+	was totally broken.
+	
+        * Skunkweb 3.0 beta 2 will be recut on Monday
+	
 	* Skunkweb 3.0 beta 2 cut
 	
 	* setup.py: removed.. Way out of date an no longer necessary
