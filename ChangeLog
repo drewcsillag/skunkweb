@@ -2,6 +2,7 @@
 
 	* skunkweb.spec: incorporating SR's latest fixes to what I screwed
 	up.
+	(Requires): changing path of cache directory argument to cache reaper.
 
 	* SkunkWeb/mod_skunkweb/Makefile.in: adding DESTDIR to install.
 

@@ -86,7 +86,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
            INSTALL=install INSTALL_DATA=install
 
 #  set up cache reaper
-echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /usr/local/skunk/cache' >"$RPM_BUILD_ROOT"/etc/cron.daily
+echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/cache/skunkweb' >"$RPM_BUILD_ROOT"/etc/cron.daily
 
 #  build file list
 find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
