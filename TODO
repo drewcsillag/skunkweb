@@ -1,5 +1,5 @@
 #   Time-stamp: <02/02/04 13:27:38 smulloni> 
-#   $Id: TODO,v 1.32 2002/02/03 05:31:33 smulloni Exp $
+#   $Id: TODO,v 1.33 2002/02/05 03:18:17 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -23,6 +23,7 @@ Do Quick release
 SkunkWeb 3.2
 ------------------------------
 
+* add favicon.ico to demo content and SkunkWeb site in general
 TESTING:
 
 X vfs !!!
