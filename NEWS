@@ -1,0 +1,5 @@
+Changes from 3.0 to 3.1
+========================================
+* Major performance tweaks.  Should now be about 30% faster overall.
+* Now supports FastCGI
+* PyDO improvements (mainly PostgreSQL related)
