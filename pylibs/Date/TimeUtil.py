@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 """miscellaneous time routines"""
-#$Id: TimeUtil.py,v 1.1.1.1 2001/08/05 15:00:59 drew_csillag Exp $
+#$Id: TimeUtil.py,v 1.2 2001/12/20 17:35:34 drew_csillag Exp $
 
 try:
     from mx import DateTime
@@ -128,7 +128,7 @@ def untilString(until, curdate=None):
 
     # else boom
     else:
-        raise TimeException, s
+        raise TimeException, until
 
 def timeConv(s):
     """convert a time like 9d20h10m15s to seconds"""
