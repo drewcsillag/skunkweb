@@ -1,7 +1,7 @@
 2003-07-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/util/cache_reaper.py.in (walk_func): fix for missing
-	key file.
+	key file. (conf): added "keyfiles" option.
 
 	* docs/manual/instConfig.txt: fixed some indentation problems in
 	the rst source.

@@ -18,6 +18,7 @@ import Config
 from SkunkExcept import *
 
 conf = Config.Config([
+    Config.el('keyfiles', 'look for key files', None, 'k', 'keyfiles'),
     Config.el('cachedir', 'cache directory', '@CACHE@',
               'c', 'cachedir', 'pathtocache'),
     Config.el('deadtime', 'how long after cache entry dies do we delete it',
@@ -36,7 +37,7 @@ def get_expiration(filename):
 
 # The number of cache entries reaped
 _reaped, _total = 0, 0
-def walk_func((dodel, deadtime), dirname, filelist):
+def walk_func((dodel, deadtime, keyfiles), dirname, filelist):
     global _reaped, _total
 
     curtime=time.time()
@@ -62,9 +63,11 @@ def walk_func((dodel, deadtime), dirname, filelist):
             #                                         curtime - deadtime)
             _reaped = _reaped + 1
             if dodel:
-                keyfile = file[:-6] + '.key'
-
-                for f in ( file, keyfile ):
+                tozap=[file]
+                if keyfiles:
+                    keyfile = file[:-6] + '.key'
+                    tozap.append(keyfile)
+                for f in tozap:
                     # Wasteful
                     _f = os.path.join ( dirname, f )
                     try:
@@ -98,6 +101,7 @@ else:
 
 cacheDir = conf['cachedir']
 deadtime = conf['deadtime']
+keyfiles = conf['keyfiles']
 
 print 'About to delete cache entries in %s expired more than %d ' \
       'seconds ago' % ( cacheDir, deadtime )
@@ -105,7 +109,7 @@ print 'About to delete cache entries in %s expired more than %d ' \
 # Make a note of the time
 _start_time = time.time()
 
-os.path.walk(cacheDir, walk_func, (dodel, deadtime))
+os.path.walk(cacheDir, walk_func, (dodel, deadtime, keyfiles))
 
 if dodel:
     sys.stdout.write ( 'Deleted ' )
