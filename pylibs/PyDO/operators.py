@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/06/10 11:44:57 smulloni>
+# Time-stamp: <2003-03-28 08:46:54 drew>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -39,7 +39,7 @@ class SQLOperator:
         classes, like FIELD, could ameliorate the problem to a degree.
         """
         _assql=lambda v: (isinstance(v, SQLOperator) and "(%s)" % v.asSQL()) \
-                or (type(v)==type("") and "'%s'" % v) or str(v)
+                or (type(v) in (types.StringType, types.UnicodeType) and "'%s'" % v) or str(v)
         vallen=len(self.values)
         if vallen==1:            
             return "%s %s" % (self.__class__.symbol, _assql(self.values[0]))
@@ -118,7 +118,7 @@ def tupleToSQL(optuple):
     and translates it into SQL
     """
     _assql=lambda v: (type(v)==type(()) and "(%s)" % tupleToSQL(v)) \
-            or (type(v)==type("") and "'%s'" % v) or str(v)
+            or (type(v) in (types.StringType, types.UnicodeType) and "'%s'" % v) or str(v)
     lent=len(optuple)
     if lent<2:
         raise ValueError, "malformed input"

@@ -21,7 +21,7 @@ from Date import DateTime
 import string
 from PyDO import SYSDATE #circular import ok, since we're loaded after PyDO
 import sapdbapi
-import sapdb
+#import sapdb
 from string import split
 
 class _NO_VALUE: pass
@@ -39,6 +39,7 @@ class PyDOsapdb:
         self.conn = sapdbapi.connect(user,pwd,dbname,host,timeout="0")
         self.bvcount = 0
         self.bindVariables = 1
+        self.__lastrowid = None
         if self.verbose:
             print 'CONNECTED'
         
@@ -68,9 +69,10 @@ class PyDOsapdb:
 
     def sqlStringAndValue(self, val, attr, dbtype):
         if val == SYSDATE:
-            return 'SYSDATE', _NO_VALUE
+            return 'NOW()', _NO_VALUE
+            #return 'SYSDATE', _NO_VALUE
         if Date.isDateTime(val):
-            val = _dateConvertToDB(val)
+            val = _dateConvertToDB(val, dbtype)
         # if string.upper(dbtype) == "LONG RAW":
         #    val = sapdbapi.dbi.dbiRaw(val)
         self.bvcount = self.bvcount + 1
@@ -86,7 +88,9 @@ class PyDOsapdb:
     def resetQuery(self):
         self.bvcount = 0
 
-    def getAutoIncrement(self, name): pass
+    def getAutoIncrement(self, name):
+        return self.__lastrowid
+    
     def getSequence(self, name):
         cur = self.conn.cursor()
         sql = 'select %s.nextval from dual' % name
@@ -103,10 +107,14 @@ class PyDOsapdb:
             print 'SQL>', sql
             print 'VALUES>', values
 
+        self.__lastrowid = None # clear previous value
+
         r = cur.execute(sql, tuple(values))
         #if self.verbose:
         #    print 'RETURN>', r
         if _isdml(sql):
+            try: self.__lastrowid = cur.lastrowid
+            except: pass    # must not have been an INSERT
             return r
         result = []
         while 1:
@@ -162,7 +170,7 @@ class PyDOsapdb:
               not isinstance(val, types.IntType)):
                 raise TypeError, ('trying to assign %s to %s and is not'
                                   ' a number') % (val, aname)
-        elif _isString(attr) and not isinstance(val, types.StringType):
+        elif _isString(attr) and not isinstance(val, types.StringType) and not isinstance(val, types.UnicodeType):
             raise TypeError, 'trying to assign %s to %s and is not a string'% (
                 val, aname)
     
@@ -186,7 +194,9 @@ def _isDateKind(type):
         return 1
 	
 def _dateConvertToDB(val,attr):
-    if attr == 'Date':
+    if val == SYSDATE:
+        return 'NOW()'
+    elif attr == 'Date':
         return sapdbapi.Date(val.year,val.month,val.day)
     elif attr == 'Time':
         return sapdbapi.Time(val.hour,val.minute,val.second)
@@ -195,6 +205,8 @@ def _dateConvertToDB(val,attr):
 
     
 def _dateConvertFromDB(val,type):
+    if val is None: # DateTimeFrom can't handle None as an argument
+        return None
     return DateTime.DateTimeFrom(sapdbapi.valTranslation[type](val))
 
 def _isNumber(attr):
