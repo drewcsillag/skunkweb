@@ -1,0 +1,20 @@
+<:compargs username:>
+<:import hoptime.hopapi as=H:>
+<:set user `H.Users.getUnique(username=username)`:>
+<:if `not user`:>
+   <:#:>do the 404 dance<:/#:>
+<:else:>
+<html>
+<head>
+  <title><:val `username`:>'s page</title>
+</head>
+<body>
+
+<p>This should the main page for the user.
+The listing I've put on the front page should perhaps go here
+as well; also it should be possible to change user information
+here, or get to forms to do that, at least.</p>
+</body>
+</html>
+
+<:/if:>
