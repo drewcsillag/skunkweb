@@ -1,3 +1,12 @@
+2003-05-01    <drew@loki.sai-office>
+
+	* configure.in:  HP-UX fix for install problems
+
+	* configure.in, SkunkWeb/configure.in: now works if python is not
+	in your path at configure time.
+	
+	* configure, SkunkWeb/configure: regenerated
+	
 2003-04-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/rewrite.py: removed hooks entirely and
