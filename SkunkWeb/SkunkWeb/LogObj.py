@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: LogObj.py,v 1.5 2003/05/02 17:38:18 smulloni Exp $
+#$Id: LogObj.py,v 1.6 2003/09/08 00:24:18 smulloni Exp $
 ########################################################################
 
 """
@@ -40,9 +40,9 @@ class Redirector:
             self.lbuf = ''
             
 def redirectStdOutErr():
-    if not sys.stderr.isatty():
+    if sys.__stderr__ == sys.stderr and not sys.stderr.isatty():
         sys.stderr = Redirector(Logger.ERROR)
-    if not sys.stdout.isatty():
+    if sys.__stderr__ == sys.stderr and not sys.stdout.isatty():
         sys.stdout = Redirector(Logger.LOG)
 
 ########################################################################        
