@@ -1,0 +1,30 @@
+from formlib import *
+
+fields=[FileField("upload",
+                  description="Upload File",
+                  required="Please select a file to upload"),
+        SubmitField("submit",
+                    default="upload!")]
+
+
+form=ViewableForm(name="testUpload",
+                  method="POST",
+                  enctype="multipart/form-data",
+                  fields=fields)
+
+import ecs
+if CONNECTION.method=='POST':
+    form.submit(CONNECTION.args)
+    if form.errors:
+        print ecs.H3("ERROR")
+    else:
+        print ecs.H3("Successful form submission.  The uploaded contents were:")
+        print ecs.Pre(CONNECTION.args['upload'].contents)
+
+else:
+    print
+    print ecs.H3("Please do your business.")
+    print
+
+print
+print form.getView()
