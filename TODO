@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-10-24 21:31:33 drew> 
-#   $Id: TODO,v 1.15 2001/10/01 14:48:45 drew_csillag Exp $
+#   Time-stamp: <01/11/06 02:17:47 smulloni> 
+#   $Id: TODO,v 1.16 2001/10/25 01:26:22 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -25,6 +25,7 @@ SkunkWeb 3.2
 * pluggable file retrieval system for AE (would have to rework pars)
 * DAV support built on httpd;
 * CGI adaptor (in place of mod_skunkweb, etc.)
+! configure refinements (js)
 
 Future stuff
 ------------------------------

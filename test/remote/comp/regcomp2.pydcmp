@@ -1,0 +1,6 @@
+thang="""
+<P>Greetings, most dutiful remote component tester.  I salute you and urge you
+to doff your hat in turn at the first talking dog you meet on a Thursday.
+</P>
+"""
+raise ReturnValue, thang

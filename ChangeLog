@@ -1,5 +1,6 @@
 2001-11-06  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* test/index.html: added some rudimentary tests.
 	* docs/opman/opman.tex (section{Remote Components}): some
 	documentation about remote components.
 
