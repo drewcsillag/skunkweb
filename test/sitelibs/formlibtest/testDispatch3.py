@@ -18,19 +18,7 @@ from containers import FieldContainer
 from formlib.form import _getname
 from formlib import *
 
-def process_store(form, argdict, state, ns):
-    """
-    store the form values in the state dictionary
-    if the field name does not begin with an underscore.
-    The key for a field value in the state dictionary
-    is the formname, a period, and then the fieldname,
-    guaranteeing uniqueness.
-    """
-    state.state.update(dict([('%s.%s' % (form.name, k), v) \
-                             for k, v in form.getData().items() \
-                             if not k.startswith('_')]))
-
-def process_munge(form, argdict, state, ns):
+def process_munge(form, state, argdict, formdict, ns):
     """
     this should take the form  data populate
     the previous form on the stack with the item
@@ -38,21 +26,22 @@ def process_munge(form, argdict, state, ns):
     into the field called "_mungetarget".
     
     """
-    f=state.peek_form()
-    assert f
-    target=form.fields['_mungetarget'].value
-    source=form.fields['_mungeitem'].value
-    f.fields[target].value=form.fields[source].value
-
-def process_submit(form, argdict, state, ns):
+    fname=state.peek_formname()
+    f=formdict[fname]
+    target=argdict.get('_mungetarget')
+    source=argdict.get('_mungeitem')
+    if target and source:
+        print "target: %s; source: %s" % (target, source)
+        state.state.setdefault(fname, {})
+        state.state[fname][target]=form.fields[source].value
+        
+def process_submit(form, state, argdict, formdict, ns):
     """
     """
     pass
 
 stateVar="_state"
 flowactionVar="_flowaction"
-
-
 
 actionRE=re.compile(r'^(PUSH|POP|GOTO)(?:\.(.*))?$')
 
@@ -88,7 +77,7 @@ class PushyFlowManager(object):
             elif a=='GOTO':
                 return Goto(f)
             else:
-                f=state.peek_form()
+##                f=state.peek_formname()
 ##                print [(k, str(v.value), v.default) for k, v in f.fields.to_dict().items()]
                 return Pop()
         else:

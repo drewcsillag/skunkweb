@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/26 14:40:35 smulloni>
-# $Id: dispatcher.py,v 1.6 2002/11/26 01:34:18 smulloni Exp $
+# Time-stamp: <02/12/03 12:24:34 smulloni>
+# $Id: dispatcher.py,v 1.7 2002/11/26 20:52:46 smulloni Exp $
 
 from containers.fieldcontainer import FieldContainer
 from form import _getname
@@ -13,11 +13,12 @@ class Goto:
                  state,
                  argdict,
                  formdict,
-                 ns):
+                 ns={}):
         form.submit(argdict)
         if form.errors:
             return form
-        form.process(argdict, state, ns)
+        state.store_form(form)
+        form.process(state, argdict, formdict, ns)
         if self.formname:
             return formdict[self.formname]
 
@@ -27,12 +28,18 @@ class Pop:
                  state,
                  argdict,
                  formdict,
-                 ns):
+                 ns={}):
         form.submit(argdict)
         if form.errors:
             return form
-        form.process(argdict, state, ns)
-        return state.pop_form()
+        state.store_form(form)        
+        form.process(state, argdict, formdict, ns)
+        nextformname=state.pop_formname()
+        if nextformname:
+            f=formdict[nextformname]
+            f.setData(state.state.get(nextformname, {}))
+            return f
+        
 
 class Push:
     def __init__(self, formname, valid=0):
@@ -49,9 +56,11 @@ class Push:
             form.submit(argdict)
             if form.errors:
                 return form
-        state.push_form(form)
-        return formdict[self.formname]
-
+        state.store_form(form)                    
+        state.push_formname(form.name)
+        f=formdict[self.formname]
+        f.setData(state.state.get(self.formname, {}))
+        return f
     
 class FormDispatcher:
     def __init__(self,
@@ -74,8 +83,8 @@ class FormDispatcher:
         if statestr:
             self.statemgr.read(statestr)
         # identify the form being submitted.
-        if self.statemgr.formname:
-            form=self.forms[self.statemgr.formname]
+        if self.statemgr.stack:
+            form=self.forms[self.statemgr.pop_formname()]
             # get the next action.
             action=self.flowmgr.next(form,
                                      self.statemgr,
@@ -94,7 +103,7 @@ class FormDispatcher:
             form.reset()
         if form:
             # update the state with the new form name
-            self.statemgr.formname=form.name
+            self.statemgr.push_formname(form.name)
             # set the new state in the form's stateVariable 
             form.fields[self.stateVariable].value=self.statemgr.write()
         return form

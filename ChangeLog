@@ -1,3 +1,22 @@
+2002-12-03    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/dispatcher.py: several api changes, mostly
+	involving changes to how state behaves.
+	* pylibs/formlib/state.py: now store the current formname on
+	the stack, and only store formnames there, not pickled forms.
+	The state field now stores one dictionary per form with its field
+	information; this is a problem if the same form occurs more than
+	once on the stack.
+	* pylibs/formlib/form.py (Form.getData): added an optional "prune"
+	argument that prevents returning data we may not be interested in 
+	(fields that aren't setable or whose names begin with an
+	underscore).
+	* pylibs/formlib/views.py (HiddenField): now not setable; previous
+	implementation was broken.
+	* test/sitelibs/formlibtest/testDispatch3.py,
+	test/formlib/htdocs/testDispatch3.pyinc: modified to work with
+	refactoring of formlib.
+
 2002-12-02    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/state.py (InPageStateManager.__init__): stack

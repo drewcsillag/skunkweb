@@ -125,7 +125,18 @@ class FileField(InputField):
 
 class HiddenField(InputField):
     type="hidden"
-    setable=0
+    def __init__(self,
+                 name,
+                 description=None,
+                 default=None,
+                 setable=0,
+                 **view_attrs):
+        InputField.__init__(self,
+                            name,
+                            description,
+                            default,
+                            setable=setable,
+                            **view_attrs)
     
 class SubmitField(InputField):
     type="submit"

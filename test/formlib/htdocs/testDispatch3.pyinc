@@ -5,6 +5,28 @@ import rotor
 import pprint
 import ecs
 
+def process_munge(form, state, argdict, formdict, ns):
+    """
+    this should take the form  data populate
+    the previous form on the stack with the item
+    indicated in the hidden variable "_mungefield"
+    into the field called "_mungetarget".
+    
+    """
+    fname=state.peek_formname()
+    f=formdict[fname]
+    target=argdict.get('_mungetarget')
+    source=argdict.get('_mungeitem')
+    if target and source:
+        print "target: %s; source: %s" % (target, source)
+        state.state.setdefault(fname, {})
+        state.state[fname][target]=form.fields[source].value
+        
+def process_submit(form, state, argdict, formdict, ns):
+    """
+    """
+    pass
+
 forms=[ViewableForm('page1',
                     method="POST",
                     fields=[HiddenField(stateVar),
@@ -15,8 +37,7 @@ forms=[ViewableForm('page1',
                                          setable=0,
                                          type="submit"),
                             SubmitField('_submit',
-                                        default='Submit')],
-                    processors=[process_store]),
+                                        default='Submit')]),
        ViewableForm('finditem',
                     method="POST",
                     fields=[HiddenField(stateVar),

@@ -32,9 +32,6 @@ class _undef(object):
     
 UNDEF=_undef()
 
-# used to delimit the composed name of CompositeField components
-COMPOSITE_FIELD_DELIMITER="_"
-
 class Field(object):
     def __init__(self,
                  name,
@@ -98,8 +95,9 @@ class Field(object):
 
  
 class FieldProxy(object):
-    "A proxy for abstracting a proxied name out from a field which may be known by another"\
-    " name as a means of indirection"
+    "A proxy for abstracting a proxied name out from a "\
+    "field which may be known by another "\
+    "name as a means of indirection"
     def __init__(self, proxyName, proxiedField):
         self._name = proxyName
         self.field = proxiedField
@@ -113,18 +111,22 @@ class FieldProxy(object):
 
 def _defaultValueComposer(fieldList):
     """\
-    Generates a single 'value' by concatentating each field.value into a single
-    newline delimited list
+    Generates a single 'value' by concatentating each field.value into
+    a single newline delimited list
     """
-    retVal = ''
-    if fieldList:
-        for fld in fieldList:
-            retVal = retVal + str(fld.value) + '\n'
-    return retVal
+    return '\n'.join([str(fld.value) for fld in fieldList])
+##    retVal = ''
+##    if fieldList:
+##        for fld in fieldList:
+##            retVal = retVal + str(fld.value) + '\n'
+##    return retVal
 
 
 class CompositeField(Field):
-    "Represents a composite group of fields which are logically grouped beneath a single name"
+
+    "Represents a composite group of fields which are logically"\
+    "grouped beneath a single name"
+
     def __init__(self,
                  name,
                  description,
@@ -132,16 +134,23 @@ class CompositeField(Field):
                  multiple=1,
                  setable=1,
                  componentFields=[],
-                 componentFieldDelimiter=COMPOSITE_FIELD_DELIMITER,
+                 componentFieldDelimiter='_',
                  valueComposer=_defaultValueComposer):
-        Field.__init__(self, name, description, default, multiple, setable)
+        Field.__init__(self,
+                       name=name,
+                       description=description,
+                       default=default,
+                       multiple=multiple,
+                       setable=setable)
         self.delimiter = componentFieldDelimiter
 
         tmpComponents = []
         for fld in componentFields:
             prxy = FieldProxy(self._getComponentName(fld), fld)
             tmpComponents.append(prxy)
-        self._components = FieldContainer(tmpComponents, _getname, storelists=0)
+        self._components = FieldContainer(tmpComponents,
+                                          _getname,
+                                          storelists=0)
         self.composeValue = valueComposer
         
     def _get_components(self):
@@ -151,14 +160,15 @@ class CompositeField(Field):
 
     def _getComponentName(self, x):
         """
-        Method for generating the keys by which fields are indexed within the composite field
+        Method for generating the keys by which fields are indexed
+        within the composite field
         """
         return "%s%s%s" % (self.name, self.delimiter, x.name)
 
     def _get_value(self):
         """
-        The value of a composite field is the result of calling the valueComposer on the composite
-        field's component fields.
+        The value of a composite field is the result of calling the
+        valueComposer on the composite field's component fields.
         """
         return self.composeValue(self.components)
 
@@ -219,7 +229,6 @@ class DomainField(Field):
             raise ValueError, "value not present in domain: %s" % value
         return value
 
-    
 
 class Form(object):
     def __init__(self,
@@ -253,9 +262,11 @@ class Form(object):
     fields=property(_get_fields, _set_fields)
 
 
-    def getData(self):
+    def getData(self, prune=1):
         d={}
         for k, v in self.fields.iteritems():
+            if prune and k.startswith('_') or not v.setable:
+                continue
             d[k]=v.value
         return d
 
@@ -263,10 +274,6 @@ class Form(object):
         for f in self.fields:
             if f.setable:
                 f.value=data.get(f.name)
-##        for k, v in data.iteritems():
-##            f=self.fields.get(k)
-##            if f:
-##                f.value=v
 
     def submit(self, data):
         self.reset()
@@ -289,13 +296,8 @@ class Form(object):
                 if e:
                     self.errors.extend(e)
 
-    def process(self, argdict, statemgr, ns):
-        # this needs to have some arguments; for instance,
-        # if the form needs to change the state of another form,
-        # as in the case of a recursive edit (where one form
-        # fills in a value in another).  For now I'm passing
-        # in more or less everything available in the dispatcher.
-        return self.processHook(self, argdict, statemgr, ns)
+    def process(self, statemgr, argdict, formdict={}, ns={}):
+        return self.processHook(self, statemgr, argdict, formdict, ns)
     
 def _getname(x):
     return x.name
@@ -307,5 +309,4 @@ class FormError(object):
 
 def _getfield(x):
     return x.field
-
 

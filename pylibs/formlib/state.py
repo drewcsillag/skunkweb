@@ -12,8 +12,7 @@ class InPageStateManager:
     hash.  If you want to further encrypt the pickled value
     of the state, use a stateEncryptor, which should have
     encrypt() and decrypt() methods (like the class in aesencrypt,
-    or a rotor object).  The stateVariable is the cgi key
-    used for retrieving and setting state.
+    or a rotor object). 
     """
     def __init__(self,
                  nonce,
@@ -21,11 +20,10 @@ class InPageStateManager:
         self.stack = [] 
         self.state = {}
         self.nonce=nonce
-        self.formname=None
         self.encryptor = stateEncryptor
 
     def write(self):
-        s = cPickle.dumps((self.formname, self.stack, self.state), 1)
+        s = cPickle.dumps((self.stack, self.state), 1)
         if self.encryptor:
             s = self.encryptor.encrypt(s)
         hash = md5.md5(self.nonce + s).digest()
@@ -40,19 +38,24 @@ class InPageStateManager:
             raise InvalidStateException, 'state has been tampered with'
         if self.encryptor:
             pick = self.encryptor.decrypt(pick)
-        (self.formname, self.stack, self.state) = cPickle.loads(pick)
+        (self.stack, self.state) = cPickle.loads(pick)
 
-    def push_form(self, form):
-        self.stack.append(form)
+    def store_form(self, form):
+        self.state.setdefault(form.name, {})
+        self.state[form.name].update(form.getData())
 
-    def pop_form(self):
+    def push_formname(self, formname):
+        self.stack.append(formname)
+
+    def pop_formname(self):
         return self.stack.pop()
 
-    def peek_form(self):
+    def peek_formname(self):
         if self.stack:
             return self.stack[-1]
 
     def clear(self):
         self.state.clear()
+        self.stack=[]
         
 __all__=['InvalidStateException', 'InPageStateManager']
