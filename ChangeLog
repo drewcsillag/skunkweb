@@ -1,5 +1,8 @@
 2003-04-15  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/spreadcache_service.py: tiniest possible service
+	for defining spreadcache aliases in skunkweb configuration.
+
 	* pylibs/spreadcache.py: simple module for caching spread
 	mailboxes.
 
