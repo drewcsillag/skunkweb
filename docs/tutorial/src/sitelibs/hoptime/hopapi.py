@@ -1,11 +1,34 @@
-# Time-stamp: <02/10/01 17:58:58 smulloni> 
-# $Id: hoptime.py,v 1.2 2002/09/30 15:44:50 smulloni Exp $
+# Time-stamp: <02/10/02 23:53:22 smulloni> 
+# $Id$
 
 import PyDO
+import sys
 
+def DEBUG(message):
+    # at runtime in SkunkWeb, this method will
+    # be replaced with a curried wrapper around
+    # SkunkWeb.LogObj.DEBUG, but this
+    # version enables the module to used
+    # for testing/scripts
+    print >> sys.stderr, message
+    
+# the connectstring when you aren't caching connections
+# (for use outside the skunkweb daemon environment)
 DEFAULT_CONNECTSTRING='pydo:postgresql:localhost:hoptime:postgres'
 
-def initDB(connectstring=DEFAULT_CONNECTSTRING):
+# what you use within skunkweb itself (w/ the postgresql service)
+SK_CONNECTSTRING='pydo:postgresql:hoptime:cache'
+
+def initDB(connectstring=DEFAULT_CONNECTSTRING, verbose=0):
+    """
+    this must be called before this module can be used.
+    in skunkweb itself, it will get called during
+    service initialization and therefore doesn't need to be
+    called in templates or data components.
+    """
+    # in verbose mode, all SQL will be logged to stdout
+    if verbose and not connectstring.endswith(':verbose'):
+        connectstring+=':verbose'
     PyDO.DBIInitAlias('hoptime', connectstring)
 
 class _hoptimebase(PyDO.PyDO):
@@ -14,6 +37,8 @@ class _hoptimebase(PyDO.PyDO):
 class GameStateException(Exception): pass
 class GameClosed(GameStateException): pass
 
+# for convenience, reference these static methods
+# outside of their purported owners
 rollback=_hoptimebase.rollback
 commit=_hoptimebase.commit
 getDBI=_hoptimebase.getDBI
@@ -95,6 +120,8 @@ class Games(_hoptimebase):
                               'id')
 
     def getText(self, before_edit=0):
+        # once play has ended, the resulting text is stored in the
+        # stories table.
         if not before_edit and self['status'] in ('editing', 'published'):
             s=Stories.getUnique(game=self['id'])
             if s:
@@ -103,8 +130,12 @@ class Games(_hoptimebase):
                 # shouldn't happen
                 return None
         else:
+            # to get the current text during play,
+            # call a stored procedure that aggregates
+            # it from the moves of the game.
+            # No need to go through a PyDO object for this.
             sql='SELECT get_text(%d)' % self['id']
-            c=self.getDBI().conn.cursor()
+            c=getDBI().conn.cursor()
             c.execute(sql)
             t=c.fetchone()
             c.close()

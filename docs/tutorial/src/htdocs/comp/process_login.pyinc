@@ -1,0 +1,43 @@
+import cPickle
+import base64
+import SkunkWeb.Configuration
+import auth
+import AE.Component
+import DT
+
+# this isn't set automatically for login pages
+CONNECTION.setContentType('text/html')
+
+# attempt to get form arguments
+locals().update(CONNECTION.extract_args('username',
+                                        'password',
+                                        'vals'))
+
+# did we get a submission, or are we just showing the login page?
+if username and password:
+  # Attempt to validate the username/password combo
+  authorized=auth.getAuthorizer().login(CONNECTION,
+                                        username,
+                                        password)
+  # title is only used for showing login form
+  # use message catalogs for this!
+  title= "Login Incorrect"
+else:
+  authorized= ""
+  title= "Welcome to Hoptime"
+  vals=base64.encodestring(cPickle.dumps(CONNECTION.args), 1)
+if authorized:
+    if vals:
+
+        CONNECTION.args =  cPickle.loads(base64.decodestring('\n'.join(vals.split('<BR>'))))
+        CONNECTION.remoteUser=username
+        CONNECTION.remotePassword=password
+  raise "OK"
+else:
+  print AE.Component(login.comp,
+                     argDict={'vals' : vals,
+                              'action' : CONNECTION.uri,
+                              'title' : title},
+                     compType=DT.DT_REGULAR)
+
+
