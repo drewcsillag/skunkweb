@@ -14,25 +14,44 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-#   
+#
+
 import types
 import Date
 from Date import DateTime
 import string
-from MySQL import MySQL
+import MySQL
+import MySQLdb
 import PyDBI
 
 class PyDOMySQL:
-    def __init__(self, connectString):
-        self.connectString = connectString
-        bits = tuple(string.split(connectString, ':'))
-        self.conn = apply(MySQL.connect, bits[1:4])
-        if bits[-1] == 'verbose':
-            self.verbose = 1
+    def __init__(self, connectParams):
+        
+        verbose, cacheUser, connectParams= self.__unpackConnectArgs(connectArgs)
+        self.verbose=verbose
+        if cacheUser:
+            self.conn=MySQL.getConnection(cacheUser)
         else:
-            self.verbose = 0
-        self.conn.selectdb(bits[0])
+            self.conn=MySQLdb.connect(**connectParams)
         self.bindVariables = 0
+
+    def __unpackConnectArgs(self, connectArgs):
+        if type(connectArgs) in (types.StringType, types.UnicodeType):
+            fields='host', 'db', 'user', 'passwd'
+            d={}
+            [d[i[0]]=i[1] for i in zip(fields, connectArgs.split(':'))]
+        else:
+            d=connectArgs.copy()
+        if d.has_key('verbose'):
+            verbose=d['verbose']
+            del d['verbose']
+        else:
+            verbose=0
+        if d.has_key('cacheUser'):
+            cacheUser=d['cacheUser']
+            del d['cacheUser']
+
+        return verbose, cacheUser, d
     
     def getConnection(self): return self.conn
 
@@ -44,7 +63,7 @@ class PyDOMySQL:
     def sqlStringAndValue(self, val, attr, dbtype):
         newval = self.typeCheckAndConvert(val, attr, dbtype)
         if _isString(dbtype):
-            newval = "'" + MySQL.escape(str(newval)) + "'"
+            newval = "'" + MySQLdb.escape_string(str(newval)) + "'"
         return str(newval), None
 
 
@@ -52,21 +71,21 @@ class PyDOMySQL:
         raise NotImplemented, 'No bind variables for mysql driver'
     
     def getAutoIncrement(self, name):
-        return int(self.conn.do("SELECT LAST_INSERT_ID()")[0][0])
+        return self.conn._db.insert_id()
 
     def execute(self, sql, values, attributes):
         if self.verbose:
-            print 'SQL>', sql
-        cur = self.conn.query(sql)
+            print 'SQL> ', sql
+        cur=self.conn.cursor()
+        cur.execute(sql)
         try:
-            result = cur.fetchrows()
-        except MySQL.error:
-            return cur.affectedrows()
-
+            result = cur.fetchall()
+        except MySQLdb.MySQLError:
+            return cur.rowcount
+        
         if attributes is None:
-            return result, cur.fields()
-        fields = cur.fields()
-        fields = map(lambda x:string.upper(x[0]), fields)
+            return result, [x[0].upper() for x in cur.description]
+        fields = [x[0].upper() for x in cur.description]
         return self.convertResultRows(fields, attributes, result)
 
     def convertResultRows(self, colnames, attributes, rows):
@@ -74,7 +93,7 @@ class PyDOMySQL:
         for row in rows:
             d = {}
             for item, desc in map(None, row, colnames):
-                #do dbtype->python type conversions here
+                # do dbtype->python type conversions here
                 a = attributes[desc]
                 if _isDateKind(a):
                     d[desc] = _dateConvertFromDB(item)
@@ -132,6 +151,9 @@ def _isDateKind(type):
 
 def _dateConvertFromDB(item):
     if item is None:
+        return item
+    # MySQLdb will now return DateTime objects is egenix is present.
+    if isinstance(item, DateTime.DateTime):
         return item
     if string.find(item, '-') == -1: #timestamp form
         y = item[:4]

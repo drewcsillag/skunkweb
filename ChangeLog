@@ -1,3 +1,24 @@
+2002-01-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in: documented new mysql service configuration
+	variables, and made minor correction to description of
+	sessionHandler.
+
+	* SkunkWeb/Services/mysql/__init__.py: modified to use the newly
+	refurbished MySQL pylib.
+
+	* pylibs/MySQL/__init__.py: modified to use MySQLdb, optionally
+	perform a rollback step, and optionally perform a connection
+	validation check before handing out a connection.
+
+	* pylibs/PyDO/PyDBI.py (DBIGetConnection): modified to accept both
+	connect strings and dictionaries of connect parameters.
+
+	* pylibs/PyDO/mysqlconn.py: modified to use MySQLdb and take a
+	dictionary of connect parameters (for interoperability with the
+	MySQL pylib).
+
+
 2002-01-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sample_webdocs/demo/gallery/comp/list_thumbnails.dcmp:

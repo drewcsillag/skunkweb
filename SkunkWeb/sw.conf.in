@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.7 2001/12/02 23:09:46 smulloni Exp $
-# Time-stamp: <01/12/02 21:38:21 smulloni>
+# $Id: sw.conf.in,v 1.8 2001/12/03 02:45:04 smulloni Exp $
+# Time-stamp: <02/01/13 15:08:56 smulloni>
 
 ########################################################################
 #
@@ -56,7 +56,8 @@
 # sessionHandler          -- adds a session-scoped object to web's
 #                            HTTPConnection class which provides a simple form
 #                            of data persistence between requests, using cookies
-#                            and a pluggable data store (currently only MySQL).
+#                            and a pluggable data store (currently only MySQL,
+#                            PostgreSQL, and shelve files).
 #                            Requires web.
 #
 # httpd                   -- service which handles http requests directly, as
@@ -481,10 +482,18 @@ userModuleCleanup = 1
 # a dictionary of 'name': connect-kwarg pairs, e.g.:
 # MySQLConnectParams = {'torchsong' : {'host' : 'localhost',
 #                                      'user' : 'lungfish',
-#                                      'password' : 'aardvark',
+#                                      'passwd' : 'aardvark',
 #                                      'db'   : 'ostrich'}}
 #
 # MySQLConnectParams = {}
+
+# If you are using transactional tables with MySQL, you can add a rollback
+# after every request by setting this to a true value:
+# MySQLRollback=0
+
+# If you want a validation function to be performed every time you get
+# a connection from the cache, specify it here:
+# MySQLTestFunc=None # e.g., MySQL.SimpleQueryTest
 
 ########################################################################
 # To use cached connections with the pylibs/Oracle module set this to
@@ -520,6 +529,11 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.8  2001/12/03 02:45:04  smulloni
+# modified mysql service to use MySQLdb, and merged in
+# connection caching code from the MySQL pylib.  Adjusted
+# sw.conf.in accordingly.
+#
 # Revision 1.7  2001/12/02 23:09:46  smulloni
 # some documentation changes related to vfs
 #
