@@ -1,3 +1,33 @@
+2002-05-09  Andrew Csillag  <drew@yahoo.com>
+
+	* docs/html/Makefile: no more dependancy on the long missing devel.bib
+
+	* docs/devel/devel.tex: now will build (had extraneous \'s in it)
+
+	* docs/README: new
+
+	* SkunkWeb/Services/templating/UrlBuilder.py(hidden): now encodes 
+	key/value pairs where the value is None as "" instead of not putting
+	in the hidden tag altogether
+
+	* INSTALL: added doc about building/obtaining the documentation
+
+	* SkunkWeb/Services/httpd/protocol.py(marshalResponse):
+	pretty much rewritten so can add a Server: header if there wasn't 
+	one already and still do the proper handling of the Status header.
+
+	* SkunkWeb/Services/web/protocol.py(_initHeaders): no longer
+	adds default Server: header
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: now calls 
+	ap_add_version_component to get SkunkWeb/vvv in the Server: header
+
+	* SkunkWeb/mod_skunkweb/Makefile.in: now adds -DSW_VERSION=vvvv
+	so mod_skunkweb puts the correct thing in the server header.
+
+	* SkunkWeb/mod_skunkweb/httpd_conf.stub: added bit for new option
+	SkunkWebExpose
+
 2002-05-07  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: fixed skunkweb_handler so it 

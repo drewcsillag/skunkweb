@@ -1,10 +1,13 @@
 Changes in 3.2.1 (not yet released)
 ========================================
-* new cookieauth service
-* PyDO fixes
+* new auth service
+* Assorted PyDO fixes, notably support for more PostgreSQL types
 * Caching fix for stale 
-* Now works with Apache 2!
+* Apache 2 support.
 * DateTime objects can now be used as arguments to cacheable components
+* rewrite fixes and feature additions
+* usual array of general bug fixes
+* mod_skunkweb now properly reports it's existence in the Server header
 
 Changes in 3.2 beta 3
 ========================================
