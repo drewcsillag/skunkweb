@@ -18,3 +18,5 @@
 *shared*
 _urllib 	_urllib.c
 _translate	_translate.c
+_normpath 	_normpath.c
+_normheader	_normheader.c
