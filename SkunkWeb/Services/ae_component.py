@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ae_component.py,v 1.8 2001/07/30 16:07:29 smulloni Exp $
+# $Id: ae_component.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
 # Time-stamp: <01/05/04 11:27:17 smulloni>
 ########################################################################
 
@@ -118,16 +118,25 @@ def _trapClose(s):
 
 def _componentCommentRenderComponent(
     name, argDict, auxArgs, compType, srcModTime ):
-    import AE.Component
-    from SkunkWeb.LogObj import ERROR, DEBUG
-    from SkunkWeb.ServiceRegistry import COMPONENT
-
+    global DEBUG, ERROR, COMPONENT, Component
+    try:
+        DEBUG
+    except:
+        from SkunkWeb.LogObj import ERROR, DEBUG
+    try:
+        COMPONENT
+    except:
+        from SkunkWeb.ServiceRegistry import COMPONENT
+    try:
+        Component
+    except:
+        from AE import Component
     sargs = argDict.copy()
     out, exp = _savedRealRenderComponent(name, argDict, auxArgs, compType,
                                          srcModTime)
 
     #if not a textual component, we have no business being here
-    if compType not in (AE.Component.DT_REGULAR, AE.Component.DT_INCLUDE):
+    if compType not in (Component.DT_REGULAR, Component.DT_INCLUDE):
         DEBUG(COMPONENT, 'not a textual component')
         return out, exp
 
@@ -137,8 +146,8 @@ def _componentCommentRenderComponent(
         DEBUG(COMPONENT, 'ccl not > 0')
         return out, exp
     
-    if len(AE.Component.componentStack):
-        tlns = AE.Component.componentStack[ 0 ].namespace
+    if len(Component.componentStack):
+        tlns = Component.componentStack[ 0 ].namespace
         #if not an html page, we shouldn't comment then either
         if not tlns['CONNECTION'].responseHeaders.get(
             'Content-Type') == 'text/html':
@@ -168,6 +177,10 @@ __initHooks()
 
 ########################################################################
 # $Log: ae_component.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.8  2001/07/30 16:07:29  smulloni
 # made scope.Scopeable's "__matchers" field public: "matchers", and
 # fixed two references to it, in ae_component and pars services.
