@@ -12,7 +12,7 @@ viewable form and field implementations that delegate the actual
 rendering of forms and fields to AE components.
 """
 
-from AE.Component import callComponent, DT_REGULAR, NO
+from AE.Component import callComponent, DT_REGULAR, DT_DATA, NO, rectifyRelativePath
 from form import Form
 from views import ViewableField, ViewableDomainField, ViewableForm, Viewable
 
@@ -109,8 +109,18 @@ class ComponentViewableForm(ComponentViewableMixin, Viewable, Form):
                       processors)
 
 
-        
+class ComponentValidator:
+    def __init__(self, comp_path):
+        self.comp_path=rectifyRelativePath(comp_path)
+    def __call__(self, form):
+        res=callComponent(comp_path,
+                          argDict={'form' : form},
+                          compType=DT_DATA,
+                          cache=NO)
+        # should be a list of FormErrorMessage objects
+        return res or []
         
 __all__=['ComponentViewableField',
          'ComponentViewableDomainField',
-         'ComponentViewableForm']
+         'ComponentViewableForm',
+         'ComponentValidator']

@@ -1,3 +1,9 @@
+2003-05-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/aecomp.py (ComponentValidator):
+	added a callable wrapper for data components to be
+	used as form validators.
+
 2003-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/formlib/form.py (Field.__init__): made description
