@@ -1,0 +1,19 @@
+<:comment:>
+ what goes here:
+ links to published stories.
+
+<:/comment:>
+<:datacomp story_links dcmp/story_links.pydcmp limit=11:>
+<:if `story_links`:>
+<h2>Recent Stories</h2>
+<ul>
+<:for `story_links[:10]` slink:>
+  <li><:url `"/texts/%s" % slink[0]` text=`slink[1]`:></li>
+<:/for:>
+</ul>
+<:if `len(story_links)==11`:>
+ <p><:url /texts/ text="more texts....":></p>
+<:/if:>  
+<:/if:>
+
+

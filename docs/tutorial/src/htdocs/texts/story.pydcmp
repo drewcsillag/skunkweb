@@ -1,0 +1,4 @@
+import hoptime.hopapi as H
+
+if id is not None:
+    raise ReturnValue, H.Stories.getUnique(id=id)

@@ -1,3 +1,4 @@
+<:compargs action="" title="Login" vals="":>
 <table>
   <form method="POST" action=<:val `action`:>>
     <tr>

@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
- * Time-stamp: <02/09/30 15:43:06 smulloni> 
- * $Id: hoptime.sql,v 1.2 2002/09/30 15:44:34 smulloni Exp $
+ * Time-stamp: <02/11/01 09:07:11 smulloni> 
+ * $Id: hoptime.sql,v 1.3 2002/09/30 19:50:03 smulloni Exp $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;
@@ -16,7 +16,7 @@ DROP SEQUENCE users_id_seq;
 
 CREATE TABLE users (
 id SERIAL PRIMARY KEY,
-username TEXT NOT NULL UNIQUE,
+username TEXT NOT NULL UNIQUE CHECK (username != 'guest'),
 email TEXT NOT NULL,
 honorific TEXT,
 firstname TEXT,

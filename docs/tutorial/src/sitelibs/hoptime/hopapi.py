@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/06 00:22:57 smulloni> 
-# $Id: hopapi.py,v 1.1 2002/10/06 04:03:44 smulloni Exp $
+# Time-stamp: <02/11/01 09:09:26 smulloni> 
+# $Id: hopapi.py,v 1.2 2002/10/06 14:38:00 smulloni Exp $
 
 import PyDO
 import sys
@@ -156,6 +156,7 @@ class Games(_hoptimebase):
     def publish(self):
         if self['status'] in ('editing', 'playing'):
             self['status']='published'
+            
         else:
             raise GameStateException, "game cannot be published"
 
@@ -200,12 +201,20 @@ class Users(_hoptimebase):
                          game=game['id'],
                          content_append=text)
 
+    def fullName(self):
+        return ' '.join(filter(None, [self['honorific'],
+                                      self['firstname'],
+                                      self['middlename'],
+                                      self['lastname']]))
+                        
+
 class Stories(_hoptimebase):
     table='stories'
     fields=(
         ('id', 'integer'),
         ('game', 'integer'),
         ('story', 'text'),
+        ('published', 'timestamp'),
         )
     unique=[('id',), ('game',)]
     sequenced={
@@ -214,3 +223,17 @@ class Stories(_hoptimebase):
 
     def getGame(self):
         return Games.getUnique(id=self['game'])
+
+
+def getLatestStoryLinks(limit):
+    sql="""
+select s.id, g.title from stories s, games g
+where s.game=g.id and g.status='published'
+order by s.published desc limit %s
+    """ % limit
+
+    c=getDBI().conn.cursor()
+    c.execute(sql)
+    return c.fetchall()
+
+        

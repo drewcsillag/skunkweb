@@ -1,0 +1,9 @@
+<:comment:>
+ 
+some introductory matter here
+
+<:/comment:>
+<p>Welcome to <strong>hoptime</strong>, a collaborative 
+creative writing engine.  Read what others have written, 
+join a writing project, or start one yourself!
+<:url /faq.html text="more information":></p>

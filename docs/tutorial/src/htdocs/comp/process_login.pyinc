@@ -1,26 +1,35 @@
 import cPickle
 import base64
 import SkunkWeb.Configuration
-import auth
+import hoptime.hopauth as HA
 import AE.Component
 import DT
+import auth
 
-# this isn't set automatically for login pages
-CONNECTION.setContentType('text/html')
+# This needs to support two modes of operation.
+# Some pages will block if you aren't authorized --
+# being "guest" is insufficient -- and redirect to
+# a login page.  That page will move the login
+# components out of the navigation and put them
+# in the page body.  They may also come from form
+# submissions (where will I allow a form to appear
+# to someone who isn't authorized to fill it out?)
 
-# attempt to get form arguments
-locals().update(CONNECTION.extract_args('username',
-                                        'password',
-                                        'vals'))
+# If I don't do the latter, can I get rid of vals?
+# There are anomalous cases, if someone deletes their
+# cookie and then submits a form, for instance.  What
+# I can do in that case is simply terminate the form
+# submission.
 
-# did we get a submission, or are we just showing the login page?
-if username and password:
-  # Attempt to validate the username/password combo
-  authorized=auth.getAuthorizer().login(CONNECTION,
-                                        username,
-                                        password)
-  # title is only used for showing login form
-  # use message catalogs for this!
+_authdict=CONNECTION.extract_args('username',
+                                  'password',
+                                  'vals')
+
+authorized=HA.process_auth(CONNECTION, **_authdict)
+
+if authorized==0:
+  
+
   title= "Login Incorrect"
 else:
   authorized= ""
@@ -31,7 +40,7 @@ if authorized:
     CONNECTION.args =  cPickle.loads(base64.decodestring('\n'.join(vals.split('<BR>'))))
     CONNECTION.remoteUser=username
     CONNECTION.remotePassword=password
-  raise "OK"
+  raise auth.OK
 else:
   print AE.Component.callComponent('/comp/login.comp',
                                    argDict={'vals' : vals,

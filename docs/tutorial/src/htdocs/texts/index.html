@@ -1,0 +1,12 @@
+<:args id=`int`:>
+<:datacomp story story.pydcmp id=`id` cache=yes:>
+<:if `not story`:>
+  <:#:>return a 404<:/#:>
+  <:import templating.Handler fourOhFourHandler:>
+  <:call `CONNECTION.uri=CONNECTION.realUri`:>
+  <:call `CONNECTION.setStatus(404)`:>
+  <:call `fourOhFourHandler(CONNECTION, {})`:>
+  <:halt:>
+<:/if:>
+<:#:>we have a story, render it<:/#:>
+<:component text.comp story=`story` cache=yes:>

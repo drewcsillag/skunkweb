@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.7 2002/06/30 17:28:56 drew_csillag Exp $
-# Time-stamp: <02/10/08 07:39:44 smulloni>
+# $Id: __init__.py,v 1.8 2002/10/15 17:24:20 smulloni Exp $
+# Time-stamp: <02/10/30 23:13:01 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -235,7 +235,8 @@ class CookieAuthBase: #class that does basic cookie authentication
 
     #a simple login method to set the cookie as appropriate
     def login(self, conn, username, password):
-        if self.validate(username, password):
+        val=self.validate(username, password)
+        if val:
             cookieval = armor.armor(self.cookieNonce,
                                     "%s:%s" % (username, password))
             # the slice [:-1] is to trim off the newline that armor appends
@@ -246,8 +247,11 @@ class CookieAuthBase: #class that does basic cookie authentication
             conn.remoteUser = username
             conn.remotePassword = password
             conn.env['REMOTE_USER']=conn.remoteUser
-            conn.env['REMOTE_PASSWORD']=conn.remotePassword            
-            return 1
+            conn.env['REMOTE_PASSWORD']=conn.remotePassword
+            # login will now return what validate returns,
+            # which is convenient if it returns a user object
+            # of some kind
+            return val
 
     def logout(self, conn):
         conn.responseCookie[self.cookieName] = ""
@@ -377,6 +381,10 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.8  2002/10/15 17:24:20  smulloni
+# deprecated string exception, set environmental variables more
+# consistently.
+#
 # Revision 1.7  2002/06/30 17:28:56  drew_csillag
 #  made it so
 # 	we don't need the PseudoDict thing we used to need.

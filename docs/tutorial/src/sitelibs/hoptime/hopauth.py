@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/06 00:35:29 smulloni>
-# $Id: auth.py,v 1.1 2002/10/06 04:03:44 smulloni Exp $
+# Time-stamp: <02/10/30 23:41:55 smulloni>
+# $Id: hopauth.py,v 1.1 2002/10/06 14:38:00 smulloni Exp $
 
 """
 support for authenticating hoptime users
@@ -8,49 +8,70 @@ against the hoptime database.
 
 import auth as A
 import hopapi as H
+import AE.Component
+import SkunkWeb.Configuration as C
+import cPickle
+import base64
 
-class HoptimeDBAuthBase:
-    """
-    base class for validation of users
-    against the hoptime Users table.
-    """
+class HoptimeAuth(A.CookieAuthBase, A.RespAuthBase):
+    def __init__(self, loginPage):
+        A.RespAuthBase.__init__(self, loginPage)
+        A.CookieAuthBase.__init__(self,
+                                  'hoptime_auth',
+                                  'Ingabook Forsmythe',
+                                  {'path':'/'})
+
     def validate(self, username, password):
         user=H.Users.getUnique(username=username)
-        # return the actual user object as a true value
+        # return the actual user object as a true value --
+        # will be returned by A.CookieAuthBase.checkCredentials,
+        # in our checkCredentials, below, and stored in the
+        # CONNECTION object
         if user and user['password']==password:
             return user
 
-class HoptimeUserSessionBase(A.SessionAuthBase):
-    """
-    subclass of auth.SessionAuthBase that
-    stores the Users object in the session
-    """
-    def login(self, conn, username, password):
-        user=self.validate(username, password)
+    def checkCredentials(self, conn):
+        user=A.CookieAuthBase.checkCredentials(self, conn)
         if user:
-            sess=conn.getSession(1)
-            sess[self.usernameSlot]=user
-            sess.save()
+            conn.hoptimeUser=user
             return 1
+        conn.hoptimeUser=None
+        return 0
+        
+    def authFailed(self, conn):
+        conn.remoteUser='guest'
+        conn.remotePassword=None
+        if C.HoptimeRequireValidUser:
+            A.RespAuthBase.authFailed(self, conn)
 
-class CookieHoptimeAuth(A.CookieAuthBase,
-                    HoptimeDBAuthBase,
-                    A.RespAuthBase):
-    """
-    a session-free authorizer
-    """
-    def __init__(self, cookieName, nonce, extras, loginPage):
-        A.CookieAuthBase.__init__(self, cookieName, nonce, extras)
-        #HoptimeDBAuthBase.__init__(self)
-        A.RespAuthBase.__init__(self, loginPage)
+    def login(self, conn, username, password):
+        authorized=A.CookieAuthBase.login(self, conn, username, password)
+        conn.hoptimeUser=authorized
+        return authorized
 
-class SessionHoptimeAuth(HoptimeUserSessionBase,
-                     HoptimeDBAuthBase,
-                     A.RespAuthBase):
+
+
+# user-space function -- can be called from templates
+def process_auth(conn, username, password, vals=None):
     """
-    a session authorizer
+    processes login.  conn is a HttpConnection object;
+    username, password, and vals should be taken from
+    conn.args (using whatever forms keys are employed).
+    Four outcomes:
+       if the argument vals in not none and the ahuth check
+          is ok, raise OK
+       if vals is not true and 
     """
-    def __init__(self, usernameSlot, loginPage):
-        HoptimeUserSessionBase.__init__(self, usernameSlot)
-        #HoptimeDBAuthBase.__init__(self)
-        A.RespAuthBase.__init__(self, loginPage)
+    # don't allow GET logins
+    if conn.method=='POST' and None not in (username, password):
+        authorized=A.getAuthorizer().login(conn,
+                                           username,
+                                           password)
+        if authorized:
+            conn.hoptimeUser=authorized
+            if vals:
+                conn.args=cPickle.loads(base64.decodestring(vals))
+                raise A.OK
+            return 1
+        return 0
+    return -1
