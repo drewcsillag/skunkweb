@@ -114,6 +114,7 @@ class PyDOMySQL:
             val = _dateConvertToDB(val)
         elif (_isNumber(attr) and
               not isinstance(val, types.FloatType) and
+              not isinstance(val, types.LongType) and
               not isinstance(val, types.IntType)):
                 raise TypeError, ('trying to assign %s to %s and is not'
                                   ' a number') % (val, aname)
