@@ -1,3 +1,10 @@
+2003-02-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/xmlrpchandler.py: fix for methodSignature, whose purpose
+	had been misunderstood.  The original implementation, which
+	returned the *call* signature of the underlying Python method, 
+	is retained as system.methodPydoc.
+
 2003-02-07    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/rosio.py (RO_StringIO.__iter__): removed xreadlines, since

@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/08 16:00:02 smulloni>
-# $Id: xmlrpchandler.py,v 1.5 2002/10/08 18:04:59 smulloni Exp $
+# Time-stamp: <03/02/08 09:21:28 smulloni>
+# $Id: xmlrpchandler.py,v 1.6 2002/10/08 20:02:08 smulloni Exp $
 
 """
 a module for serving XMLRPC from SkunkWeb.
@@ -32,6 +32,19 @@ INTROSPECTION_DISABLED_ERROR = -508
 LIMIT_EXCEEDED_ERROR = -509
 INVALID_UTF8_ERROR = -510
 
+# Some type names for use in method signatures;
+# this is borrowed from Eric Kidd's code in xmlrpc-c's
+# xmlrpc_registry.py.
+INT="int"
+BOOLEAN="boolean"
+DOUBLE="double"
+STRING="string"
+DATETIME="dateTime.iso8601"
+BASE64="base64"
+ARRAY="array"
+STRUCT="struct"
+UNDEF="undef"
+
 _multicall_doc="""
 Processes an array of calls, and return an array of results.  Calls
 should be structs of the form {'methodName': string, 'params': array}.
@@ -49,22 +62,32 @@ class XMLRPCServer:
         if add_system_methods:
             self.register_function(self.funcs.keys,
                                    'system.listMethods',
-                                   'Lists the names of registered methods')
-            # using lambdas to keep the method signature accurate
+                                   'Lists the names of registered methods',
+                                   [[ARRAY]])
+            # using lambdas to keep the pydoc method signature accurate
             self.register_function(lambda method: self._methodSignature(method),
                                    'system.methodSignature',
                                    ('Returns the signature of method requested.  '\
-                                    'Raises a Fault if the method does not exist.'))
+                                    'Raises a Fault if the method does not exist'),
+                                   [[ARRAY, STRING]])
             self.register_function(lambda method: self._methodHelp(method),
                                    'system.methodHelp',
                                    ("Gives help for the method requested.  "\
-                                   "Raises a Fault if the method does not exist."))
+                                   "Raises a Fault if the method does not exist."),
+                                   [[STRING, STRING]])
 
             self.register_function(lambda calls: self._multicall(calls),
                                    'system.multicall',
-                                   _multicall_doc)
+                                   _multicall_doc,
+                                   [[ARRAY, ARRAY]])
 
-    def _methodSignature(self, method):
+            self.register_function(lambda method: self._methodPydoc(method),
+                                   'system.methodPydoc',
+                                   ('Gives pydoc method signature for the method requested.  '\
+                                    'Raises a Rault if the method does not exist.'),
+                                   [[STRING]])
+
+    def _methodPydoc(self, method):
         func=self.get_func(method)
         if func:
             s=pydoc.plain(_tdoc.docroutine(func)).strip()
@@ -85,6 +108,13 @@ class XMLRPCServer:
             s=re.sub(r'\.\.\.', '', s)
             return s
         raise xmlrpclib.Fault(NO_SUCH_METHOD_ERROR, method)
+
+    def _methodSignature(self, method):
+        fspec=self.funcs.get(method)
+        if not fspec or if fspec[-1] is None:
+            raise xmlrpclib.Fault(NO_SUCH_METHOD_ERROR, method)
+        return fspec[-1]
+            
 
     def _methodHelp(self, method):
         func=self.get_func(method)
@@ -114,12 +144,13 @@ class XMLRPCServer:
     def register_function(self,
                           func,
                           name=None,
-                          docstring=None):
+                          docstring=None,
+                          signature=UNDEF):
         if name is None:
             name=func.__name__
         if docstring is None:
             docstring=func.__doc__ or ""
-        self.funcs[name]=(func, docstring.strip())
+        self.funcs[name]=(func, docstring.strip(), signature)
 
     def get_func(self, funcname):
         if self.funcs.has_key(funcname):
