@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.32 2003/05/12 15:51:04 smulloni Exp $
-# Time-stamp: <03/07/18 19:23:00 smulloni>
+# $Id: sw.conf.in,v 1.33 2003/07/21 17:17:55 smulloni Exp $
+# Time-stamp: <03/07/27 09:45:35 smulloni>
 
 ########################################################################
 #
@@ -336,15 +336,23 @@ documentRoot = '@DOCROOT@'
 # If MailMethod == 'sendmail', it will call the sendmail program to do
 # it (this is the default).  If you set it to 'relay', it will send the
 # mail via SMTP to the host specified by the MailHost config variable
-# (which defaults to localhost).  If using the 'sendmail' MailMethod,
-# the pragram that is run comes from SendmailCommand.  When no from
-# address is specified in the call to the sendmail tag (or it's
-# corresponding function), the address FromAddress is used.
+# (which defaults to localhost). 'qmail' uses the qmail MTA. If using
+# the 'sendmail' MailMethod, the program that is run comes from
+# SendmailCommand. When using the 'qmail' method, the program given in
+# QmailInject is used. When no from address is specified in the call to
+# the sendmail tag (or it's corresponding function), the address
+# FromAddress is used.
+# AddressCheckLevel (default is 1): 0 - no checks, 1 - simple checks,
+# 2 - full syntax check (not implemented yet)
+# For more information look at the document "How to send Mail with SkunkWeb"
 #
 # MailMethod = 'sendmail'
 # MailHost = 'localhost'
-# SendmailCommand = 'sendmail -t'
+# SendmailCommand = 'sendmail'
 # FromAddress = 'root@localhost'
+# QmailInject = '/var/qmail/bin/qmail-inject'
+# AddressCheckLevel = 1
+
 
 ########################################################################
 # If using NFS (or other shared filesystem) for the component cache,

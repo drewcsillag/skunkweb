@@ -47,7 +47,7 @@ to <tt>'localhost'</tt>.</li>
 </ul>
 
 """
-# $Id: MailServices.py,v 1.5 2003/05/05 15:50:43 drew_csillag Exp $
+# $Id: MailServices.py,v 1.6 2003/05/05 17:19:18 smulloni Exp $
 
 import rfc822, mimetools, mimify
 import string
@@ -61,15 +61,26 @@ from SkunkExcept import *
 from SkunkWeb.LogObj import *
 from SkunkWeb import Configuration
 from Date import LocalDate, DateString
-from mx.DateTime import ARPA   # What if standard DateTime?
+from mx.DateTime import ARPA   # mx DateTime module required
 from cStringIO import StringIO
 
-# The mail error we're raising
+# The mail errors we're raising
 class MailError ( SkunkRuntimeError ):
     """
     Error we raise when sendmail fails
     """
     pass
+
+class AddressValidationError( MailError ):
+    """
+    Error if addresses are most likely not deliverable
+    """
+    def __init__(self, message, bad, good=None):
+        MailError.__init__(self, message)
+        self.bad = bad
+        self.good = good or []
+	self.message = message
+
 
 # Init some variables
 Configuration.mergeDefaults(
@@ -77,14 +88,18 @@ Configuration.mergeDefaults(
     MailHost = 'localhost',
     SendmailCommand = '/usr/lib/sendmail',
     FromAddress = "root@localhost",
-    QmailInject = "/var/qmail/bin/qmail-inject"
+    QmailInject = "/var/qmail/bin/qmail-inject",
+    AddressCheckLevel = 1
     )
+# AddressCheckLevel
+# 0 - no checks are done
+# 1 - simple format check
+# 2 - full syntax check (not implemented yet)
 
 valid_charsets = ['iso-8859-1', 'us-ascii']
 
 # shows the mail method: 'sendmail' (default) or 'relay' or 'qmail'
 _method = Configuration.MailMethod
-if _method not in ('sendmail', 'qmail', 'relay'): _method = 'sendmail'
 
 # mailhost for relaying SMTP server (default localhost)
 _mailhost = Configuration.MailHost
@@ -94,6 +109,9 @@ _sendmail_cmd = Configuration.SendmailCommand
 
 # qmail-inject command (default '/var/qmail/bin/qmail-inject')
 _qmailinject = Configuration.QmailInject
+
+# address-check level (default 1)
+_addresscheck_level = Configuration.AddressCheckLevel
 
 
 # The general-purpose sendmail function, which is called
@@ -162,22 +180,25 @@ def sendmail ( to_addrs, subj, msg,
     </dl>
     """
 
+    # force SkunkWeb administrator to change the default envelope sender
+    if from_addr == 'root@localhost':
+        WARN("MailServices: FromAddress not changed, use a deliverable address!")
+        raise MailError, "FromAddress not changed, use a deliverable address!"
+    
+
     # if they supplied only a string as to_addrs (i.e. one address),
     # make it a list
     if type(to_addrs) == type(''):
         to_addrs = [to_addrs]
     rnum = len(to_addrs)       # number of receivers
 
-    # minimal, stupid sanity check for addresses
-    for addr in to_addrs + [from_addr]:
-        if len(filter(lambda x: ord(x) > 127, list(addr))) > 0:
-           raise MailError, "8bit character in address %s" % (addr)
-        if string.find(addr, '@') == -1:
-           raise MailError, "address '%s' is no FQDN" % (addr)
+    # do defined address checks, raise exception in case of problems
+    address_check(_addresscheck_level, to_addrs)
 
     # check if the message is to be sent 'as is'
     if extended.has_key('raw') and extended['raw']:
         if not extended.has_key('envelope_sender'):
+           WARN("MailServices: envelope_sender not set, but 'raw' send requested")
            raise MailError, "envelope_sender not set, but 'raw' send requested"
         dispatch_to_send_method(to_addrs, msg, extended['envelope_sender'])
         return
@@ -186,6 +207,8 @@ def sendmail ( to_addrs, subj, msg,
     if extended.has_key('charset'):
         charset = string.lower(extended['charset'])
         if charset not in valid_charsets:
+           WARN("MailServices: invalid character set parameter given: %s" \
+	         % (extended['charset']))
            raise MailError, "invalid character set parameter given"
     else:
         charset = 'us-ascii'
@@ -218,6 +241,7 @@ def sendmail ( to_addrs, subj, msg,
         toheader = extended['to_name']
         if rnum == 1:
             if len(filter(lambda x: x in ['<','>'], list(toheader))) != 0:
+                WARN("MailServices: angle bracket in to_name when using single recipient")
                 raise MailError, "angle bracket in to_name when using single recipient"
             toheader = toheader + ' <' + to_addrs[0] + '>'
         mail['To'] = mimify.mime_encode_header(toheader)
@@ -243,6 +267,7 @@ def sendmail ( to_addrs, subj, msg,
     if extended.has_key('charset'):
         charset = string.lower(extended['charset'])
         if charset not in ['us-ascii', 'iso-8859-1']:
+            WARN("MailServices: charset %s is not supported" % (charset))
             raise MailError, "charset %s is not supported" % (charset)
     else:
         charset = 'us-ascii'
@@ -251,6 +276,7 @@ def sendmail ( to_addrs, subj, msg,
     if extended.has_key('encoding'):
         encoding = string.lower(extended['encoding'])
         if encoding not in ['7bit', '8bit', 'base64', 'quoted-printable']:
+            WARN("MailServices: encoding %s is not supported" % (encoding))
             raise MailError, "encoding %s is not supported" % (encoding)
     else:
         encoding = '7bit'
@@ -264,8 +290,10 @@ def sendmail ( to_addrs, subj, msg,
     if encoding == '7bit':
         # check for correctness
         if charset != 'us-ascii':
+            WARN("MailServices: 7bit encoding but charset is not us-ascii")
             raise MailError, "7bit encoding but charset is not us-ascii"
         if eightbitdata:
+            WARN("MailServices: 7bit encoding but 8bit data present")
             raise MailError, "7bit encoding but 8bit data present"
         # delete present MIME headers if 7bit encoding is used
         if mail.has_key('Content-Transfer-Encoding'):
@@ -293,9 +321,31 @@ def sendmail ( to_addrs, subj, msg,
     mail.rewindbody()
     messagetext = mail.__str__() + '\n' + mailfile.read()
     mailfile.close()
- 
+    # now send
     dispatch_to_send_method(to_addrs, messagetext, envelope_sender)
 
+
+def address_check (level, addresses):
+    bad = []
+    good = []
+    errors = ''
+    if level == 0:
+        return
+    if level == 1:
+        # minimal, stupid sanity check for addresses
+        for addr in addresses:
+           if len(filter(lambda x: ord(x) > 127, list(addr))) > 0:
+               errors += "8bit character in address %s\n" % (addr)
+               bad.append(addr)
+           elif string.find(addr, '@') == -1:
+               errors += "address '%s' is no FQDN\n" % (addr)
+               bad.append(addr)
+           else:
+               good.append(addr)
+        if len(bad) > 0:
+	   raise AddressValidationError, (errors, bad, good)
+        return
+    raise NotImplementedError, "MailServices/address_check: level %i" % (level)
 
 def dispatch_to_send_method(to_addrs, messagetext,envelope_sender):
     # dispatch to correct function based on method
@@ -303,8 +353,11 @@ def dispatch_to_send_method(to_addrs, messagetext,envelope_sender):
 	sendmail_smtp(to_addrs, messagetext, envelope_sender)
     elif _method == 'qmail':
 	qmail_pipe(to_addrs, messagetext, envelope_sender)
-    else:
+    elif _method == 'sendmail':
 	sendmail_pipe(to_addrs, messagetext, envelope_sender)
+    else:
+        WARN ("MailServices: no such method: %s" % (_method))
+        raise NotImplementedError, "MailServices: no such method: %s" % (_method)
 
 
 def sendmail_smtp ( to_addrs, msg, envelope_sender):
@@ -423,3 +476,4 @@ def qmail_pipe ( to_addrs, msg, envelope_sender):
 		% (_qmailinject, status))
         for line in errs:
 	    WARN("---> %s" % line)
+

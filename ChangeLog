@@ -1,3 +1,8 @@
+2003-07-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/MailServices.py,
+	SkunkWeb/sw.conf.in: patch from Frank Tegtmeyer for MailServices. 
+
 2003-07-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/manual/api.txt: various changes.
