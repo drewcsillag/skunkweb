@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.2 2001/09/21 20:36:08 drew_csillag Exp $
+#$Id: Executables.py,v 1.3 2001/09/24 16:11:05 drew_csillag Exp $
 import sys
 import cStringIO
 import copy
@@ -69,8 +69,9 @@ class PythonExecutable:
         return namespace
     
     def run( self ):
+        oldstdout = sys.stdout
         if self.compType in ( DT_REGULAR, DT_INCLUDE ):
-            sys.stdout = cStringIO.StringIO()
+            outputIO = sys.stdout = cStringIO.StringIO()
 
         try:
             try:
@@ -81,12 +82,12 @@ class PythonExecutable:
                 return val
                 
             if self.compType in ( DT_REGULAR, DT_INCLUDE ):
-                output = sys.stdout.getvalue()
+                output = outputIO.getvalue()
             return output
 
         finally:
             if self.compType in ( DT_REGULAR, DT_INCLUDE ):
-                sys.stdout = sys.__stdout__
+                sys.stdout = oldstdout #sys.__stdout__
 
 class STMLExecutable:
     def __init__(self, name, compType, srcModTime):
@@ -133,12 +134,14 @@ class STMLExecutable:
     def run( self ):
         hns = copy.copy(_hidden_namespace)
         hns.OUTPUT = cStringIO.StringIO()
+
+        oldstdout = sys.stdout
         sys.stdout = hns.OUTPUT
         try:
             return self.dt(self.namespace, self.namespace,
                            hns, self.compType)
         finally:
-            sys.stdout = sys.__stdout__
+            sys.stdout = oldstdout #sys.__stdout__
         
 executableByTypes = {
     ("text/x-stml-component",             DT_INCLUDE) : STMLExecutable,
