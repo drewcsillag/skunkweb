@@ -231,18 +231,13 @@ def _updateMe(obj):
 try:
     object #testing for 2.2
 
-    class _dufus(_StaticBase):
-        def __new__(self, name, bases, dict):
-            return object.__new__(_StaticBase)
-    
-    class _static: pass
+    _static = object
 except:
     #print 'doing old way'
     _static = _StaticBase() #old metaclass way
-    _dufus = None
 
 class static(_static):
-    __metaclass__ = _dufus
+    __metaclass__ = _StaticBase
     def __repr__(self):
         return '<instance of static class %s at %x>' % (
             self._klass._klass, id(self))

@@ -1,3 +1,7 @@
+2002-10-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/static.py: made to work with Python 2.2.2.
+
 2002-10-22    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: fixes to metaclass.  Doesn't work well
