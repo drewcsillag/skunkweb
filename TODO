@@ -1,5 +1,5 @@
-#   Time-stamp: <01/12/10 00:05:22 smulloni> 
-#   $Id: TODO,v 1.17 2001/11/07 01:26:46 smulloni Exp $
+#   Time-stamp: <2001-12-18 11:37:26 drew> 
+#   $Id: TODO,v 1.19 2001/12/14 22:47:56 smulloni Exp $
 
 
 * - TODO
@@ -29,6 +29,7 @@ X CGI adaptor (in place of mod_skunkweb, etc.)
 X! configure refinements (js) 
 ! vfs: path translation for archive files 
 ! update MySQL driver
+* update PyDO docs for sapdb
 * fix any references to DateTime to mx.DateTime (or handle both)
 
 Future stuff

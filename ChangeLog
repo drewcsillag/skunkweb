@@ -1,5 +1,9 @@
 2001-12-18  Andrew Csillag  <drew@localhost.localdomain>
 
+	* pylibs/PyDO/sapdbapi.py: added file contributed by Ulrich Eck
+
+2001-12-18  Andrew Csillag  <drew@localhost.localdomain>
+
 	* pylibs/PyDO/postconn.py: fix from Gregory Brauer for setting string
 	  attributes to None
 
