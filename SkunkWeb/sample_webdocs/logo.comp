@@ -2,4 +2,4 @@
 
 <:compargs col=0:>
 
-<a href="http://support.skunk.org/"><:img path=`"/img/skunklogo%1d.gif" % col` width=164 height=89 border=0:></a>
+<a href="http://skunkweb.sourceforge.net/"><:img path=`"/img/skunklogo%1d.gif" % col` width=164 height=89 border=0:></a>
