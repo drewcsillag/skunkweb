@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/06/10 11:30:18 smulloni>
+# Time-stamp: <02/06/10 11:37:44 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -89,13 +89,20 @@ class SET:
     def __str__(self):
         l=len(self.values)
         if l>1:
-            return "(%s)" % ', '.join([self.__escape_string(x) for x in self.values])
+            return "(%s)" % ', '.join([self.__escape(x) for x in self.values])
         else:
-            return "(%s)" % self.__escape_string(self.values[0])
+            return "(%s)" % self.__escape(self.values[0])
 
-    def __escape_string(self, s):
-        return "'%s'" % string.replace(s, "'", "\\'")
-
+    def __escape(self, thing):
+        """
+        this is somewhat inadequate, as it doesn't handle types
+        beyond ints and strings; you'll need to perform your own
+        escaping for dates and times (I can't tell what field is
+        intended, whether you need a data or a time, etc.)
+        """
+        if type(thing) in (types.StringType, types.UnicodeType):
+            return return "'%s'" % string.replace(s, "'", "\\'")
+        return str(thing)
     
     def __repr__(self):
         return "SET(%s)" % self.__str__()
