@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.7 2001/10/28 17:35:09 drew_csillag Exp $
+# $Id: Component.py,v 1.8 2002/06/25 15:08:59 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -283,7 +283,9 @@ def _rectifyRelativeName( name ):
 
     path, fname = os.path.split( componentStack[topOfComponentStack].name )
     return Cache._normpath("%s/%s" % (path, name))
-    
+
+rectifyRelativeName = _rectifyRelativeName
+
 def _renderPostRequestAndCache( name, argDict, auxArgs, compType, srcModTime,
                                 cached ):
     _postRequestRenderList.append( (
@@ -392,6 +394,17 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.8  2002/06/25 15:08:59  drew_csillag
+# 	* pylibs/AE/Component.py: made it so the componentStack gets
+# 	trimmed properly.  When adding frames, we used to blindly append
+# 	to the componentStack which was fine unless an exception was
+# 	handled, in which case, there was extra stuff in the
+# 	componentStack (the frame that blew the exception).  Now, if the
+# 	topOfComponentStack is a valid index into the componentStack (due
+# 	to a caught exception), we replace from the top to the end of the
+# 	stack with a list containing the new frame, thus removing any
+# 	frame residues left from caught exceptions.
+#
 # Revision 1.7  2001/10/28 17:35:09  drew_csillag
 # finally got the caching bug fixed for good
 #
