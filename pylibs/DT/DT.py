@@ -187,6 +187,14 @@ class DT:
             if _needs_tag:
                 self._error_tag = _current_tag_thingy ( _d.CURRENT_TAG,
                                                         _d.CURRENT_LINENO )
+            # Cleanup the local namespace
+            for k in ( '__t', '__h', '__d' ):
+                 del ns[k]
+        
+            if call_type == DT_INCLUDE:
+                # Restore parent's stuff
+                #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
+                self.__unstore_ns(ns, locals())
 
         # Check the return value
         if call_type == DT_DATA:
@@ -194,14 +202,14 @@ class DT:
                  raise SkunkStandardError, \
                        'no <:return:> tag was found in a data component'
 
-        # Cleanup the local namespace
-        for k in ( '__t', '__h', '__d' ):
-             del ns[k]
-
-        if call_type == DT_INCLUDE:
-            # Restore parent's stuff
-            #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
-            self.__unstore_ns(ns, locals())
+        ## Cleanup the local namespace
+        #for k in ( '__t', '__h', '__d' ):
+        #    if ns.has_key(k): del ns[k]
+        #
+        #if call_type == DT_INCLUDE:
+        #    # Restore parent's stuff
+        #    #ns['__t'], ns['__h'], ns['__d'] = __t, __h, __d
+        #    self.__unstore_ns(ns, locals())
 
         if call_type == DT_DATA:
             return ns['__return']
