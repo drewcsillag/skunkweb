@@ -1,5 +1,5 @@
-# Time-stamp: <03/01/06 16:39:21 smulloni>
-# $Id: dispatcher.py,v 1.12 2002/12/30 21:05:13 smulloni Exp $
+# Time-stamp: <03/01/10 14:02:16 smulloni>
+# $Id: dispatcher.py,v 1.13 2003/01/06 21:47:59 smulloni Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
@@ -24,8 +24,9 @@ from containers.fieldcontainer import FieldContainer
 from form import _getname
 
 class Goto(object):
-    def __init__(self, formname):
+    def __init__(self, formname, args=None):
         self.formname=formname
+        self.args=args
         
     def dispatch(self,
                  form,
@@ -43,6 +44,9 @@ class Goto(object):
             return dispatcher.createForm(self.formname)
 
 class Pop(object):
+    def __init__(self, args=None):
+        self.args=args
+        
     def dispatch(self,
                  form,
                  dispatcher,
@@ -62,9 +66,10 @@ class Pop(object):
             return f
 
 class Push(object):
-    def __init__(self, formname, valid=0):
+    def __init__(self, formname, valid=0, args=None):
         self.formname=formname
         self.valid=valid
+        self.args=args
         
     def dispatch(self,
                  form,

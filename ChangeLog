@@ -1,16 +1,22 @@
-2003-01-06    <smulloni@smullbola.smullyan.org>
+2003-01-10  Jacob Smullyan <smulloni@smullyan.org>
 
-	* test/formlib/htdocs: numerous revisions to work with the refactoring of
-	formlib.
+	* pylibs/formlib/dispatcher.py (Goto, Push, Pop): added optional
+	"args" argument to constructors.
 
-	* pylibs/formlib: considerable refactoring to dispatcher, forms, and views. 
-	The upshot of it all being that the dispatcher is now abstract; it doesn't
-	assume that the dispatcher needs to start out with a reference to all the 
-	form objects.  Similarly, the form's process() method doesn't make assumptions
-	about what is passed to it. Also, fields have a _setData(dict) method now,
-	so we don't need to test (in Form.setData()) for field type; and in views.py,
-	I removed the isviewable() method, and instead test for the presence of the
-	"getView" method.
+2003-01-06  Jacob Smullyan <smulloni@smullyan.org>
+
+	* test/formlib/htdocs: numerous revisions to work with the
+	refactoring of formlib.
+
+	* pylibs/formlib: considerable refactoring to dispatcher, forms,
+	and views.  The upshot of it all being that the dispatcher is now
+	abstract; it doesn't assume that the dispatcher needs to start out
+	with a reference to all the form objects.  Similarly, the form's
+	process() method doesn't make assumptions about what is passed to
+	it. Also, fields have a _setData(dict) method now, so we don't
+	need to test (in Form.setData()) for field type; and in views.py,
+	I removed the isviewable() method, and instead test for the
+	presence of the "getView" method.
 
 2003-01-03  James Richards  <jrichards@satie.wnyc.org>
 
@@ -24,7 +30,7 @@
 	with current formlib definition, note that testDispatch3 is also
 	misbehaving
 
-2003-01-02    <smulloni@smullbola.smullyan.org>
+2003-01-02  Jacob Smullyan <smulloni@smullyan.org>
 
 	* test/sitelibs/formlibtest/testDispatch3.py
 	(PushyFlowManager.getStartForm): fixed to match signature change
@@ -54,7 +60,7 @@
 	* testCompositeField.pyinc (cmpFld): Added more debugging output
 	to track composite field values
 
-2002-12-30    <smulloni@smullbola.smullyan.org>
+2002-12-30  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/views.py (SubmitButtonGroupField): support for
 	groups of submit fields. (ButtonBar): same, with button elements.
@@ -66,7 +72,7 @@
 
 	* pylibs/PyDO/PyDO2.py: small fixes.
 
-2002-12-23    <smulloni@smullbola.smullyan.org>
+2002-12-23  Jacob Smullyan <smulloni@smullyan.org>
 
 	* docs/stmlrefer/stmlrefer.tex: fixed LaTeX error.
 
@@ -74,7 +80,7 @@
 	using new-style classes and doing a couple of things that the old
 	PyDO doesn't do.  
 
-2002-12-18    <smulloni@smullbola.smullyan.org>
+2002-12-18  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/views.py (ViewableForm.__init__): another default
 	value gotcha.
@@ -89,7 +95,7 @@
 
 	* pylibs/formlib (all files): added copyright/license notices.
 
-2002-12-10    <smulloni@smullbola.smullyan.org>
+2002-12-10  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/containers/treenode.py: a simple tree class.
 
