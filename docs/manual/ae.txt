@@ -13,7 +13,6 @@ Chapter 4: The SkunkWeb API
 .. contents:: Table Of Contents
 .. section-numbering::
 
-
 Introduction
 ============
 
@@ -26,189 +25,211 @@ The Application Environment Component API
 
 The AE ("Application Environment") package provides interfaces to
 allow developers to develop component-based web
-applications. Components, for AE, are Python scripts and/or STML pages
-that are "included" in the flow of applications.
+applications. Components, for AE, are executable files such as Python
+scripts or STML pages that can be compiled to Python bytecode and are
+included in the flow of applications.
 
 Components can allow developers to section out pieces of code, with
 the goal to reuse or to logically separate their applications in a
-number of distinct files. Each component can be cached to increase
-performance of the application server.
+number of distinct files. Furthermore, the output of many components
+can be cached to increase performance of the application server.
 
-AE is very much a part of the SkunkWeb request/response process, for
-it provides an interface to execute application code when a user
-requests a page on a SkunkWeb server.
-
+AE is closely integrated into the SkunkWeb request/response process by
+the templating service, which provides an interface to execute
+application code when a user requests a page on a SkunkWeb server.  In
+what follows, therefore, they will be discussed together.
 
 Understanding Components
 ------------------------
 
-A component in AE is a Python script or an STML page. It may contain
-any type of application code or display code that is required for a
-SkunkWeb-based application to function.  When called, the component is
-included into the flow of the application, similar to that if it was
-in the application itself. 
-
-.. is the above a distinction without a difference?
-
-Since AE is part of the SkunkWeb request/response process, at the
-beginning of each request, a **top-level** document is called. The
-top-level document can be a Python script or an STML page. This
-document is URL accessible. If we had a Python script, for example,
-called ``index.py``, we can access it like so:
-``http://www.example.com/index.py`` (if ``www.example.com`` ran with
-SkunkWeb.) When the top-level document is called, it receives a number
-of variables, most significant being the ``CONNECTION`` variable,
-which is the HTTP interface in SkunkWeb. For more information about
-the ``CONNECTION`` variable, consult the section *The SkunkWeb HTTP
-API*, later in this chapter, for more information.
-
-.. actually, I believe that CONNECTION is the only variable put into
-   the component namespace.
+From the developer's point of view, components in AE are text files
+written in a supported extension language (most usually, Python or
+STML) which are included in the flow of an application by a
+potentially nested series of "component calls".  They may contain any
+code, presentational or logical, required for a SkunkWeb-based
+application to function.
 
 There are three types of components, each of them intended for a
 different purpose:
 
-**include**
-    This is a very simple component. It executes the code (STML or
-    Python, for example) and outputs the results if any output is
-    returned. This type of component is "part" of the calling page
-    in the sense that it shares the same "namespace". Because of
-    this, you can use the variables and functions that are defined
-    or imported on the calling page.
-
 **regular**
-    This one is very much like the "include" component, but this
-    is slightly different. Where "includes" cannot be cached,
-    "regular components" can. This means that any output produced
-    can be cached. You can selectively cache items, apply timeouts
-    and such to these components, and still have the same behavior
-    as a simpler include. The other difference between this and
-    the include is that it does not share the variables, functions
-    and the like with the top-level document or component that
-    called it. You need to pass values into it if you need the
-    values from the calling page or component.
+    
+    When a regular component is called, it is passed a dictionary of
+    component arguments, and the code it contains is executed in a
+    separate namespace containing them.  During execution, standard
+    output is redirected, and anything the code writes to it is
+    captured and returned. Regular components are thus very convenient
+    for the generating text output.
 
-**data**
-    This type of component returns a single value, which can then
-    be cached. This type of component is sort of like a Python
-    function, but with the ability to cache the output. Data
-    components are useful when you have a piece of code that
-    usually gets the same data in a certain period of time (maybe
-    like a "Quote of the Day"). The data can be cached, and when
-    it is cached, it does not need to re-execute the code in the
-    component if the cache hasn't expired.
+**include** 
 
-    Data components do not share the same namespace as the calling
-    document or component, so variables and the like need to be
-    passed into the component to access them within the data
-    component.
+    An include is similar to a regular component, except that it is
+    executed in the namespace of its calling component rather than in
+    a separate scope, and therefore it does not accept component
+    arguments.  Because it shares the namespace of its caller, it can
+    access and mutate the caller's environment without  restriction.  
 
+**data** 
+
+    This type of component is executed in its own scope, like a
+    regular component, and similarly can be passed component
+    arguments.  However, while the value returned from a regular
+    component call is a string gathered implicitly by redirecting and
+    spooling standard output during component execution, data
+    components must either explicitly return a value, which can be any
+    kind of Python data, not just a string, or the return value will
+    be None.
 
 All of these component types can be called with the
 ``callComponent()`` function in the ``AE.Component`` module. Each type
 of component is called like this::
 
     from AE import Component
-    
-    Component.callComponent("my.comp", argDict={}, defer = None, compType=Component.DT_XX, cache = XX, srcModTime=None)
-    
+    Component.callComponent("my.comp", 
+                            argDict={}, 
+                            defer = None, 
+                            compType=Component.DT_XX, 
+                            cache = XX, 
+                            srcModTime=None)
     
 In the component call, we need to specify a few arguments to call the component:
 
-**name**
-    We must specify the path to the component. In the example
-    above, we can say that the component is in the same directory
-    as the calling page. This path can either be absolute or
-    relative.
+**name** 
+
+    We must specify the path to the component within the document
+    root.  Both relative and absolute paths are permitted.  The root
+    path, "/", is translated to mean the current document root of the
+    document root filesystem (which itself is virtual; see `The
+    SkunkWeb Virtual FileSystem`_).  Paths may include "..", but a
+    path which escapes the document root is not permitted.
 
 **argDict**
-    As discussed before, not all types of components share the
-    same namespace as the calling page or component. With this
-    parameter, you will be able to pass a number of variables,
-    functions, classes or the like that should be accessible
-    within the component. The variables are entered into the local
-    namespace of the component, and from there, the variables
-    passed into the component can be accessed like regular
-    variables - you don't need to access an ``argDict`` dictionary
-    to retrieve the values.
 
+    In the case of regular and data components, this dictionary, if
+    not empty, should consist of string keys, which should be valid
+    Python identifiers, whose associated values may be arbitrary
+    Python objects (unless the component call is being cached, in
+    which case the objects must be hashable -- see below).  The
+    namespace in which the component is executed will be updated with
+    this dictionary, so that code in the component will be able to
+    refer to variables with the names of the dictionary's keys.  As
+    include components are not executed in their own namespace, but
+    share the namespace of the calling component, this mechanism is
+    not employed with includes, and it is an error to pass a non-empty
+    argDict to an include component.
+   
 **cache**
 
-    This parameter tells AE if and how this particular component
-    is to be cached. (We specify the timeout value in the actual
-    component itself.) There are certain values we can use here;
-    these will be discussed shortly. The actual values are in the
-    ``AE.Component`` module. Possible cache values include:
+    This parameter specifies if and how the output of this particular
+    component call is to be cached.  Acceptable values, which are
+    defined in the ``AE.Component`` module, are:
 
-    - NO: do not use the cache.
+    - NO: do not use the cache; execute the component and return the
+      result, but do not save it.
 
-    - YES: cache the output.
+    - YES: if there is a cache entry for the component with the given
+      component arguments, and that entry has not expired, return the
+      cached value; otherwise, execute the component and cache the
+      output, storing it with a cache key that uniquely corresponds to
+      the component path and the component arguments passed to it,
+      before returning the result.
 
-    - DEFER: if there is an *expired* component available, deliver
-      that cached component, and then, after the request is
-      complete, create a new cache for that specific component. This
-      actually offers a great improvement in speed: users do not
-      need to wait for a component to be executed and cached before
-      receiving a response. The component is cached *after* the
-      response is completed.  - FORCE: This executes a caching
-      procedure, whether or not the component is already cached.  
+    - DEFER: similar to YES, except that if there is an *expired*
+      cache entry matching the component path and arguments of this
+      component call, return its cached value as if it had not
+      expired, and then, after the request is complete, execute the
+      component to create a new cache entry.  When the logic of an
+      application permits this, this can offer a considerable
+      improvement in speed, as users do not need to wait for a
+      component to be executed and cached before receiving a response.
 
-    - OLD: This is the opposite of ``FORCE``. It takes anything that
-      is in cache, no matter how old it is. The only time it will
-      cache is when there is no cache at all.
+    - FORCE: This forces a component to be executed and cached
+      regardless of whether an unexpired cache entry is available for
+      the call.
 
-If you do use the ``cache`` parameter, you must be aware that the
-arguments you pass, using the ``argDict`` parameter, must be, as
-Python calls it, "hashable". The reason for this is because AE needs
-to flatten each item into a short, unique value. It does this to look
-up cached output it has stored in disk cache. Here is a list of items
-that can be used in the ``argDict`` parameter when using ``cache``:
+    - OLD: This is the opposite of ``FORCE``. It returns whatever
+      value is in the cache for a component call, regardless of
+      whether it has expired. The only time it will execute the
+      component is when there is no corresponding cache entry at all.
 
-    - Numbers, strings, dates and ``None`` are hashable.
+When using the ``cache`` parameter set to anything other than NO
+(which is the default), there is an important restriction placed on
+the sorts of arguments you can pass using the ``argDict`` parameter.
+In order to be able to store component output in a disk cache in such
+a way that it can be looked up later by component calls with the same
+signature (that is, the same component path and component arguments),
+AE needs to be able to map component signatures to unique string
+representations, which are used as cache keys.  To do this, AE must be
+able to create a hash value for each object.  Hashable objects, in
+AE's sense (which is a little broader than the usual Python sense),
+are:
 
-    - Tuples (immutable sequences) are hashable if and only if all
+    - Numbers, strings, dates and ``None``.
+
+    - Tuples (immutable sequences), provided that if and only if all
       the items within the tuple are hashable.
 
-    - Lists and dictionaries are *not* hashable. However, AE can make
-      an exception here, as long as the items are either hashable or are
-      lists or dictionaries. However, the component should not change
-      the information in the list or dictionary. If it does change, it
-      will only change *once*, but it will not appear in the cache,
-      which will be used after the component is initially cached.  -
-      ``DateTime`` objects are not hashable, but you can get away with
-      it here, since AE can make them look like they are hashable.  -
-      Any Python class you write *cannot* be used, *unless* you
+    - Lists and dictionaries are not hashable in the usual Python
+      sense. However, AE can make an exception here, as long as the
+      items are either hashable or are lists or dictionaries. However,
+      the component should not change the information in the list or
+      dictionary. If it does change, it will only change *once*, but
+      it will not appear in the cache, which will be used after the
+      component is initially cached.
+
+    - ``mx.DateTime`` objects are not hashable in the usual Python
+      sense either, but you can get away with it here, since AE can
+      make them look like they are hashable.
+
+    - Any Python class you write *cannot* be used, *unless* you
       implement a __hash__ or __cachekey__ method in the class.
 
 **compType**
 
-    This parameters tells AE what type of component it is. We would
-    actually pass certain constants into it, found in the
-    ``AE.Component`` module to specify the type of component it
-    is. Possible component types include:
-
-    - DT_INCLUDE
-    - DT_REGULAR
-    - DT_DATA
-    - DT_REMOTE
-    
+    This parameter declares what type of component it is.  The
+    possible values, defined in the DT package but available in
+    AE.Component as well, are ``DT_REGULAR``, ``DT_INCLUDE``, and
+    ``DT_DATA``. 
 
 **defer**
     [TODO]
   
-    
 **srcModTime**
     [TODO]
 
+(We specify the timeout value in
+    the actual component itself.)
 
 Further discussion about each type of component is further discussed
 in later sections.
 
+The templating Service's Top-Level Documents
+--------------------------------------------
+
+When the templating service is being used, an HTTP request for a URL
+may be mapped to a request for a **top-level document**, depending on
+the server configuration and the kind of resource being requested.
+This is actually a regular component call.  For example, if we had a
+Python script called ``index.py`` located in our server's document
+root, we could access it via the URL
+``http://localhost:8080/index.py``.  Top-level documents are the only
+URL-accessible components.  When a top-level document is called, the
+code it contains is executed in a namespace which contains the
+``CONNECTION`` variable, which is the interface in SkunkWeb to the
+HTTP request and response.  (For more information about the
+``CONNECTION`` variable, consult the section *The SkunkWeb HTTP API*,
+later in this chapter.)  The top-level document may in turn call other
+components, either to include their output into the response output
+stream, or to obtain data from them for other manipulation.
 
 Remote Components
 -----------------
 
-SkunkWeb can pass data or receive data from other SkunkWeb servers through the use of remote components. You can set up a remote SkunkWeb server, for example, to manage database connections, from which other SkunkWeb servers can receive data from the database using the SkunkWeb server setup to manage and output remote components.
+SkunkWeb can pass data or receive data from other SkunkWeb servers
+through the use of remote components. You can set up a remote SkunkWeb
+server, for example, to manage database connections, from which other
+SkunkWeb servers can receive data from the database using the SkunkWeb
+server setup to manage and output remote components.
 
     As with regular and data components, the calling page does not
     share namespaces with the remote data component.
