@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.8 2001/12/03 02:45:04 smulloni Exp $
-# Time-stamp: <02/01/13 15:08:56 smulloni>
+# $Id: sw.conf.in,v 1.9 2002/01/13 20:12:20 smulloni Exp $
+# Time-stamp: <02/01/21 01:29:33 smulloni>
 
 ########################################################################
 #
@@ -396,6 +396,16 @@ userModuleCleanup = 1
 #        ]
 
 ########################################################################
+# Dictionary of mime-type-specific request handlers for mime types
+# that are neither hidden nor interpreted by the templating engine,
+# but that you wish to give some special handling.  The keys should be
+# mime types, and the values should be callables that take two arguments,
+# a connection object and a session dictionary.  By default this dictionary
+# is empty.
+#
+# mimeHandlers = {}
+
+########################################################################
 # path to a template in the docroot (or parfile), dependent on scope
 # that should be shown if the we send back an error (500) page
 # The exception text will show up in an additional template variable
@@ -529,6 +539,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.9  2002/01/13 20:12:20  smulloni
+# fixes for MySQL.
+#
 # Revision 1.8  2001/12/03 02:45:04  smulloni
 # modified mysql service to use MySQLdb, and merged in
 # connection caching code from the MySQL pylib.  Adjusted

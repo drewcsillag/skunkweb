@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id$
+# $Id: Handler.py,v 1.4 2001/12/02 20:57:50 smulloni Exp $
 
 import AE.Cache
 import AE.Component
@@ -42,7 +42,8 @@ Configuration.mergeDefaults(
         "text/html",
         "application/x-python"
         ],
-    defaultIndexHtml = None
+    defaultIndexHtml = None,
+    mimeHandlers = {}    
     )
 
 def _handleException(connObj):
@@ -104,23 +105,25 @@ def requestHandler(connObj, sessionDict):
                     st = AE.Cache._statDocRoot(uri)
                 else:
                     return
-                if Configuration.defaultIndexHtml:
-                    s = Configuration.defaultIndexHtml
-                    st = AE.Cache._statDocRoot(uri)
-                else:
-                    return
             connObj.uri = s
             DEBUG(TEMPLATING, "uri is now %s" % s)
 
     connObj.mimeType = mimeType = AE.MimeTypes.getMimeType(connObj.uri)
     DEBUG(TEMPLATING, 'mime type is %s' % mimeType)
+
+    # don't handle a hidden mime type
+    if mimeType in Configuration.hideMimeTypes:
+        DEBUG(TEMPLATING, "hidden mime type: %s" % mimeType)
+        return
+
+    if Configuration.mimeHandlers.has_key(mimeType):
+        DEBUG(TEMPLATING, "invoking special mime handler for mime type %s" % mimeType)
+        return Configuration.mimeHandlers[mimeType](connObj, sessionDict)    
     
     #if not a template, don't handle
-    #if mimeType not in Configuration.templateMimeTypes:
-    if (not AE.Executables.executableByTypes.has_key(
-        (mimeType, AE.Executables.DT_REGULAR))
-        or mimeType in Configuration.hideMimeTypes):
-        DEBUG(TEMPLATING, "not a template or hidden % s" % mimeType)
+    if not AE.Executables.executableByTypes.has_key((mimeType,
+                                                     AE.Executables.DT_REGULAR)):
+        DEBUG(TEMPLATING, "not a template mime type: %s" % mimeType)
         return
 
     #if a templatable thing, but we've been told not to interpret it but
@@ -148,11 +151,11 @@ def requestHandler(connObj, sessionDict):
 
 def plainHandler(connObj, sessionDict):
     if not hasattr(connObj, 'statInfo'):
-        return #file doesn't exist, screw it
+        return # file doesn't exist, screw it
     if not hasattr(connObj, 'mimeType'):
-        return #file exists, but is a directory
+        return # file exists, but is a directory
     if connObj.mimeType in Configuration.hideMimeTypes:
-        return #something that shouldn't be uri accessible
+        return # something that shouldn't be uri accessible
         
     connObj.responseHeaders['Content-Type'] = connObj.mimeType
     DEBUG(TEMPLATING, "spewing raw file")

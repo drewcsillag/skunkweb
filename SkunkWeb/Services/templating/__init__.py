@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.18 2001/07/09 20:38:40 drew Exp $
+# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:11 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:07:01 smulloni>
 ########################################################################
 
@@ -46,8 +46,6 @@ def _formatException(exc_text, sessionDict):
 
 def __initHooks():
     import SkunkWeb.constants as skc
-    #TEMPORARILY HARD-CODED in SkunkWeb.constants.py -- FIX NE ***
-    #rc.TEMPLATING_JOB= rc.WEB_JOB + rc.AE_COMPONENT_JOB + '/templating/'
     import Handler
     from web.protocol import HandleConnection
     from aecgi import RequestFailed
@@ -70,6 +68,10 @@ SkunkWeb.LogObj.LOG("templating service loaded")
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:11  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.18  2001/07/09 20:38:40  drew
 # added licence comments
 #
