@@ -1,5 +1,5 @@
-# Time-stamp: <02/02/13 21:42:59 smulloni>
-# $Id: Handler.py,v 1.5 2002/01/21 07:05:48 smulloni Exp $
+# Time-stamp: <02/02/14 09:16:36 smulloni>
+# $Id: Handler.py,v 1.6 2002/02/14 02:58:25 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -28,7 +28,7 @@ import AE.Executables
 from SkunkWeb import Configuration
 import stat
 import sys
-from SkunkWeb.LogObj import ERROR, DEBUG
+from SkunkWeb.LogObj import ACCESS, ERROR, DEBUG
 from web.protocol import Redirect
 from SkunkWeb.ServiceRegistry import TEMPLATING
 import vfs
@@ -46,8 +46,7 @@ Configuration.mergeDefaults(
         "application/x-python"
         ],
     defaultIndexHtml = None,
-    mimeHandlers = {},
-    log404s = 1
+    mimeHandlers = {}
     )
 
 def _handleException(connObj):
@@ -79,9 +78,7 @@ def requestHandler(connObj, sessionDict):
         fixed, fs, st=AE.Cache._getPathFSAndMinistat(uri)
         connObj.statInfo = st
     except vfs.VFSException:
-        if Configuration.log404s:
-            text=AE.Error.logException()
-            ERROR("file not found: %s\n%s" % (uri, text))
+        ACCESS("file not found: %s" % uri)
         return
     except:
         return _handleException(connObj)

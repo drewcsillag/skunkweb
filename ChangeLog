@@ -1,8 +1,20 @@
 2002-02-14  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args): added
-	a method that corresponds to the <:args:> tag to the connection object;
-	returns a dictionary rather than automatically updating the local namespace. 
+	* pylibs/Authenticator.py (Authenticator.authenticate): this method
+	was dying with an error whenever someone tried a username that was
+	not in the auth file; fixed.
+
+	* SkunkWeb/Services/httpd/protocol.py
+	(HTTPProtocol.marshalResponse): necessary check for None.
+
+	* SkunkWeb/Services/templating/Handler.py (requestHandler):
+	removed optional logging for 404s and now log to access rather
+	than error log.
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args):
+	added a method that corresponds to the <:args:> tag to the
+	connection object; returns a dictionary rather than automatically
+	updating the local namespace.
 
 2002-02-13  Jacob Smullyan  <smulloni@smullyan.org>
 

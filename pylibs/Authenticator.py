@@ -29,6 +29,8 @@ class Authenticator:
         if not user or not password:
             return
         t = self.getHashBits(user)
+        if t==None:
+            return
         salt, hash = t[:4], t[4:]
         if not hash:
             return
