@@ -1,3 +1,8 @@
+2003-04-21  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/scope.py (Scopeable.pop): pop needs to check defaults 
+	as well as dictlist.
+
 2003-04-20  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* FAQ: added item about setting temporary Configuration values.
