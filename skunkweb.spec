@@ -21,16 +21,20 @@ Requires: /usr/bin/python2.2
 Requires: %{pylibdir}/site-packages/mx
 BuildRequires: /usr/sbin/apxs
 
+%description
+SkunkWeb is a scalable, extensible and easy to use web application server
+designed for handling both high-traffic and smaller sites, written in Python.
+
 %package mod_skunkweb
 Summary: A module for including Skunkweb in Apache.
 Group: System Environment/Daemons
 Requires: %{name}
 Requires: httpd
 
+%description mod_skunkweb
+A module for including the Skunkweb environment in the Apache web server.
 
-%description
-SkunkWeb is a scalable, extensible and easy to use web application server
-designed for handling both high-traffic and smaller sites, written in Python.
+
 
 %changelog
 * Thu May 22 2003 Jacob Smullyan <smulloni@smullyan.org>
@@ -63,7 +67,7 @@ designed for handling both high-traffic and smaller sites, written in Python.
            --sysconfdir=/etc/skunkweb \
            --prefix=/usr/share/skunkweb \
            --with-cache=/var/cache/skunkweb \
-           --with-docdir=/usr/share/doc/skunkweb-%(version) \
+           --with-docdir=/usr/share/doc/skunkweb-%{version} \
            --with-python=/usr/bin/python2.2 \
            --with-apxs=/usr/sbin/apxs
 
