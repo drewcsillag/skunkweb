@@ -3,6 +3,7 @@
 	* pylibs/scope.py: added "freeze" and "unfreeze" methods
 	that store the scoped values in self.__dict__ and clean them
 	out, respectively.
+	(Scopeable.pop): made compatible with scopeable.Scopeable.pop().
 
 2003-04-18  Jacob Smullyan  <smulloni@smullyan.org>
 

@@ -132,8 +132,8 @@ class Scopeable:
     def push(self, dict):
         self.__dictList.insert(0, dict)
 
-    def pop(self):
-        return self.__dictList.pop()
+    def pop(self, index):
+        return self.__dictList.pop(index)
 
     def trim(self):
         # should this be automatic or not?
