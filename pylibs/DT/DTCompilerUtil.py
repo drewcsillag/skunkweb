@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: DTCompilerUtil.py,v 1.6 2002/06/28 17:45:14 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.7 2003/05/01 20:45:59 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 import os
@@ -96,6 +96,10 @@ class Output:
 
     def write(self, indent, s):
         self.textlist.append((' '*indent) + s)
+        
+    def writelines(self, *lines):
+        for indent, s in lines:
+            self.textlist.append((' '*indent) +s)
 
     def writemultiline(self, indent, s):
         it = ' '*indent
@@ -202,36 +206,12 @@ def checkName(tag, argname, val, ppval = None):
     raise DTExcept.DTCompileError ( tag, ('argument %s is an expression and '
                                           'should be a string') % argname)
 
-########################################################################
-# $Log: DTCompilerUtil.py,v $
-# Revision 1.6  2002/06/28 17:45:14  drew_csillag
-# now converts line endings in exprs to the native lineending
-#
-# Revision 1.5  2002/06/07 14:46:29  drew_csillag
-# 	* pylibs/DT/DTCompilerUtil.py(genCodeChild): made all arguments
-# 	mandatory (see comment about DTC.py), as well as calls genCode on
-# 	Tag instances with the meta argument when they are block (as opposed
-# 	to empty) tags.
-#
-# Revision 1.4  2001/09/21 21:07:14  drew_csillag
-# now made
-# it so that if you have a multi-line <:call:> tag, you don't have
-# to have the ':> on it's own line for it to work.
-#
-# Revision 1.3  2001/09/21 20:36:08  drew_csillag
-# fixed so print statements in templates now work
-#
-# Revision 1.2  2001/09/21 20:16:31  drew_csillag
-# added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
-#
-# Revision 1.1.1.1  2001/08/05 15:00:49  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.26  2001/07/09 20:38:41  drew
-# added licence comments
-#
-# Revision 1.25  2001/04/12 22:05:33  smullyan
-# added remote call capability to the STML component tag; some cosmetic changes.
-#
-########################################################################
+def safe_import(indent, codeout, modulename):
+    """
+    imports (in the generated code) the stated module into the hidden
+    namespace and returns a string that can be used to refer to it, of
+    the form "__h.%s" % modulename.    
+    """
+    t="__h.%s" % modulename.split('.', 1)[0]
+    codeout.write(indent, "%s=__import__('%s')" % (t, modulename))
+    return "__h.%s" % modulename

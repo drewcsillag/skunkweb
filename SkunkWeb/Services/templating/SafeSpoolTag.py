@@ -1,26 +1,31 @@
 from DT.DTTags import SpoolTag
 from DT import DTCompilerUtil
 import SkunkWeb.Configuration as C
-#from SkunkWeb.LogObj import DEBUG
-#from SkunkWeb.ServiceRegistry import USER
 
 class SafeSpoolTag(SpoolTag):
     _attend_to_comments=1
 
     def _pushCommentLevel(self, indent, codeout, val):
-        codeout.write(indent, "__t.SkunkWeb=__import__('SkunkWeb')")
+        Cfg=DTCompilerUtil.safe_import(indent, codeout, 'SkunkWeb.Configuration')
         oldvalname=DTCompilerUtil.getTempName()
-        codeout.write(indent, "%s=__t.SkunkWeb.Configuration.componentCommentLevel" % oldvalname)
-        codeout.write(indent, "__t.SkunkWeb.Configuration.componentCommentLevel=int(%s)" % val)
+        codeout.write(indent, "%s=%s.componentCommentLevel" % (oldvalname, Cfg))
+        codeout.write(indent, "%s.componentCommentLevel=int(%s)" % (Cfg, val))
         return (oldvalname,)
 
     def _popCommentLevel(self, indent, codeout, oldvalname):
-        codeout.write(indent, "__t.SkunkWeb.Configuration.componentCommentLevel=%s" % oldvalname)
-        codeout.write(indent, "del %s" % oldvalname)
+        s="__h.SkunkWeb.Configuration.componentCommentLevel"
+        lines=((indent,
+                "%s=%s" % (s, oldvalname)),
+               (indent,
+                "del %s" % oldvalname))
+        codeout.writelines(*lines)
 
     def _testCommentLevel(self, indent, codeout, commentLevel):
-        codeout.write(indent, "if int(%s) not in (0, 1, 2, 3):" % commentLevel)
-        codeout.write(indent+4, "raise ValueError, \"unrecognized value: %s\"" % commentLevel)
+        lines=((indent,
+                "if not (0 <= int(%s) <=3):" % commentLevel),
+               (indent+4,
+                "raise ValueError, \"unrecognized value: %s\"" % commentLevel))
+        codeout.writelines(*lines)
 
             
         
