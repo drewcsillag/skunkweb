@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.7 2001/08/03 16:02:50 drew Exp $
+# $Id: Makefile.in,v 1.1.1.1 2001/08/05 14:59:30 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -53,7 +53,7 @@ WEBDOC 		= @WEBDOC@
 INSTALL		= @INSTALL@ -o $(owner) -g $(group)
 INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
-DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp
+DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp index.html
 
 
 default:	build
@@ -124,6 +124,10 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.1.1.1  2001/08/05 14:59:30  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.7  2001/08/03 16:02:50  drew
 # now installs demo files
 #
