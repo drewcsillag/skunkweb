@@ -18,7 +18,7 @@
 #
 # The makefile for the mod_skunkweb module
 #
-# $Id: Makefile.in,v 1.4 2002/04/24 19:17:08 drew_csillag Exp $
+# $Id: Makefile.in,v 1.5 2002/05/09 18:51:55 drew_csillag Exp $
 
 # This is a useful script provided by apache to compile shared modules
 APXS=@APXS@
@@ -31,11 +31,11 @@ prefix		= @prefix@
 share_dir       = @prefix@/share/skunk
 
 # Can be given on command line
-DEBUG=
+#DEBUG=
 
-ifdef DEBUG
-   CFLAGS += -DDEBUG
-endif
+#ifdef DEBUG
+#   CFLAGS += -DDEBUG
+#endif
 
 mod_skunkweb.o: mod_skunkweb.c
 	$(APXS) -c -Wc,"$(CFLAGS)" mod_skunkweb.c

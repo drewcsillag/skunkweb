@@ -48,13 +48,13 @@ AC_SUBST(DOCROOT)
 AC_ARG_WITH(docroot,
 [ --docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
 DOCROOT=$withval], [
-DOCROOT=])
+DOCROOT=\${prefix}/docroot])
 
 AC_SUBST(CACHE)
 AC_ARG_WITH(cache,
 [ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
 CACHE=$withval], [
-CACHE=])
+CACHE=\${prefix}/cache])
 
 AC_SUBST(OWNER)
 AC_ARG_WITH(user, 

@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.12 2002/05/15 14:01:37 smulloni Exp $
+# $Id: Makefile.in,v 1.13 2002/06/18 20:33:27 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -37,17 +37,9 @@ log_dir		= $(localstate_dir)/log
 pid_dir		= $(localstate_dir)/run
 components 	= @MOD_SKUNKWEB@ Services
 
-ifeq (@DOCROOT@,)
-	docroot	= $(prefix)/docroot
-else
-	docroot = @DOCROOT@
-endif
 
-ifeq (@CACHE@,)
-	cache = $(prefix)/cache
-else
-	cache = @CACHE@
-endif
+docroot = @DOCROOT@
+cache = @CACHE@
 
 #
 # Who to install as and what modes to set
@@ -153,6 +145,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.13  2002/06/18 20:33:27  drew_csillag
+# updated for favicon.ico
+#
 # Revision 1.12  2002/05/15 14:01:37  smulloni
 # added auth to list of services
 #
