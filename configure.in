@@ -138,25 +138,25 @@ not a problem.
 ])
 fi
 
-# check for mx package
-AC_MSG_CHECKING([eGenix mxBase Python package])
-if $PYTHON <<\EOF 
-import sys
-try:
-    import mx.DateTime
-except ImportError:
-    sys.exit ( 1 )
-sys.exit(0)
-EOF
-then
-    AC_MSG_RESULT([OK])
-else
-    AC_MSG_RESULT([ERROR: Skunk requires the eGenix mxBase Python package
-Get it at:
-    http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
-])
-exit 1;
-fi
+dnl # check for mx package
+dnl AC_MSG_CHECKING([eGenix mxBase Python package])
+dnl if $PYTHON <<\EOF 
+dnl import sys
+dnl try:
+dnl     import mx.DateTime
+dnl except ImportError:
+dnl     sys.exit ( 1 )
+dnl sys.exit(0)
+dnl EOF
+dnl then
+dnl     AC_MSG_RESULT([OK])
+dnl else
+dnl     AC_MSG_RESULT([ERROR: Skunk requires the eGenix mxBase Python package
+dnl Get it at:
+dnl     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
+dnl ])
+dnl exit 1;
+dnl fi
 
 AC_SUBST(OWNER)
 AC_ARG_WITH(user, 
@@ -173,11 +173,11 @@ AC_ARG_WITH(group,
 dnl Checks for library functions.
 
 # This is for mxDateTime module
-AC_SUBST(MX_DATE_FUNCS)
+#AC_SUBST(MX_DATE_FUNCS)
 
-AC_CHECK_FUNC(strftime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRFTIME"])
-AC_CHECK_FUNC(strptime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRPTIME"])
-AC_CHECK_FUNC(timegm,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_TIMEGM"])
+#AC_CHECK_FUNC(strftime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRFTIME"])
+#AC_CHECK_FUNC(strptime,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_STRPTIME"])
+#AC_CHECK_FUNC(timegm,[MX_DATE_FUNCS="$MX_DATE_FUNCS -DHAVE_TIMEGM"])
 
 AC_PATH_PROG(LYNX, lynx)
 AC_PATH_PROG(LATEX, latex)

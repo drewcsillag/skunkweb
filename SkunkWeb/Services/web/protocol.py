@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.26 2003/09/08 00:24:18 smulloni Exp $
-# Time-stamp: <03/09/07 20:14:44 smulloni>
+# $Id: protocol.py,v 1.27 2003/12/18 16:58:14 smulloni Exp $
+# Time-stamp: <2003-12-29 22:50:30 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -15,8 +15,8 @@ from SkunkWeb.LogObj import DEBUG, HTTP_ACCESS, logException
 from SkunkWeb.ServiceRegistry import WEB
 from SkunkWeb import Configuration, ConfigAdditives, constants
 from requestHandler.protocol import Protocol, PreemptiveResponse
+from skunk.date.format import HTTPDate
 import Cookie
-import Date
 import SocketScience
 import cStringIO
 import cgi
@@ -147,7 +147,7 @@ class HTTPConnection:
         self.requestHeaders = HeaderDict(self._requestDict['headers'])
         self.responseHeaders = HeaderDict({
             #'Server': 'SkunkWeb %s' % Configuration.SkunkWebVersion,
-            'Date': str(Date.HTTPDate(time.time())),
+            'Date': str(HTTPDate()),
             'Status': '200 OK'
             })
 

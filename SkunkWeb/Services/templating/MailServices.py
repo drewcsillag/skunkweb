@@ -47,7 +47,7 @@ to <tt>'localhost'</tt>.</li>
 </ul>
 
 """
-# $Id: MailServices.py,v 1.6 2003/05/05 17:19:18 smulloni Exp $
+# $Id: MailServices.py,v 1.7 2003/07/27 13:47:55 smulloni Exp $
 
 import rfc822, mimetools, mimify
 import string
@@ -56,13 +56,14 @@ import socket
 import os, sys
 import popen2
 import random
+import time
+from cStringIO import StringIO
 
+from skunk.date.timeutil import arpa
 from SkunkExcept import *
 from SkunkWeb.LogObj import *
 from SkunkWeb import Configuration
-from Date import LocalDate, DateString
-from mx.DateTime import ARPA   # mx DateTime module required
-from cStringIO import StringIO
+
 
 # The mail errors we're raising
 class MailError ( SkunkRuntimeError ):
@@ -252,11 +253,11 @@ def sendmail ( to_addrs, subj, msg,
             mail['To'] = "recipient list not shown: ;"
 
     # required Date: header
-    localdate = LocalDate()
-    mail['Date'] = ARPA.str(localdate)
+    lt=time.time()
+    mail['Date']=arpa(lt)
 
     # not necessary but useful - Message-Id
-    utcdate = DateString(localdate, 'yyyymmddhh24miSS')
+    utcdate = time.strftime('%Y%m%d%H%M%S', time.gmtime(lt))
     pid = os.getpid()
     idhost = socket.getfqdn()
     randint = random.randrange(100000)

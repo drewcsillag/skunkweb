@@ -352,6 +352,20 @@ def _parse_ISO(datestr):
         return _parse_ISO_mx(datestr)
     else:
         return _parse_ISO_vanilla(datestr)
+
+def _arpa_mx(timet):
+    return DateTime.ARPA.str(DateTime.DateTimeFromTicks(timet))
+
+def _arpa_vanilla(timet):
+    time.strftime('%a, %d, %b %Y %H;%m;%S ' +time.strftime('%z'),
+                  time.localtime(timet))
+
+def arpa(timet):
+    if _have_mx:
+        return _arpa_mx(timet)
+    else:
+        return _arpa_vanilla(timet)
+            
     
 def _old_test():
     print "testing old functions..."

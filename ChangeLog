@@ -12,8 +12,12 @@
 
 2003-12-31  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
-	* SkunkWeb/Services/templating/MailServices.py (sendmail): removed
-	dependencies on Date and mx.DateTime.
+	* configure, configure.in: no longer test for egenix-mx.
+
+	* SkunkWeb/Services/templating/MailServices.py (sendmail),
+	SkunkWeb/Services/templating/Handler.py,
+	SkunkWeb/Services/web/protocol.py: removed dependencies on Date
+	and mx.DateTime.
 
 	* pylibs/skunk/date/timeutil.py (arpa): equivalent of
 	mx.DateTime.ARPA.str.
