@@ -31,7 +31,7 @@ from SkunkExcept import *
 _CACHE_EXP_MODE = 0740
 
 conf = Config.Config([
-    Config.el('cachedir', 'cache directory', '@prefix@/cache',
+    Config.el('cachedir', 'cache directory', '@CACHE@',
               'c', 'cachedir', 'pathtocache'),
     Config.el('deadtime', 'how long after cache entry dies do we delete it',
               24 * 60 * 60, 'd', 'deadtime', 'seconds', convert_hook = int),
