@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.23 2002/07/15 15:07:09 smulloni Exp $
-# Time-stamp: <2002-07-18 15:24:19 acsillag>
+# $Id: sw.conf.in,v 1.24 2002/07/25 17:26:53 drew_csillag Exp $
+# Time-stamp: <2002-07-25 14:16:32 drew>
 
 ########################################################################
 #
@@ -31,6 +31,11 @@
 # userToRunAs = "@OWNER@"
 # groupToRunAs = "@GROUP@"
 
+# A little default so it will work out of the box in most cases
+if "@RUNASROOT@" == "root":
+    userToRunAs = "@OWNER@"
+    groupToRunAs = "@GROUP@"
+    
 ########################################################################
 # services you want to load.
 # standard services are:
@@ -645,6 +650,9 @@ documentRoot = '@DOCROOT@'
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.24  2002/07/25 17:26:53  drew_csillag
+# added docs for userToRunAs and groupToRunAs
+#
 # Revision 1.23  2002/07/15 15:07:09  smulloni
 # various changes: configuration (DOCROOT); new sw.conf directive (File);
 # less spurious debug messages from rewrite; more forgiving interface to
