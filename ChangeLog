@@ -1,4 +1,14 @@
+2001-08-11  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* docs/PyDO/PyDO.tex: Added 
+
 2001-08-10  Drew Csillag  <drew@starmedia.net>
+
+        * pylibs/PyDO/doc: added info on connect strings
+	 
+	* pylibs/PyDO/postconn.py, pylibs/PyDO/oracleconn.py: added the
+	cache option to the connect strings.
+	
 	* SkunkWeb/Services/templating/HTMLTags.py: fixed redirect tag.  It
 	was totally broken.
 	
