@@ -1,0 +1,377 @@
+=================
+SkunkWeb Tutorial
+=================
+
+
+Introduction
+============
+
+SkunkWeb is a scalable, extensible, and easy-to-use Web application server written in Python. It is designed for handling both high-traffic sites and smaller sites. Its features include a powerful component model and an elegant templating language that encourages component-based design, highly configurable caching (on disk and/or in memory) of compiled templates and component output, message catalog support for i18n, and remote component calls. It can be used with Apache via an Apache module, or it can serve HTTP requests directly.
+
+SkunkWeb would be primarily used on Unix-based OSs, instead of Windows, since it forks processes instead of creating threads.
+
+This tutorial reviews most of the major concepts in SkunkWeb:
+
+- Components
+- HTTP
+- Database Access
+- STML
+- Formlib
+
+This tutorial is fast and quick overview of the features in SkunkWeb. It is not meant at all to be an exhaustive survey of the features in SkunkWeb, but instead give you a taste of what SkunkWeb is like. To get more familiar with the many details in SkunkW
+
+Some sections will discuss briefly some future plans to improve on what is discussed.
+
+Installation
+============
+
+SkunkWeb can be downloaded from http://www.sf.net/projects/skunkweb.
+
+After downloading and untar-ing the downloaded file, change into the directory containing SkunkWeb and type::
+
+    ./configure
+    make
+    make install
+
+(Make sure you have enough privileges to do ``make install`` to the ``/usr/local`` directory.) When installation is complete, go to the directory ``/usr/local/skunk/bin``, where you will find the startup scripts for SkunkWeb. Type in::
+
+    ./swmgr start
+
+To start the server. Then in your web browser, type::
+
+    http://www.example.com:8080/
+
+where ``www.example.com`` is your domain or IP address. If you see a page with a SkunkWeb graphic, you have successfully installed SkunkWeb.
+
+Consult the installation guide for more installation options.
+
+
+The SkunkWeb Environment
+========================
+
+Out of the box, SkunkWeb comes with the ability to serve directly different types of source files with the extensions:
+
+- .py
+- .html
+- .stml
+- .txt
+
+If SkunkWeb finds a request in the URL for these types of files, it will execute them, if they set up to be executed, and then served to the user. By default, SkunkWeb is set up to execute two types of languages:
+
+- Python
+- STML
+
+More templating languages can be used within SkunkWeb; read the *Extending SkunkWeb* guide for more information.
+
+With this knowledge, we can start with a simple Python example. Create a file called ``myfile.py`` with this code::
+
+    print "Hello World!"
+
+and save the file in ``/usr/local/skunk/docroot``. Then go to your browser, and go to that page::
+
+    http://www.example.com:8080/myfile.py
+
+On the browser screen, it will print, expectedly::
+
+    Hello World!
+
+To do this with an HTML page, you can create a file, calling it, let's say, "hello.html" and typing this::
+
+    Hello World!
+
+and the output to the browser would be the same as before.
+
+SkunkWeb, by default, is very unassuming about what is going to done with SkunkWeb. To those coming from PHP or Mason, for example, will find SkunkWeb to be a very familiar environment, since the same concepts apply.
+
+
+Components
+==========
+
+Components are the "includes" of SkunkWeb. However, there are a few different types of components, which reflect certain needs and features required by a developer. Here is a list of the component types:
+
+- Include components. These are basic components. You would use these, for example, to include common page elements or dynamically add specific parts of a page to the final output. There are two default types of includes, Python includes and STML includes, with the extensions:
+
+    a. .pyinc (For Python includes.)
+    b. .inc (For HTML and STML includes.)
+
+Include components *share* the namespace of the calling component. That means that if you define a variable::
+
+    a = 1
+
+and then try to print it in the include:
+
+    print a
+
+It will print ``1``, from the included page. This feature, though, does not work within Python functions; here, you would use a regular component instead.
+
+- Regular components. These are like include components, but with a few extra features. First, these type of components are *cachable*. This means that whatever output it generates will be cached, and SkunkWeb will continue to rely on the cached version until the cache expires. This is handy for components that take a little time to load but will not change for a long period of time.
+
+Regular components, unlike include components, do not share the calling page's namespace. In this case, you would have to pass variables into it so they will be recognized by the regular component.
+
+File extensions for regular components are:
+
+    a. .pycomp (For Python regular components)
+    b. .comp   (For HTML and STML components)
+
+- Data components. These type of components have similar features to regular components, but the final output is a single value. These can be looked on as "cachable functions", since the return value can be cached so SkunkWeb does not have to execute the component until the cache expires. These can be useful for caching database results that take awhile to process.
+
+Just like regular components, data components do not share the namespace of the calling component.
+
+File extensions for data components are:
+
+    a. .pydcmp (For Python data components)
+    b. .dcmp   (For all other components)
+
+Top-level Documents
+-------------------
+
+Top-level documents are documents that are called from the URL. For example::
+
+    http://www.example.com/index.py
+
+the top-level document here is ``index.py``. The top-level document is just a regular component that is called when the request is made. Obviously, though, the regular component is not cached.
+
+Usage
+-----
+
+To start off, you need to import the ``AE`` library. This library contains all the component tools you will need. You would type on top of a component::
+
+    from AE.Component import *
+
+which will import the whole component library. There is a single function you would use to call components, namely ``callComponent()``.
+
+- Include Components. An include component would be called as such::
+
+       a = callComponent("my.pyinc", compType=DT_INCLUDE)
+
+The ``my.pyinc`` is the path to the file to include, and the ``compType=DT_INCLUDE`` is used to tell callComponent() what type of include it is.
+
+(Note: The "DT" in ``DT_INCLUDE`` stands for "Document Templates", which really comes from the ``DT`` library, which is the library for STML.)
+
+- Regular Components. An example::
+
+       a = callComponent("my.pycomp", argDict={'test': 1}, compType=DT_REGULAR)
+
+The two new things here is ``DT_REGULAR`` for the component type and ``argDict``. ``argDict`` is a dictionary of all the variables that are going to be sent to the component. In the above example, the component can then print ``test`` like so::
+
+    print test
+
+with the output being ``1``.
+
+- Data components. An example::
+
+        a = callComponent("my.pydcmp", argDict={'test': 1}, compType=DT_DATA)
+
+Just like the prior regular component example, but with the component type as ``DT_DATA``. In the actual component, it needs to raise an exception of type ``ReturnValue`` to return the specific value that is intended to be returned. An example::
+
+        raise ReturnValue, 'test'
+
+If that line is in the ``my.pydcmp`` file, the ``a`` variable would get a string ``test``.
+
+Caching
+-------
+
+[TODO]
+
+
+Future
+------
+
+There are plans to make components easier to work with. Three wrapper functions were written to wrap ``callComponent()`` to make it mimic other web environments along with making components easier to understand:
+
+    - include(filename)
+    - regularComp(filename, value=1, value2=2, cache=0)
+    - dataComp(filename, value=1, value2=2)
+
+In the last example, ``value`` and ``value1`` are used as examples of types of variables that would be inputted into the ``argDict`` parameter in ``callComponent()``. These functions make components more familiar to people new to SkunkWeb, while making components look more "Pythonic".
+
+This is going to be rolled into a later release of SkunkWeb.
+
+
+HTTP
+====
+
+The HTTP interface is available immediately within your top-level documents. It is an object that represents the current request. The object's variable name is called ``CONNECTION`` and it contains methods and attributes that assist in receiving information about the current request.
+
+First off, there is the ``CONNECTION.args`` attribute. These contain all of the form and query string arguments sent from a POST or GET request. So, if you had a URL, like so::
+
+    /index.py?a=1
+
+You can get the ``a`` value by using the ``CONNECTION.args`` dictionary::
+
+    print CONNECTION.args['a']
+
+``CONNECTION.args`` is merely a dictionary of all the HTTP arguments sent.
+
+If there was more than one value for an argument, like if there was a single name to a set of checkboxes, then it would be represented as a list in ``CONNECTION.args``. For example, if the form value ``my_checkbox`` represented 3 boxes, and all of them were checked, then the code below::
+
+    print CONNECTION.args['my_checkbox']
+
+would output a string representation of the list. So something like this::
+
+    print CONNECTION.args['my_checkbox'][1]
+
+would work if the list contained two items or more.
+
+If the argument value only contains one value when it is received by the web server, it will just be a string value. (So, for those multi-value arguments, where you might just get one value, you need to check the type of the argument by using the type-checking functions in Python.)
+
+``CONNECTION`` contains the request headers and the response headers in the respective attributes ``.requestHeaders`` and ``.responseHeaders``. These are too dictionaries. ``CONNECTION.responseHeaders`` is modifiable, and whatever is modified there last is used as the response header. (All the common HTTP rules apply here. For example, you can only have one Content-Type for a response.) You can alter the content type with the ``CONNECTION.setContentType()`` function, with its single parameter as a string value representing the content type.
+
+``CONNECTION.env`` is a dictionary of the CGI-like environment variables that is received from the HTTP server, such as Apache or SkunkWeb's own httpd service. The dictionary follows the common CGI standards for naming and the like.
+
+``CONNECTION.requestCookies`` and ``CONNECTION.responseCookies`` contain ``SimpleCookie()`` objects (from the standard library) of the request and response cookies. Look at the Python documentation for more information on this.
+
+``CONNECTION.setStatus()`` takes a single integer specifying the HTTP response code to send to the browser. So, you can do this for example::
+
+    CONNECTION.setStatus(404)
+    print "Page not found"
+
+With this, you need to provide your own page if you raise a specific status as such.
+
+
+Database Access
+===============
+
+SkunkWeb uses a simple method of managing persistent connections to database servers. Other than managing the database server connection, you would rely on the Python DB-API modules available either with your database system package or through a third party.
+
+SkunkWeb supports these DB-API modules:
+
+- pgdb: PostgreSQL driver
+- MySQLdb: MySQL driver
+- DCOracle: Oracle driver
+- KinterbasDB: For Interbase and Firebird 1.0
+
+SkunkWeb merely stores a persistent connection to database systems. Each process would maintain a single connection to the database server.
+
+The actual process of setting up SkunkWeb to maintain persistent connections is described in ``sw.conf``. Basically, you need to first turn on the service that maintains connections in the ``services`` list. Here is what you would put for each:
+
+    - 'postgresql'
+    - 'mysql'
+    - 'oracle'
+    - 'firebird'
+
+You would then specify in a configuration dictionary the name of the connection and the connection parameters. For example, using PostgreSQL::
+
+    PostgreSQLConnectParams = {'my_conn': 'localhost:my_db:username:password'}
+
+Replace "PostgreSQL" for the name of the database system you are using ("Oracle", "MySQL", "PostgreSQL", "Firebird"). Each database connector has different ways of passing connection parameters. Check the ``sw.conf`` file for examples for your specific database driver.
+
+To access a connection, you would import the appropriate module specific to your database system and use the ``getConnection()`` function. Here are the import strings:
+
+    - import PostgreSql
+    - import Firebird
+    - import MySQL
+    - import Oracle
+
+If you are using PostgreSQL, for example, you would retrieve a connection like this::
+
+    conn = PostgreSql.getConnection('my_conn')
+
+and then use the database driver API from there::
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM my_table")
+    a = cursor.fetchall()
+    for i in a:
+        print i[0]
+
+There is no need to use the ``.close()`` method on the connection, since we want to keep the connection open.
+
+Future
+------
+
+There are two things being discussed on how to improve this. First, we would like to remove all these separate modules for each database system to create a cache. Instead, there would be one codebase and one way of setting up a database connection cache. It would be simpler to use and maintain in the end.
+
+Second, there is consideration of adding glue code to use SQL Relay, which is a separate daemon application that manages multiple connections in a connection *pool* (as opposed to caching.) Caching is okay for small sites. However, if the traffic grows, and the number of processes required to service those requests increases, then SkunkWeb might exhaust the number of connections the database server can handle. There are certain mitigation techniques to this, like using remote data components against another SkunkWeb server, but it is easier and more cost-effective to just use a separate database server connection pool without having to rewrite parts of the application. (Plus, since SQL Relay is in a separate process, it can add increased reliability, at the slight expense of data transmission over something like Unix sockets, if the SQL Relay daemon is on the same server as SkunkWeb is on.)
+
+
+STML
+====
+
+STML stands for the "Skunk Template Markup Language". It is a simple templating language used for placing dynamic elements into HTML pages. It is not a full-blown programming language; you would use Python for that. There is also a "calculated inefficiency" in it; it is good for small things, but it is not something you would want to constantly do programming in. (Just imagine having to write XML code a lot.) Instead, it gives just enough to make HTML pages easier to make when adding dynamic elements to it.
+
+STML tags are made up like so::
+
+    <:tag_name parameter named=parameter `'non-string data'`:>
+
+``tag_name`` would be the name of the tag. STML takes named and unnamed parameters. If the parameter is a Python string, the quotes around it is not required, unless there is a space in the string. [TODO: Check on this]. For all other type of data, you would wrap it with backticks (`). If a piece of code is between backticks, then that is considered a Python statement.
+
+Below are some common STML tags one would use:
+
+- <:val:>. This will evaluate an expression that is passed to it and print the result. It accepts an optional parameter called "fmt", which specifies how it should be encoded (such as "html", "latin", etc.) Here is an example::
+
+    <:val `data['moo']`:>
+
+or::
+
+    <:val `data['moo']` fmt=html:>
+
+
+- <:call:>. This executes an expression but does not return anything. For example, you can set a variable to a value with this::
+
+    <:call `a = 1`:>
+
+- <:set:>. This sets a variable to a value (just like in the sample above.) Example::
+
+    <:set a `1`:>
+
+or::
+
+    <:set b moo:>
+
+
+[TODO: More to do]
+
+Formlib
+=======
+
+Formlib is a simple form creation and validation package included with SkunkWeb. Formlib makes the tedious process of generating and validating forms easier than without it.
+
+The basic concept behind is to define a form, which contains any number of specific form elements, like text fields, checkboxes, etc. and then use that form definition to display the form as well as validating the form.
+
+Defining A Form
+---------------
+
+Defining a form is simple. You first import the ``formlib`` library, and the create a ``ViewableForm()`` instance with new instances of field classes. Here is a simple form::
+
+    import formlib
+
+    form = formlib.ViewableForm(name='my_form',
+                                fields=[
+                                        TextField('name', required=1),
+                                        TextField('address', required=1),
+                                        TextField('city', required=1),
+                                        TextField('state', required=1),
+                                        TextField('zip', required=1)
+                                       ])
+
+
+Notice the ``required`` parameter for each field. This is a default validation to ensure that there is something in the field itself. You can add extra validators into the form.
+
+To show the form, you would just do this::
+
+    print form.getView()
+
+and it will show a default display of the form. Evidently, you can manually display each item. For example, we can print the first field in the form like so::
+
+    print form.fields['name'].getView()
+
+To validate data against the form, we would pass a dictionary of HTTP arguments (``CONNECTION.args`` for example) to validate it. Here is an example::
+
+    form.submit(CONNECTION.args)
+
+    if form.errors:
+        print "There were missing fields"
+    else:
+        print "Form accepted"
+
+``.submit()`` is a ``ViewableForm()`` method which validates the data passed into it. If there were validation errors, the ``form.errors`` list will contain all the ``FormErrorMessage()`` objects that were created for each field that failed validation. If you redisplay the form with the submitted values, like so::
+
+    print form.getView()
+
+all of the fields that were not blank will be filled in. (A pretty nifty timesaver.)
+
+More About Formlib
+------------------
+
+There is a lot in formlib, which deems a complete manual. So, to learn more about formlib, it is best to consult the Formlib Manual that is included with the SkunkWeb documentation to learn more about it. It goes through each class exhaustively, so it acts as a good reference.
