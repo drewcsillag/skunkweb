@@ -4,7 +4,7 @@ import xmllib
 
 def getXML():
     h = httplib.HTTP('www.newsforge.com')
-    h.putrequest('GET', '/reports.rss')
+    h.putrequest('GET', '/newsvac.rss')
     h.endheaders()
     errc, errm, headers = h.getreply()
     f = h.getfile()
