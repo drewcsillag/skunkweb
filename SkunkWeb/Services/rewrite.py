@@ -1,5 +1,5 @@
-# Time-stamp: <03/01/29 15:56:41 smulloni>
-# $Id: rewrite.py,v 1.11 2003/01/28 22:01:42 smulloni Exp $
+# Time-stamp: <03/01/29 17:16:02 smulloni>
+# $Id: rewrite.py,v 1.12 2003/01/29 21:09:02 smulloni Exp $
 
 ########################################################################
 #  
@@ -32,6 +32,10 @@ from SkunkWeb.ServiceRegistry import REWRITE
 import re
 import sys
 from requestHandler.protocol import PreemptiveResponse
+from skunklib import normpath
+
+def _fixPath(root, path):
+    return normpath('%s/%s' % (root,path)) 
 
 Configuration.mergeDefaults(rewriteBeforeScope=1,
                             rewriteRules = [],
@@ -78,7 +82,7 @@ class Redirect(DynamicRewriter):
         connection.redirect(url)
         raise PreemptiveResponse, connection.response()
 
-# use templating's 404 handler if it is already imported,
+# use templating's 404 handler if it is already imported, 
 # or is about to be loaded, to the extent possible to determine
 if sys.modules.has_key('templating') \
        or 'templating' in Configuration.services:
@@ -125,15 +129,15 @@ class ExtraPathFinder(DynamicRewriter):
 
     def rewrite(self, match, connection, sessionDict, key):
         fs=Configuration.documentRootFS
-        (path, info)=fs.split_extra(connection.uri)
+        (path, info)=fs.split_extra(_fixPath(Configuration.documentRoot, connection.uri))
         if not path:
             raise PreemptiveResponse, self.notFoundHandler(connection,
                                                            sessionDict)
         else:
             if self.add_info_to_args:
                 connection.args[self.path_info_var_name]=info
-            connection.requestHeaders['PATH_INFO']=info
-            connection.uri= path
+            connection.requestHeaders['PATH-INFO']=info
+            connection.uri= path[len(Configuration.documentRoot):]
 
 
 ##class HostMatch(DynamicRewriter):
@@ -166,12 +170,12 @@ class RewriteCond:
                  ):
         self.uri=uri 
         self.host=host
-        self.unixPath=unixpath
+        self.unixPath=unixPath
         self.port=port
         self.skunkPort=skunkPort
         self.ip=ip
 
-    def __call__(connection, sessionDict):
+    def __call__(self, connection, sessionDict):
         for pat, target in zip((self.uri,
                                 self.host,
                                 self.unixPath,
@@ -182,7 +186,7 @@ class RewriteCond:
                                 constants.IP)):
             if pat is not None:
                 t=sessionDict.get(target)
-                if (not t) or not getcompiled(pat).search(t):
+                if (not t) or not _getcompiled(pat).search(t):
                     return 0
         for pat, target in zip((self.port,
                                 self.skunkPort),
@@ -224,7 +228,8 @@ def _dorewriteloop(connection, sessionDict, rules):
         if callable(p):
             if p(connection, sessionDict):
                 _dorewriteloop(connection, sessionDict, r)
-        else:
+            continue
+
         m = _getcompiled(p).search(connection.uri)
         if m is not None:
             if Configuration.rewriteEnableHooks:
@@ -238,7 +243,7 @@ def _dorewriteloop(connection, sessionDict, rules):
                 except:
                     logException()
 
-            _dorewrite(m, connection, sessionDict, r, key)
+            _dorewrite(m, connection, sessionDict, r, (p, r))
 
             if Configuration.rewriteEnableHooks:
                 try:
