@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/08/30 10:32:17 smulloni>
+# Time-stamp: <02/09/04 11:05:42 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -118,7 +118,7 @@ class XMLElement:
                 self.setAttribute('%s:%s' % (XMLNS_ATTR, namespaceCode), namespace)
             else:
                 self.setAttribute(XMLNS_ATTR, namespace)
-        self.__parent=None
+        self.parent=self.__parent=None
 
     def __str__(self):
         buff=['<']
@@ -242,10 +242,18 @@ class XMLElement:
                     return kid
         return None
 
+    def getPrimogenitor(self):
+        if self.__parent==None:
+            return self
+        return self.__parent.getPrimogenitor()
+
     
 
 ########################################################################
 # $Log$
+# Revision 1.7  2002/09/04 19:05:24  smulloni
+# work on flow manager
+#
 # Revision 1.6  2002/08/30 19:47:54  smulloni
 # xmlutils.XMLElement now has a public "attributes" member; added DTD
 # for flow definitions.
