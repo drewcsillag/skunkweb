@@ -330,6 +330,31 @@ def makeM2MJoin(t, rels, schema):
                            rels[0].myAttrs, rels[0].theirTable,
                            rels[0].theirAttrs, t2Meth)
                 )
+
+        if len(t.columns) == 2:
+            if t1Meth:
+                new_rels = []
+                for r in schema[t1].relations:
+                    if isinstance(r, OneToMany) and \
+                        r.theirTable == tn and \
+                        r.theirAttrs == rels[0].myAttrs and \
+                        r.myAttrs == rels[0].theirAttrs:
+                            pass
+                    else:
+                        new_rels.append(r)
+                schema[t1].relations = new_rels
+            if t2Meth:
+                new_rels = []
+                for r in schema[t2].relations:
+                    if isinstance(r, OneToMany) and \
+                        r.theirTable == tn and \
+                        r.theirAttrs == rels[1].myAttrs and \
+                        r.myAttrs == rels[1].theirAttrs:
+                            pass
+                    else:
+                        new_rels.append(r)
+                schema[t2].relations = new_rels
+
         #check unique constraints and pk's
 
 def doMany2Many(schema):
@@ -418,23 +443,8 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                 out.write("    }\n")
             
         #write out foreign key methods
+
         for r in t.relations:
-            # Check for OneToManys that are a manifestion of a ManyToMany
-            found = 0
-            if isinstance(r, OneToMany):
-                for tn2, t2 in schema.tables.items():
-                    for r2 in t2.relations:
-                        if r2.theirTable == r.theirTable and \
-                           isinstance(r2, OneToMany):
-                            for tn3, t3 in schema.tables.items(): 
-                                for r3 in t3.relations:
-                                    if tn3 == tn2 and \
-                                       isinstance(r3, ManyToMany) and \
-                                       r3.theirTable == tn:
-                                        found = 1
-                                        break
-            if found == 1:
-                continue
             
             oside = tableNameToClassName[r.theirTable]
             tside = tableNameToClassName[tn]
@@ -478,7 +488,7 @@ PyDO.DBIInitAlias(%s, 'pydo:postgresql:%s')
                     qcommafy(r.mySideJoinAttrs),
                     qcommafy(r.theirSideJoinAttrs),
                     oside, qcommafy(r.theirAttrs)))
-                # The next 4 lines are HACKY
+                # The next 6 lines are HACKY
                 if r.methName[:3] == 'get':
                     addMethName = 'add' + singular(r.methName[3:])
                     removeMethName = 'remove' + singular(r.methName[3:])
