@@ -1,3 +1,8 @@
+Changes in 3.4b5
+================
+* a security fix put in hastily in 3.4b4 broke the
+  product service; this was repaired.
+
 Changes in 3.4b4
 =================
 * security fixes: cross-site scripting vulnerability in default
