@@ -1,0 +1,141 @@
+\documentclass{manual}
+\usepackage{makeidx}
+\usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
+\title{Creating a SkunkWeb Application: A Gentle Tutorial}
+\author{Jacob Smullyan}
+\release{1.1}
+\setshortversion{1}
+\makeindex
+\begin{document}
+\maketitle
+
+% \ 
+\vfill 
+
+\noindent
+Copyright (C) 2002 Jacob Smullyan
+
+\noindent
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+\tableofcontents
+
+\chapter{Introduction}
+\label{introduction}
+
+The purpose of this tutorial is to give a web developer an idea of how
+a fairly typical web application might be written in SkunkWeb. The
+focus is not on explaining all of the separate facilities that
+SkunkWeb provides, which are better explained in other documents, but
+on how those facilities (among them being the STML templating and
+component system, services for session handling, authentication,
+database connection caching, and url rewriting, and the PyDO object
+relational layer) can be used together.  This will done by tracing the
+development of a reasonably elaborate example application that happens
+to be one the author wanted an excuse to write anyway.  The process
+will be goal-oriented; not on explaining SkunkWeb and its architecture
+per se, except as necessary, but on explaining how to use it.
+
+\chapter{The Application: A Writing Game}
+\label{application}
+
+\section{The Rules of the Game}
+
+The application being developed here is an multi-player, turn-based,
+writing game.  The rules are very simple:
+
+\begin{itemize}
+
+\item A user, henceforth the game admin, creates a new game instance,
+to which other users, the players, may join.  The game admin is also
+the first player; there must be at least two players for the game to
+proceed, and no more than six.  
+
+\item At any point when at least two players but less than six have
+joined the game, the game admin may decide that the game is no longer
+open for new players, at which point it can begin.  If six players
+have joined, the join phase is closed automatically, and play can
+begin.
+
+\item The players take turns in the order in which they originally
+joined the game.  The game admin, having joined the game automatically
+by creating it, is therefore always the first player.  Each player is
+prompted to append text to a single document; the document may be
+viewed in its entirety by the players at any time, but the only
+modification it is possible to make is to append to it.  A player's
+turn is not over until he or she adds something to the document; an
+empty submission is not allowed.
+
+\item At any point, the game admin may decide that the document is
+complete, at which the game is over, and the admin may decide whether
+to edit the document, to publish it, or to trash it.  
+
+\item If a game admin wishes to edit the document, the entire document
+text is available to him or her for modification, without restriction.
+(An enhancement would be to give the game admin the ability to specify
+other users as having editorial privileges, but that isn't implemented
+here.)  After editing, the document can be saved for further editing,
+published, or trashed.
+
+\item If the document is published, the game admin is prompted for a
+title, and the document is published on the game website for everyone
+to read.
+
+\item If the document is trashed, it is no longer available for
+editing and will not appear any longer on the website.
+
+\end{itemize}
+
+\section{The Game Interface}
+
+An unauthenticated user, coming to the game website, would see, in
+addition to descriptive text and site navigation:
+
+\begin{enumerate}
+
+\item A list of links to published items, in reverse order of
+publication.  If the list is too long, it will show only the most
+recent publications, and then link to a page with a fuller listing.
+\item A form for user login.
+\item A link to a sign-up page.
+
+\end{enumerate}
+
+Once a user had logged, he or she would be able to go to his or her
+home page, which would contain a summary of the user's current and
+past game-playing activities:
+
+\begin{enumerate}
+
+\item A list of the player's active games, leading off with links to
+the games where it is the player's turn (which are highlighted). 
+
+\item A list of games it is possible to join.
+
+\item A link to create a new game.
+
+\item A list of any publications that resulted from previous games in
+which the player participated.
+
+\end{enumerate}
+
+The game page during game play would show a heading giving some
+metadata about the game (its players, the start date of the game, time
+of the last move), and then present the document in its current state
+in read-only form.  At bottom, there would be a form with a textarea
+in which text to be appended could be entered.
+
+%TO BE DONE:
+%A Project Plan
+%The Back End
+%Authentication
+%etc.
+
+\end{document}
+
+
+
+
+
