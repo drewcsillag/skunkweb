@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/12/05 12:39:33 smulloni>
+# Time-stamp: <02/12/05 12:51:44 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -250,7 +250,7 @@ class XMLElement:
 
     def walk(self, visitfunc, state=None, filter=None):
         for c in self.getChildren():
-            if filter and filter(c):
+            if (filter and filter(c)) or not filter:
                 visitfunc(c, state)
             if isinstance(c, XMLElement):
                 c.walk(visitfunc, state, filter)
@@ -258,6 +258,9 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.9  2002/12/05 17:52:31  smulloni
+# basic fix.
+#
 # Revision 1.8  2002/12/05 17:40:46  smulloni
 # added walk() element to XMLElement.
 #
