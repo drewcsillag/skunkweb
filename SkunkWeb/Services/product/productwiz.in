@@ -1,6 +1,6 @@
-#! @BASH@
+#! @bindir@/swpython
 
-# -*-sh-*-
+# -*-python-*-
 # Time-stamp: <02/03/31 18:40:37 smulloni>
 
 ########################################################################
@@ -12,7 +12,8 @@
 #      README file.
 #   
 # This script starts the product wizard (requires Tkinter).
-# $Id: productwiz.in,v 1.2 2002/07/11 22:57:00 smulloni Exp $
+# $Id: productwiz.in,v 1.3 2003/05/01 20:45:53 drew_csillag Exp $
 ########################################################################
 
-@bindir@/swpython -e "import product.productwiz as P; P.main()" &
+import product.productwiz as P
+P.main()

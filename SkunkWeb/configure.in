@@ -12,11 +12,6 @@ SW_VERSION=3.4b5
 
 AC_PREFIX_DEFAULT(/usr/local/skunk)
 
-# Check for location of bash. Don't check the return status, lower level
-# config should have taken care of that
-AC_SUBST(BASH)
-AC_PATH_PROG(BASH,bash)
-
 # Get the python path
 AC_SUBST(PYTHON)
 # look for python

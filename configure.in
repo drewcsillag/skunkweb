@@ -1,4 +1,4 @@
-dnl -*- m4-mode -*-
+dnl -*- m4 -*-
 dnl  
 dnl  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 dnl  
@@ -31,14 +31,6 @@ dnl deal with weird HP/UX stuff
 if test "`uname -s`" = "HP-UX"
 then
     INSTALL="/bin/sh $INSTALL"
-fi
-
-dnl # Make sure xargs is GNU xargs
-AC_PATH_PROG(XARGS,xargs)
-
-if test -z $XARGS
-then
-    AC_MSG_ERROR([xargs program not found!])
 fi
 
 AC_SUBST(DOCROOT)
@@ -166,28 +158,17 @@ Get it at:
 exit 1;
 fi
 
-dnl # Check for location of bash
-dnl AC_SUBST(BASH)
-dnl AC_PATH_PROG(BASH,bash)
-dnl 
-dnl if test -z $BASH
-dnl then
-dnl 	AC_MSG_ERROR([bash (Bourne Again Shell) is not found!])
-dnl fi
-
 AC_SUBST(OWNER)
 AC_ARG_WITH(user, 
 [  --with-user=user        Make Skunk installation owned by user], [
 	OWNER=$withval], [
 	OWNER=`$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
-dnl	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[[0]]"`;])
 
 AC_SUBST(GROUP)
 AC_ARG_WITH(group, 
 [  --with-group=group      Make Skunk installation owned by group], [
 	GROUP=$withval], [
 	GROUP=`$PYTHON -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
-dnl	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[[0]]"`;])
 
 dnl Checks for library functions.
 

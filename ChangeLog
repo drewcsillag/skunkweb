@@ -1,4 +1,15 @@
+2003-08-22    <smulloni@smullyan.org>
+
+	* configure.in: some cleanup (removed commented out junk), stopped
+	testing for xargs (only needed for deprecated cache cleaning
+	functionality).
+
+	* SkunkWeb/configure.in: no longer test for bash at all.
+
 2003-08-22    <smulloni@localhost>
+
+	* SkunkWeb/Services/product/productwiz.in: now an swpython
+	shebang.
 
 	* SkunkWeb/swmgr.in: rewritten so that it works with ash, which
 	means, I hope, that it will work with just about anything.
