@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/12/05 13:04:33 smulloni>
+# Time-stamp: <03/06/18 12:28:31 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -166,7 +166,7 @@ class XMLElement:
     def addChild(self, *children):
         for child in children:
             if isinstance(child, XMLElement):
-                child.__parent=self
+                child.parent=child.__parent=self
             self.__children.append(child)
         # for convenience
         return self
@@ -252,6 +252,9 @@ class XMLElement:
 
 ########################################################################
 # $Log$
+# Revision 1.12  2003/06/18 16:30:55  smulloni
+# bugfix: wasn't setting parent attribute
+#
 # Revision 1.11  2003/05/01 20:45:58  drew_csillag
 # Changed license text
 #

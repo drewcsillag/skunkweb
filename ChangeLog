@@ -1,3 +1,8 @@
+2003-06-18  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/xmlutils.py (XMLElement.addChild): forgot to set "parent"
+	as well as "__parent" (probably should drop __parent).
+
 2003-06-11  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Component.py (CascadingComponentHandler): added a
