@@ -1,3 +1,7 @@
+2001-12-12  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/swcgi.py.in: fixed content-length handling problem
+
 2001-12-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/Session.py (getSession): Added
