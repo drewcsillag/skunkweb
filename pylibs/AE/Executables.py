@@ -15,9 +15,10 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.1.1.1 2001/08/05 15:00:37 drew_csillag Exp $
+#$Id: Executables.py,v 1.2 2001/09/21 20:36:08 drew_csillag Exp $
 import sys
 import cStringIO
+import copy
 
 from SkunkExcept import *
 from DT import DT_REGULAR, DT_DATA, DT_INCLUDE
@@ -130,7 +131,7 @@ class STMLExecutable:
             return namespace
             
     def run( self ):
-        hns = dummy()
+        hns = copy.copy(_hidden_namespace)
         hns.OUTPUT = cStringIO.StringIO()
         sys.stdout = hns.OUTPUT
         try:
