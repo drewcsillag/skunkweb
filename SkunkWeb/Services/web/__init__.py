@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: __init__.py,v 1.8 2001/07/09 20:38:40 drew Exp $
+# $Id: __init__.py,v 1.1.1.1 2001/08/05 14:59:58 drew_csillag Exp $
 # Time-stamp: <01/05/04 11:09:09 smulloni>
 
 # a rewrite of the web service, using requestHandler.
@@ -27,17 +27,19 @@
 
 #WEB_JOB="/web/"
 
+
+
 def __initFlag():
     from SkunkWeb import ServiceRegistry
     ServiceRegistry.registerService('web', 'WEB')
-
+    import SkunkWeb.Configuration as C
+    C.mergeDefaults(mergeQueryStringWithPostData=1)
+    
 def __initHooks():
     import requestHandler.requestHandler
     import protocol
     import SkunkWeb.constants
-    # commented out TEMPORARILY until I have a way for services to get loaded before these
-    # are referenced by the config file
-    #SkunkWeb.constants.WEB_JOB="/web/"
+
     jobGlob=SkunkWeb.constants.WEB_JOB+'*'
     requestHandler.requestHandler.HandleRequest[jobGlob]=protocol._processRequest
     requestHandler.requestHandler.CleanupRequest[jobGlob]=protocol._cleanupConfig
@@ -48,6 +50,10 @@ __initHooks()
         
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.8  2001/07/09 20:38:40  drew
 # added licence comments
 #

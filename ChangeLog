@@ -1,3 +1,13 @@
+2002-05-03  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/web/__init__.py (__initFlag): adding config
+	option for merging querystring into post data.
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection._convertArgs):
+	bug fix for TypeError thrown by cgi.py at times.
+	(HTTPConnection._initArgs): use new config option for merging
+	querystring into post data.
+
 2002-05-02  Andrew Csillag  <drew@localhost.localdomain>
 
 	* FAQ: added entry about path info
