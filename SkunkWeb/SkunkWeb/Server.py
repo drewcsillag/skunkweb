@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Server.py,v 1.7 2003/04/03 17:51:27 smulloni Exp $
+# $Id: Server.py,v 1.8 2003/04/13 03:35:34 smulloni Exp $
 ########################################################################
 
 ########################################################################
@@ -99,7 +99,8 @@ class SkunkWebServer(SocketMan):
 
         if hasattr(Configuration, 'userToRunAs'):
             uid = pwd.getpwnam(Configuration.userToRunAs)[2]
-            os.seteuid(os.getuid())
+            if hasattr(os, 'seteuid'):
+                os.seteuid(os.getuid())
             os.setuid(uid)
             
         Hooks.ChildStart()
@@ -169,13 +170,13 @@ def start():
 def addService(sockAddr, func):
     reset = None
     
-    if os.getuid() != os.geteuid():
+    if hasattr(os, 'geteuid') and os.getuid() != os.geteuid():
         reset = os.geteuid() #uid to switch back to
         os.seteuid(0)
     try:
         svr.addConnection(sockAddr, func)
     finally: # make sure we go back to the initial user
-        if reset is not None:
+        if reset is not None and hasattr(os, 'seteuid'):
             os.seteuid(reset)
     
 ########################################################################

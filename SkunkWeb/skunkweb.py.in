@@ -81,7 +81,8 @@ if hasattr(Configuration, 'groupToRunAs'):
         gid = grp.getgrnam(Configuration.groupToRunAs)[2]
     except:
         raise "ConfigurationError", "group %s specified in groupToRunAs does not exist" % Configuration.groupToRunAs
-    os.setegid(gid)
+    if hasattr(os, 'setegid'):
+        os.setegid(gid)
 
 if hasattr(Configuration, 'userToRunAs'):
     import pwd
@@ -89,7 +90,8 @@ if hasattr(Configuration, 'userToRunAs'):
         uid = pwd.getpwnam(Configuration.userToRunAs)[2]
     except:
         raise "ConfigurationError", "user %s specified in userToRunAs does not exist" % Configuration.userToRunAs
-    if os.getuid() == 0: # if running as root, switch to the user
+    # if running as root, switch to the user
+    if os.getuid() == 0 and hasattr(os, 'seteuid'): 
         os.seteuid(uid)
         
 #/NEW
