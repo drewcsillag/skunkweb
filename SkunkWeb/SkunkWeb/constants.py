@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: constants.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
+# $Id: constants.py,v 1.2 2001/10/02 00:06:35 smulloni Exp $
 # Time-stamp: <01/05/04 13:31:34 smulloni>
 ########################################################################
 
@@ -44,9 +44,13 @@ WEB_JOB="/web/"
 AE_COMPONENT_JOB='/ae_component/'
 REMOTE_JOB=AE_COMPONENT_JOB + "/remote/"
 TEMPLATING_JOB= WEB_JOB + AE_COMPONENT_JOB + '/templating/'
-
+CGI_JOB = WEB_JOB + '/cgi/'
 ########################################################################
 # $Log: constants.py,v $
+# Revision 1.2  2001/10/02 00:06:35  smulloni
+# fixes for unix sockets, which were broken due to profound cognitive
+# impairment.
+#
 # Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
 # take 2 of import
 #
