@@ -1,3 +1,8 @@
+2003-04-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/views.py: use htmlquote for displaying text in 
+	views.
+
 2003-04-21  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/Makefile.in (exclude): removing the now deprecated

@@ -27,6 +27,7 @@ from form import Field, DomainField, Form, FormErrorMessage, \
      FieldProxy
 from containers import Set
 import ecs
+from DT.DTUtil import htmlquote
 
 # some base classes.
 
@@ -113,7 +114,7 @@ class InputField(ViewableField):
         if self.name is not None:
             elem.setAttribute('name', self.name)
         if self.value is not None:
-            elem.setAttribute('value', self.value)
+            elem.setAttribute('value', htmlquote(str(self.value)))
         elem.attributes.update(self.view_attrs)
         return elem
 
@@ -229,7 +230,7 @@ class ButtonField(ViewableField):
         if self.name!=None:
             elem.setAttribute('name', self.name)
         if self.value is not None:
-            elem.setAttribute('value', self.value)
+            elem.setAttribute('value', htmlquote(str(self.value)))
         if isinstance(self.content, list) or isinstance(self.content, tuple):
             for c in self.content:
                 elem.addElement(c)
@@ -260,7 +261,7 @@ class TextAreaField(ViewableField):
         if self.name is not None:
             elem.setAttribute('name', self.name)
         if self.value is not None:
-            elem.addElement(self.value)
+            elem.addElement(htmlquote(str(self.value)))
         elem.attributes.update(self.view_attrs)
         return elem
 
@@ -429,7 +430,7 @@ class SelectOption(Viewable):
             elem.setAttribute('selected', 'selected')
         if self.label is not None:
             elem.setAttribute('label', self.label)
-        elem.setAttribute('value', self.name)
+        elem.setAttribute('value', htmlquote(str(self.name)))
         elem.attributes.update(self.view_attrs)
         return elem
 
@@ -584,7 +585,7 @@ class ButtonBar(ViewableDomainField):
         tr=ecs.Tr()
         for val, label in self.options:
             b=ecs.Button(label, attributes={'name' : self.name,
-                                            'value': val})
+                                            'value': htmlquote(str(val))})
             tr.addElement(ecs.Td(b))
         return ecs.Table(tr)
             
@@ -620,7 +621,7 @@ class ButtonOption(Viewable):
         if self.name is not None:
             elem.setAttribute('name', self.name)
         if self.value is not None:
-            elem.setAttribute('value', self.value)
+            elem.setAttribute('value', htmlquote(str(self.value)))
         if self.inputType in ('radio', 'checkbox') and self.checked:
             elem.setAttribute('checked', 'checked')
         elem.attributes.update(self.view_attrs)
