@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/06/04 10:34:41 smulloni>
+# Time-stamp: <02/06/10 11:30:18 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -18,6 +18,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #
+import string
 
 class SQLOperator:
     def asTuple(self):
@@ -88,9 +89,12 @@ class SET:
     def __str__(self):
         l=len(self.values)
         if l>1:
-            return str(self.values)
+            return "(%s)" % ', '.join([self.__escape_string(x) for x in self.values])
         else:
-            return "(%s)" % repr(self.values[0])
+            return "(%s)" % self.__escape_string(self.values[0])
+
+    def __escape_string(self, s):
+        return "'%s'" % string.replace(s, "'", "\\'")
 
     
     def __repr__(self):
