@@ -20,6 +20,8 @@
 
 \newcommand{\doref}[1]{(see section \ref{#1}, page \pageref{#1})}
 \newcommand{\nonscope}{[N]}
+\newcommand{\PAR}{\texttt{par}}
+\newcommand{\swpython}{\texttt{swpython}}
 
 %begin titlepage stuff
 \maketitle
@@ -593,25 +595,95 @@ corresponding function), the address FromAddress is used.
 \section{Remote Components}
 \label{remotecomponents}
 \section{\texttt{pars}}
+The \texttt{pars} service is present to allow you to maintain the
+docroot \'al\`a java-style/\texttt{CLASSPATH}, sorta.  It allows you
+to store items that would normally be required to be in the docroot,
+in special archive files called par files.  So instead of just looking
+in the docroot for docroot items, it first looks in the par files
+specified in th \texttt{parFiles} configuration variable and only
+then, if \texttt{parFallthrough} is specified, look in the docroot.
+
 \section{\texttt{sessionHandler}}
-%\section{\texttt{vhost}}
 \section{Database Services}
 \label{databaseservices}
 \chapter{Miscellaneous SkunkWeb Utilities}
-vicache.py
+%vicache.py
+
+\section{The \texttt{par} Archive Tool}
 \label{pardotpy}
-par
+The \texttt{par.py} program is used to create and extract files from
+\PAR\ files.  It has three modes of operation: create, list and
+extract.
+
+To create \PAR\ files, type:
+\begin{verbatim}
+par c parfile_to_create.par file_or_dir1 file_or_dir2 ...
+\end{verbatim}
+
+To list the contents of \PAR\ files, type:
+\begin{verbatim}
+par t parfile_to_list.par
+\end{verbatim}
+
+To extract tho contents of \PAR\ files, you can either extract
+everything or extract only certain files.  To extract everything,
+type:
+\begin{verbatim}
+par x parfile_to_extract.par
+\end{verbatim}
+
+Otherwise,
+\begin{verbatim}
+par x parfile_to_extract.par file_or_dir1 file_or_dir2 ...
+\end{verbatim}
+
+
+\section{The \texttt{swpasswd} Utility}
 \label{swpasswd}
-swpasswd
-swpython
+The \texttt{swpasswd} utility is a simple program to maintain
+password files.  
+
+Its general form is:
+\begin{verbatim}
+swpasswd [-cb] password_file username [password]
+\end{verbatim}
+
+The two options are:
+\begin{argdesc}
+\item[-c] Create a new password file
+\item[-b] Specify the password on the command line as opposed to being
+asked for it interactively.
+\end{argdesc}
+
+
+\section{\swpython}
+\label{swpython}
+\index{\swpython}
+\swpython is basically the SkunkWeb server without the server part.  It
+loads the environment just as running \texttt{skunkweb} does, but instead
+of opening ports and forking, it (by default) drops you at a Python prompt.
+
+\begin{verbatim}
+Usage: swpython [-ih] [-c configfilelist] [-e script] [scriptname]
+
+  -c,--config-files=configfilelist   list of config files to load delimited
+                                     by colons
+  -h,--help                          show help screen
+  -i                                 if scriptname is provided, run script
+                                     and then start interactive interpreter
+  -e,--execute=script                Execute script then exit
+  -r,--redir-logs                    Redirect logs to stderr
+\end{verbatim}
+
 
 \chapter{Virtual Hosting}
+Use Scope(IP,...) or Scope(Host,...)
 
 \chapter{Care and feeding}
   log rolling
 
 \chapter{Using Apache}
-  mod_skunkweb stuff
+  mod\_skunkweb stuff
   What happens:
 \begin{enumerate}
 \item The client connects to the Apache web server and makes an HTTP
