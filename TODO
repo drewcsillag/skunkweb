@@ -1,5 +1,5 @@
 #   Time-stamp: <2001-08-13 14:44:37 drew> 
-#   $Id: TODO,v 1.8 2001/08/13 18:42:34 drew_csillag Exp $
+#   $Id: TODO,v 1.9 2001/08/23 13:36:13 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -25,10 +25,7 @@ SkunkWeb 3.0
 
 Future stuff
 ------------------------------
-? fix so templating will fully work properly (other svcs too (e.g. oracle)) 
-  if web isn't there and remcompsvr is
 * fix devel doc -- remove config stuff, api only
-* separate PyDO release
 * separate pargen release
 * separate DT release
 * Patch to pydoc to allow it to handle STML
@@ -94,6 +91,7 @@ N add a superteam service
 
 DONE
 ------------------------------
+X separate PyDO release
 X fix msg on swmgr start
 /usr/local/skunk/lib/SkunkWeb/Server.py:79: SyntaxWarning: name 'Configuration' is assigned to before global declaration
   def reload(self):
