@@ -20,9 +20,9 @@ form2=ViewableForm('form2',
                                                 'banana'])])
 statemgr=InPageStateManager('google-google GaiPan',
                             rotor.newrotor('my artichoke', 12))
-dispatcher=FormDispatcher(statemgr,
-                          [form1, form2],
-                          stateVariable=stateVar)
+dispatcher=LinearFormDispatcher(statemgr,
+                                [form1, form2],
+                                stateVariable=stateVar)
 
 curform=dispatcher.dispatch(CONNECTION.args, globals())
 if curform:

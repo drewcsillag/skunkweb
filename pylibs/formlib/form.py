@@ -20,11 +20,10 @@
 from containers import FieldContainer
 from hooks import Hook
 
-__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError',
+__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormErrorMessage',
          'CompositeField', 'FieldProxy']
 
 class _undef(object):
-
     def __str__(self):
         return "UNDEF"
 
@@ -94,7 +93,11 @@ class Field(object):
         """
         pass
 
- 
+    def _setData(self, data):
+        if self.setable:
+            self._set_value(data.get(self.name))
+        
+        
 class FieldProxy(object):
     "A proxy for abstracting a proxied name out from a "\
     "field which may be known by another "\
@@ -183,7 +186,12 @@ class CompositeField(Field):
         return self.composeValue(self.fields)
     value=property(_get_value)
     
-
+    def _setData(self, data):
+        if self.setable:
+            for ky in data.keys():
+                if self.fields.has_key(ky):
+                    chgfld = f.fields[ky]
+                    chgfld.value = data.get(ky)
 
 class DomainField(Field):
     """
@@ -238,7 +246,6 @@ class DomainField(Field):
             raise ValueError, "value not present in domain: %s" % value
         return value
 
-
 class Form(object):
     def __init__(self,
                  name=None,
@@ -281,15 +288,16 @@ class Form(object):
 
     def setData(self, data):
         for f in self.fields:
-            if f.setable:
-                if isinstance(f, CompositeField):
-                    #search subfields for key
-                    for ky in data.keys():
-                        if f.fields.has_key(ky):
-                            chgfld = f.fields[ky]
-                            chgfld.value = data.get(ky)
-                else:
-                    f.value=data.get(f.name)
+            f._setData(data)
+#            if f.setable:
+#                if isinstance(f, CompositeField):
+#                    #search subfields for key
+#                    for ky in data.keys():
+#                        if f.fields.has_key(ky):
+#                            chgfld = f.fields[ky]
+#                            chgfld.value = data.get(ky)
+#                else:
+#                    f.value=data.get(f.name)
 
     def submit(self, data):
         self.reset()
@@ -312,17 +320,15 @@ class Form(object):
                 if e:
                     self.errors.extend(e)
 
-    def process(self, statemgr, argdict, formdict=None, ns=None):
-        if formdict is None:
-            formdict={}
-        if ns is None:
-            ns={}
-        return self.processHook(self, statemgr, argdict, formdict, ns)
+    def process(self,
+                *args,
+                **kwargs):
+        return self.processHook(self, *args, **kwargs)
     
 def _getname(x):
     return x.name
 
-class FormError(object):
+class FormErrorMessage(object):
     def __init__(self, field, errormsg):
         self.field=field
         self.errormsg=errormsg

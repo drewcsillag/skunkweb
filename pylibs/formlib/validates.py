@@ -17,11 +17,18 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
 
-from form import FormError, _defaultValueComposer
+########################################################################
+# This module kindly contributed by James Richards.
+########################################################################
+
+from form import FormErrorMessage, _defaultValueComposer
 from views import TextField, ViewableCompositeField, SelectField
 import time
 
-__all__=['IntegerField', 'DoubleField', 'DateField', 'InternationalAddressField']
+__all__=['IntegerField',
+         'DoubleField',
+         'DateField',
+         'InternationalAddressField']
 
 ########################################################################
 # Validating fields
@@ -35,7 +42,7 @@ class IntegerField(TextField):
             try:
                 int(self.value)
             except ValueError, ve:
-                errorlist.append(FormError(self, str(ve)))
+                errorlist.append(FormErrorMessage(self, str(ve)))
         return errorlist
         
 
@@ -48,7 +55,7 @@ class DoubleField(TextField):
             try:
                 float(self.value)
             except ValueError, ve:
-                errorlist.append(FormError(self, str(ve)))
+                errorlist.append(FormErrorMessage(self, str(ve)))
         return errorlist
 
 
@@ -84,7 +91,7 @@ class DateField(TextField):
                 time.strptime(self.value, self.format)
             except ValueError, ve:
                 msg="%s: Expected format: %s" % (str(ve), self.format)
-                errorlist.append(FormError(self, msg))
+                errorlist.append(FormErrorMessage(self, msg))
         return errorlist
 
 
@@ -107,12 +114,25 @@ class InternationalAddressField(ViewableCompositeField):
         add1 = TextField('address1', description='Address 1', size='40')
         add2 = TextField('address2', description='Address 2', size='40')
         cty = TextField('city', description='City', size='40')
-        st = SelectField('state', STATE_LIST, default=defaultState, description='Your State', multiple=0, size=1)
-        prov = TextField('province', description='Province (if outside US)', size='40')
-        cntry = SelectField('country', COUNTRY_CODES, description='Your Country', default=defaultCountry, multiple=0, size=1)
+        st = SelectField('state',
+                         STATE_LIST,
+                         default=defaultState,
+                         description='Your State',
+                         multiple=0,
+                         size=1)
+        prov = TextField('province',
+                         description='Province (if outside US)',
+                         size='40')
+        cntry = SelectField('country',
+                            COUNTRY_CODES,
+                            description='Your Country',
+                            default=defaultCountry,
+                            multiple=0,
+                            size=1)
         pstl = TextField('postal', description='Postal Code', size='40')
 
-        # keep a reference to the fields to make validation simpler [no looping over fields]
+        # keep a reference to the fields to make validation simpler
+        # [no looping over fields]
         self._address1 = add1
         self._address2 = add2
         self._city = cty
@@ -137,21 +157,25 @@ class InternationalAddressField(ViewableCompositeField):
         errorlist = []
         if not self._address1.value and not self._address2.value:
             # at least one address line must be filled out
-            errorlist.append(FormError(self, 'Please enter at least one line of address information.'))
+            s='Please enter at least one line of address information.'
+            errorlist.append(FormErrorMessage(self,s ))
         if not self._city.value:
-            errorlist.append(FormError(self, 'Please enter a city.'))
+            errorlist.append(FormErrorMessage(self, 'Please enter a city.'))
         if not self._postal.value:
-            errorlist.append(FormError(self, 'Please enter a postal code.'))
+            s='Please enter a postal code.'
+            errorlist.append(FormErrorMessage(self, s))
         if not self._country.value:
-            errorlist.append(FormError(self, 'Please entery a country.'))
+            errorlist.append(FormErrorMessage(self, 'Please entery a country.'))
         else:
-            # for US residents, a state must be chosen, otherwise a province must be filled out
+            # for US residents, a state must be chosen,
+            # otherwise a province must be filled out
             if self._country.value == 'US' and not self._state.value:
-                errorlist.append(FormError(self, 'Please enter a state for US residents.'))
+                s='Please enter a state for US residents.'
+                errorlist.append(FormErrorMessage(self, s))
             elif self._country.value != 'US' and not self._province.value:
-                errorlist.append(FormError(self, 'Please enter a province for non-US residents.'))
+                s='Please enter a province for non-US residents.'
+                errorlist.append(FormErrorMessage(self, s))
         return errorlist    
-        
                                 
 
 STATE_LIST = [

@@ -15,36 +15,19 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
+#
+########################################################################
+#      Credits: many contributions here from James Richards (especially
+#      layout code and composite fields).
 ########################################################################
 
 from containers import FieldContainer
-from form import Field, DomainField, Form, FormError, \
+from form import Field, DomainField, Form, FormErrorMessage, \
      _getname, CompositeField, _defaultValueComposer, \
      FieldProxy
 from containers import Set
 import ecs
 
-# utility function to determine if a given object is
-# viewable, handles cases where an object
-# is not directly a Viewable implementation but can
-# still be viewed [i.e. the case of a FieldProxy 
-# proxying a viewable field].
-def isviewable(anObject):
-    if isinstance(anObject, Viewable):
-        return 1
-    if isinstance(anObject, FieldProxy):
-        tstfld = anObject.field
-        return isinstance(tstfld, Viewable)
-    if isinstance(anObject, CompositeField):
-        for fld in anObject.components:
-            if isinstance(fld, Viewable):
-                return 1
-            if isinstance(fld, FieldProxy):
-                if isinstance(fld.field, Viewable):
-                    return 1
-    return 0        
-                
-    
 # some base classes.
 
 class Viewable(object):
@@ -68,7 +51,7 @@ class _requirable(object):
                 msg=self.required % d
             except TypeError:
                 msg="%(description)s is required but has no value" % d
-            return [FormError(self, msg)]
+            return [FormErrorMessage(self, msg)]
 
 class ViewableField(_requirable, Field, Viewable):
     def __init__(self,
@@ -148,6 +131,45 @@ class ButtonInputField(InputField):
 
 class FileField(InputField):
     type="file"
+    def __init__(self,
+                 name,
+                 description=None,
+                 default=None,
+                 required=0,
+                 setable=1,
+                 store_contents=0,
+                 **view_attrs):
+        self.store_contents=store_contents        
+        InputField.__init__(self,
+                            name,
+                            description,
+                            default,
+                            required,
+                            setable,
+                            **view_attrs)
+
+        
+    def _set_value(self, val):
+        try:
+            v=val.filename
+        except AttributeError:
+            v=val
+        InputField._set_value(self, v)
+        if self.store_contents:
+            try:
+                self.contents=val.contents
+            except AttributeError:
+                self.contents=None
+
+    value=property(InputField._get_value, _set_value)
+    
+    def clearValue(self):
+        if self.store_contents:
+            self.contents=None
+        InputField.clearValue(self)
+        
+
+        
 
 class HiddenField(InputField):
     type="hidden"
@@ -651,18 +673,18 @@ class FlowLayout(Layout):
 
         tr = ecs.Tr()
         for fld in form.fields:
-            if not isviewable(f):
+            if not hasattr(fld, "getView"):
                 continue
             
-            if f.description:
-                desTd = ecs.Td().addElement(f.description)
-                vwTd = ecs.Td().addElement(f.getView())
+            if fld.description:
+                desTd = ecs.Td().addElement(fld.description)
+                vwTd = ecs.Td().addElement(fld.getView())
                 desTd.setAttribute('valign', 'top')
                 vwTd.setAttribute('valign', 'top')
                 tr.addElement(desTd)
                 tr.addElement(vwTd)
             else:
-                td=ecs.Td().addElement(f.getView())
+                td=ecs.Td().addElement(fld.getView())
                 td.setAttribute('valign', 'top')
                 td.setAttribute('colspan', '2')
                 tr.addElement(td)
@@ -698,7 +720,7 @@ class StackLayout(Layout):
         if table is None:
             table=ecs.Table()
         for fld in form.fields:
-            if not isviewable(fld):
+            if not hasattr(fld, "getView"):
                 continue
 
             errTr = ecs.Tr()
@@ -806,7 +828,7 @@ class NestedListLayout(Layout):
             fnm = list[idx]
             fld = form.fields[fnm]
 
-            if not isviewable(fld):
+            if not hasattr(fld, "getView"):
                 return
             
             if idx == lstLen - 1:
@@ -826,7 +848,7 @@ class NestedListLayout(Layout):
             if numErr:
                 table.addElement(errTr)
 
-        if not isviewable(f):
+        if not hasattr(f, "getView"):
             return 
             
         if f.description:
@@ -1000,7 +1022,7 @@ class ViewableCompositeField(Viewable, CompositeField):
                                 componentFieldDelimiter,
                                 valueComposer)
 
-        # must override initialization of composite fields to ensure that ViewableFieldProxies ]
+        # must override initialization of composite fields to ensure that ViewableFieldProxies 
         # are used
         tmpComponents = []
         for fld in componentFields:

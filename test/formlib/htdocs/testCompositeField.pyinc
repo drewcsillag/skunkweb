@@ -21,7 +21,7 @@ print '<br />COMPOSITE IS SETABLE:', cmpFld.setable, '<br />'
 print 'COMPOSITE FIELDS:', [fld.name for fld in cmpFld.fields], '<br />'
 for fld in cmpFld.fields:
     print fld.name, '[default:', fld.default, '][value:', fld.value, '][IS FieldProxy:', isinstance(fld, FieldProxy), \
-          '][IS viewable:', isviewable(fld), '][IS setable:', fld.setable, ']'
+          '][IS viewable:', hasattr(fld, "getView"), '][IS setable:', fld.setable, ']'
     print '<br />'
 
 print '<hr/>'

@@ -34,9 +34,9 @@ def validate(form):
     errors=[]
     if form.fields.has_key('username') \
            and form.fields['username'].value=='bizarre':
-        errors.append(FormError(form.fields['username'], 'No bizarre usernames, please'))
+        errors.append(FormErrorMessage(form.fields['username'], 'No bizarre usernames, please'))
     if errors:
-        errors.append(FormError(form, 'There were errors with your submission, fruitcake.'))
+        errors.append(FormErrorMessage(form, 'There were errors with your submission, fruitcake.'))
     return errors
 
 form=ViewableForm(name="test2",

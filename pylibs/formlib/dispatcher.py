@@ -1,5 +1,5 @@
-# Time-stamp: <02/12/30 12:32:01 smulloni>
-# $Id: dispatcher.py,v 1.11 2002/12/30 17:04:21 smulloni Exp $
+# Time-stamp: <03/01/06 16:39:21 smulloni>
+# $Id: dispatcher.py,v 1.12 2002/12/30 21:05:13 smulloni Exp $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
@@ -23,57 +23,53 @@
 from containers.fieldcontainer import FieldContainer
 from form import _getname
 
-class Goto:
+class Goto(object):
     def __init__(self, formname):
         self.formname=formname
         
     def dispatch(self,
                  form,
-                 state,
+                 dispatcher,
                  argdict,
-                 formdict,
                  ns=None):
         if ns is None:
             ns={}
         form.submit(argdict)
         if form.errors:
             return form
-        state.store_form(form)
-        form.process(state, argdict, formdict, ns)
+        dispatcher.statemgr.store_form(form)
+        form.process(argdict, dispatcher, ns)
         if self.formname:
-            return formdict[self.formname]
+            return dispatcher.createForm(self.formname)
 
-class Pop:
+class Pop(object):
     def dispatch(self,
                  form,
-                 state,
+                 dispatcher,
                  argdict,
-                 formdict,
                  ns=None):
         if ns is None:
             ns={}
         form.submit(argdict)
         if form.errors:
             return form
-        state.store_form(form)        
-        form.process(state, argdict, formdict, ns)
-        nextformname=state.pop_formname()
+        dispatcher.statemgr.store_form(form)        
+        form.process(argdict, dispatcher, ns)
+        nextformname=dispatcher.statemgr.pop_formname()
         if nextformname:
-            f=formdict[nextformname]
-            f.setData(state.state.get(nextformname, {}))
+            f=dispatcher.createForm(nextformname)
+            f.setData(dispatcher.statemgr.state.get(nextformname, {}))
             return f
-        
 
-class Push:
+class Push(object):
     def __init__(self, formname, valid=0):
         self.formname=formname
         self.valid=valid
         
     def dispatch(self,
                  form,
-                 state,
+                 dispatcher, 
                  argdict,
-                 formdict,
                  ns=None):
         if ns is None:
             ns={}
@@ -81,26 +77,27 @@ class Push:
             form.submit(argdict)
             if form.errors:
                 return form
-        state.store_form(form)                    
-        state.push_formname(form.name)
-        f=formdict[self.formname]
-        f.setData(state.state.get(self.formname, {}))
+        dispatcher.statemgr.store_form(form)                    
+        dispatcher.statemgr.push_formname(form.name)
+        f=dispatcher.createForm(self.formname)
+        f.setData(dispatcher.statemgr.state.get(self.formname, {}))
         return f
     
-class FormDispatcher:
+class AbstractFormDispatcher(object):
     def __init__(self,
                  statemgr,
-                 forms,
-                 flowmgr=None,
                  stateVariable='_state'):
-        self.forms=FieldContainer(forms,
-                                  fieldmapper=_getname,
-                                  storelists=0)
         self.statemgr=statemgr
-        if flowmgr is None:
-            flowmgr=LinearFlowManager(self.forms)
-        self.flowmgr=flowmgr
         self.stateVariable=stateVariable
+
+    def createForm(self, formname, argdict=None):
+        raise NotImplementedError
+
+    def getStartForm(self, argdict):
+        raise NotImplementedError
+
+    def next(self, form, argdict, ns):
+        raise NotImplementedError
 
     def dispatch(self, argdict, ns):
         # extract the state
@@ -109,22 +106,20 @@ class FormDispatcher:
             self.statemgr.read(statestr)
         # identify the form being submitted.
         if self.statemgr.stack:
-            form=self.forms[self.statemgr.pop_formname()]
+            form=self.createForm(self.statemgr.pop_formname(), argdict)
             # get the next action.
-            action=self.flowmgr.next(form,
-                                     self.statemgr,
-                                     argdict,
-                                     ns)
+            action=self.next(form,
+                             argdict,
+                             ns)
             # get the next form, if any
             form=action.dispatch(form,
-                                 self.statemgr,
+                                 self,
                                  argdict,
-                                 self.forms,
                                  ns)
             
         # if there isn't one, return the start form.
         else:
-            form=self.flowmgr.getStartForm(argdict)
+            form=self.getStartForm(argdict)
             if form:
                 form.reset()
         if form:
@@ -133,16 +128,31 @@ class FormDispatcher:
             # set the new state in the form's stateVariable 
             form.fields[self.stateVariable].value=self.statemgr.write()
         return form
-    
-class LinearFlowManager(object):
-    def __init__(self, formlist):
-        self.formlist=formlist
+
+class LinearFormDispatcher(AbstractFormDispatcher):
+    def __init__(self,
+                 statemgr,
+                 forms,
+                 stateVariable='_state'):
+        self.forms=FieldContainer(forms,
+                                  fieldmapper=_getname,
+                                  storelists=0)        
+        AbstractFormDispatcher.__init__(self, statemgr, stateVariable)
+        
+    def createForm(self, formname, argdict=None):
+        return self.forms.get(formname)
 
     def getStartForm(self, argdict):
-        return self.formlist[0]
+        return self.forms[0]
 
-    def next(self, form, state, argdict, ns):
-        ind=self.formlist.index(form) + 1
-        if ind < len(self.formlist):
-            return Goto(self.formlist[ind].name)
-        return Goto(None) # end
+    def next(self, form, argdict, ns):
+        ind=self.forms.index(form)+1
+        if ind < len(self.forms):
+            return Goto(self.forms[ind].name)
+        return Goto(None)
+
+__all__=['Goto',
+         'Pop',
+         'Push',
+         'AbstractFormDispatcher',
+         'LinearFormDispatcher']

@@ -20,7 +20,8 @@ postalfld = TextField('postal', description="Postal Code", size="40")
 subfld = SubmitField(default="Submit")
 
 
-fields=[usernmfld, passwordfld, visitedfld, firstnmfld, lastnmfld, statefld, provincefld, countryfld, postalfld, subfld]
+fields=[usernmfld, passwordfld, visitedfld, firstnmfld,
+        lastnmfld, statefld, provincefld, countryfld, postalfld, subfld]
 
 def validate(form):
     errors=[]
@@ -30,16 +31,16 @@ def validate(form):
     prov = form.fields['province']
 
     if not usnm.value:
-        errors.append(FormError(usnm, 'Please enter a valid username to submit changes.'))
+        errors.append(FormErrorMessage(usnm, 'Please enter a valid username to submit changes.'))
     if not psswd.value:
-        errors.append(FormError(psswd,'Please enter a valid password to submit changes.'))
+        errors.append(FormErrorMessage(psswd,'Please enter a valid password to submit changes.'))
 
     if cntry.value != "US":
         if not prov.value:
-            errors.append(FormError(prov,"Please enter a province for non-US residents."))
+            errors.append(FormErrorMessage(prov,"Please enter a province for non-US residents."))
 
     if errors:
-        errors.append(FormError(form, 'There were errors with your submission.'))
+        errors.append(FormErrorMessage(form, 'There were errors with your submission.'))
 
     return errors
 

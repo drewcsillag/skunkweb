@@ -5,7 +5,7 @@ import rotor
 import pprint
 import ecs
 
-def process_munge(form, state, argdict, formdict, ns):
+def process_munge(form, argdict, dispatcher, ns):
     """
     this should take the form  data populate
     the previous form on the stack with the item
@@ -13,8 +13,9 @@ def process_munge(form, state, argdict, formdict, ns):
     into the field called "_mungetarget".
     
     """
+    state=dispatcher.statemgr
     fname=state.peek_formname()
-    f=formdict[fname]
+    f=dispatcher.createForm(fname)
     target=argdict.get('_mungetarget')
     source=argdict.get('_mungeitem')
     if target and source:
@@ -22,7 +23,7 @@ def process_munge(form, state, argdict, formdict, ns):
         state.state.setdefault(fname, {})
         state.state[fname][target]=form.fields[source].value
         
-def process_submit(form, state, argdict, formdict, ns):
+def process_submit(form, argdict, dispatcher, ns):
     """
     """
     pass
@@ -71,16 +72,32 @@ forms=[ViewableForm('page1',
 
 statemgr=InPageStateManager('don\'t touch my nougat',
                             rotor.newrotor('time for dinner'))
+
+class PushyDispatcher(LinearFormDispatcher):
+    def __init__(self,
+                 statemgr,
+                 forms,
+                 stateVariable="_state"):
+        LinearFormDispatcher.__init__(self, statemgr, forms, stateVariable)
+        self.flowmgr=PushyFlowManager(forms)
+
+    def createForm(self, formname, argdict=None):
+        return self.forms.get(formname)
+
+    def getStartForm(self, argdict):
+        return self.forms[0]
+
+    def next(self, form, argdict, ns):
+        return self.flowmgr.next(form, self.statemgr, argdict, ns)
             
-dispatcher=FormDispatcher(statemgr,
-                          forms,
-                          flowmgr=PushyFlowManager(forms),
-                          stateVariable=stateVar)
+dispatcher=PushyDispatcher(statemgr,
+                           forms,
+                           stateVariable=stateVar)
 
 
 
 curform=dispatcher.dispatch(CONNECTION.args, globals())
-state=dispatcher.statemgr.state
+##state=dispatcher.statemgr.state
 ##print ecs.H5('state:')
 ##print ecs.Pre(pprint.pformat(state))
 ##print ecs.Pre(pprint.pformat(dispatcher.statemgr.stack))

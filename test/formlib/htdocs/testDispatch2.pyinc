@@ -42,7 +42,7 @@ form4=ViewableForm('old',
 statemgr=InPageStateManager('google-google GaiPan',
                             rotor.newrotor('my artichoke', 12))
 
-class SillyFlowManager(object):
+class SillyFormDispatcher(LinearFormDispatcher):
     def getStartForm(self, argdict):
         return form1
 
@@ -62,10 +62,9 @@ class SillyFlowManager(object):
         return Goto(form1.name)
 
 
-dispatcher=FormDispatcher(statemgr,
-                          [form1, form2, form3, form4],
-                          flowmgr=SillyFlowManager(),
-                          stateVariable=stateVar)
+dispatcher=SillyFormDispatcher(statemgr,
+                               [form1, form2, form3, form4],
+                               stateVariable=stateVar)
 
 curform=dispatcher.dispatch(CONNECTION.args, globals())
 if curform:
