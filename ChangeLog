@@ -1,5 +1,8 @@
 2002-08-16  Andrew Csillag  <drew@localhost.localdomain>
 
+	* pylibs/formlib/set.py, pylibs/formlib/state.py, pylibs/formlib/reqs:
+	added beginnings of formlib
+
 	* SkunkWeb/sw.conf.in: added userModuleCleanupIgnore and some
 	extra docs.
 
