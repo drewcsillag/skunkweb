@@ -1,3 +1,9 @@
+2003-02-18  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/importer.py (ExtInPkgImporter.getmod): some
+	impossible code fixed; it got called on one machine and not
+	another, for mysterious reasons.
+
 2003-02-17  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/SocketMan/SocketMan.py (SocketMan.addConnection): code
