@@ -77,7 +77,7 @@ class PyDOPostgreSQL:
 
     def sqlStringAndValue(self, val, attr, dbtype):
         newval = self.typeCheckAndConvert(val, attr, dbtype)
-        if _isString(dbtype):
+        if _isString(dbtype) and not val == None:
             newval = "'" + _escape(str(newval)) + "'"
         return str(newval), None
 
