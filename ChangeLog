@@ -1,3 +1,7 @@
+2002-09-29    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/xmlrpchandler.py: helper module for writing XMLRPC servers. 
+
 2002-09-04  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/flowmgr/parser.py: parser for flow manager, partially
