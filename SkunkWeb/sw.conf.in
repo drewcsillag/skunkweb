@@ -16,16 +16,8 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: sw.conf.in,v 1.23 2001/07/29 15:23:35 drew Exp $
+# $Id: sw.conf.in,v 1.2 2001/08/05 15:17:35 drew_csillag Exp $
 # Time-stamp: <01/05/07 13:57:33 smulloni>
-
-########################################################################
-# First, discuss parameters that must be specified at the top level;
-# then, discuss scoping;
-# then discuss variables that can be defined inside a scope.
-# If any variables MUST be defined inside a scope (I don't think there
-# ever will be, but ...) mention that.
-
 
 ########################################################################
 # services you want to load.
@@ -105,25 +97,9 @@ useCompileMemoryCache = 1
 # stampEveryLine=0
 
 # services that are INITIALLY set to be debugged.
-# N.B.: It is possible to modify the actual debug settings
-# of the server at runtime, but this Configuration variable will
-# not be updated to reflect those changes!  To determine the
-# what services are being debugged at runtime, use
+# To determine what services are being debugged at runtime, use
 # SkunkWeb.ServiceRegistry.getDebugServices().
 initialDebugServices=[]
-#'requestHandler',
-#                      'aecgi',
-#                      'weird',
-#                      'templating',
-#                      'sessionHandler',
-#                      'web',
-#                      'core',
-#                      'component',
-#                      'vhost',
-#                      'basicauth',
-#                      'user',
-#                      'remote',
-#                      'remote_client']
 
 
 ########################################################################
@@ -471,6 +447,11 @@ userModuleCleanup = 1
 # SessionHandler_MySQLPass='sessionPass'
 
 ########################################################################
+# For the FSSessionStoreImpl, the directory where pickle files should
+# be created
+# SessionHandler_FSSessionDir='@prefix@/var/run/skunksessions'
+
+########################################################################
 # END sessionHandler CONFIG
 ########################################################################
 
@@ -502,6 +483,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.2  2001/08/05 15:17:35  drew_csillag
+# documented
+#
 # Revision 1.23  2001/07/29 15:23:35  drew
 # added stuff for errorTemplate, notFoundTemplate, and changed default of parFallthrough to 1
 #
