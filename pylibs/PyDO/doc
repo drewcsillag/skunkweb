@@ -32,6 +32,9 @@ or
    sequence named table_column_seq, so for your sequenced item, make
    sure to put it in.
 
+For SAPdb, currently only the non-caching form is available:
+    pydo:sapdb:<DATABASE>[@<HOSTNAME>] <USER> <PASSWORD>[:verbose]
+
 For MySQL, which hasn't been tested all that much, only the non-caching
 version is currently available.  If there is demand I can do it, I just
 don't have mysql installed anywhere convienient for me to test.
