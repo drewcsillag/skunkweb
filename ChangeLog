@@ -1,3 +1,9 @@
+2002-10-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/swcgi.py.in: swcgi was misbehaving due to not always
+	reading all there was to be read off the aecgi socket; use of the
+	SocketScience module fixed that.
+
 2002-10-04    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: a vfs.FS implementation for FTP.

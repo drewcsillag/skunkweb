@@ -3,7 +3,8 @@
 #edit this as appropriate as to where the aecgi protocol is listening
 #as specified by the AecgiListenPorts variable in sw.conf
 connectInfo = ('localhost', 9888)# or '/tmp/skunksock' or whatever
-
+# timeout for reading from socket; 0 is no timeout
+TIMEOUT=0
 
 #shouldn't need to change anything below here
 
@@ -23,6 +24,9 @@ import socket
 import sys
 import string
 import marshal
+
+sys.path.append('@libdir@/pylibs')
+import SocketScience
 
 env = {}
 headers = {}
@@ -54,8 +58,8 @@ else:
 sock.connect(connectInfo)
 sock.recv(1)
 sock.send('%010d%s' % (len(req_data), req_data))
-rlen = sock.recv(10)
+rlen = SocketScience.read_this_many(sock, 10, TIMEOUT)
 rlen = string.atoi(rlen)
-data = sock.recv(rlen)
+data = SocketScience.read_this_many(sock, rlen, TIMEOUT)
 sys.stdout.write(data)
           
