@@ -1,4 +1,8 @@
-2003-01-21    <smulloni@smullbola.smullyan.org>
+2003-01-22  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/argextract.py: fixing import error.
+
+2003-01-21  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib: many changes, back and forth, resulting
 	in no detectable forward progress.
