@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.1.1.1 2001/08/05 15:00:33 drew_csillag Exp $
+# $Id: Logger.py,v 1.2 2001/08/27 18:16:30 drew_csillag Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -123,7 +123,17 @@ def logException():
     exc_info=sys.exc_info()
     if exc_info:
         x = cStringIO.StringIO()
-        traceback.print_tb(exc_info[2], file = x)
+        try:
+            traceback.print_tb(exc_info[2], file = x)
+        except:
+            x.write("Strange and Weird thing happened, we ran into"
+                    " an exception rendering an exception?!?!?!?!\n")
+            try:
+                traceback.print_tb(sys.exc_info()[2], file = x)
+            except:
+                #should I do os.kill(9 (or 15), os.getpid()) ???
+                x.write("Ok, we're fubar!!!\n")
+                
         text = x.getvalue()
         text += "\n%s: %s" % exc_info[:2]
         ERROR(text)
@@ -133,6 +143,9 @@ def logException():
 
 ########################################################################
 # $Log: Logger.py,v $
+# Revision 1.2  2001/08/27 18:16:30  drew_csillag
+# removed spurious import
+#
 # Revision 1.1.1.1  2001/08/05 15:00:33  drew_csillag
 # take 2 of import
 #
