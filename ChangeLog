@@ -1,3 +1,11 @@
+2002-05-30  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
+
+	* pylibs/PyDO/postconn.py: proper handling of date strings where 
+	the timezone is GMT+ something as opposed to GMT- something
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: SkunkWebExclude option 
+	now removed for Apache 2.x
+
 2002-05-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/__init__.py: now import two more exceptions from
