@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <02/02/23 02:40:28 smulloni>
+# $Id: productmaker.py,v 1.1 2002/02/23 07:46:56 smulloni Exp $
+# Time-stamp: <02/02/24 10:29:06 smulloni>
 
 ########################################################################
 #  
@@ -29,7 +29,8 @@ REQUIREMENTS:
 1. specify the location of the docroot.
 2. specify the location of the libs.
 3. byte-compile the libs, if any.
-4. prompt for dependencies, services, product name, version, author, (etc.), format.
+4. prompt for dependencies, services, product name,
+   version, author, (etc.), format.
 5. produce and save the archive file.
 
 TODO:
@@ -60,7 +61,8 @@ def _getbuildroot(builddir, productName):
     try:
         os.makedirs(buildroot)
     except:
-        print >> sys.stderr, "unable to create temporary build space at %s" % buildroot
+        print >> sys.stderr,\
+              "unable to create temporary build space at %s" % buildroot
         raise
     return buildroot
 
@@ -74,18 +76,20 @@ def makeProduct(productName,
                 comments=(),
                 productFile=None):
     """
-    given the necessary ingredients, builds the product archive and returns the path to it.
+    given the necessary ingredients, builds the product archive
+    and returns the path to it.
     """
 
     buildroot=_getbuildroot(builddir, productName)
     docroot=os.path.join(buildroot, manifestData.get('docroot', 'docroot'))
     libs=os.path.join(buildroot, manifestData.get('libs', 'libs'))
     shutil.copytree(docsources, docroot)
-    shutil.copytree(libsources, libs)
-    # to silence the compileall module
-    sys.stdout=cStringIO.StringIO()
-    compileall.compile_dir(libs, force=1)
-    sys.stdout=sys.__stdout__
+    if libsources:
+        shutil.copytree(libsources, libs)
+        # to silence the compileall module
+        sys.stdout=cStringIO.StringIO()
+        compileall.compile_dir(libs, force=1)
+        sys.stdout=sys.__stdout__
     manifestpath=os.path.join(buildroot, manifest.MANIFEST_FILE)
     manifest.write_manifest(manifestpath, manifestData, comments=comments)
     
@@ -122,7 +126,8 @@ def makeProduct(productName,
                 dest=productFile
         else:
             tf=open(dest)
-            dest=productFile or os.path.join(builddir, '%s.%s' % (productName, format))
+            dest=productFile or os.path.join(builddir, '%s.%s' % \
+                                             (productName, format))
             gf=gzip.open(dest, 'w')
             buffsize=2<<10
             while 1:

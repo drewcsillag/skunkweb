@@ -1,4 +1,15 @@
+2002-02-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/product/productwiz.py: adding a rather
+	silly product-making wizard.
+
+	* SkunkWeb/Services/product/productmaker.py (makeProduct): fix for
+	when there are no libs.
+
 2002-02-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection._convertArgs):
+	fix for TypeError (query.keys() when query is None)
 
 	* SkunkWeb/Services/product/manifest.py (write_manifest): some api 
 	modifications for productmaker.py.
