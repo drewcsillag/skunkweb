@@ -1,3 +1,23 @@
+2002-07-25  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/Logger.py (logException): now adds exception info
+
+	* SkunkWeb/SkunkWeb/bootloader.py.in (_stupidfunc): added pwd and grp
+	so they don't get whacked on restart
+
+	* SkunkWeb/sw.conf.in: added docs for userToRunAs and groupToRunAs
+
+	* SkunkWeb/skunkweb.py.in: now switches euid/egid as appropriate
+
+	* SkunkWeb/SkunkWeb/Server.py (addService): made it do uid switching
+
+	* SkunkWeb/configure.in, SkunkWeb/configure:  added stuff to support 
+	--with-runasroot
+
+	* SkunkWeb/swmgr.in: added stuff to support --with-runasroot
+
+	* SkunkWeb/util/cache_reaper.py.in:  changed @prefix@/cache to @CACHE@
+	
 2002-07-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/pycgi.py (_processRequest): d'oh! was raising
