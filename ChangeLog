@@ -1,3 +1,10 @@
+2003-04-16  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/Makefile.in (install): rolling back Drew's change for
+	HPUX, because it breaks the install for systems where autoconf
+	detects and uses a binary install program.  We need to find
+	another solution for HPUX.
+
 2003-04-16    <drew@loki.sai-office>
 
 	* pylibs/Makefile.in (install): on HPUX, for reasons that are
