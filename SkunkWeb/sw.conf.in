@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: sw.conf.in,v 1.2 2001/08/05 15:17:35 drew_csillag Exp $
+# $Id: sw.conf.in,v 1.3 2001/08/06 17:18:26 smulloni Exp $
 # Time-stamp: <01/05/07 13:57:33 smulloni>
 
 ########################################################################
@@ -313,7 +313,7 @@ userModuleCleanup = 1
 ########################################################################
 # The location of your mimetypes file
 #
-# mimeTypesFile = '/usr/local/skunk/etc/mime.types
+# mimeTypesFile = '/usr/local/skunk/etc/mime.types'
 
 ########################################################################
 # If we cannot determine the mime type by examining the extension of the
@@ -483,6 +483,9 @@ userModuleCleanup = 1
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.3  2001/08/06 17:18:26  smulloni
+# added SessionHandler_FSSessionDir; removed some anachronisms
+#
 # Revision 1.2  2001/08/05 15:17:35  drew_csillag
 # documented
 #
