@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <02/02/19 23:26:57 smulloni>
+# $Id: __init__.py,v 1.1 2002/02/20 04:54:14 smulloni Exp $
+# Time-stamp: <02/02/20 11:15:24 smulloni>
 
 ########################################################################
 #  
@@ -53,6 +53,7 @@ archive file.
 import SkunkWeb.Configuration as Cfg
 from loader import *
 from manifest import *
+import os
 
 Cfg.mergeDefaults(productDirectory='products',
                   products='*',
@@ -62,8 +63,17 @@ Cfg.mergeDefaults(productDirectory='products',
                   productLibdirs={}
                   )
 
+proddir=loader.product_directory()
+if not os.path.isdir(proddir):
+    try:
+        os.makedirs(proddir)
+    except:
+        ERROR(("product service needs a product directory,"
+               "currently configured as %s") % proddir)
+        raise
+del proddir
 
-for p in Product.list():
+for p in loader.listProducts():
     p.load()
 
 

@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.1 2002/02/20 04:54:14 smulloni Exp $
-# Time-stamp: <02/02/20 00:58:04 smulloni>
+# $Id: loader.py,v 1.2 2002/02/20 06:12:32 smulloni Exp $
+# Time-stamp: <02/02/20 11:41:51 smulloni>
 
 ########################################################################
 #  
@@ -68,7 +68,7 @@ def _directories_and_files(directory):
 
 class ProductDependencyError(Exception): pass
 
-class Product(static.static):
+class Product:
     
     loaded=[]
     
@@ -103,43 +103,6 @@ class Product(static.static):
             return self.manifest[attr]
         raise AttributeError, attr
 
-##    def __getitem__(self, item):
-##        if self.manifest.has_key(item):
-##            return self.manifest[item]
-##        raise KeyError, item
-
-    def static_findProduct(self, productname, fromFile=0):
-        pdir=product_directory()
-        d=os.path.join(pdir, productname)
-        if fromFile or os.path.isdir(d):
-            return self(d)
-        for ps in product_suffixes:
-            path=os.path.join(pdir, '%s%s' % (productname, ps))
-            if os.path.exists(path):
-                return self(path)
-
-    def static_list(self):
-        ptype=type(Cfg.products)
-        productList=[]
-        if ptype not in (types.ListType, types.TupleType):
-            pdirs, pfiles=_directories_and_files(product_directory())
-            for p in pdirs:
-                newprod=Product.findProduct(p)
-                if newprod:
-                    productList.append(newprod)
-            for p in pfiles:
-                newprod=Product.findProduct(p, 1)
-                if newprod and newprod not in productList:
-                    productList.append(newprod)
-        else:
-            for p in Cfg.products:
-                newprod=Product.findProduct(p)
-                if newprod:
-                    productList.append(newprod)
-                else:
-                    raise SkunkStandardError, "no such product: %s" % p
-        return productList        
-
     def load(self, dependencystack=[]):
         if self.name in Product.loaded:
             # already loaded
@@ -147,10 +110,19 @@ class Product(static.static):
         if self.name in dependencystack:
             raise ProductDependencyError, "circular dependency: %s" % self.name
         for p in self.dependencies:
-            if p not in Product.loaded:
-                dprod=Product.findProduct(p)
+            if type(p)==types.TupleType:
+                pr, vr=p
+            else:
+                pr=p; vr=None
+            if pr not in Product.loaded:
+                dprod=findProduct(p)
                 if not dprod:
                     raise ProductDependencyError, "product not found: %s" % p
+                if vr!=None and dprod.version < vr:
+                    raise ProductDependencyError, ("need version %s of product %s, "
+                                                   "found version %s") % (vr,
+                                                                          pr,
+                                                                          dprod.version)
                 dependencystack.append(self.name)
                 dprod.load(dependencystack)
                 dependencystack.remove(self.name)
@@ -187,7 +159,37 @@ class Product(static.static):
             __import__(service)
 
 
+def findProduct(productname, fromFile=0):
+    pdir=product_directory()
+    d=os.path.join(pdir, productname)
+    if fromFile or os.path.isdir(d):
+        return Product(d)
+    for ps in product_suffixes:
+        path=os.path.join(pdir, '%s%s' % (productname, ps))
+        if os.path.exists(path):
+            return Product(path)
 
+def listProducts():
+    ptype=type(Cfg.products)
+    productList=[]
+    if ptype not in (types.ListType, types.TupleType):
+        pdirs, pfiles=_directories_and_files(product_directory())
+        for p in pdirs:
+            newprod=findProduct(p)
+            if newprod:
+                productList.append(newprod)
+        for p in pfiles:
+            newprod=findProduct(p, 1)
+            if newprod and newprod not in productList:
+                productList.append(newprod)
+            else:
+                for p in Cfg.products:
+                    newprod=findProduct(p)
+                    if newprod:
+                        productList.append(newprod)
+                    else:
+                        raise SkunkStandardError, "no such product: %s" % p
+    return productList        
 
     
             

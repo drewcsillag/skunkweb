@@ -30,7 +30,7 @@ ac_help="$ac_help
                            names are:
 
                            ae_component aecgi basicauth httpd mysql oracle
-                           postgresql remote remote_client requestHandler
+                           postgresql product remote remote_client requestHandler
                            rewrite sessionHandler templating web fcgiprot 
                            userdir"
 ac_help="$ac_help
@@ -725,7 +725,7 @@ if test "${with_services+set}" = set; then
 	SERVICES=$withval
 else
   
-	SERVICES="ae_component aecgi basicauth httpd mysql oracle postgresql remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir";
+	SERVICES="ae_component aecgi basicauth httpd mysql oracle postgresql product remote remote_client requestHandler rewrite sessionHandler templating web fcgiprot userdir";
 fi
 
 

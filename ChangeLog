@@ -1,7 +1,13 @@
 2002-02-20  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/product/__init__.py: autocreate
+	product directory.
+
 	* SkunkWeb/Services/product/loader.py (Product.__reallyload):
 	stopped using a vfs importer for directory products.
+	(Product.load): improved dependency check -- optionally
+	can include version in dependency. (Product): moved static
+	methods to module methods.
 
 	* configure.in, configure, SkunkWeb/configure.in,
 	SkunkWeb/configure: added reference to product service.
