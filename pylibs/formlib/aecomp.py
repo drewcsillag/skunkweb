@@ -29,8 +29,7 @@ from views import ViewableField, ViewableDomainField, ViewableForm
 class ComponentViewableMixin(object):
     def __init__(self,
                  component,
-                 cache=NO)
-                 **view_attrs):
+                 cache=NO):
         self.component=component
         self.cache=cache
 
