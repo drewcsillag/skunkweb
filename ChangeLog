@@ -25,7 +25,7 @@
 2002-12-30    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/views.py (SubmitButtonGroupField): support for
-	groups of submit fields.
+	groups of submit fields. (ButtonBar): same, with button elements.
 
 	* pylibs/formlib/dispatcher.py (FormDispatcher.dispatch): permit
 	start form to be null.

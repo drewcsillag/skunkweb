@@ -527,6 +527,37 @@ class SubmitButtonGroupField(ButtonGroupField):
         return table
 
 
+class ButtonBar(ViewableDomainField):
+    def __init__(self,
+                 name,
+                 options,
+                 **view_attrs):
+        self.options, domain=self._parse_options(options)
+        ViewableDomainField.__init__(self, name, domain, **view_attrs)
+
+    def _parse_options(self, options):
+        d=Set()
+        optlist=[]
+        for o in options:
+            if isinstance(o, tuple):
+                d.append(o[0])
+                optlist.append(o)
+            else:
+                d.append(o)
+                optlist.append((o, o))
+        return optlist, d
+
+    def getView(self):
+        tr=ecs.Tr()
+        for val, label in self.options:
+            b=ecs.Button(label, attributes={'name' : self.name,
+                                            'value': val})
+            tr.addElement(ecs.Td(b))
+        return ecs.Table(tr)
+            
+            
+        
+
 ########################################################################
 # helper classes for button groups
 ########################################################################
