@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.11 2002/03/21 18:10:17 smulloni Exp $
+# $Id: Makefile.in,v 1.12 2002/05/15 14:01:37 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -123,6 +123,7 @@ install:
 	then \
 	    $(INSTALL_DATA) sample_webdocs/index.html $(docroot)/index.html;\
 	    $(INSTALL_DATA) sample_webdocs/logo.comp $(docroot)/logo.comp;\
+	    $(INSTALL_DATA) sample_webdocs/favicon.ico $(docroot)/favicon.ico;\
 	    $(INSTALL) -d $(docroot)/img; \
 	    for i in 0 1 2 3 4 5 6 7 8 9;\
 	    do \
@@ -152,6 +153,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.12  2002/05/15 14:01:37  smulloni
+# added auth to list of services
+#
 # Revision 1.11  2002/03/21 18:10:17  smulloni
 # adding new demo files
 #
