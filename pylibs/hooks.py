@@ -1,9 +1,9 @@
-# Time-stamp: <03/03/06 13:47:12 smulloni>
-# $Id: hooks.py,v 1.3 2003/03/06 18:55:08 smulloni Exp $
+# Time-stamp: <03/07/17 23:25:30 smulloni>
+# $Id: hooks.py,v 1.4 2003/05/01 20:45:57 drew_csillag Exp $
 
 ########################################################################
 #  
-#  Copyright (C) 2001, 2002 Andrew T. Csillag <drew_csillag@geocities.com>,
+#  Copyright (C) 2001-2003 Andrew T. Csillag <drew_csillag@geocities.com>,
 #                           Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General
@@ -26,6 +26,11 @@ class Hook(_list):
             ret = i(*args, **kw)
             if ret is not None:
                 return ret
+            
+    def oneshot(self, func, index=None):
+        if not index:
+            index=len(self)
+        self.insert(index, _oneshot(self, func))
 
 ########################################################################
 
@@ -45,16 +50,20 @@ class KeyedHook:
     def has_key(self, key):
         return not not self.pairList.keyMatches(key)
 
-    def _clearCache(self, jobName):
+    def _clearCache(self, jobGlob):
         for key in self.__memoDict.keys():
-            if key.startswith(jobName):
-                self.__memoDict.remove(key)
+            if fnmatchcase(key, jobGlob):
+                del self.__memoDict[key]
 
-    def addFunction(self, func, jobName='*', index=None):
+    def addFunction(self, func, jobGlob='*', index=None):
         if not callable(func):
             raise TypeError, "%s not callable" % func
-        self._clearCache(jobName)
-        self.pairList.addPair(jobName, func, index)
+        self._clearCache(jobGlob)
+        self.pairList.addPair(jobGlob, func, index)
+
+    def removeFunction(self, func, jobGlob="*"):
+        self.pairList.orderedPairs.remove((jobGlob, func))
+        self._clearCache(jobGlob)
 
     def _getFuncList(self, jobName):
         if self.__memoDict.has_key(jobName):
@@ -69,7 +78,9 @@ class KeyedHook:
             if retVal is not None:
                 return retVal
 
-
+    def oneshot(self, func, jobGlob, index=None):
+        self.addFunction(_oneshot(self, func, jobGlob), jobGlob, index)
+        
 class SearchablePairList:
 
     def __init__(self):
@@ -98,3 +109,18 @@ class SearchablePairList:
         else:
             self.orderedPairs.insert(index, (key, value))
 
+
+class _oneshot:
+    def __init__(self, hook, func, jobGlob=None):
+        self.hook=hook
+        self.func=func
+        self.jobGlob=jobGlob
+
+    def __call__(self, *args, **kwargs):
+        try:
+            self.func(*args, **kwargs)
+        finally:
+            try:
+                self.hook.removeFunction(self, self.jobGlob)
+            except AttributeError:
+                self.hook.remove(self)

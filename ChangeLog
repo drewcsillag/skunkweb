@@ -1,5 +1,9 @@
 2003-07-17  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/hooks.py (KeyedHook.oneshot, Hook.oneshot): added
+	"oneshot" methods, where a hook function will be executed just
+	once and then removed.
+
 	* pylibs/formlib/aecomp.py (ComponentSubmitProcessor): added new
 	class that wraps a component call in a function in a trivial way.
 
