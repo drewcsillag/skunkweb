@@ -1,16 +1,9 @@
 import re
 import string
-import httplib
+import urllib
 
 def getLT():
-    h = httplib.HTTP('lwn.net')
-    h.putrequest('GET', '/headlines/text')
-    h.endheaders()
-    errc, errm, headers = h.getreply()
-    f = h.getfile()
-    data = f.read()
-    f.close()
-    return data
+    return urllib.urlopen('http://lwn.net/headlines/text').read()
 
 class Article:
     def __init__(self, headline, link):
@@ -27,4 +20,8 @@ def getArticles():
         if len(bits) == 3: res.append(Article(bits[0], bits[1]))
     return res 
 
-raise ReturnValue, getArticles()
+if __name__ == '__main__':
+    art = getArticles()
+    print art
+else:
+    raise ReturnValue, getArticles()
