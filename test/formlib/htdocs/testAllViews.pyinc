@@ -74,11 +74,13 @@ def validate(form):
 
 form = ViewableForm(name="testAllViews",
                     method="POST",
+                    enctype="multipart/form-data",
                     fields=fields,
                     validators=[validate])
 
 import ecs
 if CONNECTION.method == "POST":
+    print "POSTED DATA:", CONNECTION.args
     form.submit(CONNECTION.args)
     if form.errors:
         print ecs.H3("ERROR")
@@ -88,5 +90,8 @@ if CONNECTION.method == "POST":
             print "%s -> %s:%s" % (fld.description, fld.name, fld.value)
             print ecs.Br()
         print ecs.Hr()
+        val = CONNECTION.extract_args('file')
+        if val:
+            print 'FILE UPLOADED SIZE:', len(val['file'].contents)
 
 print form.getView()    
