@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-12-18 11:37:26 drew> 
-#   $Id: TODO,v 1.19 2001/12/14 22:47:56 smulloni Exp $
+#   Time-stamp: <2001-12-20 12:37:19 drew> 
+#   $Id: TODO,v 1.20 2001/12/18 16:38:26 drew_csillag Exp $
 
 
 * - TODO
@@ -24,13 +24,17 @@ Do Quick release
 SkunkWeb 3.2
 ------------------------------
 X pluggable file retrieval system for AE (would have to rework pars)
-* DAV support built on httpd;
 X CGI adaptor (in place of mod_skunkweb, etc.)
 X! configure refinements (js) 
+X fix any references to DateTime to mx.DateTime (or handle both)
+X update PyDO docs for sapdb
 ! vfs: path translation for archive files 
 ! update MySQL driver
-* update PyDO docs for sapdb
-* fix any references to DateTime to mx.DateTime (or handle both)
+* sapdb service, package and caching connection from PyDO
+
+SkunkWeb 3.3
+------------------------------
+* DAV support built on httpd;
 
 Future stuff
 ------------------------------
