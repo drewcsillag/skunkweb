@@ -198,7 +198,7 @@ def _dateConvertFromDB(val,type):
     return DateTime.DateTimeFrom(sapdbapi.valTranslation[type](val))
 
 def _isNumber(attr):
-    if attr in ['Integer','Smallint'] or attr[:4] == 'Float' or attr[:5] == 'Fixed':
+    if attr in ['Integer','Smallint'] or attr[:5] in ['Float', 'Fixed']:
         return 1
     
 def _isLongKind(attr):

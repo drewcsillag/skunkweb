@@ -1,3 +1,7 @@
+2002-02-03  Andrew Csillag  <drew@thoughttrack.com>
+
+	* pylibs/PyDO/sapdbconn.py: minor fix from Ulrich Eck
+
 2002-02-03  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/remote_client.py (getRemoteException, etc): 
