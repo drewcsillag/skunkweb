@@ -1,3 +1,18 @@
+2001-11-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/configure.in: use docroot, cache, docsdir, and make 
+	more use of standard configure options.
+
+	* SkunkWeb/Services/Makefile.in (inst_services): Now use
+	libdir, bindir, and friends, to assist packagers who prefer
+	different application layouts.
+
+	* pylibs/Makefile.in (pylibs_dir): use libdir configuration option.
+
+	* configure.in: added --with-docroot, --with-cache, and 
+	--with-docsdir options.
+
+
 2001-11-08  Jacob Smullyan  <smulloni@skunk.org>
 
 	* SkunkWeb/mod_skunkweb/modskunkweb_error.html: Removed references 
@@ -6,6 +21,9 @@
 	* SkunkWeb/.cvsignore: now even more ignorant.
 
 2001-11-06  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Makefile.in: sw.conf was not being preserved
+	during installation; fixed, and preserve mime.types also.
 
 	* test/index.html: added some rudimentary tests.
 	* docs/opman/opman.tex (section{Remote Components}): some

@@ -44,6 +44,18 @@ then
 AC_PATH_PROG(PYTHON,python)
 fi
 
+AC_SUBST(DOCROOT)
+AC_ARG_WITH(docroot,
+[ --docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
+DOCROOT=$withval], [
+DOCROOT=])
+
+AC_SUBST(CACHE)
+AC_ARG_WITH(cache,
+[ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
+CACHE=$withval], [
+CACHE=])
+
 AC_SUBST(OWNER)
 AC_ARG_WITH(user, 
 [  --with-user=user        Make Skunk installation owned by user], [
@@ -76,7 +88,7 @@ AC_ARG_WITH(webdoc,
 AC_SUBST(SERVICES)
 AC_ARG_WITH(services, 
 [  --with-services=svcs    Specify the list of services to install
-                           space delimited list of personas to install, valid
+                           space delimited list of services to install, valid
                            names are:
 
                            ae_component aecgi basicauth httpd mysql oracle
@@ -106,15 +118,15 @@ AC_PATH_PROG(SUDO, sudo, "", "$PATH:/usr/sbin:/sbin")
 fi
 
 
-#check if they want to build/install mod_aecgi
+# check if they want to build/install mod_skunkweb
 AC_MSG_CHECKING([build mod_skunkweb])
 AC_SUBST(MOD_SKUNKWEB)
 AC_ARG_WITH(mod_skunkweb,
 [  --without-mod_skunkweb  Don't build mod_skunkweb],[
 	case $withval in
 	no)  MOD_SKUNKWEB="";            MOD_SKUNKWEBRES="no";;
-	yes) MOD_SKUNKWEB="mod_aecgi";   MOD_SKUNKWEBRES="yes";;
-	*)   MOD_SKUNKWEB="mod_aecgi";   MOD_SKUNKWEBRES="yes";;
+	yes) MOD_SKUNKWEB="mod_skunkweb";   MOD_SKUNKWEBRES="yes";;
+	*)   MOD_SKUNKWEB="mod_skunkweb";   MOD_SKUNKWEBRES="yes";;
 	esac], [
 	MOD_SKUNKWEB="mod_skunkweb";        MOD_SKUNKWEBRES="yes";])
 AC_MSG_RESULT([$MOD_SKUNKWEBRES])
@@ -170,7 +182,7 @@ APACHE_MODULES_DIR=`$APXS -q LIBEXECDIR`
 fi #if mod_skunkweb enabled
 
 dnl Check for functions
-dnl memmem() is used by mod_aecgi
+dnl memmem() is used by mod_skunkweb
 AC_CHECK_FUNCS(memmem)
 
 dnl Checks for header files.

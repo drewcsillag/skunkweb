@@ -43,6 +43,24 @@ then
     AC_MSG_ERROR([xargs program not found!])
 fi
 
+AC_SUBST(DOCROOT)
+AC_ARG_WITH(docroot,
+[ --docroot     Specify default docroot location (default <SkunkRoot>/docroot)], [
+DOCROOT=$withval], [
+DOCROOT=])
+
+AC_SUBST(CACHE)
+AC_ARG_WITH(cache,
+[ --cache     Specify default cache location (default <SkunkRoot>/cache)], [
+CACHE=$withval], [
+CACHE=])
+
+AC_SUBST(DOCSDIR)
+AC_ARG_WITH(docsdir,
+[ --docsdir    Specify location for documentation (default <SkunkRoot>/docs)], [
+DOCSDIR=$withval], [
+DOCSDIR=])
+
 AC_SUBST(WITH_SKUNKWEB)
 AC_ARG_WITH(skunkweb, 
 [  --with-skunkweb       Install SkunkWeb as part of this installation (default yes)], [
@@ -164,20 +182,22 @@ AC_PATH_PROG(LATEX, latex)
 AC_PATH_PROG(PDFLATEX, pdflatex)
 AC_PATH_PROG(DVIPS, dvips)
 
-dnl AC_CONFIG_SUBDIRS(AED)
 AC_CONFIG_SUBDIRS(SkunkWeb)
 
-dnl  --with-port=port    Configure SkunkWeb daemon to listen on given port
 AC_ADD_HELP([
 Additional options if building SkunkWeb:
+  --with-docroot          Specify default docroot location 
+  --with-cache            Specify default cache location
+  --with-docsdir          Specify documentation location
   --with-webdoc           Install some sample content
   --with-services=svcs    Specify the list of services to install
-                           space delimited list of personas to install, valid
+                           space delimited list of services to install, valid
                            names are:
 
                            sessionHandler, requestHandler, remote, ae_component, 
                            remote_client, aecgi, httpd, basicauth,
                            oracle, pars, templating, web, fcgiprot, userdir
+                           [default: install all services]
 
   --with-sudo=/path/sudo  Specify path to sudo
   --without-mod_skunkweb  Don't build mod_skunkweb
@@ -187,3 +207,4 @@ Additional options if building SkunkWeb:
 
 AC_OUTPUT(Makefile pylibs/Makefile pylibs/skunkdoc/skunkdoc.py pylibs/skunkdoc/skunkdoc2html.py pylibs/skunkdoc/skunkdoc2latex.py docs/Makefile)
 dnl pylibs/mmlib/Setup)
+

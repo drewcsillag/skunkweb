@@ -26,7 +26,7 @@ prefix		= @prefix@
 exec_prefix	= @exec_prefix@
 skunk_data_dir	= @prefix@/share
 skunk_var_dir	= @prefix@/var
-skunk_config_dir	= @sysconfdir@
+skunk_config_dir = @sysconfdir@
 skunk_bin_dir	= @bindir@
 
 # List of components to install
