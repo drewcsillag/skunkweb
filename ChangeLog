@@ -15,6 +15,11 @@
 	with hopefully faster C code, to replace the excruciatingly 
 	slow scope.py.
 
+2001-09-03  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* pylibs/PyDO/postconn.py: integrated patch from Gregory Brauer
+	to support setting values to None to put NULLs in the database
+	
 2001-08-28  Drew Csillag  <drew@naxos.starmedia.net>
 
         * pylibs/skunklib/_normpath.c: fixed core dumpage by rewrite
