@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <03/06/18 12:28:31 smulloni>
+# Time-stamp: <03/06/18 13:10:51 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -100,7 +100,7 @@ class XMLElement:
         self.namespaceCode=namespaceCode
         self.empty=empty
         self.html_compat=html_compat
-        self.__children=[]
+        self.children=[]
         self.attributes=self.__attributes={}
         self.__namespaces={}
         self.__defaultNamespace=''
@@ -109,7 +109,7 @@ class XMLElement:
                 self.setAttribute('%s:%s' % (XMLNS_ATTR, namespaceCode), namespace)
             else:
                 self.setAttribute(XMLNS_ATTR, namespace)
-        self.parent=self.__parent=None
+        self.parent=None
 
     def __str__(self):
         buff=['<']
@@ -118,9 +118,9 @@ class XMLElement:
         buff.append(self.name)
         for attr, val in self.__attributes.items():
             buff.append(' %s="%s"' % (attr, val))
-        if len(self.__children):
+        if len(self.children):
             buff.append('>')
-            buff.extend(map(str, self.__children))
+            buff.extend(map(str, self.children))
             buff.append('</')
             if (self.namespaceCode):
                 buff.append('%s:' % self.namespaceCode)
@@ -159,17 +159,22 @@ class XMLElement:
         if suppressWhitespace:
             return filter(lambda x: type(x) not in (types.UnicodeType,
                                                     types.StringType) or x.strip(),
-                          self.__children)
+                          self.children)
         else:
-            return self.__children[:]
+            return self.children[:]
 
     def addChild(self, *children):
         for child in children:
             if isinstance(child, XMLElement):
-                child.parent=child.__parent=self
-            self.__children.append(child)
+                child.parent=self
+            self.children.append(child)
         # for convenience
         return self
+
+    def removeChild(self, child):
+        self.children.remove(child)
+        if isinstance(child, XMLElement):
+            child.parent=None
 
     def getChildrenByAttribute(self, attr, val, limit=1):
         """
@@ -207,13 +212,13 @@ class XMLElement:
         if not namespaceCode:
             return self.getDefaultNamespace()
         ns=self.__namespaces.get(namespaceCode)
-        if not ns and self.__parent!=None:
-            ns=self.__parent.getNamespace(namespaceCode)
+        if not ns and self.parent!=None:
+            ns=self.parent.getNamespace(namespaceCode)
         return ns
 
     def getDefaultNamespace(self):
-        if (not self.__defaultNamespace) and self.__parent:
-            return self.__parent.getDefaultNamespace()
+        if (not self.__defaultNamespace) and self.parent:
+            return self.parent.getDefaultNamespace()
         return self.__defaultNamespace
 
     def setDefaultNamespace(self, ns):
@@ -225,7 +230,7 @@ class XMLElement:
 
     def getChild(self, name, namespace=None, index=0):
         i=-1
-        for kid in self.__children:
+        for kid in self.children:
             if kid.name==name and (namespace==None \
                                    or namespace==kid.getNamespace()):
                 i+=1
@@ -234,9 +239,9 @@ class XMLElement:
         return None
 
     def getPrimogenitor(self):
-        if self.__parent==None:
+        if self.parent==None:
             return self
-        return self.__parent.getPrimogenitor()
+        return self.parent.getPrimogenitor()
 
     def walk(self, visitfunc, state=None, filter=None):
         if filter is not None:
@@ -249,55 +254,3 @@ class XMLElement:
             else:
                 visitfunc(c, state)
         
-
-########################################################################
-# $Log$
-# Revision 1.12  2003/06/18 16:30:55  smulloni
-# bugfix: wasn't setting parent attribute
-#
-# Revision 1.11  2003/05/01 20:45:58  drew_csillag
-# Changed license text
-#
-# Revision 1.10  2002/12/05 18:05:35  smulloni
-# another go.
-#
-# Revision 1.9  2002/12/05 17:52:31  smulloni
-# basic fix.
-#
-# Revision 1.8  2002/12/05 17:40:46  smulloni
-# added walk() element to XMLElement.
-#
-# Revision 1.7  2002/09/04 19:05:24  smulloni
-# work on flow manager
-#
-# Revision 1.6  2002/08/30 19:47:54  smulloni
-# xmlutils.XMLElement now has a public "attributes" member; added DTD
-# for flow definitions.
-#
-# Revision 1.5  2002/08/29 15:37:10  smulloni
-# add/revised copyright notice and license
-#
-# Revision 1.4  2002/08/29 14:59:06  smulloni
-# added xhtml parser and moved some code from ecs.xhtml to xmlutils.
-#
-# Revision 1.3  2002/08/28 20:55:27  smulloni
-# some tweaks for xhtml compatibiity.
-#
-# Revision 1.2  2001/12/02 20:57:50  smulloni
-# First fold of work done in September (!) on dev3_2 branch into trunk:
-# vfs and PyDO enhancements (webdav still to come).  Also, small enhancement
-# to templating's <:img:> tag.
-#
-# Revision 1.1.2.2  2001/10/16 03:27:15  smulloni
-# merged HEAD (basically 3.1.1) into dev3_2
-#
-# Revision 1.1.2.1  2001/09/27 03:36:07  smulloni
-# new pylibs, work on PyDO, code cleanup.
-#
-########################################################################
-        
-        
-
-    
-            
-    
