@@ -1,5 +1,6 @@
 import unittest
 from formlib import *
+from formlib.form import FieldProxy
 
 class FieldUnitTest(unittest.TestCase):
     def __init__(self, aStr):
@@ -32,6 +33,28 @@ class FieldUnitTest(unittest.TestCase):
         except ValueError:
             pass #expected
         assert isinstance(self.isMultiple.checkValue('1'), list), "multiple checkValue failed to convert '1' to list" 
+class FieldProxyUnitTest(unittest.TestCase):
+    def __init__(self, aStr):
+        unittest.TestCase.__init__(self, aStr)
+        self.proxyName = 'proxyjoe'
+        self.fieldName = 'joe'
+        self.tstField = Field(self.fieldName, 'joe field', default='1')
+        self.tstProxy = FieldProxy(self.proxyName, self.tstField)
+
+    def testName(self):
+        """\
+        Ensures that the name of a field proxy is distinct from the proxied field's name\
+        """
+        assert self.tstProxy.name == self.proxyName
+        # check to make sure proxy name hasn't magically overridden field name 
+        assert self.tstField.name == self.fieldName 
+
+    def testFieldProxying(self):
+        """\
+        Ensures that all field attributes outside of the field name are accessible via the proxy\
+        """
+        assert self.tstProxy.description == self.tstField.description
+        assert self.tstProxy.default == self.tstField.default
 
         
 class DomainFieldUnitTest(unittest.TestCase):
@@ -146,6 +169,8 @@ def suite():
     suite.addTest(FormUnitTest('testGetData'))
     suite.addTest(FormUnitTest('testSetData'))
     suite.addTest(FormUnitTest('testValidate'))
+    suite.addTest(FieldProxyUnitTest('testName'))
+    suite.addTest(FieldProxyUnitTest('testFieldProxying'))
     return suite
     
 if __name__ == "__main__":
