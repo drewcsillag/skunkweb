@@ -1,0 +1,13 @@
+<:args username:>
+<:if `not username`:>
+  <:component /comp/user_list.comp:>
+<:else:>
+  <:component /comp/user_page.comp username=`username`:>
+<:/if:>
+<html>
+<head>
+  <title>
+</head>
+<body>
+</body>
+</html>
