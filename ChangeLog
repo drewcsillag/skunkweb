@@ -1,5 +1,7 @@
 2001-08-28  Drew Csillag  <drew@naxos.starmedia.net>
 
+        * pylibs/skunklib/_normpath.c: fixed core dumpage by rewrite
+	
 	* docs/paper-letter/Makefile: fixed clean and clobber stuff
 
 	* docs/html/Makefile: fixed the clean target
