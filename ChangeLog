@@ -1,5 +1,8 @@
 2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* skunkweb.spec: incorporating SR's latest fixes to what I screwed
+	up.
+
 	* SkunkWeb/mod_skunkweb/Makefile.in: adding DESTDIR to install.
 
 2003-05-23  Jacob Smullyan  <smulloni@smullyan.org>

@@ -4,10 +4,9 @@
 
 #  get python lib directory
 %define pylibdir %(python2.2 -c "import sys; print '%s/lib/python%s' % (sys.prefix, sys.version[:3])")
-# not needed here
-#%define pylibvers %(python2.2  -c"import sys; print sys.version[:3]")
+%define apxspath /usr/sbin/apxs
 
-Summary: an easily extensible web application server written in Python,
+Summary: An easily extensible web application server written in Python.
 Name: %{name}
 Version: %{version}
 Release: %{release}
@@ -19,7 +18,7 @@ Packager:  Jacob Smullyan <smulloni@smullyan.org>
 BuildRoot: /var/tmp/%{name}-%{version}-root
 Requires: /usr/bin/python2.2
 Requires: %{pylibdir}/site-packages/mx
-BuildRequires: /usr/sbin/apxs
+BuildRequires: %{apxspath}
 
 %description
 SkunkWeb is a scalable, extensible and easy to use web application server
@@ -35,6 +34,14 @@ Requires: httpd
 A module for including the Skunkweb environment in the Apache web server.
 
 %changelog
+* Sat May 24  2003 Jacob Smullyan <smulloni@smullyan.org>
+- incorporated SR's latest patch into source.
+
+* Fri May 23 2003 Sean Reifschneider <jafo-rpms@tummy.com> [3.4b3+-1]
+- Setting INSTALL for build.
+- Sets up cache reaper cron job.
+- mod_skunkweb defaults to using root for the file attributes.
+
 * Thu May 22 2003 Jacob Smullyan <smulloni@smullyan.org>
 - some revisions to layout
 - simpler way of getting python library path
@@ -67,14 +74,19 @@ A module for including the Skunkweb environment in the Apache web server.
            --with-cache=/var/cache/skunkweb \
            --with-docdir=/usr/share/doc/skunkweb-%{version} \
            --with-python=/usr/bin/python2.2 \
-           --with-apxs=/usr/sbin/apxs
+           --with-apxs=%{apxspath}
 
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 
 %install
 [ ! -z "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{_prefix}
-make install  DESTDIR="%{buildroot}" APXSFLAGS="-c"
+mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
+%makeinstall DESTDIR="%{buildroot}" APXSFLAGS="-c" \
+           INSTALL=install INSTALL_DATA=install
+
+#  set up cache reaper
+echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /usr/local/skunk/cache' >"$RPM_BUILD_ROOT"/etc/cron.daily
 
 #  build file list
 find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
@@ -85,13 +97,13 @@ MODFILELIST=`pwd`/mod_skunkweb.files
 export MODFILELIST
 (
    cd SkunkWeb/mod_skunkweb
-   moddir=`/usr/sbin/apxs -q LIBEXECDIR`
+   moddir=`%{apxspath} -q LIBEXECDIR`
    mkdir -p "${RPM_BUILD_ROOT}/${moddir}"
    cp .libs/mod_skunkweb.so "${RPM_BUILD_ROOT}/${moddir}"
    echo "/${moddir}"/mod_skunkweb.so >>"$MODFILELIST"
 
    #  use conf.d?
-   confdir=`/usr/sbin/apxs -q SYSCONFDIR`
+   confdir=`%{apxspath} -q SYSCONFDIR`
    if [ -d "${confdir}".d ]
    then
       mkdir -p "${RPM_BUILD_ROOT}/${confdir}.d/"
@@ -114,4 +126,4 @@ export MODFILELIST
 %config /etc/skunkweb/mime.types
 
 %files mod_skunkweb -f mod_skunkweb.files
-
+%defattr(-,root,root)
