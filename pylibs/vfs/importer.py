@@ -1,5 +1,5 @@
-# $Id: importer.py,v 1.2 2002/02/20 04:54:14 smulloni Exp $
-# Time-stamp: <02/02/21 02:05:31 smulloni>
+# $Id: importer.py,v 1.3 2002/02/21 07:20:17 smulloni Exp $
+# Time-stamp: <02/02/21 10:47:35 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -120,7 +120,7 @@ def install():
     import __builtin__
     if type(__builtin__.__import__)==types.BuiltinFunctionType:
         global __oldimport__
-        __oldimport__=__import__
+        __oldimport__=__builtin__.__import__
         iu._globalownertypes.insert(0, VFSOwner)
         global _manager
         _manager=iu.ImportManager()
@@ -129,9 +129,7 @@ def install():
 def uninstall():
     import __builtin__
     if type(__builtin__.__import__)==types.MethodType:
-        global __oldimport__
-        __builtin__.__import__==__oldimport__
-        del __oldimport__
+        __builtin__.__import__=__oldimport__
         global _manager
         del _manager
 

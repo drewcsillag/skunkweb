@@ -1,5 +1,11 @@
 2002-02-21  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/Services/product/loader.py: removed unnecessary
+	import. 
+
+	* pylibs/vfs/importer.py (uninstall): fixed typo; no longer
+	delete __oldimport__ (leaving it around doesn't hurt).
+
 	* pylibs/vfs/zipfs.py (ZipFS.isdir), pylibs/vfs/tarfs.py
 	(TarFS.isdir): 	no longer raise an exception when calling isdir on
 	a nonexistent file. 

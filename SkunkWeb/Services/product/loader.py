@@ -1,5 +1,5 @@
-# $Id: loader.py,v 1.3 2002/02/20 17:00:54 smulloni Exp $
-# Time-stamp: <02/02/21 02:01:30 smulloni>
+# $Id: loader.py,v 1.4 2002/02/21 07:20:16 smulloni Exp $
+# Time-stamp: <02/02/21 10:07:04 smulloni>
 
 ########################################################################
 #  
@@ -28,7 +28,6 @@ import types
 import SkunkWeb.Configuration as Cfg
 from SkunkWeb.LogObj import ERROR, logException
 from SkunkExcept import SkunkStandardError
-import static
 import vfs
 import manifest
 from skunklib import normpath2
