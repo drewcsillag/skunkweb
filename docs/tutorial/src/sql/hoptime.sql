@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
- * Time-stamp: <02/11/01 09:07:11 smulloni> 
- * $Id: hoptime.sql,v 1.3 2002/09/30 19:50:03 smulloni Exp $
+ * Time-stamp: <02/11/02 16:01:31 smulloni> 
+ * $Id: hoptime.sql,v 1.4 2002/11/01 17:54:17 smulloni Exp $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;
@@ -177,3 +177,26 @@ END;
 
 CREATE TRIGGER game_update_trigger AFTER UPDATE ON games
 FOR EACH ROW EXECUTE PROCEDURE game_update();
+
+CREATE OR REPLACE FUNCTION get_next_turn(INTEGER)
+RETURNS INTEGER AS '
+DECLARE
+  game_id ALIAS FOR $1;
+  game_status TEXT;
+  game_size INTEGER;
+  user_id INTEGER; 
+BEGIN
+  SELECT into game_status status FROM games WHERE id=game_id;
+  IF NOT FOUND OR game_status <> ''playing'' THEN
+     RETURN NULL;
+  END IF; 
+
+  SELECT INTO game_size COUNT(*) FROM players where game=game_id;
+
+  SELECT INTO user_id 1+p.player % game_size FROM players p, moves m
+    WHERE m.player=p.player
+    AND m.game=game_id
+    ORDER BY m.entered DESC LIMIT 1;
+  RETURN user_id;
+END;
+' LANGUAGE 'plpgsql';

@@ -1,5 +1,5 @@
-# Time-stamp: <02/10/30 23:41:55 smulloni>
-# $Id: hopauth.py,v 1.1 2002/10/06 14:38:00 smulloni Exp $
+# Time-stamp: <02/11/01 17:18:38 smulloni>
+# $Id: hopauth.py,v 1.2 2002/11/01 17:54:17 smulloni Exp $
 
 """
 support for authenticating hoptime users
@@ -19,7 +19,7 @@ class HoptimeAuth(A.CookieAuthBase, A.RespAuthBase):
         A.CookieAuthBase.__init__(self,
                                   'hoptime_auth',
                                   'Ingabook Forsmythe',
-                                  {'path':'/'})
+                                  {})
 
     def validate(self, username, password):
         user=H.Users.getUnique(username=username)

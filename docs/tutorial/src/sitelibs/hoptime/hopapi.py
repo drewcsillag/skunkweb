@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/01 09:09:26 smulloni> 
-# $Id: hopapi.py,v 1.2 2002/10/06 14:38:00 smulloni Exp $
+# Time-stamp: <02/11/03 17:54:42 smulloni> 
+# $Id: hopapi.py,v 1.3 2002/11/01 17:54:16 smulloni Exp $
 
 import PyDO
 import sys
@@ -83,6 +83,9 @@ class Moves(_hoptimebase):
         'id': 'moves_id_seq',
         }
 
+    def getUser(self):
+        return Users.getUnique(id=self['player'])
+
 class Games(_hoptimebase):
     table = 'games'
     fields = (
@@ -162,6 +165,33 @@ class Games(_hoptimebase):
 
     def trash(self):
         self['status']='trashed'
+
+    def getNextPlayer(self):
+        if self['status'] != 'playing':
+            return None
+        sql="SELECT get_next_turn(%s)" % self['id']
+        c.getDBI().conn.cursor()
+        c.execute(sql)
+        u=c.fetchone()
+        if not u:
+            return None
+        else:
+            return Users.getUnique(id=u)
+
+    def getMoveCount(self):
+        sql="SELECT count(*) FROM moves where game=%s" % self['id']
+        c=getDBI().conn.cursor()
+        c.execute(sql)
+        res=c.fetchone()
+        return res and res[0] or 0
+
+    def getMoves(self):
+        return Moves.getSome(game=self['id'])
+
+    def getLastMove(self):
+        m=Moves.getSQLWhere("game=%d order by entered desc limit 1" % self['id'])
+        return m and m[0] or None
+           
         
 
 class Users(_hoptimebase):
@@ -187,13 +217,25 @@ class Users(_hoptimebase):
     def getOwnedGames(self):
         return Games.getSome(owner = self['id'])
 
-    def getPlayedGames(self):
+    def getAllPlayedGames(self):
         return self.joinTable('id',
                               "players",
                               'player',
                               'game',
                               Games,
                               'id')
+
+    def getAllPlayedButNotOwnedGames(self):
+        sql="""SELECT %(fields)s FROM games g, players p
+        WHERE players.player=%(user_id)s players.game=g.id
+        AND g.owner!=%(user_id)s
+        """ % {'fields' : ', '.join(['g.%s' % x for x in self.getColumns()]),
+               'user_id' : self['id']}
+        res=getDBI().conn.execute(sql, None, self.fieldDict)
+        if not res:
+            return None
+        return map(self, res)
+
 
     def move(self, game, text):
         return Moves.new(refetch=1,

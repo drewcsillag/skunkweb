@@ -7,11 +7,14 @@
   <:/if:>
 <:/if:>
 <:if `not CONNECTION.hoptimeUser`:>
-  <p><:component login_form.comp  
+  <p><:component /comp/login_form.comp  
                  title=`submitted and "Login Incorrect" or "Login"`
                  cache=yes:></p>
 <:else:>
-  <p>You are logged in as <strong><:val `CONNECTION.remoteUser`:></strong>.</p>
+  <p>You are logged in as
+    <strong><:component /comp/user.comp 
+                user=`CONNECTION.hoptimeUser` 
+                cache="yes":></strong>.</p>
   <p><:url logout.html text="Logout":></p>
 <:/if:>
 

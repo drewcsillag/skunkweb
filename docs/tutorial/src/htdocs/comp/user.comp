@@ -1,0 +1,1 @@
+<:compargs user:><:url `'/users/%s' % user['username']` text=`user['username']`:>

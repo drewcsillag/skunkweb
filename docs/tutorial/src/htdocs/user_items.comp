@@ -1,9 +1,0 @@
-<:compargs hopuser username:>
-<:if `hopuser`:>
-  <p>stuff that should go here:</p>
-  <ul>
-   <li>your games, highlighting those in which it is your move
-       or you are the game owner.</li>
-   <li>your publications.</li>
-<:/if:>
- 

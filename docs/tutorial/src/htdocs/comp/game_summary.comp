@@ -1,0 +1,38 @@
+<:compargs game:>
+<:doc:>
+ 
+A template that renders a game for display, for use in a list of games.
+
+<:/doc:>
+<:set players `game.getPlayers()`:>
+<:#:> put players in play order <:/#:>
+<:call `players.sort(lambda x, y: cmp(x['play_number'], y['play_number']))`:>
+<:set owner `game.getOwner()`:>
+<:set next `game.getNextPlayer()`:>
+<:set movecount `game.getMoveCount()`:>
+<:set last_move `game.getLastMove()`:>
+<:set game_link `"/%s/%d" % ((game['status']=='published' and 'texts' or 'games'), game['id'])`:>
+<div class="game_summary">
+<:url `game_link` text=`game['title']`:> 
+  created <:date "dd Mon YYYY hh12:min PM" to_zone=UTC date=`game['created']`:> GMT 
+  by <:component /comp/user.comp user=`owner`:><br />
+<:if `game['description']`:>
+<:val `game['description']`:><br />
+<:/if:>
+Players: <ol class="player_list">
+  <:for `players` p:>
+    <li <:if `p==next`:>class="next_player"<:/if:>>
+      <:component /comp/user.comp user=`p.getUser()` cache="yes":>
+      <:if `p==owner`:>
+        <i>owner</i>
+      <:/if:>
+    </li>
+  <:/for:>
+</ol>
+Number of moves in game: <:val `movecount`:><br />
+<:if `movecount`:>
+  Last move on <:date "dd Mon YYYY hh12:min PM" to_zone=UTC date=`last_move['entered']`:> GMT
+     by <i><:component /comp/user.comp user=`last_move.getUser()`:></i><br />
+<:/if:>
+</div>
+
