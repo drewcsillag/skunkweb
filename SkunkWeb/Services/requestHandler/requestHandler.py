@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: requestHandler.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
+# $Id: requestHandler.py,v 1.2 2001/10/02 00:06:35 smulloni Exp $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 
@@ -74,7 +74,7 @@ def _processRequest(sock, addr, protocolImpl):
                                               requestData,
                                               sessionDict)
 
-                    DEBUG(REQUESTHANDLER, 'response returned: %s' % rawResponse)
+                    DEBUG(REQUESTHANDLER, 'response returned: %s' % str(rawResponse))
                     DEBUG(REQUESTHANDLER, 'marshalling response')
                     responseData=protocolImpl.marshalResponse(rawResponse,
                                                               sessionDict)
@@ -232,6 +232,10 @@ def addRequestHandler(protocol, ports):
 
 ########################################################################
 # $Log: requestHandler.py,v $
+# Revision 1.2  2001/10/02 00:06:35  smulloni
+# fixes for unix sockets, which were broken due to profound cognitive
+# impairment.
+#
 # Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
 # take 2 of import
 #
