@@ -1,0 +1,75 @@
+#!@bindir@/swpython
+# -*- python -*-
+#  
+#  Copyright (C) 2003 Andrew T. Csillag <drew_csillag@yahoo.com>
+#  
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
+#   
+from AE import MimeTypes, Executables
+from SkunkWeb import Configuration
+import os
+import sys
+import getopt
+
+def help():
+    print "Usage: %s [-n] [-h] [-s path] [-c path] " % sys.argv[0]
+    print
+    print "  -n, --no-debug         do not include *any* debug info in compiled form"
+    print "  -h, --help             this screen"
+    print "  -s path,               generate a shadow docroot"
+    print "     --shadow-docroot=path"
+    print "  -c path,               use alternate cache root"
+    print "     --cache-root=path"
+    print "  -d path,               use alternate document root"
+    print "     --document-root=path"
+    sys.exit(1)
+    
+try:
+    optlist, args = getopt.getopt(sys.argv[1:], 'nhs:c:d:', [
+        'no-debug', 'shadow-docroot=', 'help', 'cache-root=',
+        'document-root='])
+except:
+    help()
+    
+debugit = 1
+ndr = None
+
+for (opt, optval) in optlist:
+    if opt in ('-n', '--no-debug'):
+        debugit = 0
+    elif opt in ('-s', '--shadow-docroot'):
+        ndr = optval
+    elif opt in ('-h', '--help'):
+        help()
+    elif opt in ('-c', '--cache-root'):
+        Configuration.compileCacheRoot = optval
+    elif opt in ('-d', '--document-root'):
+        Configuration.documentRoot = optval
+        
+if not debugit:
+    Configuration.dontCacheSource = 1
+    Configuration.noTagDebug = 1
+
+exemap = {}
+for (mt,ct),v in Executables.executableByTypes.items():
+    exemap[mt]=v
+
+ldr=len(Configuration.documentRoot)
+def func(arg, dirname, fnames):
+    rdn = dirname[ldr:]
+    for i in fnames:
+        mimetype=MimeTypes.getMimeType(i)
+
+        exe=exemap.get(mimetype)
+        if exe:
+            pathname = '%s/%s' % (rdn, i)
+            print "compiling %s" % pathname
+            exe(pathname, Executables.DT_DATA, 0)
+            if ndr:
+                try: os.makedirs('%s/%s' % (ndr, rdn))
+                except OSError: pass
+                open('%s/%s/%s' % (ndr, rdn, i), 'w').write('')
+
+os.path.walk(Configuration.documentRoot, func, None)
