@@ -1,3 +1,8 @@
+2004-02-16  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/PyDO2.py (_pydobase): setting default value of the
+	mutable property to be 1, as in the original PyDO.
+
 2004-02-10  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/CacheTag.py (CacheTag.genCode): remove incorrect

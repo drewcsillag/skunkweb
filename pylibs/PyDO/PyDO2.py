@@ -68,7 +68,7 @@ class _pydobase(object):
     """
     __metaclass__=_metapydo
     
-    mutable=0
+    mutable=1
     useAttrs=1
     connAlias=None
     unique=[]
