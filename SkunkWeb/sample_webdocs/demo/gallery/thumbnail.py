@@ -11,19 +11,9 @@ import PIL.Image as Image
 
 SUPPORTED_EXTENSIONS=[x[1:] for x in Image.EXTENSION.keys()]
 
-# simulate the <:args:> tag; generally I would wish that we had
-# a python api that corresponded as closely as possible to stml....
-REQUIRED='RREEQQUUIIRREEDD'
-def _args(**kw):
-    for k, v in kw.items():
-        if k not in CONNECTION.args.keys():
-            if v != REQUIRED:
-                globals()[k]=v
-            else:
-                raise NameError, k
-        else:
-            globals()[k]=CONNECTION.args[k]
-_args(imagefile=REQUIRED, x=150, y=150)
+globals().update(CONNECTION.extract_args(imagefile, x=150, y=150))
+if not imagefile:
+    raise NameError, "imagefile"
 
 size=(int(x),int(y))
 

@@ -1,5 +1,5 @@
-#   Time-stamp: <02/02/22 20:33:22 smulloni> 
-#   $Id: TODO,v 1.36 2002/02/22 20:56:07 smulloni Exp $
+#   Time-stamp: <02/03/31 19:00:59 smulloni> 
+#   $Id: TODO,v 1.37 2002/02/23 07:46:56 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -35,13 +35,13 @@ NEW CODING:
 X pluggable mime-type handlers
 * tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
-* support for extra path info and urls with params after a semicolon
-* support for BETWEEN in PYDO.operators
+@ support for extra path info and urls with params after a semicolon
+L support for BETWEEN in PYDO.operators
 X documentRootFS should be single FS (maybe?)
 X vfs.MultiFS should support callable mounts
 X product service should use dynamic mount for products, fluctuating
   depending on value of documentRoot
-* wizard -- show required fields, show picture of skunk
++ wizard -- show required fields, show picture of skunk
 
 CHORES
 
@@ -84,7 +84,7 @@ SkunkWeb 3.3
   possible without writing a service, permits multiple rewriting
   schemes to coexist without hook function order being an issue, and
   works with scoping (perhaps a Rewrite directive for sw.conf?)
-* ZODB FS implementation.
+? ZODB FS implementation.
 * sessionHandler's FSSessionStore rewritten to use VFS.
 * an authorization service that supports cookie, basic, digest,
   and pluggable authorization stores.

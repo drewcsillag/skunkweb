@@ -1,5 +1,8 @@
 2002-03-31  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sample_webdocs/demo/gallery/thumbnail.py: now use
+	CONNECTION.extract_args.
+
 	* SkunkWeb/Services/pars: removing from cvs and distro.
 
 	* SkunkWeb/configure.in, SkunkWeb/configure: remove par script,
