@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py,v 1.8 2003/03/31 15:28:13 drew_csillag Exp $
+# $Id: protocol.py,v 1.9 2003/05/01 20:45:53 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -16,7 +16,6 @@ from SkunkWeb.LogObj import DEBUG, ACCESS
 from SkunkWeb import Configuration, constants
 import exceptions
 import re
-import urllib
 import socket
 
 ##NEW
@@ -168,7 +167,7 @@ class HTTPMethodRequestParser:
                 headers): 
         
         # parse the requestURI
-        match=pathRE.match(urllib.unquote(requestURI))
+        match=pathRE.match(requestURI)
         sockname=sock.getsockname()
         if isinstance(sockname, str):
             # unix socket; we'll set the serverPort to 0

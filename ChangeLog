@@ -1,3 +1,9 @@
+2003-06-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/httpd/protocol.py
+	(HTTPMethodRequestParser._getEnv): removing urllib.unquote-ing
+	of the requestURI, which is wrong.
+
 2003-06-06  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/cronjob.py (CronJob.__call__): use exec rather than eval.
