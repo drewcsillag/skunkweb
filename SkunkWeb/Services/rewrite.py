@@ -1,5 +1,5 @@
-# Time-stamp: <03/01/29 17:16:02 smulloni>
-# $Id: rewrite.py,v 1.12 2003/01/29 21:09:02 smulloni Exp $
+# Time-stamp: <03/02/05 09:42:33 smulloni>
+# $Id: rewrite.py,v 1.13 2003/01/29 22:18:48 smulloni Exp $
 
 ########################################################################
 #  
@@ -23,6 +23,57 @@
 ########################################################################
 
 # graciously contributed by Spruce Weber <sprucely@hotmail.com>
+
+"""
+The rewrite service is to SkunkWeb what mod_rewrite is to Apache;
+it is used especially for rewriting urls, but can also be used to
+make other changes to a request or how it is processed on the basis
+of the url and other aspects of the connection.
+
+In order to use the service, define ``Configuration.rewriteRules`` to be
+a list of rewrite rules, which come in two forms::
+ 
+    (<regular expression>, <replacement>)
+
+or::
+ 
+    (<rewrite condition>, [<more rules>])
+
+In the first form, the regular expression is used to search
+``CONNECTION.uri``.  If it matches, what happens next depends on what
+kind of thing the replacement is.  If it has a method named
+``rewrite``, that method is called, which can perform any action:
+rewriting the url, altering the connection or the session dictionary
+(which you can pretend you never heard about, as the best thing to do
+is to leave it alone), raising a ``PreemptiveResponse`` and thus
+handling the request, etc.  (A number of classes are provided that do
+commonly needed things along these lines, like performing a redirect,
+or returning a 404; and you can write your own.)  Else, if the
+replacement is callable or a string, regular expression substitution
+is performed on the original uri, and the result is assigned to
+``CONNECTION.uri``.  An additional twist: if the regular expression
+match contains a groupdict and ``Configuration.rewriteMatchToArgs`` is
+true, then ``CONNECTION.args`` is updated with the groupdict.  This is
+an easy way to use path info rather than querystrings to pass request
+data to scripts.
+
+In the second form, the first element must be callable with the
+arguments ``(CONNECTION, sessionDict)`` (and again, you can ignore the
+session dictionary).  If and only if it returns a true value, the
+rules in the second element are executed.  A class is provided,
+``rewrite.RewriteCond``, that performs most of the tests you'll want
+to perform -- exactly the same tests as you would perform while
+scoping.
+
+By default, all of your rewrite rules will be applied, one by one.
+But if you want it to stop after the first match, set
+``Configuration.rewriteApplyAll`` to a false value.
+
+This API is subject to change; in particular, the hooks may be dropped
+altogether, and the method signatures of rewriters may be simplified by
+dropping the ``key`` parameter to ``rewrite()``.
+
+"""
 
 from SkunkWeb import ServiceRegistry, Configuration, constants
 ServiceRegistry.registerService('rewrite')
@@ -140,26 +191,10 @@ class ExtraPathFinder(DynamicRewriter):
             connection.uri= path[len(Configuration.documentRoot):]
 
 
-##class HostMatch(DynamicRewriter):
-##    """
-##    checks the Host header before doing any rewrite.
-##    Superseded by RewriteCond.
-##    """
-##    def __init__(self,
-##                 hostregex,
-##                 replacement):
-##        self.hostregex=_getcompiled(hostregex)
-##        self.replacement=replacement
-
-##    def rewrite(self, match, connection, sessionDict, key):
-##        if self.hostregex.match(connection.host):
-##            _dorewrite(match,
-##                       connection,
-##                       sessionDict,
-##                       self.replacement,
-##                       key)
-    
 class RewriteCond:
+    """
+    as the first element in a rewrite rule tuple, 
+    """
     def __init__(self,
                  uri=None,
                  host=None,
@@ -186,7 +221,11 @@ class RewriteCond:
                                 constants.IP)):
             if pat is not None:
                 t=sessionDict.get(target)
-                if (not t) or not _getcompiled(pat).search(t):
+                if not t:
+                    return 0
+                if callable(pat):
+                    return pat(t)
+                elif not _getcompiled(pat).search(t):
                     return 0
         for pat, target in zip((self.port,
                                 self.skunkPort),
