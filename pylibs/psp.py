@@ -1,3 +1,5 @@
+import sys
+import SkunkExcept
 CODE, LITERAL = ('CODE', 'LITERAL')#range(2)
 
 def psp_compile(s, name):
@@ -28,10 +30,17 @@ def psp_compile(s, name):
         else:
             cs = s.split('\n')
             if cs[0].strip() == '': #stuff after initial <% is blank to eol
-                s = '\n'.join(cs[1:])
+                s = '\n'.join(cs[1:]) #trim it off so tb's are correct
             codestr+=s
-    #print 'codestr is', codestr
-    return compile(codestr, name, 'exec'), codestr
+
+    try:
+        return compile(codestr, name, 'exec'), codestr
+    except SyntaxError, synerror:
+        se = SkunkExcept.SkunkSyntaxError(name, codestr, synerror,
+                                          'error compiling PSP template', 0)
+        fmt = se.format().split('\n')
+        
+        raise "PSPSyntaxError", '\n'.join(fmt[1:-2])
 
 if __name__=='__main__':
     t = """Counting to 3<%
