@@ -199,14 +199,8 @@ class _StaticBase(_baseClass):
         self._modname = arg['_modname']
         _updateMe(self)
 
-    try:
-        object
-        #for 2.2 need to make bogus methods so their tp_slots get
-        #filled since we inherit from object
-        for i in _fakeMethods:
-            exec "def %s(*args, **kw): pass" % i
-    except:
-        pass
+    def __call__(self, *args, **kw):
+        return self.__getattr__('__call__')(*args, **kw)
     
 def _getModName():
     S = "someexc"
