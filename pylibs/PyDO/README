@@ -22,6 +22,9 @@ If you are going to use oracle, you need the DCOracle pacakge
 available from the zope.org site at:
     http://www.zope.org/Products/DCOracle
 
+First, you will need the mx.DateTime module available from the mxBASE package
+http://www.lemburg.com/files/python/eGenix-mx-Extensions.html#mxBASE.
+
 If you are going to use PostgreSQL, build and install the Python
 interface located in it the PostgreSQL build tree under the
 src/interfaces/python directory.  You'll also need the mxBase Python

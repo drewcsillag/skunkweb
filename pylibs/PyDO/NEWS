@@ -1,0 +1,11 @@
+since 1.0.1
+-------------------
+* self.get(columnname, default) now returns default if 
+  self._dict[columnname]==None
+* Now works with Python 2.2
+* MySQL revamps -- uses MySQLdb
+* doc updates
+* SAP database adaptor
+* new operator framework so can add things to the where clause
+* many postgresql fixes (most related to handling NULLs)
+
