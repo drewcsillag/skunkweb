@@ -1,8 +1,12 @@
 <:#:>component to display thumbnails that link to images contained in a given directory<:/#:>
-<:compargs dirpath x y:>
+<:compargs dirpath x y nailpath=`None`:>
 <:import os:>
 <:if `not os.path.isdir(dirpath)`:>
   <:set dirpath `os.path.dirname(dirpath)`:>
+<:/if:>
+<:if `nailpath==None`:>
+<:import AE.Component:>
+<:set nailpath `os.path.normpath(os.path.join(os.path.dirname(AE.Component.componentStack[-1].name), '../thumbnail.py'))`:>
 <:/if:>
 <:datacomp listing listing.pydcmp path=`dirpath`:>
 <:call `listing.sort()`:>
@@ -11,10 +15,9 @@
 <:set listing `[os.path.join(dirpath, p) for p in filter(lambda b, r=filterRe: r.match(b), listing)]`:>
 <:set naillist `[]`:>
 <:for `listing` img:>
-<:#:><:spool nailurl:><:url thumbnail.py queryargs=`{'imagefile' : img, 'x' : x, 'y' : y }`:><:/spool:><:/#:>
+<:spool nailurl:><:url `nailpath` queryargs=`{'imagefile' : img, 'x' : x, 'y' : y }`:><:/spool:>
 <:datacomp realsize nailsize.pydcmp imagefile=`img` x=`x` y=`y` cache=yes:>
-<:spool nail:><:img thumbnail  queryargs=`{'imagefile' : img, 'x' : x, 'y' : y }` 
-                    noescape=1 border=0 width=`realsize[0]` height=`realsize[1]`:><:/spool:>
+<:spool nail:><:img `nailurl` noescape=1 border=0 width=`realsize[0]` height=`realsize[1]`:><:/spool:>
 <:call `naillist.append((nail, img))`:>
 <:/for:>
 <:return `naillist`:>

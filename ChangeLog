@@ -1,5 +1,10 @@
 2002-01-13  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sample_webdocs/demo/gallery/comp/list_thumbnails.dcmp:
+	Use component stack to determine the current path of this
+	component, to determine where thumbnails.py is (if not given to
+	the component)
+
 	* SkunkWeb/sw.conf.in: documented new mysql service configuration
 	variables, and made minor correction to description of
 	sessionHandler.
