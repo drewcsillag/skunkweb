@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/03/11 22:44:28 smulloni>
+# Time-stamp: <03/03/11 22:47:34 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -97,7 +97,7 @@ def _add_usertracking_cookie(conn, sessionDict):
                         continue
                 v=getattr(Configuration, c)
                 if v is not None:
-                morsel[a]=v
+                    morsel[a]=v
 
 
 def WebtrendsCookie(conn):
