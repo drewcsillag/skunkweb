@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.5 2001/08/01 01:43:53 smulloni Exp $
+# $Id: Logger.py,v 1.1.1.1 2001/08/05 15:00:33 drew_csillag Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -91,7 +91,7 @@ def _doMsg(filename, msg, kind=0, prefix=''):
             file.flush()
 
 def DEBUGIT(kind):
-    import sys
+    #import sys
     return not not (config.debugLog and (debugFlags & kind))
     
 def DEBUG(kind, msg):
@@ -133,6 +133,10 @@ def logException():
 
 ########################################################################
 # $Log: Logger.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:33  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.5  2001/08/01 01:43:53  smulloni
 # modified Logger.py so Configuration.debugLog, accessLog, errorLog, and
 # regularLog can be scoped.
