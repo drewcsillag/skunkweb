@@ -1,5 +1,5 @@
-# Time-stamp: <2003-05-02 11:16:48 drew>
-# $Id: Handler.py,v 1.9 2003/05/01 20:45:54 drew_csillag Exp $
+# Time-stamp: <03/08/11 20:33:51 smulloni>
+# $Id: Handler.py,v 1.10 2003/05/02 17:20:29 drew_csillag Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -176,7 +176,6 @@ def fourOhFourHandler(connObj, sessionDict):
         connObj.write(AE.Component.callComponent(
             Configuration.notFoundTemplate, {'CONNECTION': connObj}))
     else:
-        connObj.write(
-"""Sorry the requested document (<tt>%s</tt>) is not available""" % connObj.uri)
+        connObj.write("Sorry the requested document is not available")
     return  connObj.response()
                                                  

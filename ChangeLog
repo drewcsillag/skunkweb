@@ -1,3 +1,9 @@
+2003-08-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/Handler.py (fourOhFourHandler): fix
+	for cross-site scripting vulnerability in default 404 page,
+	reported by Jeroen van Dongen.
+
 2003-08-11    <smulloni@smullyan.org>
 
 	* SkunkWeb/util/cache_reaper.py.in: now a swpython script,
