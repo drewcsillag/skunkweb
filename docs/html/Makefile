@@ -69,7 +69,7 @@ clean:
 	do\
 		rm mod$$i.ind;\
 	done
-	-rm style.css intlabels.pl index.dat
+	-rm intlabels.pl index.dat
 
 distclean realclean clobber: clean
 	rm -rf index.html modindex.html acks.html
