@@ -1,3 +1,8 @@
+2002-02-17  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:args:>}}): forgot 
+	an "\end{verbatim}"; fixed.
+
 2002-02-16  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:args:>}}): added
