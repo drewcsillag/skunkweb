@@ -1,3 +1,7 @@
+2001-12-14  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/PyDO/sapdbconn.py, pylibs/PyDO/sapdbgenscript.py, pylibs/PyDO/PyDBI.py: Added SAP database adaptor from Ulrich Eck
+
 2001-12-12  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/swcgi.py.in: fixed content-length handling problem
