@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.4 2001/09/21 20:16:31 drew_csillag Exp $
+# $Id: protocol.py,v 1.5 2001/10/02 02:35:34 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -303,7 +303,8 @@ def _processRequest(requestData, sessionDict):
     # the connection should be available to postResponse and cleanup hooks.
     sessionDict[constants.CONNECTION]=connection
     DEBUG(WEB, 'returning response: %s' % response)
-    DEBUG(WEB, 'length of response: %d' % len(response))
+    if response!=None:
+        DEBUG(WEB, 'length of response: %d' % len(response))
     return response
 
 
@@ -326,6 +327,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.5  2001/10/02 02:35:34  smulloni
+# support for scoping on unix socket path; very serious scope bug fixed.
+#
 # Revision 1.4  2001/09/21 20:16:31  drew_csillag
 # added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
 #

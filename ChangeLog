@@ -1,7 +1,22 @@
+2002-02-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (_processRequest): added check
+	for None to prevent SW barfing on a debug statement
+
+	* SkunkWeb/Services/templating/Handler.py (requestHandler):
+	optionally log to error log when there is a 404 (vfs error) and
+	raise a 500 for other errors (which weren't supposed to occur, but
+	did)
+
 2002-02-13  Andrew Csillag  <drew@thoughttrack.com>
 
 	* pylibs/AE/Cache.py: fix for getPathAndMinistat which broke pretty 
 	much everything. 
+
+2002-02-10  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/Hooks.py: moved class definitions to a pylib
+	(hooks.py) 
 
 2002-02-08  Andrew Csillag  <drew@localhost.localdomain>
 

@@ -1,4 +1,7 @@
-#  
+# Time-stamp: <02/02/13 21:42:59 smulloni>
+# $Id: Handler.py,v 1.5 2002/01/21 07:05:48 smulloni Exp $
+
+########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      This program is free software; you can redistribute it and/or modify
@@ -15,7 +18,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Handler.py,v 1.4 2001/12/02 20:57:50 smulloni Exp $
+########################################################################
 
 import AE.Cache
 import AE.Component
@@ -43,7 +46,8 @@ Configuration.mergeDefaults(
         "application/x-python"
         ],
     defaultIndexHtml = None,
-    mimeHandlers = {}    
+    mimeHandlers = {},
+    log404s = 1
     )
 
 def _handleException(connObj):
@@ -74,8 +78,13 @@ def requestHandler(connObj, sessionDict):
         DEBUG(TEMPLATING, "statting %s" % uri)
         fixed, fs, st=AE.Cache._getPathFSAndMinistat(uri)
         connObj.statInfo = st
-    except:
+    except vfs.VFSException:
+        if Configuration.log404s:
+            text=AE.Error.logException()
+            ERROR("file not found: %s\n%s" % (uri, text))
         return
+    except:
+        return _handleException(connObj)
     
     # if a directory fix uri as appropriate
     if fs.isdir(fixed):
