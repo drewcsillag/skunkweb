@@ -1,5 +1,9 @@
 2002-12-03    <smulloni@smullbola.smullyan.org>
 
+	* test/sitelibs/formlibtest/testDispatch3.py
+	(PushyFlowManager.next): added state.clear() when returning to the
+	beginning.
+
 	* pylibs/formlib/dispatcher.py: several api changes, mostly
 	involving changes to how state behaves.
 	* pylibs/formlib/state.py: now store the current formname on

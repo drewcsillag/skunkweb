@@ -18,27 +18,7 @@ from containers import FieldContainer
 from formlib.form import _getname
 from formlib import *
 
-def process_munge(form, state, argdict, formdict, ns):
-    """
-    this should take the form  data populate
-    the previous form on the stack with the item
-    indicated in the hidden variable "_mungefield"
-    into the field called "_mungetarget".
-    
-    """
-    fname=state.peek_formname()
-    f=formdict[fname]
-    target=argdict.get('_mungetarget')
-    source=argdict.get('_mungeitem')
-    if target and source:
-        print "target: %s; source: %s" % (target, source)
-        state.state.setdefault(fname, {})
-        state.state[fname][target]=form.fields[source].value
-        
-def process_submit(form, state, argdict, formdict, ns):
-    """
-    """
-    pass
+
 
 stateVar="_state"
 flowactionVar="_flowaction"
@@ -61,6 +41,7 @@ class PushyFlowManager(object):
         if form.name=='confirm':
             if argdict['confirm']=='0':
 ##                print "<h6>returning a goto</h6>"
+                state.clear()
                 return Goto(self.forms[0].name)
 ##            print "<h6>ending it all</h6>"
             return Goto(None)
