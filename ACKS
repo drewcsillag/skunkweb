@@ -15,3 +15,4 @@ Neal Norwitz for making PyChecker
 James Richards (formlib and tests)
 John Derrick (pypgsql driver for PyDO)
 Hy Ginsberg (sapdb changes)
+Frank Tegtmeyer (patch for non-daemon mode)
