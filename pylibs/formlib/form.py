@@ -23,6 +23,9 @@ __all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError', 'CompositeField',
 
 UNDEF=object()
 
+# used to delimit the composed name of CompositeField components
+COMPOSITE_FIELD_DELIMITER="_"
+
 class Field(object):
     def __init__(self,
                  name,
@@ -120,16 +123,17 @@ class CompositeField(Field):
                  multiple=1,
                  setable=1,
                  componentFields=[],
-                 componentFieldDelimiter="_",
+                 componentFieldDelimiter=COMPOSITE_FIELD_DELIMITER,
                  valueComposer=_defaultValueComposer):
         Field.__init__(self, name, description, default, multiple, setable)
+        self.delimiter = componentFieldDelimiter
+
         tmpComponents = []
         for fld in componentFields:
-            prxy = FieldProxy(self.getComponentName(fld.name), fld)
-            tmpComponents.append[prxy]
+            prxy = FieldProxy(self._getComponentName(fld), fld)
+            tmpComponents.append(prxy)
         self._components = FieldContainer(tmpComponents, _getname, storelists=0)
         self.composeValue = valueComposer
-        self.delimiter
         
     def _get_components(self):
         return self._components
