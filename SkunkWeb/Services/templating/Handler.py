@@ -1,5 +1,5 @@
-# Time-stamp: <03/09/07 20:07:14 smulloni>
-# $Id: Handler.py,v 1.11 2003/08/12 00:48:27 smulloni Exp $
+# Time-stamp: <2003-12-29 23:22:28 smulloni>
+# $Id: Handler.py,v 1.12 2003/09/08 00:24:18 smulloni Exp $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -22,7 +22,7 @@ from SkunkWeb.LogObj import ACCESS, ERROR, DEBUG
 from web.protocol import Redirect
 from SkunkWeb.ServiceRegistry import TEMPLATING
 import vfs
-import Date
+from skunk.date.format import HTTPDate
 
 Configuration.mergeDefaults(
     indexDocuments = ['index.html'],
@@ -155,7 +155,7 @@ def plainHandler(connObj, sessionDict):
     if connObj.mimeType in Configuration.hideMimeTypes:
         return # something that shouldn't be uri accessible
 
-    modtime = Date.HTTPDate(connObj.statInfo[2])
+    modtime = HTTPDate(connObj.statInfo[2])
     ims = connObj.requestHeaders.get('If-Modified-Since')
     if ims:
         if ims == modtime:
