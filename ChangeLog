@@ -1,5 +1,8 @@
 2002-01-10  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sample_webdocs/demo/index.html: acknowledged the
+	existence of the gallery demo.
+
 	* pylibs/Date/Date.py: ISO fix.
 
 2002-01-09  Jacob Smullyan  <smulloni@smullyan.org>
