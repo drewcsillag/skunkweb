@@ -1,3 +1,10 @@
+2002-05-10  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/rewrite.py (Status404): added a
+	DynamicRewriter subclass that raises a 404.  If templating
+	is (or is to be, to the extent it is possible to determine)
+	loaded,  it uses templating's 404 handler by default.
+
 2002-05-09  Andrew Csillag  <drew@yahoo.com>
 
 	* docs/html/Makefile: no more dependancy on the long missing devel.bib
