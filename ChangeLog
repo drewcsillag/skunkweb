@@ -1,5 +1,16 @@
 2003-05-02    <drew@loki.sai-office>
 
+	* SkunkWeb/sw.conf.in: added the long unmentioned 
+	mergeQueryStringWithPostData option as well as textCompression
+	and generateEtagHeader.
+
+	* SkunkWeb/Services/templating/Handler.py (plainHandler): added 
+	Last-Modified header and checking
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.response): 
+	added configurable gzip compression of text types and generation
+	of etag headers
+
 	* README: removed license interpretation paragraph copied from -ack-
 	Perl
 

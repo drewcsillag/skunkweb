@@ -1,6 +1,5 @@
 Changes in 3.4 final
 ========================================
-* swpython can now be used in a #! line
 * vfs.LocalFS now follows symlinks by default.
 * new usertracking service.
 * DT.DTLexer now permits colons in the plaintext 
@@ -53,6 +52,10 @@ Changes in 3.4 final
   applications, but it does mean that skunkweb developers can be less 
   concerned about the cost of new Configuration variable lookups in the 
   core.
+* swpython can now be used in a #! line
+* generates and checks Last-Modified headers for static content
+* generates ETag headers (generateEtagHeader option)
+* optionally compress text/* mime bodies (textCompression option)
 
 Changes in 3.4b2
 ========================================
@@ -234,3 +237,4 @@ print foo(3)`:>
 * PyDO classes can now be defined in non-modules
 * Now can have a template that gets executed for directories that don't
   have an index document.
+
