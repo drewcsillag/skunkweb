@@ -1,3 +1,11 @@
+2002-05-06  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/AE/ComponentTag.py (ComponentTag.genCode,
+	DataComponentTag.genCode): __args__ was broken, because references
+	to DictType gave rise to NameErrors.  I believe that the contents
+	of the types module used to be imported into the component
+	namespace, and this is a hangover from that.
+
 2002-05-03  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/web/__init__.py (__initFlag): adding config
