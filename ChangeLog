@@ -1,5 +1,10 @@
 2003-04-07  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:for:>}}): Added
+	documentation for using tuples in the <:for:> tag's "name"
+	parameter (and learned how to type a literal quotation mark in
+	latex-mode!) 
+
 	* pylibs/DT/DTTags.py (ImportTag.genCode): Permit items being
 	imported to be separated by commas as well as spaces: 
 	<:import os "getlogin, getuid":> now works.

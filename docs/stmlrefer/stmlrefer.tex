@@ -873,6 +873,10 @@ The \texttt{<:for:>} tag will execute everything after
 an \texttt{<:else:>} tag if the sequence in \code{expr}
 is empty.
 
+If you know that the items of the sequence will be assignable
+to a tuple, you can put a string representation of a tuple
+in the name parameter, just as in Python.
+
 Examples:
 
 \begin{verbatim}
@@ -888,6 +892,10 @@ current loop value: <:val `foo`:><BR>
 This wouldn't show
 <:else:>
 Loop is empty
+<:/for:>
+
+<:for `d.items()` "(k, v)":>
+ <:val `"%0.2f : %0.2f" % (k/2, v/3)`:>  
 <:/for:>
 \end{verbatim}
 
