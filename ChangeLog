@@ -1,3 +1,13 @@
+2002-08-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/sqliteconn.py (PyDOSqlite.execute): added some
+	debugging. Until the next version of pysqlite is released, this
+	won't work, as the current version returns the wrong value for
+	rowcount.  PySQLite in CVS at least exposes the necessary portion
+	of the C API for me to find the correct value for rowcount after
+	an INSERT/UPDATE, but I have only tested with 2.0, the last
+	release. 
+
 2002-08-07  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/sqliteconn.py,  pylibs/PyDO/PyDBI.py: added sqlite

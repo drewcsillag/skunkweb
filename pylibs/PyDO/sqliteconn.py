@@ -1,5 +1,5 @@
-# Time-stamp: <02/08/06 23:56:25 smulloni>
-# $Id$
+# Time-stamp: <02/08/08 22:48:56 smulloni>
+# $Id: sqliteconn.py,v 1.1 2002/08/07 14:05:46 smulloni Exp $
 #  
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,
 #                     Andrew T. Csillag <drew_csillag@geocities.com>
@@ -26,6 +26,11 @@ import PyDBI
 class PyDOSqlite:
     def __init__(self, connectArgs):
         self.bindVariables = 0
+        if connectArgs.has_key('verbose') and connectArgs['verbose']:
+            self.verbose=1
+            del connectArgs['verbose']
+        else:
+            self.verbose=0
         self.conn=sqlite.connect(**connectArgs)
 
     def getConnection(self):
@@ -48,16 +53,25 @@ class PyDOSqlite:
 
     def execute(self, sql, values, attributes):
         cur=self.conn.cursor()
-        cur.execute(sql, values)
+        if self.verbose:
+            print sql
+            print values
+        cur.execute(sql) #, values)
         result=cur.fetchall()
-        if not result and None==cur.fetchone():
+        if self.verbose:
+            print "result: %s" % (result,)
+        if not result and cur.fetchone() in (None, (), []):
+            if self.verbose:
+                print "returning cur.rowcount"
             return cur.rowcount
-        if attributes is None:
-            return result, [x[0] for x in cur.description]
         fields=[x[0] for x in cur.description]
+        if attributes is None:
+            return result, fields
+        if self.verbose:
+            print attributes
         return self.convertResultRows(fields, attributes, result)
 
-    def convertResultRows(self, columnNames, attributeKinds, rows):
+    def convertResultRows(self, columnNames, attributes, rows):
         newresult=[]
         for row in rows:
             d={}
@@ -67,7 +81,7 @@ class PyDOSqlite:
             newresult.append(d)
         return newresult
 
-    def __convert(attribute, item):
+    def __convert(self, attribute, item):
         # add conversions here TBD
         return item
         
@@ -99,14 +113,38 @@ def test():
     import PyDO
     import PyDBI
 
-    DBIInitAlias('test', {'driver' : 'sqlite', 'db' : '/home/smulloni/testdb'})
+    PyDBI.DBIInitAlias('test', {'driver' : 'sqlite',
+                                'db' : '/home/smulloni/testdb',
+                                'verbose' : 1})
 
     class Contact(PyDO.PyDO):
         connectionAlias='test'
+        table='contact'
         fields=(
             ('id', 'integer'),
             ('firstname', 'text'),
             ('lastname', 'text'),
             ('home_email', 'text'))
+        autoincrement=['id']
+        unique=['id']
 
+    contacts=Contact.getSome()
+    for c in contacts:
+        print c.dict()
+    while 1:
+        answer=raw_input("new contact? [y/N]").lower()
+        if not answer.startswith('y'):
+            return
+        firstname=raw_input('first name: ')
+        lastname=raw_input('last name: ')
+        email=raw_input('email: ')
+        c=Contact.new(refetch=1, firstname=firstname,
+                      lastname=lastname, home_email=email)
+        print c.dict()
+        answer=raw_input("OK? [y/N]").lower()
+        if answer.startswith('y'):
+            c.commit()
+        else:
+            c.rollback()
+    
     
