@@ -50,6 +50,7 @@ def _fix(dict): #fixup the environment variables
             nd["SCRIPT_NAME"] = pb[:-1]
         else:
             nd["SCRIPT_NAME"] = pb
+    nd["PATH_TRANSLATED"] = Configuration.CGIProgram#os.path.split(Configuration.CGIProgram)[0]
     return nd
 
 def _dispenv(env):
@@ -58,7 +59,7 @@ def _dispenv(env):
         if env.has_key(i):
             s.append('%s: %s' % (i,env[i]))
     return '\n'.join(s)
-    
+
 def _processRequest(conn, sessionDict):
     DEBUG(EXTCGI, 'extcgi Processing Request')
     #dict of environ, headers, stdin
@@ -95,8 +96,14 @@ def _processRequest(conn, sessionDict):
             prog = Configuration.CGIProgram
             args = ( (prog,) + (prog,) +
                      Configuration.CGIProgramArgs +(env,))
-            #DEBUG(EXTCGI, 'args is %s' % repr(args))
-            os.execle(*args)
+            DEBUG(EXTCGI, 'args is %s' % repr(args))
+            oldpwd = os.getcwd()
+            try:
+                os.chdir(os.path.split(env["PATH_TRANSLATED"])[0])
+                os.execle(*args)
+
+            finally:
+                os.chdir(oldpwd)
     except:
         if pid == 0: #I'm the kid
             logException()
