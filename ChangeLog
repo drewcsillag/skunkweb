@@ -1,5 +1,8 @@
 2003-07-22  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/util/cache_reaper.py.in: no longer raise exception when
+	an OSError occurs.
+
 	* SkunkWeb/Services/sessionHandler/fssession_clean.sh: session
 	cleaner script made to work nicely with AE Cache sessions.
 

@@ -17,9 +17,6 @@ import stat
 import Config
 from SkunkExcept import *
 
-# The mode of expired files - we are using xbit hack to mark expired items
-_CACHE_EXP_MODE = 0740
-
 conf = Config.Config([
     Config.el('cachedir', 'cache directory', '@CACHE@',
               'c', 'cachedir', 'pathtocache'),
@@ -31,15 +28,6 @@ conf = Config.Config([
     ], 'walk the cache directory and reap dead entries')
     
 def get_expiration(filename):
-
-    # First, stat the file and check mode
-    #
-    # XXX we cannot use it - we still don't have enough meta-data to 
-    # figure out when it was expired
-    #
-    #stat.S_IMODE(os.stat(filename)[stat.ST_MODE]) != _CACHE_EXP_MODE:
-    #    return None
-
     try:
         metaDict = cPickle.load(open(filename))[0]
         return metaDict['exp_time']
@@ -82,7 +70,7 @@ def walk_func((dodel, deadtime), dirname, filelist):
                     try:
                         os.unlink( _f )
                     except OSError, val:
-                        raise SkunkStandardError, 'cannot unlink %s: %s' % \
+                        print >> sys.stderr, 'cannot unlink %s: %s' % \
                               ( _f, val )
 
                     # Get rid of the filename in the list, to prevent os.walk()
