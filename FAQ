@@ -21,7 +21,10 @@ from within a component?
 12) Is it possible to add to a list of file extensions which types of
     top-level documents SkunkWeb can process?
 13) I want to run multiple virtual servers. 
-
+14) in STML, I'd like to loop over the items of a dictionary and assign
+   key and value to separate variables (like "for k, v in d.items()" in 
+   Python).  How?
+    
 
 ----------------------------------------------------------------------
 
@@ -354,3 +357,17 @@ Scope(Host('bar.org',
             componentCacheRoot='/path/to/bar-cache',
             compileCacheRoot='/path/to/bar-cache'))
 
+14) in STML, I'd like to loop over the items of a dictionary and assign
+   key and value to separate variables (like "for k, v in d.items()" in 
+   Python), all in one line.  How?
+
+The "name" argument to the form tag can be the string representation
+of a tuple, so both
+
+  <:for `d.items()` "k, v":>
+
+and
+
+  <:for `d.items() "(k, v)":>
+
+will work.
