@@ -114,7 +114,7 @@ else:
         v = sys.exc_value
         v.filename = args[0]
         raise
-    sys.argv = args[1:]
+    sys.argv = args
     ll = {}
     exec co in ll, ll
     
