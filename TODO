@@ -1,5 +1,5 @@
-#   Time-stamp: <02/01/28 09:12:02 smulloni> 
-#   $Id: TODO,v 1.28 2002/01/21 16:22:16 smulloni Exp $
+#   Time-stamp: <2002-01-30 10:43:58 drew> 
+#   $Id: TODO,v 1.29 2002/01/28 14:13:11 smulloni Exp $
 
 
 * - TODO
@@ -17,7 +17,7 @@ try a test installtion
 Make the release tarball
 try a test installation
 Push release to sourceforge 
-# ncftpput -V upload.sourceforge.net /incoming foo.tar.gz
+# ncftpput -v upload.sourceforge.net /incoming foo.tar.gz
 Do Quick release
     https://sourceforge.net/project/admin/qrs.php?package_id=&group_id=32756
 
@@ -62,6 +62,7 @@ SkunkWeb 3.3
 * sapdb service, package and caching connection from PyDO
 * convert from using Makefile.pre.in to using distutils to build
   and install our C modules
+* make PyDO separate release use distutils also for install
 
 Future stuff
 ------------------------------
