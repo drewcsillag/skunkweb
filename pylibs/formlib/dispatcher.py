@@ -1,5 +1,5 @@
-# Time-stamp: <02/11/25 10:04:02 smulloni>
-# $Id$
+# Time-stamp: <02/11/25 12:59:11 smulloni>
+# $Id: dispatcher.py,v 1.4 2002/11/25 18:13:49 smulloni Exp $
 
 
 class Goto:
@@ -16,7 +16,8 @@ class Goto:
         if form.errors:
             return form
         form.process(argdict, state, ns)
-        return formdict[self.formname]
+        if self.formname:
+            return formdict[self.formname]
 
 class Pop:
     def dispatch(self,
@@ -49,17 +50,7 @@ class Push:
         state.push_form(form)
         return formdict[self.formname]
 
-class End:
-    def dispatch(self,
-                 form,
-                 state,
-                 argdict,
-                 formdict,
-                 ns):
-        form.submit(argdict)
-        if form.errors:
-            return form
-        
+    
 class FormDispatcher:
     def __init__(self,
                  statemgr,
@@ -103,31 +94,6 @@ class FormDispatcher:
             form.fields[self.stateVariable].value=self.statemgr.write()
         return form
     
-##        # if it is a PUSH, push the current form on the stack, retrieve
-##        # the push action's requested form, and return it.
-##        if what_to_do.action == 'PUSH':
-##            if what_to_do.valid:
-##                # request is for the form to be
-##                # valid before a push (not the default)
-##                form.submit(argdict)
-##                if form.errors:
-##                    return form
-##            self.statemgr.push_form(form)
-##            return self.forms[what_to_do.formname]
-##        # if it is a POP or a GOTO, do the submit/process cycle
-##        elif what_to_do.action in('GOTO', 'POP'):
-##            form.submit(argdict)
-##            if form.errors:
-##                return form
-##            form.process(argdict, self.statemgr, ns)
-##            # if a POP,  pop the stack and return what is popped
-##            if what_to_do.action=='POP':
-##                return self.statemgr.pop_form()
-##            else:
-##                # GOTO the requested form
-##                return self.forms[what_to_do.formname]
-
-
 class LinearFlowManager(object):
     def __init__(self, formlist):
         self.formlist=formlist
@@ -139,4 +105,4 @@ class LinearFlowManager(object):
         ind=self.formlist.index(form) + 1
         if ind < len(self.formlist):
             return Goto(self.formlist[ind])
-        return End()
+        return Goto(None) # end

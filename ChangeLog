@@ -1,5 +1,8 @@
 2002-11-25    <smulloni@smullbola.smullyan.org>
 
+	* pylibs/formlib/dispatcher.py (LinearFlowManager.next): removed
+	unnecessary End class, and permit a Goto with a null formname.
+
 	* test/formlib/htdocs/test{1-4}.pyinc: changed value view_attr to
 	default in several places.
 
