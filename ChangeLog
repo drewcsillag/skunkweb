@@ -1,3 +1,8 @@
+2003-05-05    <drew@loki.sai-office>
+
+	* SkunkWeb/Services/templating/MailServices.py: big and better update
+	from Frank Tegtmeyer
+
 2003-05-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyPgSQLcache.py: typo fixes.
