@@ -1,5 +1,5 @@
-# Time-stamp: <01/09/03 19:05:09 smulloni>
-# $Id$
+# Time-stamp: <01/09/03 23:17:47 smulloni>
+# $Id: scope.py,v 1.1 2001/09/03 23:08:32 smulloni Exp $
 ########################################################################
 
 #  
@@ -20,7 +20,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # an object that transforms itself depending on its environment.
-# $Id: scope.py,v 1.1.1.1 2001/08/05 15:00:26 drew_csillag Exp $
+# $Id: scope.py,v 1.1 2001/09/03 23:08:32 smulloni Exp $
 # Time-stamp: <01/05/04 11:01:26 smulloni>
 ########################################################################
 
@@ -71,6 +71,22 @@ class Scopeable(_scope.Scopeable):
 
     def __str__(self):
         return str(self.mash())
+                   
+##    def update(self, dict):
+##        self.__dictList[-1].update(dict)
+
+##    def push(self, dict):
+##        self.__dictList.insert(0, dict)
+
+##    def pop(self):
+##        return self.__dictList.pop()
+
+##    def trim(self):
+##        del self.__dictList[:-1]    
+
+##    def mashSelf(self):
+##        self.__dictList=[self.mash()]                   
+    
 
 
 class ScopeMatcher:

@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.1 2001/09/03 23:08:32 smulloni Exp $ 
- * Time-stamp: <01/09/04 00:04:00 smulloni>
+ * $Id: _scope.c,v 1.2 2001/09/04 04:06:17 smulloni Exp $ 
+ * Time-stamp: <01/09/04 12:41:09 smulloni>
  */
 
 /***********************************************************************
@@ -31,7 +31,7 @@
 
 #include <Python.h>
 
-/*#define MYDEBUG */
+/* #define MYDEBUG  */
 
 #define DICTLIST "_Scopeable__dictList"
 #define CURRENT_SCOPES "_Scopeable__currentScopes"
@@ -137,17 +137,24 @@ static PyObject *Scopeable_mergeDefaults(PyObject *self,
   if (!(self=getSelf(args))) {
     return NULL;
   }
-  
   for (i=1;i<len;i++) {
-    PyObject *dict=PyList_GetItem(args, i);
+    
+    PyObject *dict=PySequence_GetItem(args, i);
     if (!PyDict_Check(dict)) {
       PyErr_SetString(PyExc_TypeError, 
 		      "Scopeable.mergeDefaults: expected a dictionary");
       return NULL;
     }
+#ifdef MYDEBUG
+    PyObject_Print(dict, stdout, 0);
+    puts("");
+#endif
+
+    Py_INCREF(dict);
     _mergeDefaults(self, dict);
+
   }
-  if (PyObject_IsTrue(kwargs)) {
+  if (kwargs && PyObject_IsTrue(kwargs)) {
     _mergeDefaults(self, kwargs);
   }
   Py_INCREF(Py_None);
@@ -366,12 +373,12 @@ static PyObject *Scopeable_pop(PyObject *self, PyObject *args) {
     ndl=PyList_GetSlice(dictList, 0, len-1);
     Py_INCREF(ndl);
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, ndl);
-    Py_DECREF(dictList);
+    /*    Py_DECREF(dictList); */
     _resetMash(self);
     return popped;
   }
   PyErr_SetString(PyExc_IndexError, "pop from empty list");
-  Py_DECREF(dictList);
+  Py_DECREF(dictList); 
   return NULL;
   
 }  
@@ -391,7 +398,7 @@ static PyObject *Scopeable_trim(PyObject *self, PyObject *args) {
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, newList);
     _resetMash(self);
   }
-  Py_DECREF(dictList);
+  /*  Py_DECREF(dictList); */
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -547,6 +554,9 @@ void init_scope() {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.2  2001/09/04 04:06:17  smulloni
+ * removed segfault-producing Py_DECREF
+ *
  * Revision 1.1  2001/09/03 23:08:32  smulloni
  * first draft of c version of scopeable object; raw, leaks like hog, if hogs
  * leak.
