@@ -1,5 +1,15 @@
 2001-08-11  Drew Csillag  <drew@naxos.starmedia.net>
 
+	* docs/stmlrefer/stmlrefer.tex: added doc about the new as
+	parameter to the <:import:> tag
+
+	* pylibs/DT/DTTags.py: added the as optional parameter to
+	the <:import:> tag.
+
+	* pylibs/PostgreSql/__init__.py: now catches the right exception
+	and fixed the way it called the pgdb.connect function to just call
+	it directly instead of using apply()
+
 	* docs/PyDO/PyDO.tex: Added 
 
 2001-08-10  Drew Csillag  <drew@starmedia.net>
