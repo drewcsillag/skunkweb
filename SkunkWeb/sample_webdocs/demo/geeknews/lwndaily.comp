@@ -2,7 +2,7 @@
 <P>
 <A NAME="lwndaily"><B>Headlines from <A HREF="http://lwn.net/daily">Linux Weekly News</A></b></A>
 
-<:datacomp headlines dcomps/lwndaily.pydcmp cache=yes:>
+<:datacomp headlines dcomps/lwndaily.pydcmp:>
 
 <font size=-1>
 <ul>

@@ -3,7 +3,7 @@
 <A NAME="linuxcom"><B>Headlines from <A HREF="http://www.linux.com">Linux.com</A></b></A>
 
 <:try:>
-<:datacomp headlines dcomps/linuxcom.pydcmp cache=yes:>
+<:datacomp headlines dcomps/linuxcom.pydcmp:>
 
 <font size=-1>
 <ul>

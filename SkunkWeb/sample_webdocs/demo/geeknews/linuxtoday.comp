@@ -3,7 +3,7 @@
 <B><A NAME="linuxtoday">Headlines from <A HREF="http://linuxtoday.com">LinuxToday.com</A></A></B>
 <:try:>
     <font size=-1>
-    <:datacomp arts dcomps/lintoday.pydcmp cache=yes:>
+    <:datacomp arts dcomps/lintoday.pydcmp:>
     <:if `not arts`:><BR>No articles from linuxtoday<BR><:/if:>
     <ul>
     <:for `arts[:10]` article:>

@@ -3,7 +3,7 @@
 <A NAME="newsforge"><B>Headlines from <A HREF="http://www.newsforge.com">newsforge.com</A></b></A>
 
 <:try:>
-<:datacomp headlines dcomps/newsforge.pydcmp cache=yes:>
+<:datacomp headlines dcomps/newsforge.pydcmp:>
 
 <font size=-1>
 <ul>

@@ -3,7 +3,7 @@
 <A NAME="freshmeat"><B>Headlines from <A HREF="http://freshmeat.net">Freshmeat</A></B></A><BR>
 <:try:>
     <font size=-1>
-    <:datacomp items dcomps/freshhead.pydcmp cache=yes:>
+    <:datacomp items dcomps/freshhead.pydcmp:>
     <ul>
     <:for `items` item:>
     <li><A HREF="<:val `item.link`:>"><:val `item.title`:></a> <:val `item.desc`:></li>
