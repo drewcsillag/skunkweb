@@ -1,6 +1,11 @@
 Changes in 3.2.2
 ========================================
-* The <:compargs:> tag can now be used in a block
+* The <:compargs:> tag can now be used in an STML block (used to only work
+  at the top level)
+* Works with Python 2.1 again (broke in 3.2.1)
+* new geeknews feed from python.org
+* fixed lwn geeknews feed 
+* added support for DCOracle2
 
 Changes in 3.2.1 
 ========================================
