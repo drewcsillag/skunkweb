@@ -1,3 +1,7 @@
+2001-10-02  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* 3.1beta3 cut
+
 2001-10-01  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/SkunkWeb/KickStart.py (CONFIG_STRING): added new imports into sw.conf
