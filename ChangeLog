@@ -1,3 +1,15 @@
+2003-11-29  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: replace references to AE
+	and AED with SkunkWeb.
+
+	* SkunkWeb/Services/sessionHandler/PostgreSQLSessionStore.py:
+	several changes so it actually works (previous version did not).
+
+	* SkunkWeb/Services/sessionHandler/SQLSessionStore.py
+	(AbstractSQLSessionStore._getPickle): fix for bytea using
+	pypgsql. 
+
 2003-11-24  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/PyDO/PyDO2.py (_metapydo.__new__): looping through

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SQLSessionStore.py,v 1.4 2003/07/18 19:56:18 smulloni Exp $
+# $Id: SQLSessionStore.py,v 1.5 2003/07/19 17:08:16 smulloni Exp $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 
@@ -86,10 +86,14 @@ class AbstractSQLSessionStore(Session.SessionStore):
         raise NotImplementedError
 
     def execSql(self, sql, args=None):
+        DEBUG(SESSIONHANDLER, sql)
         try:
             db=self.getConnection()
             cursor=db.cursor()
-            cursor.execute(sql, args)
+            if args:
+                cursor.execute(sql, args)
+            else:
+                cursor.execute(sql)
             retval=cursor.fetchall()
             cursor.close()
             db.commit()
@@ -139,7 +143,7 @@ class AbstractSQLSessionStore(Session.SessionStore):
         if resultSet and resultSet[0]:
             gherkin, tstamp=resultSet[0]
             self._touched=self.marshalTimeStamp(tstamp)
-            return cPickle.loads(gherkin)
+            return cPickle.loads(str(gherkin))
         else:
             self._touched=int(time.time())
             return {}

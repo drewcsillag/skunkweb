@@ -7,11 +7,11 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.9 2003/03/03 17:34:33 smulloni Exp $
+ *  $Id: mod_skunkweb.c,v 1.10 2003/05/01 20:45:56 drew_csillag Exp $
  *
  *
  * Configuration:
- * SkunkWebSocketAddress - socket address of where AED is listening - is either
+ * SkunkWebSocketAddress - socket address of where SkunkWeb is listening - is either
  *                    host:port or /path_to_unix_socket
  * SkunkWebRetries     - the number of times to try to connect to the daemon
  * SkunkWebErrorDoc    - the page to display when a critical error occurs
@@ -1153,7 +1153,7 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
         {
             /* Retry again */
 	    SK_AP_RERROR1( APLOG_MARK, APLOG_INFO, r,
-			   "SkunkWeb: cannot connect to AED daemon, retrying...");
+			   "SkunkWeb: cannot connect to SkunkWeb daemon, retrying...");
 
             close ( sock );
             sleep ( RETRY_DELAY );
@@ -1166,7 +1166,7 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
         {
             /* Retry also */
             SK_AP_RERROR1 ( APLOG_MARK, APLOG_INFO, r,
-		   "SkunkWeb: didn't get handshake from AED daemon, retrying...");
+		   "SkunkWeb: didn't get handshake from SkunkWeb daemon, retrying...");
 
             close ( sock );
             sleep ( RETRY_DELAY );
@@ -1177,14 +1177,14 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
         /* Connection established! */
         if ( retries < conf->retries )
             SK_AP_RERROR2 ( APLOG_MARK, APLOG_INFO|APLOG_NOERRNO, r,
-                      "SkunkWeb: connection to AED daemon established "
+                      "SkunkWeb: connection to SkunkWeb daemon established "
                       "after %d retries", conf->retries - retries );
         break;
     }
 
     if ( !retries )
         return critical_error ( r, ap_psprintf ( r->pool, 
-               "SkunkWeb: cannot connect to AE daemon at %s",
+               "SkunkWeb: cannot connect to SkunkWeb daemon at %s",
                conf->aedsockaddr) );          
 
     /* Marshall everything and send to the server */
@@ -1257,7 +1257,7 @@ static int do_request ( request_rec* r, const binbuffer *stdin_buf,
     }
 #ifdef DEBUG
     SK_AP_RERROR3 ( APLOG_MARK, LOG_DEBUG|APLOG_NOERRNO, r,
-                    "done talking to AED daemon on socket %s; "
+                    "done talking to SkunkWeb daemon on socket %s; "
                     "got %d bytes and sent them on",
                     conf->aedsockaddr, sent );
 #endif /*DEBUG*/
@@ -1538,10 +1538,10 @@ static int skunkweb_init_handler(apr_pool_t *p, apr_pool_t *plog,
 static command_rec skunkweb_cmds[] = 
 {
     { "SkunkWebSocketAddress", set_skunkweb_addr, NULL, RSRC_CONF, TAKE1,
-      "socket address of where AED lives host:port for TCP sockets or "
+      "socket address of where SkunkWeb lives host:port for TCP sockets or "
       "/path_to_sock for UNIX domain sockets"},
     { "SkunkWebRetries", set_skunkweb_retries, NULL, RSRC_CONF, TAKE1,
-      "the number of times to try to connect to AE daemon before failing" },
+      "the number of times to try to connect to SkunkWeb daemon before failing" },
     { "SkunkWebErrorDoc", set_skunkweb_error_doc, NULL, RSRC_CONF, TAKE1,
       "the html document to display when critical error occurs" },
     { "SkunkWebErrorEmails", set_skunkweb_error_email, NULL, RSRC_CONF, ITERATE,
@@ -1590,10 +1590,10 @@ module skunkweb_module = {
 static const command_rec skunkweb_cmds[] = 
 {
     AP_INIT_TAKE1("SkunkWebSocketAddress", set_skunkweb_addr, NULL, RSRC_CONF,
-		  "socket address of where AED lives host:port for TCP "
+		  "socket address of where SkunkWeb lives host:port for TCP "
 		  "sockets or /path_to_sock for UNIX domain sockets"),
     AP_INIT_TAKE1("SkunkWebRetries", set_skunkweb_retries, NULL, RSRC_CONF,
-		  "the number of times to try to connect to AE daemon before"
+		  "the number of times to try to connect to SkunkWeb daemon before"
 		  " failing"),
     AP_INIT_TAKE1("SkunkWebErrorDoc", set_skunkweb_error_doc, NULL, RSRC_CONF,
 		  "the html document to display when critical error occurs"),
