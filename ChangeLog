@@ -1,5 +1,7 @@
 2003-08-12  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* due to breakage of product service, cutting a 3.4b5 release.
+
 	* pylibs/AE/Cache.py (_fixPath): now applying normpath twice.
 	This prevents the the docroot from being escaped, but also
 	normalizes the entire path (removing extra slashes).  Otherwise,
