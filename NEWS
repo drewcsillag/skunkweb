@@ -1,5 +1,6 @@
 Changes in 3.2.4
 ========================================
+* pydo/mysql now supports connection caching using the mysql service.
 * PyDO documentation updates
 * The userdir service will now function properly when operating with a
   scoped docroot

@@ -1,5 +1,11 @@
 2002-07-05  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* pylibs/PyDO/mysqlconn.py: now allows you to use cacheUser
+	without using a dictionary.
+
+	* docs/PyDO/PyDO.tex (chapter{Operators}): added operators chapter
+	and now in process of bringing this up to date.
+
 	* SkunkWeb/sw.conf.in: fixed typo in HTTPKeepAliveTimeout
 	(previously, the "a" in alive wasn't capitalized as it should've
 	been)
