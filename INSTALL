@@ -7,7 +7,7 @@ systems:
     FreeBSD
     HPUX 11
     MacOS 10.2
-    Windows/Cygwin
+    Windows/Cygwin (sort of)
 
 It should work on any reasonable version of Unix that runs Python 2.1
 or later.
@@ -97,5 +97,5 @@ paper you're shooting for.  Then type:
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL,v 1.11 2002/07/28 02:01:57 drew_csillag Exp $
+$Id: INSTALL,v 1.12 2003/05/02 18:05:17 smulloni Exp $
 

@@ -1,5 +1,5 @@
 #   Time-stamp: <2004-01-03 23:40:06 smulloni> 
-#   $Id: TODO,v 1.49 2003/12/30 03:31:22 smulloni Exp $
+#   $Id: TODO,v 1.50 2004/01/04 04:42:15 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -24,6 +24,9 @@ update Freshmeat
 
 SkunkWeb 3.5
 ------------
+
+(Note -- much of the below is no longer applicable, since the advent
+of the Stoat project.)
 
 3.5 should be the first major refactoring of SkunkWeb since the 3.0
 release.  Previous releases have been incremental; 3.5 should retain a
