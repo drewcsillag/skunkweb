@@ -33,9 +33,15 @@ def armor(nonce, value):
 
 def dearmor(nonce, value):
     try:
+        return dearmor_detail(nonce, value)
+    except:
+        return None
+    
+def dearmor_detail(nonce, value):
+    try:
         value = base64.decodestring(value)
     except: #value string is bogus
-        return None
+        raise "bogus"
     
     salt = value[:4]
     digest = value[-20:]
@@ -43,7 +49,7 @@ def dearmor(nonce, value):
 
     ndigest = sha.sha(salt + value + nonce).digest()
     if ndigest != digest:
-        return None
+        raise "invalidhash"
 
     return value
                    
