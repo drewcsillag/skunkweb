@@ -12,6 +12,7 @@ from SkunkWeb import Configuration
 import os
 import sys
 import getopt
+import stat
 
 def help():
     print "Usage: %s [-n] [-h] [-s path] [-c path] [files]" % sys.argv[0]
@@ -85,6 +86,29 @@ def compile_thing(i):
             try: os.makedirs('%s/%s' % (ndr, rdn))
             except OSError: pass
             open('%s/%s' % (ndr, i), 'w').write('')
+
+    elif ndr: # shadow docroot but non-template file, copy.. blah blah
+        rdn = os.path.dirname(i)
+        #what's the mode
+        print "I is", i
+        srcfilename = '%s/%s' % (Configuration.documentRoot, i)
+        destfilename = '%s/%s' % (ndr, i)
+        mode = os.lstat(srcfilename)[stat.ST_MODE]
+        dirmode = os.stat('%s/%s' % (Configuration.documentRoot, rdn))[stat.ST_MODE]
+        #regular file
+        if stat.S_ISREG(mode): 
+            try: os.makedirs('%s/%s' % (ndr, rdn), dirmode)
+            except OSError: pass
+            open(destfilename, 'w').write(open(srcfilename).read())
+            os.chmod(destfilename, mode)
+        #symlink
+        elif stat.S_ISLNK(mode):
+            try: os.makedirs('%s/%s' % (ndr, rdn), dirmode)
+            except OSError: pass
+            linkdest = os.readlink(srcfilename)
+            print 'dest is', destfilename
+            print 'linkdest is', linkdest
+            os.symlink(linkdest, destfilename)
 
 def func(arg, dirname, fnames):
     rdn = dirname[ldr:]
