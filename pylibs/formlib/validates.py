@@ -472,7 +472,7 @@ COUNTRY_CODES = [
 
 def check_isbn(isbn):
 	isbn=filter(lambda c: c != '-', isbn)
-	if len(isbn)<> 10:
+	if len(isbn)!=10:
 		return
 	weights=range(2, 11)
 	weights.reverse()

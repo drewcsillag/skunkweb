@@ -1,3 +1,11 @@
+2003-08-11  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/vfs/tarfs.py (TarFS.open): removing "<>".
+
+	* pylibs/vfs/zipfs.py (ZipFS.open): removing "<>".
+
+	* pylibs/formlib/validates.py (check_isbn): removing "<>".
+
 2003-08-07  Frank Tegtmeyer  <fte@fte.to>
 
 	* doc/HowToSendMail.tex: new parts (mail basics, usage patterns)

@@ -1,5 +1,5 @@
-# $Id: tarfs.py,v 1.5 2002/02/21 07:20:17 smulloni Exp $
-# Time-stamp: <02/02/20 13:19:43 smulloni>
+# $Id: tarfs.py,v 1.6 2003/05/01 20:46:02 drew_csillag Exp $
+# Time-stamp: <03/08/11 13:12:06 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2002 Andrew Csillag <drew_csillag@yahoo.com>
@@ -61,7 +61,7 @@ class TarFS(FS):
     def open(self, path, mode='r'):
         bslog('getting %s' % path)
         adjusted=pathutil._adjust_user_path(path)
-        if mode<>'r':
+        if mode!='r':
             raise VFSException, "unsupported file open mode"
         if not self.__archive.paths.has_key(adjusted):
             raise VFSException, "no such file or directory: %s" % path

@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/02/20 13:19:17 smulloni>
+# Time-stamp: <03/08/11 13:12:17 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001 Jocob Smullyan <smulloni@smullyan.org>
@@ -44,7 +44,7 @@ class ZipFS(FS):
 
     def open(self, path, mode='r'):
         adjusted=pathutil._adjust_user_path(path)
-        if mode<>'r':
+        if mode!='r':
             raise NotWriteableException, "unsupported file open mode: %s" % mode
         if not self.__archive.paths.has_key(adjusted):
             raise FileNotFoundException, path
@@ -90,6 +90,9 @@ class ZipFS(FS):
 
 ########################################################################
 # $Log$
+# Revision 1.9  2003/08/11 17:15:32  smulloni
+# replacing "<>" with "!=".  (Makes Brian Olsen happy.)
+#
 # Revision 1.8  2003/05/01 20:46:02  drew_csillag
 # Changed license text
 #
