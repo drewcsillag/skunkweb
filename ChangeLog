@@ -1,3 +1,9 @@
+2002-08-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/sqliteconn.py,  pylibs/PyDO/PyDBI.py: added sqlite
+	driver (still incomplete -- checked in largely as a way of
+	getting it from one machine to another).
+
 2002-08-01  Andrew Csillag  <drew@localhost.localdomain>
 
 	* docs/devel/devel.tex: more doc updates, readded the AE appendix

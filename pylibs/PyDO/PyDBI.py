@@ -28,6 +28,7 @@ _driverConfig = {
     'oracle':      ('oracleconn', 'PyDOOracle'),
     'postgresql':  ('postconn',   'PyDOPostgreSQL'),
     'sapdb':       ('sapdbconn',  'PyDOsapdb'),
+    'sqlite':      ('sqliteconn', 'PyDOSqlite'),
     }
 _loadedDrivers = {}
 
