@@ -1,5 +1,5 @@
-# Time-stamp: <02/07/28 23:05:03 smulloni>
-# $Id: pycgi.py,v 1.2 2002/07/25 11:21:02 smulloni Exp $
+# Time-stamp: <02/07/29 12:41:03 smulloni>
+# $Id: pycgi.py,v 1.3 2002/07/29 03:10:19 smulloni Exp $
 
 ########################################################################
 #  
@@ -79,7 +79,7 @@ def _processRequest(conn, sessionDict):
     saved=_swap_streams(conn)
     try:
         try:
-            (directory, file) = os.path.split(env['PATH_TRANSLATED'])
+            (directory, file) = os.path.split(env['SCRIPT_FILENAME'])
             os.chdir(directory)
             DEBUG(PYCGI, "about to execfile %s" % file)
             execfile(file)
@@ -105,13 +105,15 @@ def _fix(dict, uri):
     nd = {}
     for k,v in dict.items():
         nd[str(k)] = str(v)
-    fullpath, extra=Configuration.documentRootFS.split_extra(\
-        AE.Cache._fixPath(Configuration.documentRoot, uri))
+    translated=AE.Cache._fixPath(Configuration.documentRoot, uri)
+    fullpath, extra=Configuration.documentRootFS.split_extra(translated)
     if not fullpath:
-        raise vfs.FileNotFoundException, fullpath
+        raise vfs.FileNotFoundException, translated
     # file exists
-    nd['PATH_INFO']=extra
-    nd['PATH_TRANSLATED']=fullpath
+    if extra:
+        nd['PATH_INFO']='/%s' % extra
+    nd['PATH_TRANSLATED']=translated
+    nd['SCRIPT_FILENAME']=fullpath
     nd['SCRIPT_NAME']=fullpath[len(Configuration.documentRoot):]
     return nd
 

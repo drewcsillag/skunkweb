@@ -1,3 +1,10 @@
+2002-07-29  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/pycgi.py (_processRequest): added slash at
+	beginning of PATH_INFO, if it exists; SCRIPT_FILENAME is the full
+	filename of the actual file, and PATH_TRANSLATED is the same but
+	contains extra path info.
+
 2002-07-29  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/psp.py: added
