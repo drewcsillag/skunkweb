@@ -1,5 +1,5 @@
 #   Time-stamp: <02/01/02 01:36:16 smulloni> 
-#   $Id: TODO,v 1.22 2001/12/21 14:28:06 drew_csillag Exp $
+#   $Id: TODO,v 1.23 2002/01/02 06:39:24 smulloni Exp $
 
 
 * - TODO
@@ -31,18 +31,19 @@ X! configure refinements (js)
 X vfs: path translation for archive files 
 X fix any references to DateTime to mx.DateTime (or handle both)
 X update PyDO docs for sapdb
-! update MySQL driver
-* fix any references to DateTime to mx.DateTime (or handle both)
+? update MySQL driver
 X vfs: make mounts show up in directory listings for MultiFS;
   make archive fses in which archives contain only a fragment of 
   a filesystem still work
+X fix so everything (including PyDO) works with Python 2.2
 
 
 SkunkWeb 3.3
 ------------------------------
-* DAV support built on httpd;
+* DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
-
+* convert from using Makefile.pre.in to using distutils to build
+  and install our C modules
 
 Future stuff
 ------------------------------
