@@ -33,20 +33,27 @@ class Viewable(object):
 class ViewableField(Field, Viewable):
     def __init__(self,
                  name,
+                 description=None,
                  default=None,
                  multiple=0,
                  **view_attrs):
-        Field.__init__(self, name, default, multiple)
+        Field.__init__(self, name, description, default, multiple)
         Viewable.__init__(self, **view_attrs)
 
 class ViewableDomainField(DomainField, Viewable):
     def __init__(self,
                  name,
                  domain,
+                 description=None,
                  default=None,
                  multiple=0,
                  **view_attrs):
-        DomainField.__init__(self, name, domain, default, multiple)
+        DomainField.__init__(self,
+                             name,
+                             domain,
+                             description,
+                             default,
+                             multiple)
         Viewable.__init__(self, **view_attrs)
 
 class InputField(ViewableField):
@@ -54,10 +61,12 @@ class InputField(ViewableField):
 
     def __init__(self,
                  name,
+                 description=None,
                  default=None,
                  **view_attrs):
         ViewableField.__init__(self,
                                name,
+                               description,
                                default,
                                multiple=0,
                                **view_attrs)
@@ -95,18 +104,34 @@ class HiddenField(InputField):
 
 class SubmitField(InputField):
     type="submit"
+    def __init__(self,
+                 name=None,
+                 description=None,
+                 default=None,
+                 **view_attrs):
+        InputField.__init__(self,
+                            name,
+                            description,
+                            default,
+                            **view_attrs)
 
 class ImageField(InputField):
     type="image"
 
 class ButtonField(ViewableField):
     def __init__(self,
-                 name,
                  content,
+                 name=None,
+                 description=None,
                  default=None,
                  multiple=0,
                  **view_attrs):
-        ViewableField.__init__(self, name, default, multiple, **view_attrs)
+        ViewableField.__init__(self,
+                               name,
+                               description,
+                               default,
+                               multiple,
+                               **view_attrs)
         self.content=content
         
     def getView(self):
@@ -142,6 +167,7 @@ class SelectField(ViewableDomainField):
     def __init__(self,
                  name,
                  options,
+                 description=None,
                  default=None,
                  multiple=0,
                  group_levels=1,
@@ -306,6 +332,7 @@ class ButtonGroupField(ViewableDomainField):
     def __init__(self,
                  name,
                  options,
+                 description=None,
                  default=None,
                  multiple=0,
                  **view_attrs):
@@ -313,6 +340,7 @@ class ButtonGroupField(ViewableDomainField):
         ViewableDomainField.__init__(self,
                                      name,
                                      domain,
+                                     description,
                                      default,
                                      multiple,
                                      **view_attrs)
@@ -401,30 +429,51 @@ class ButtonOption(Viewable):
 class ViewableForm(Viewable, Form):
     def __init__(self,
                  name=None,
-                 method='POST',
-                 action="",
+                 method=None,
+                 action=None,
+                 enctype=None,
                  fields=None,
                  validators=None,
                  **view_attrs):
-        Form.__init__(self, name, method, action, fields, validators)
+        Form.__init__(self, name, method, action, enctype, fields, validators)
         Viewable.__init__(self, **view_attrs)
 
     def getView(self):
         errors=self.submitted and self.validate() or {}
-        elem=ecs.Form(attributes={'method' : self.method, 'action' : self.action})
+        elem=ecs.Form()
+        if self.method:
+            elem.setAttribute('method', self.method)
+        if self.enctype:
+            elem.setAttribute('enctype', self.enctype)
+        if self.action:
+            elem.setAttribute('action', self.action)
         elem.attributes.update(self.view_attrs)
         table=ecs.Table()
+        table.addElement('\n')
         top_level_error=errors.get(self)
         if top_level_error:
             em=ecs.Em(top_level_error).setAttribute('class', 'form_error')
-            table.addElement(ecs.Tr().addElement(ecs.Td(em)))
+            tr=ecs.Tr().addElement(ecs.Td(em).setAttribute('colspan', '2'))
+            table.addElement(tr)
+            table.addElement('\n')
         for f in self.fields:
             msg=errors.get(f)
             if msg:
                 em=ecs.Em(msg).setAttribute('class', 'form_error')
-                table.addElement(ecs.Tr().addElement(ecs.Td(em)))
-            table.addElement(ecs.Tr().addElement(ecs.Td().addElement(f.getView())))
+                td=ecs.Td(em).setAttribute('colspan', '2')
+                table.addElement(ecs.Tr().addElement(td))
+            tr=ecs.Tr()
+            if f.description:
+                tr.addElement(ecs.Td().addElement(f.description))
+                tr.addElement(ecs.Td().addElement(f.getView()))
+            else:
+                td=ecs.Td().addElement(f.getView()).setAttribute('colspan', '2')
+                tr.addElement(td)
+            table.addElement(tr)
+            table.addElement('\n')
+        elem.addElement('\n')
         elem.addElement(table)
+        elem.addElement('\n')
         return elem
         
         

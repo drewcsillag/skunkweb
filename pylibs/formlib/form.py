@@ -25,9 +25,11 @@ UNDEF=object()
 class Field(object):
     def __init__(self,
                  name,
+                 description,
                  default=None,
                  multiple=0):
         self.name=name
+        self.description=description
         self.__multiple=multiple
         if default==None:
             self.clearDefault()
@@ -83,9 +85,14 @@ class DomainField(Field):
     the possible values of the field consist
     of an enumeration or menu. 
     """
-    def __init__(self, name, domain, default=None, multiple=0):
+    def __init__(self,
+                 name,
+                 domain,
+                 description,
+                 default=None,
+                 multiple=0):
         self.__domain=domain
-        Field.__init__(self, name, default, multiple)
+        Field.__init__(self, name, description, default, multiple)
         
     def _get_domain(self):
         return self.__domain
@@ -126,11 +133,13 @@ class Form(object):
                  name=None,
                  method='POST',
                  action="",
+                 enctype=None,
                  fields=None,
                  validators=None):
         self.name=name
         self.method=method
         self.action=action
+        self.enctype=enctype
         self.fields=FieldContainer(fields or [],
                                    fieldmapper=lambda x: x.name,
                                    storelists=0)

@@ -1,14 +1,19 @@
 from argextract import extract_args
 
-class Action(object):
-    def __init__(self,
-                 action=None,
-                 *target):
-        """action/target can be one of ('GOTO', formname), ('PUSH', formname)
-        or ('POP', dontcare)
-        """
-        self.action = action
-        self.target = target 
+class Action(object): pass
+
+class Goto(Action):
+    action='GOTO'
+    def __init__(self, formname):
+        self.formname=formname
+
+class Pop(Action):
+    action='POP'
+    
+class Push(Action):
+    action='PUSH'
+    def __init__(self, formname):
+        self.formname=formname
 
 class FormSet:
     def __init__(self, forms, initformname, statemgr, formFlow = None):
@@ -110,43 +115,7 @@ class FormSet:
         pass
 
 
-class Form:
-    def __init__(self, name, fields):
-        """as far as the formset is concerned, fields is a sequence of
-        things that have a 'name' attribute that is the unqualified field
-        name"""
-        self.fields = fields
-        self.name = name
 
-    def argMunge(self, cgiargdict, state):
-        pass
-
-    def fillDefaults(self, cgiargdict, state):
-        pass
-
-    def validate(self, cgiargdict, state):
-        """
-        does whatever validation you want
-        returns None if all is ok, otherwise a list of invalid fields
-        """
-    def submit(self, cgiargdict, state):
-        """returning a true value signifies a (likely) persistence error
-        as argument validation should be complete before you get here
-
-        if the return value is true, this value will be passed to errorview
-        """
-        pass
-
-    def view(self, state, ns):
-        """show the form"""
-        pass
-
-    def next(self, cgiargdict, state):
-        """return the next action, if you're not using the formFlow"""
-        
-    def errorview(self, cgiargdict, state, ret, ns):
-        """when submit fails, this is used to handle/display the error to
-        the user"""
     
 class AutoForm:
     def __init__(self, name, fields):

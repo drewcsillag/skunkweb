@@ -1,5 +1,9 @@
 2002-11-18    <smulloni@smullbola.smullyan.org>
 
+	* test/formlib/htdocs/: created first *very* simple test.
+
+	* pylibs/formlib/views.py (ViewableForm.getView): show descriptions.
+
 	* pylibs/containers/fieldcontainer.py (FieldContainer.__setitem__): fixed
 	typo.
 
@@ -7,7 +11,8 @@
 	sets will be part of Python 2.3).
 
 	* pylibs/formlib/views.py, pylibs/formlib/form.py: now reached a point
-	where it is possible to test it with simple forms.
+	where it is possible to test it with simple forms.  Added description field
+	to all fields.
 
 2002-11-14    <smulloni@smullbola.smullyan.org>
 

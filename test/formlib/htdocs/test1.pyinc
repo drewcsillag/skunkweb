@@ -1,0 +1,24 @@
+from formlib import *
+import time
+
+form=ViewableForm(name="test1",
+                  method="POST",
+                  fields=[TextField('username',
+                                    description='Your username',
+                                    default="enter username here",
+                                    length='30'),
+                          PasswordField('password',
+                                        description='Your Password',
+                                        length="30"),
+                          HiddenField('date', value=str(time.time())),
+                          TextAreaField('comments',
+                                        description="Comments",
+                                        default="this is some text.",
+                                        rows="10",
+                                        cols="60"),
+                          SubmitField(None, value="Submit")])
+if CONNECTION.method=='POST':
+    form.setData(CONNECTION.args)
+    form.submitted=1
+print
+print form.getView()
