@@ -1,3 +1,7 @@
+2003-02-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/argextract.py (extract_args): fix for default values.
+
 2003-02-11    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/vfs/importer.py (VFSOwner.getmod): Package imports were

@@ -52,7 +52,7 @@ def extract_args(argsrc, *args, **kwargs):
             else:
                 default=None
         else:
-            default=None
+            default=v
             converter=None
         val=argsrc.get(k, default)
         if val != default and converter != None:

@@ -1,6 +1,6 @@
 # author: Gordon McMillan; used and distributed with the author's permission.
 # see http://www.mcmillan-inc.com/ for more information.
-# Time-stamp: <02/02/20 15:02:55 smulloni>
+# Time-stamp: <03/02/09 22:18:11 smulloni>
 
 import sys
 import imp
@@ -226,9 +226,21 @@ class ImportManager:
             RegistryImportDirector(),
             PathImportDirector()
         ]
+        self.threaded = 0
+        self.rlock = None
+        self.locker = None
+        self.setThreaded()
+    def setThreaded(self):
+        thread = sys.modules.get('thread', None)
+        if thread and not self.threaded:
+##            print "iu setting threaded"
+            self.threaded = 1
+            self.rlock = thread.allocate_lock()
+            self._get_ident = thread.get_ident
     def install(self):
         import __builtin__
         __builtin__.__import__ = self.importHook
+        __builtin__.reload = self.reloadHook
     def importHook(self, name, globals=None, locals=None, fromlist=None):
         # first see if we could be importing a relative name
         #print "importHook(%s, %s, locals, %s)" % (name, globals['__name__'], fromlist)
@@ -248,6 +260,7 @@ class ImportManager:
         # a.b.c -> [a, b, c]
         nmparts = namesplit(name)
         _self_doimport = self.doimport
+        threaded = self.threaded
         for context in contexts:
             ctx = context
             for i in range(len(nmparts)):
@@ -257,9 +270,18 @@ class ImportManager:
                     fqname = ctx + '.' + nm
                 else:
                     fqname = nm
+                if threaded:
+                    self._acquire()
                 mod = _sys_modules_get(fqname, UNTRIED)
                 if mod is UNTRIED:
-                    mod = _self_doimport(nm, ctx, fqname)
+                    try:
+                        mod = _self_doimport(nm, ctx, fqname)
+                    except:
+                        if threaded:
+                            self._release()
+                        raise
+                if threaded:
+                    self._release()
                 if mod:
                     ctx = fqname
                 else:
@@ -294,9 +316,14 @@ class ImportManager:
                     nm = fromlist[i]
                 i = i + 1
                 if not hasattr(bottommod, nm):
-                    mod = self.doimport(nm, ctx, ctx+'.'+nm)
-                    if not mod:
-                        raise ImportError, "%s not found in %s" % (nm, ctx)
+                    if threaded:
+                        self._acquire()
+                    try:
+                        mod = self.doimport(nm, ctx, ctx+'.'+nm)
+                    except:
+                        pass
+                    if threaded:
+                        self._release()
         #print "importHook done with %s %s %s (case 3)" % (name, globals['__name__'], fromlist)
         return bottommod
     def doimport(self, nm, parentnm, fqname):
@@ -328,10 +355,38 @@ class ImportManager:
                 co = mod.__co__
                 del mod.__co__
                 exec co in mod.__dict__
+            if fqname == 'thread' and not self.threaded:
+##                print "thread detected!"
+                self.setThreaded()
         else:
             sys.modules[fqname] = None
         #print "..found %s" % mod
         return mod
+    def reloadHook(self, mod):
+        fqnm = mod.__name__
+        nm = namesplit(fqnm)[-1]
+        parentnm = packagename(fqnm)
+        newmod = self.doimport(nm, parentnm, fqnm)
+        mod.__dict__.update(newmod.__dict__)
+##        return newmod
+    def _acquire(self):
+        if self.rlock.locked():
+            if self.locker == self._get_ident():
+                self.lockcount = self.lockcount + 1
+##                print "_acquire incrementing lockcount to", self.lockcount
+                return
+        self.rlock.acquire()
+        self.locker = self._get_ident()
+        self.lockcount = 0
+##        print "_acquire first time!"
+    def _release(self):
+        if self.lockcount:
+            self.lockcount = self.lockcount - 1
+##            print "_release decrementing lockcount to", self.lockcount
+        else:
+            self.rlock.release()
+	    self.locker = None
+##            print "_release releasing lock!"
 
 #=========some helper functions=============================#
 
@@ -375,14 +430,18 @@ def _os_bootstrap():
     names = sys.builtin_module_names
 
     join = dirname = None
+    mindirlen = 0
     if 'posix' in names:
         sep = '/'
+        mindirlen = 1
         from posix import stat, getcwd
     elif 'nt' in names:
         sep = '\\'
+        mindirlen = 3
         from nt import stat, getcwd
     elif 'dos' in names:
         sep = '\\'
+        mindirlen = 3
         from dos import stat, getcwd
     elif 'os2' in names:
         sep = '\\'
@@ -411,10 +470,12 @@ def _os_bootstrap():
             return a + sep + b
 
     if dirname is None:
-        def dirname(a, sep=sep):
+        def dirname(a, sep=sep, mindirlen=mindirlen):
             for i in range(len(a)-1, -1, -1):
                 c = a[i]
                 if c == '/' or c == sep:
+                    if i < mindirlen:
+                        return a[:i+1]
                     return a[:i]
             return ''
     
