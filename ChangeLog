@@ -1,5 +1,20 @@
 2001-08-27  Drew Csillag  <drew@naxos.starmedia.net>
 
+	* SkunkWeb/Services/web/protocol.py: now uses skunklib.normheader
+	for speed
+
+	* SkunkWeb/Services/httpd/protocol.py: now uses
+	skunklib.normheader for speed
+	
+	* pylibs/AE/Cache.py: now uses skunklib.normpath for speed
+
+	* pylibs/skunklib/_normpath.c,_normheader.c,__init__.py: added
+	modules to speed up header casification and path normalization
+
+	* pylibs/AE/Cache.py,Component.py: commented out a bunch
+	of debug statements since the appear to chew up a lot of
+	cycles
+
 	* SkunkWeb/Services/ae_component: performance tweaks
 
 	* SkunkWeb/SkunkWeb/Hooks.py(KeyedHook.__call__): Only
