@@ -5,7 +5,10 @@
 	have more demos soon... hint... hint...
 
 	* pylibs/AE/Component.py: made so you can tell whether the component
-	call a) was rendered or fetched from cache, or b) was expired
+	call a) was rendered or fetched from cache, or b) was expired by
+	adding fullCallComponent.  callComponent now just calls 
+	fullCallComponent and returns the text, not the flags.
+	
 
 2001-08-09  Jacob Smullyan  <smulloni@smullyan.org>
 
