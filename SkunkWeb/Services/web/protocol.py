@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.11 2002/05/02 16:29:07 drew_csillag Exp $
+# $Id: protocol.py,v 1.12 2002/05/03 15:53:10 smulloni Exp $
 # Time-stamp: <01/05/04 15:57:35 smulloni>
 ########################################################################
 
@@ -79,15 +79,23 @@ class HTTPConnection:
     def _initArgs(self, requestData):
         stdin = cStringIO.StringIO(requestData['stdin'])
         env = requestData['environ']
-        query = cgi.FieldStorage(fp = stdin, environ = env,
-                                 keep_blank_values = 1)
-        self.args=self._convertArgs(query)
+        try:
+            query = cgi.FieldStorage(fp = stdin, environ = env,
+                                     keep_blank_values = 1)
+            self.args=self._convertArgs(query)
+            ok=1
+        except:
+            # may be some exotic content-type
+            logException()
+            DEBUG(WEB, "content-type: %s" % self.requestHeaders.get("content-type"))
+            self.args={}
+            ok=0
 
-        if Configuration.mergeQueryStringWithPostData and \
+        if ok and Configuration.mergeQueryStringWithPostData and \
                env.get("REQUEST_METHOD")=='POST':
             #if POST, see if any GET args too
             environ = env.copy()
-            environ["REQUEST_METHOD"] = 'GET'
+            environ["REQUEST_METHOD"] = 'GET'            
             query = cgi.FieldStorage(fp = stdin, environ = environ,
                                      keep_blank_values = 1)
             self.args.update(self._convertArgs(query))
@@ -391,6 +399,9 @@ def _cleanupConfig(requestData, sessionDict):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.12  2002/05/03 15:53:10  smulloni
+# fix to deal with cgi.py's little problems; made the merging of querystring into post data optional.
+#
 # Revision 1.11  2002/05/02 16:29:07  drew_csillag
 # made it so that:
 #
