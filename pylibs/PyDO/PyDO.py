@@ -283,6 +283,21 @@ class PyDO(PyDOBase):
         if results:
             return self(results[0]) 
 
+    
+    def static__orderByString(self, order_by):
+        
+        order_list = []
+        
+        for item in order_by:
+            if type(item) == types.StringType:
+                order_list.append(item)
+            else:
+                order_list.append(string.join(item, ' '))
+                    
+        sql = ' ORDER BY %s' % string.join(order_list, ', ')
+        
+        return sql
+    
     def static_getSomeSQL(self, **kw):
         """given the attribute/value pairs in kw, return
         sql statement, values to be used in a call to conn.execute.
@@ -303,7 +318,10 @@ class PyDO(PyDOBase):
                 notFlag = '!'
                 v = v.val
             if k == 'order':
-                order.extend(v)
+                if type(v) == types.StringType:
+                    order.append(v)
+                else:
+                    order.extend(v)
                 continue
             elif k == 'limit':
                 limit = v
@@ -326,13 +344,14 @@ class PyDO(PyDOBase):
             sql = sql[:-7]
             
         if len(order):
-            sql = sql + ' ORDER BY %s' % string.join(order, ', ')
-        
+            sql += self._orderByString(order)
+                
         if limit:
             sql = sql + ' LIMIT %d' % limit
             
         if offset:
-            sql = sql + ' OFFSET %d' % offset            
+            sql = sql + ' OFFSET %d' % offset
+            
         
         return sql, values
     
@@ -367,17 +386,21 @@ class PyDO(PyDOBase):
             daOp=None
         sql=(daOp and daOp.asSQL()) or ''
         
-        order=()
+        order=[]
         limit=0
         offset=0
+        desc=0
+
         if kw.get('order'):
-            order = kw['order']
+            if type(kw['order']) == types.StringType:
+                order.append(kw['order'])
+            else:
+                order.extend(kw['order'])
         if kw.get('limit'):
             limit = kw['limit']
         if kw.get('offset'):
             offset = kw['offset']
-            
-        
+
         return self.getSQLWhere(sql, order=order, limit=limit, offset=offset)
 
     def static_getTupleWhere(self, opTuple, order=(), limit=0, offset=0, **kw):
@@ -389,7 +412,15 @@ class PyDO(PyDOBase):
             opTuple=tuple(_and)
         sql=opTuple and operators.tupleToSQL(opTuple) or ''
         
-        return self.getSQLWhere(sql, order=order, limit=limit, offset=offset)
+        order_list=[]
+
+        if order:
+            if type(order) == types.StringType:
+                order_list.append(order)
+            else:
+                order_list.extend(order)
+       
+        return self.getSQLWhere(sql, order=order_list, limit=limit, offset=offset)
 
     def static_getSQLWhere(self, sql, values=(), order=(), limit=0, offset=0):
         base=self._baseSelect()
@@ -399,7 +430,8 @@ class PyDO(PyDOBase):
             sql=base
 
         if len(order):
-            sql += ' ORDER BY ' + string.join(order, ', ')
+            sql += self._orderByString(order)
+            
         if limit:
             sql += ' LIMIT %d' % limit
         if offset:

@@ -11,7 +11,7 @@
 
 from PyDBI import *
 import operators
-import types
+import types, string
 
 class _fieldproperty(object):
     def __init__(self, fieldname):
@@ -29,8 +29,7 @@ class _metapydo(type):
     def __new__(self, cl_name, bases, namespace):
         prefix_descriptor_pairs=(('static_', staticmethod),
                                  ('class_', classmethod))
-	ns = namespace.items()
-        for k, v in ns:
+        for k, v in namespace.iteritems():
             for prefix, descriptor in prefix_descriptor_pairs:
                 lenpre=len(prefix)
                 if k.startswith(prefix):
@@ -389,6 +388,21 @@ class PyDO(_pydobase):
             raise PyDOError, 'got more than one row on unique query!'
         if results:
             return klass(results[0]) 
+            
+            
+    def class__orderByString(self, order_by):
+        
+        order_list = []
+        
+        for item in order_by:
+            if type(item) == types.StringType:
+                order_list.append(item)
+            else:
+                order_list.append(string.join(item, ' '))
+                    
+        sql = ' ORDER BY %s' % string.join(order_list, ', ')
+        
+        return sql
     
     def class_getSomeSQL(klass, **kw):
         """ Prepare the SQL required to retrieve some objects by keyword.
@@ -409,7 +423,10 @@ class PyDO(_pydobase):
         key_count = 0
         for k, v in kw.items():
             if k == 'order':
-                order.extend(v)
+                if type(v) == types.StringType:
+                    order.append(v)
+                else:
+                    order.extend(v)
                 continue
             elif k == 'limit':
                 limit = v
@@ -431,14 +448,14 @@ class PyDO(_pydobase):
             sql = sql[:-7]
                 
         if len(order):
-            sql = sql + ' ORDER BY %s' % ', '.join(order)
+            sql += klass._orderByString(order)
         
         if limit:
             sql = sql + ' LIMIT %d' % limit
             
         if offset:
             sql = sql + ' OFFSET %d' % offset 
-        
+            
         return sql, values
     
     def class_getSome(klass, **kw):
@@ -486,11 +503,14 @@ class PyDO(_pydobase):
             daOp=None
         sql=(daOp and daOp.asSQL()) or ''
         
-        order=()
+        order=[]
         limit=0
         offset=0
         if kw.get('order'):
-            order = kw['order']
+            if type(kw['order']) == types.StringType:
+                order.append(kw['order'])
+            else:
+                order.extend(kw['order'])
         if kw.get('limit'):
             limit = kw['limit']
         if kw.get('offset'):
@@ -523,7 +543,16 @@ class PyDO(_pydobase):
                 _and.append(('=', FIELD(k), v))
             opTuple=tuple(_and)
         sql=opTuple and operators.tupleToSQL(opTuple) or ''
-        return klass.getSQLWhere(sql, order=order, limit=limit, offset=offset)
+        
+        order_list=[]
+
+        if order:
+            if type(order) == types.StringType:
+                order_list.append(order)
+            else:
+                order_list.extend(order)        
+        
+        return klass.getSQLWhere(sql, order=order_list, limit=limit, offset=offset)
     
     def class_getSQLWhere(klass, sql, values=(), order=(), limit=0, offset=0):
         """ Retrieve objects with custom 'where' clause.
@@ -539,7 +568,7 @@ class PyDO(_pydobase):
             sql=base
 
         if len(order):
-            sql += ' ORDER BY ' + ', '.join(order)
+            sql += klass._orderByString(order)
         if limit:
             sql += ' LIMIT %d' % limit
         if offset:
