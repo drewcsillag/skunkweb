@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: remote_client.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
+# $Id: remote_client.py,v 1.2 2001/10/30 15:02:17 drew_csillag Exp $
 # Time-stamp: <01/05/09 14:36:02 smulloni>
 ########################################################################
 
@@ -86,13 +86,18 @@ class SkunkWebRemoteComponentHandler(AE.Component.ComponentHandler):
             length=int(SocketScience.read_this_many(sock, 10))
             data=SocketScience.read_this_many(sock, length)
             unPickled=cPickle.loads(data)
-            if (type(unPickled)==types.TupleType
-            and len(unPickled)==3
-                and type(unPickled[0])==types.ClassType
-                and issubclass(unPickled[0], exceptions.Exception)
-                and isinstance(unPickled[1], exceptions.Exception)):       
-                raise getRemoteException(unPickled[1])
-        return unPickled, 1, 1
+            DEBUG(REMOTE_CLIENT, 'unp was %s' % str(unPickled))
+            if unPickled[0] == 0: #ok
+                return unPickled[1]
+            else:
+                raise getRemoteException(unPickled[2])
+            #if (type(unPickled)==types.TupleType
+            #and len(unPickled)==3
+            #    and type(unPickled[0])==types.ClassType
+            #    and issubclass(unPickled[0], exceptions.Exception)
+            #    and isinstance(unPickled[1], exceptions.Exception)):       
+            #    raise getRemoteException(unPickled[1])
+        #return unPickled, 1, 1
 
     def __parseComponentName(self, name):
         """
@@ -127,6 +132,9 @@ AE.Component.componentHandlers[SWRC_PROTOCOL]=SkunkWebRemoteComponentHandler()
 
 ########################################################################
 # $Log: remote_client.py,v $
+# Revision 1.2  2001/10/30 15:02:17  drew_csillag
+# fixed bug so remote components work again
+#
 # Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
 # take 2 of import
 #
