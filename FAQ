@@ -154,7 +154,29 @@ Can you add a SkunkWeb-PHP comparison to your FAQ?
    supports two (Python and STML) and could support more (an ASP-style
    templating language comes to mind).
  
-5) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
+5)Dave Swegen wrote:
+> If this is the case, is there any way of allowing such files to be
+> passed straight through, without compiling them?
+
+That sounds like that's what is happening.  The solution is a scoping
+directive in sw.conf:
+
+Scope(Location("/nointerp.html", interpretMimeTypes=[]))
+
+Where /nointerp.html is a document (or a directory name, whatever) you
+don't want interpreted.  You could do this for an entire tree if you
+wanted also.
+
+6)On Fri, Oct 12, 2001 at 10:33:42AM +0100, Dave Swegen wrote:
+> Is there any way for a pydcmp to get hold of the value of docroot? At
+> the moment I'm having to hardcode the value in, which is somewhat ugly.
+
+I've not actually run this, so I'm not positive it works, but it should:
+
+from SkunkWeb import Configuration
+print Configuration.documentRoot # or whatever you want to do here.
+
+7) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
 server or virtual host? SkunkWebExclude doesn't work!
 
 If you set the skunkweb-handler for the root directory / and want
