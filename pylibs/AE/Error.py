@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Error.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
+#$Id: Error.py,v 1.2 2002/06/24 21:49:46 drew_csillag Exp $
 import cStringIO
 
 import ErrorHandler
@@ -29,7 +29,7 @@ def logException():
     ErrorHandler.logError(out)
     
     errorTags = [frame.executable.dt._error_tag
-                 for frame in Component.componentStack[:Component.topOfComponentStack]
+                 for frame in Component.componentStack#[:Component.topOfComponentStack]
                  if isinstance(frame.executable, Executables.STMLExecutable)
                  if hasattr(frame.executable.dt, '_error_tag')]
     if errorTags:
@@ -43,6 +43,15 @@ def logException():
 
     x = out.getvalue()
     Logs.ERROR(x)
+    #return testexc()
     return x
 
-            
+def testexc():
+    out = cStringIO.StringIO()
+    print >> out, "top of stack is", Component.topOfComponentStack
+    for i in zip(range(len(Component.componentStack)), Component.componentStack):
+        print >> out, '%d: %s' % i
+        if (isinstance(i[1].executable, Executables.STMLExecutable) 
+            and hasattr(i[1].executable.dt, '_error_tag')):
+            print >> out, 'tag: ', i[1].executable.dt._error_tag
+    return out.getvalue()
