@@ -1,3 +1,9 @@
+2003-11-17  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* SkunkWeb/Services/product/loader.py (Product.__reallyload): when
+	using Python 2.3 or better, using zipimport if the product is a 
+	zip file.
+
 2003-10-20 Brian Olsen <brian@qinternet.com>
 
 	* pylibs/PyDO/PyDO.py: Added "order", "limit", and "offset"
