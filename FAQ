@@ -92,14 +92,14 @@ directory, that goes into a bit more detail.
 Again, the SkunkWebIPC10.tex file in the docs directory goes into this
 stuff in greater detail.
 
-Paul Rubin <phr-n2001@nightsong.com> Asks:
+3) Paul Rubin <phr-n2001@nightsong.com> Asks:
 How does it compare to Mason?
 
 Mason and SkunkWeb compare rather well with each other, as they do tend 
 to attack the web serving problem in similar ways
 
  * Mason and SkunkWeb have a similar approach to their templating languages,
-   but I don't think you can reasonably extent Mason's whereby SkunkWeb's
+   but I don't think you can reasonably extend Mason's whereby SkunkWeb's
    templating language was designed to be extendable.
 
  * Mason and SkunkWeb both have HTML and data components.
