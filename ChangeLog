@@ -1,5 +1,7 @@
 2002-06-07  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
+	* INSTALL: fixed error about building paper docs
+
 	* All of this sections changes are for the fact that you previously
 	couldn't put a <:compargs:> tag (or any tag that fiddled with 
 	meta-info about the template) in a block tag.
