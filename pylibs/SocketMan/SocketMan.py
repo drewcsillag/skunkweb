@@ -114,6 +114,19 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
         ProcessMgr.ProcessMgr.ProcessMgr.reload(self)
         self._reset()
 
+    def retrying_bind(self, sock, addr, retries):
+        retrycount = retries # mayhap it's not quite dead, so retry a few times
+        while retrycount:
+            try:
+                sock.bind(addr)
+            except:
+                retrycount = retrycount - 1
+                if retrycount == 0:
+                    raise
+                time.sleep(1)
+            else:
+                break
+        
     def addConnection(self, addrspec, handler_func):
         if addrspec[0] == 'TCP':
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -121,7 +134,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
             s.setsockopt (socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             # Make sure the socket will be closed on exec
             fcntl.fcntl (s.fileno(), FCNTL.F_SETFD, 1)
-            s.bind(addrspec[1:])
+            self.retrying_bind(s, addrspec[1:], 5)
             s.listen(5)
         elif addrspec[0] == 'UNIX':
             try:
@@ -145,17 +158,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
             s.setblocking(0)
             # Make sure the socket will be closed on exec
             fcntl.fcntl(s.fileno(), FCNTL.F_SETFD, 1)
-            retrycount = 5 # mayhap it's not quite dead, so we retry a few times
-            while retrycount:
-                try:
-                    s.bind(addrspec[1])
-                except:
-                    retrycount = retrycount - 1
-                    if retrycount == 0:
-                        raise
-                    time.sleep(1)
-                else:
-                    break
+            self.retrying_bind(s, addrspec[1], 5)
                     
             if len(addrspec) == 3:
                 os.chmod(addrspec[1], addrspec[2])
