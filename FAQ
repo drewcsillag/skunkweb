@@ -24,7 +24,8 @@ from within a component?
 14) in STML, I'd like to loop over the items of a dictionary and assign
    key and value to separate variables (like "for k, v in d.items()" in 
    Python).  How?
-    
+15) I'd like to temporarily override the value of a Configuration variable.  
+    Can I do this?    
 
 ----------------------------------------------------------------------
 
@@ -371,3 +372,55 @@ and
   <:for `d.items() "(k, v)":>
 
 will work.
+
+15) I'd like to temporarily override the value of a Configuration variable.  
+    Can I do this?    
+
+Yes, but how you go about it depends on what SkunkWeb version you are using.
+In SkunkWeb versions up to and including 3.4b2, you used to have to 
+resort to one of two nasty tricks.  The first one looked like this:
+
+   # set the attribute in the object's __dict__, overriding the __getattr__ hook
+   Configuration.x=override
+   # now delete the attribute to let the __getattr__ hook operate
+   del Configuration.x
+
+And the second:
+   
+   # set the temporary value 
+   Configuration.push({'x': override})
+   # pop it off -- note the strange index argument
+   Configuration.pop(0)
+
+Both approaches are counterintuitive.  In later versions, you can do the much 
+more obvious
+
+   # get original value
+   oldvalue=Configuration.x
+   # set temporary value
+   Configuration.x=override
+   # restore oldvalue
+   Configuration.x=oldvalue
+
+The push/pop approach will also work, but pop() no longer takes the index argument it
+expected in SkunkWeb versions 3.3 through 3.4b2 (which was added as a wrong-headed way
+of working around the fact that pop() popped off the wrong end of the stack).  If you 
+have a number of configuration changes you want to make at once, push() and pop() may 
+still be very useful:
+
+   Configuration.push({'componentCommentLevel' : 0,
+                       'documentRoot' : '/images-www',
+                       'compileCacheRoot' : '/images-www-cache',
+                       'componentCacheRoot' : '/images-www-cache',
+                       'documentTimeout' : 600'})
+   res=AE.Component.callComponent('/get_image.pydcmp',
+                                  argDict=myargs,
+                                  compType=AE.Component.DT_DATA,
+                                  cache=AE.Component.YES)
+   Configuration.pop()
+
+But the more useful it seems to be, the more likely it is that you should be using 
+configuration-time scoping instead!
+
+
+
