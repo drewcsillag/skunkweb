@@ -1,3 +1,14 @@
+2002-07-29  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/devel/devel.tex (section{Linkage Services}): added note
+	about psptemplate
+
+	* SkunkWeb/sw.conf.in: added bits for psptemplate
+
+	* pylibs/psp.py (psp_compile): fixed error handling so line
+	numbers in tracebacks should be closer to right.  Also made
+	handling of syntax errors easier to read.
+
 2002-07-29  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/pycgi.py (_processRequest): added slash at
@@ -6,6 +17,13 @@
 	contains extra path info.
 
 2002-07-29  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/devel/devel.tex: added notes about adding a new templating
+	type
+
+	* pylibs/AE/mime.types: added psp mime types
+
+	* SkunkWeb/Services/psptemplate.py: added
 
 	* pylibs/psp.py: added
 

@@ -1,5 +1,6 @@
 Changes in 3.3
 ========================================
+* PSP support added.  For now should be considered alpha
 * Prebuilt documentation is now included in the distribution (HTML and
   paper-formats in letter dimensions)
 * now can have skunkweb started as root (can set who you actually want
