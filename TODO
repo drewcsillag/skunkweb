@@ -1,5 +1,5 @@
-#   Time-stamp: <2002-06-19 10:43:40 acsillag> 
-#   $Id: TODO,v 1.44 2002/07/03 18:00:50 drew_csillag Exp $
+#   Time-stamp: <03/05/02 13:34:28 smulloni> 
+#   $Id: TODO,v 1.45 2003/05/01 20:45:52 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -37,19 +37,19 @@ SkunkWeb 3.3
   Xitami distro
 * Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
   (at least in 4.0.4) under jk/doc
-* rewrite enhancements
-* another hard look at scoping -- how are overlapping scopes handled?  Can
+X rewrite enhancements
+X another hard look at scoping -- how are overlapping scopes handled?  Can
   the default scope directives be made more powerful?  Can the code be made
   more efficient?
 ? Quixote support - is it feasable given how it works?
 * PSP support
 * get standard directory configuration options to actually work; distributions
   for gentoo, debian, redhat.
-* test userdir (I suspect scoping bug)
+X test userdir (I suspect scoping bug)
 ? DAV support built on httpd
-? convert from using Makefile.pre.in to using distutils to build
+X convert from using Makefile.pre.in to using distutils to build
   and install our C modules 
-* tweak makefiles (for RPM_BUILD_ROOT) and documentation
+X tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
 
 DOCS
