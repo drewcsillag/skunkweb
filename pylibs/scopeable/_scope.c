@@ -1,6 +1,6 @@
 /* 
- * $Id: _scope.c,v 1.8 2001/09/18 19:06:50 drew_csillag Exp $ 
- * Time-stamp: <2001-09-18 10:02:53 drew>
+ * $Id: _scope.c,v 1.9 2001/09/19 05:37:59 smulloni Exp $ 
+ * Time-stamp: <01/10/01 22:20:32 smulloni>
  */
 
 /***********************************************************************
@@ -364,7 +364,7 @@ static PyObject *Scopeable_pop(PyObject *self, PyObject *args) {
     popped=PyList_GetItem(dictList, len-1);
     Py_INCREF(popped);
     ndl=PyList_GetSlice(dictList, 0, len-1);
-    /*Py_INCREF(ndl);*/
+    Py_DECREF(ndl);
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, ndl);
 
     _resetMash(self);
@@ -386,9 +386,9 @@ static PyObject *Scopeable_trim(PyObject *self, PyObject *args) {
   dictList=GET_DICTLIST(self);
   len=PyList_Size(dictList);
   if (len>1) {
-    newList=PyList_GetSlice(dictList, 0, len-1);
-    Py_INCREF(newList);
+    newList=PyList_GetSlice(dictList, len-1, len);
     PyMapping_SetItemString(((PyInstanceObject *)self)->in_dict, DICTLIST, newList);
+    Py_DECREF(newList);
     _resetMash(self);
     Py_DECREF(dictList);
     dictList=NULL;
@@ -487,6 +487,9 @@ void init_scope(void) {
 
 /************************************************************************
  * $Log: _scope.c,v $
+ * Revision 1.9  2001/09/19 05:37:59  smulloni
+ * fixed typo.
+ *
  * Revision 1.8  2001/09/18 19:06:50  drew_csillag
  * refcounting fixes
  *

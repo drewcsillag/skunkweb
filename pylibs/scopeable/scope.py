@@ -1,5 +1,5 @@
-# Time-stamp: <01/09/04 23:40:37 smulloni>
-# $Id: scope.py,v 1.3 2001/09/04 18:41:00 smulloni Exp $
+# Time-stamp: <01/10/01 22:17:53 smulloni>
+# $Id: scope.py,v 1.4 2001/09/05 03:42:52 smulloni Exp $
 ########################################################################
 
 #  
@@ -200,6 +200,9 @@ def test1(**kw):
     print '*'*40
     config.addScopeMatchers(hostMatcher)
     config.scope(env)
+    print config
+    config.trim()
+    print 'TRIMMED'
     print config
     del locMatcher1
     del locMatcher2

@@ -1,5 +1,16 @@
 2001-10-01  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/SkunkWeb/KickStart.py (CONFIG_STRING): added new imports into sw.conf
+	environment.
+
+	* SkunkWeb/Services/web/protocol.py (_cleanupConfig): cleanup hijinxs necessary for 
+	dealing with UNIXPath.
+
+	* pylibs/scopeable/_scope.c: Bizarrely dumb error in trim() repaired.
+
+	* SkunkWeb/SkunkWeb/ConfigAdditives.py (UNIXPath): added scope directive for sw.conf
+	for unix sockets, rather maladroitly called UNIXPath.
+
 	* SkunkWeb/Services/requestHandler/requestHandler.py (RequestHandler.__initPorts): 
 	fixed bug that would appear if you left out the permissions of the unix socket from 
 	sw.conf.

@@ -1,5 +1,8 @@
+# $Id: ConfigAdditives.py,v 1.2 2001/09/09 02:37:41 smulloni Exp $
+# Time-stamp: <01/10/01 20:09:31 smulloni>
 #  
-#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
+#                     Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -15,8 +18,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: ConfigAdditives.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
-# Time-stamp: <01/05/03 16:35:13 smulloni>
+
 ########################################################################@
 
 from SkunkWeb.Hooks import ServerStart
@@ -55,7 +57,13 @@ def IP(ip, *kids, **kw):
                           ip,
                           kids,
                           kw)
-                       
+
+def UNIXPath(path, *kids, **kw):
+    return _createMatcher(scope.GlobMatcher,
+                          'unixpath',
+                          path,
+                          kids,
+                          kw)                       
 
 def Scope(*scopeMatchers):
     from SkunkWeb import Configuration
@@ -73,6 +81,10 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.2  2001/09/09 02:37:41  smulloni
+# performance enhancements, removal of sundry nastinesses and erasure of
+# reeking rot.
+#
 # Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
 # take 2 of import
 #
