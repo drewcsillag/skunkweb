@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Component.py,v 1.2 2001/08/09 22:14:44 drew_csillag Exp $
+# $Id: Component.py,v 1.3 2001/08/09 22:53:40 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -340,13 +340,15 @@ def _realRenderComponent( name, argDict, auxArgs, compType, srcModTime ):
         name, namespace, executable, argDict, auxArgs, compType ) )
 
     try:
-        beg = time.time()
+        if DEBUGIT(COMPONENT_TIMES):
+            beg = time.time()
         topOfComponentStack += 1
         out = executable.run()
     finally:
         topOfComponentStack -= 1
-        DEBUG(COMPONENT_TIMES, "execution of %s in %s" % (
-            name, time.time() - beg))
+        if DEBUGIT(COMPONENT_TIMES):
+            DEBUG(COMPONENT_TIMES, "execution of %s in %s" % (
+                name, time.time() - beg))
 
     # normally this is equivalent to a pop, but if a component exception
     # was handled somewhere, we need to clean up the residual shit
@@ -382,6 +384,12 @@ def _getAuxArgs( argDict ):
 
 ########################################################################
 # $Log: Component.py,v $
+# Revision 1.3  2001/08/09 22:53:40  drew_csillag
+# ok, I'm a moron...  Copied the argument list from the def: to the call,
+# default arguments included, which of course become keyword arguments....
+#
+# DUH!!!!!!
+#
 # Revision 1.2  2001/08/09 22:14:44  drew_csillag
 # made so if call fullCallComponent, can figure out if it:
 #   a) was rendered
