@@ -129,7 +129,10 @@ _fakeMethods = ["__call__"]
 
 class _StaticBase(_baseClass):
     def __init__(self, klass = None, superClasses = (), dict = {}):
-        self._modname = _getModName()
+        try:
+            self._modname = _getModName()
+        except:
+            pass
         self._klass = klass
         self._superClasses = superClasses
         self._dict = dict
@@ -184,7 +187,12 @@ class _StaticBase(_baseClass):
         raise AttributeError, attr
 
     def __getstate__(self):
-        return {'_klass': self._klass, '_modname': self._modname}
+        try:
+            return {'_klass': self._klass, '_modname': self._modname}
+        except:
+            raise ValueError, ('Object of type %s cannot be pickled because'
+                               ' it is not associated with any module'
+                               ) %  self._klass
 
     def __setstate__(self, arg):
         self._klass = arg['_klass']
