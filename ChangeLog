@@ -1,3 +1,7 @@
+2003-01-03  James Richards  <jrichards@satie.wnyc.org>
+
+	* test/formlib/htdocs/testAllViews.pyinc (form): Adding multipart/form-data enctype and display of uploaded file characteristics
+
 2003-01-02  James Richards  <jrichards@satie.wnyc.org>
 
 	* test/formlib/htdocs/testDispatch2.pyinc: modified test to work with current formlib definition, note that testDispatch3 is also misbehaving
