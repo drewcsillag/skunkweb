@@ -97,11 +97,13 @@ try:
     SkunkWeb.Server.start()
 except:
     if sys.exc_info()[0] != SystemExit:
-        sys.__stderr__.write('SkunkWeb exited abnormally! -- check the error log file\n')
-        sys.__stderr__.write('for details\n')
         import SkunkWeb.LogObj
         SkunkWeb.LogObj.logException()
+        sys.__stderr__.write('SkunkWeb exited abnormally! -- check the error log file\n')
+        sys.__stderr__.write('for details\n')
 else:
+    import SkunkWeb.LogObj
+    SkunkWeb.LogObj.logException()
     sys.__stderr__.write(
         'startup failed! (server exited wayyy too soon) -- check the error log file\n')
     sys.__stderr__.write('for details\n')
