@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.22 2003/08/13 02:03:04 smulloni Exp $
+#$Id: Cache.py,v 1.23 2003/08/13 02:34:48 smulloni Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -18,6 +18,7 @@ import socket
 import sys
 import commands
 import stat
+import md5
 import DT
 import DT.DTTagRegistry
 
@@ -450,7 +451,7 @@ def _getCCModTime(path, svr):
 def _genCachedComponentPath(name, argDict):
     d = argDict.copy()
     name = _fixPath('', name)
-    md5, fullkey = cacheKey.cachekey.genCacheKey(d)
+    md5, fullkey = _genCacheKey(d)
     if Configuration.numServers:
         serverNo = int(md5[-4:], 16) % Configuration.numServers
 
@@ -482,6 +483,12 @@ def _expireCacheFile(path):
     except:
         pass
 
+def _genCacheKey(d):
+    if Configuration.writeKeyFiles:
+        return cacheKey.cachekey.genCacheKey(d)
+    else:
+        return md5.new(cPickle.dumps(d)).hexdigest(), None
+
 def _shellEscape(a):
     na = []
     for i in a:
@@ -502,7 +509,7 @@ def clearCache(name, arguments, matchExact = None):
         _expireCacheFile(path)
     else:
         name = _normpath(name)
-        md5, fullKey = cacheKey.cachekey.genCacheKey(arguments)
+        md5, fullKey = _genCacheKey(arguments)
         if Configuration.numServers:
             names = ' '.join([_shellEscape("%s/%s/%s" % (Configuration.componentCacheRoot,
                                                            i, name))
@@ -511,6 +518,9 @@ def clearCache(name, arguments, matchExact = None):
             names = "%s/%s" % (Configuration.componentCacheRoot, _shellEscape(name))
 
         greps = []
+        if fullKey is None:
+            raise RuntimeError, \
+                  "key files not written, but attempt to use inexact cache clear"
         for k, v in fullKey.items():
             #print "--> %r %r" % (k, v)
             greps.append(_shellQuote("%r %r" % (k, v)))

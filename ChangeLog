@@ -1,8 +1,27 @@
+2004-01-10  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* pylibs/AE/Cache.py (_genCacheKey): use different cachekey
+	function if key files aren't being written.  I think this works,
+	but it needs testing.
+	
+
 2004-01-05  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/formlib/validates.py (STATELIST): added Arkansas, which
 	was missing for some reason, and fixed the state code for Arizona.
 
+2003-12-31  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+
+	* SkunkWeb/Services/templating/MailServices.py (sendmail): removed
+	dependencies on Date and mx.DateTime.
+
+	* pylibs/skunk/date/timeutil.py (arpa): equivalent of
+	mx.DateTime.ARPA.str.
+
+	* pylibs/AE/InitTags.py (initTags): inclusion of DateTag is now
+	conditional on the presence of mx (and will remain that way as
+	long as DateTag depends on it).
+	
 2003-12-29  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
 
 	* pylibs/AE/CacheTag.py: now use skunk.date.timeutil rather than
