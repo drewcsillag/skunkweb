@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: constants.py,v 1.2 2001/07/09 20:38:40 drew Exp $
+# $Id: constants.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
 # Time-stamp: <01/05/04 13:31:34 smulloni>
 ########################################################################
 
@@ -28,6 +28,7 @@ a repository for constants defined by other services.
 
 IP='ip'
 PORT='port'
+UNIXPATH='unixpath'
 JOB='job'
 CONNECTION='connection'
 HOST='host'
@@ -46,6 +47,10 @@ TEMPLATING_JOB= WEB_JOB + AE_COMPONENT_JOB + '/templating/'
 
 ########################################################################
 # $Log: constants.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.2  2001/07/09 20:38:40  drew
 # added licence comments
 #

@@ -1,3 +1,16 @@
+2001-10-01  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py (RequestHandler.__initPorts): 
+	fixed bug that would appear if you left out the permissions of the unix socket from 
+	sw.conf.
+
+	* pylibs/SocketMan/SocketMan.py (SocketMan._run): added a more useful error trace.
+
+	* SkunkWeb/SkunkWeb/constants.py (UNIXPATH): added constant for sessionDict key
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py (_beginSession): fix
+	for unix sockets.
+
 2001-10-01  Drew Csillag  <drew@starmedia.net>
 
 	* SkunkWeb/sw.conf.in: added userdir config and defaultIndexHtml

@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: requestHandler.py,v 1.22 2001/07/09 20:38:40 drew Exp $
+# $Id: requestHandler.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 
@@ -29,6 +29,7 @@ import select
 from signal_plus import signal_plus
 import signal
 import socket
+import types
 import SocketScience
 
 BeginSession=KeyedHook()
@@ -124,17 +125,26 @@ def SIGALRMHandler(*args):
 
 
 def _beginSession(sock, sessionDict):
-    # capture the ip & port on which the request came,
-    # for scoping of configuration data on their basis
-    try:
-        ip, port=sock.getsockname()
+    # capture the ip & port (or path, for a unix socket)
+    # on which the request came, for scoping of configuration
+    # data on their basis
+    ip, port, unixpath=None, None, None
+    try:      
+        addr=sock.getsockname()
+        if type(addr)==types.TupleType:
+            ip, port=addr
+        else:
+            unixpath=addr
     except:
-        ERROR("failed to read ip and port off socket!")
+        ERROR("failed to read addr off socket!")
         logException()
         raise
-    
-    sessionDict[constants.IP]=ip
-    sessionDict[constants.PORT]=port
+
+    if ip and port:
+        sessionDict[constants.IP]=ip
+        sessionDict[constants.PORT]=port
+    else:
+        sessionDict[constants.UNIXPATH]=unixpath
     
     # get configuration data for the job
     Configuration.scope(sessionDict)
@@ -203,7 +213,8 @@ class RequestHandler:
             if bits[0] == 'TCP':
                 bits[2] = int(bits[2])
             elif bits[0] == 'UNIX':
-                bits[2] = int(bits[2], 8)
+                if len(bits)>=3:
+                    bits[2] = int(bits[2], 8)
             else: raise "unrecognized socket specifier: %s" % port
             DEBUG(REQUESTHANDLER, 'adding Service: %s, %s' %((tuple(bits)),
                                                              self))
@@ -221,6 +232,10 @@ def addRequestHandler(protocol, ports):
 
 ########################################################################
 # $Log: requestHandler.py,v $
+# Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.22  2001/07/09 20:38:40  drew
 # added licence comments
 #

@@ -103,6 +103,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
                 self.logInterface.ERROR(
                     "handler %s died with exception info %s" %
                     (self.socketMap[s][0], sys.exc_info()))
+                self.logInterface.logException()
             sock.close()
             if r:
                 self.logInterface.LOG('SM exiting due to r being true') 
