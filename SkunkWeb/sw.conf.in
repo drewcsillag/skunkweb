@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.31 2003/05/02 17:19:51 drew_csillag Exp $
-# Time-stamp: <03/05/12 11:49:47 smulloni>
+# $Id: sw.conf.in,v 1.32 2003/05/12 15:51:04 smulloni Exp $
+# Time-stamp: <03/07/18 19:23:00 smulloni>
 
 ########################################################################
 #
@@ -79,7 +79,10 @@ if "@RUNASROOT@" == "root":
 #                            caching
 #
 # postgresql              -- preloads the PostgreSql pylib and allows for
-#                            connection caching
+#                            connection caching (using pgdb).
+#
+# pypgsqlcache            -- preloads the PyPgSQLcache pylib and allows for
+#                            connection caching (using the pyPgSQL db module)
 #
 # mysql                   -- preloads the MySQL pylib and allows for
 #                            connection caching
@@ -597,7 +600,7 @@ documentRoot = '@DOCROOT@'
 # defaults to None, which, if the sessionHandler service is imported,
 # will cause an error.  To use sessionHandler, you must specify a session
 # store implementation; e.g.:
-# SessionStore='sessionHandler.MySQLSessionStore.MySQLSessionStoreImpl'
+# SessionStore='sessionHandler.MySQLSessionStore.Store'
 
 ########################################################################
 # the key under which the session is kept (in a cookie or in URL rewriting)
@@ -611,27 +614,16 @@ documentRoot = '@DOCROOT@'
 # SessionTimeout=30*60
 
 ########################################################################
-# session reap interval, in seconds.  When the reap interval has elapsed,
-# the server may reap old sessions in the aftermath of its next
-# request handling cycle.  To turn off reaping (if more than one
-# server is using the same session store, or if another process
-# is performing reaping separately), set this to zero or a negative
-# value.
-#
-# SessionReapInterval=300
+# For the MySQL session store, you must have the mysql service loaded
+# and have MySQLConnectParams defined. This should the connection alias
+# used.
+# SessionHandler_MySQLAlias="session"
 
 ########################################################################
-# For the MySQLSessionStoreImpl, the following variables specify names
-# of the session table and its columns and the MySQL host, user and password.
-#
-# SessionHandler_MySQLUser='sessionHandler'
-# SessionHandler_MySQLDB='sessionStore'
-# SessionHandler_MySQLIDColumn='id'
-# SessionHandler_MySQLTable='Sessions'
-# SessionHandler_MySQLPickleColumn='pickle'
-# SessionHandler_MySQLTimestampColumn='accessTime'
-# SessionHandler_MySQLHost='localhost'
-# SessionHandler_MySQLPass='sessionPass'
+# For the PostgreSQL session store, you must use the pypgsqlcache s
+# connection caching service.  If necessary override this connection
+# alias:
+# SessionHandler_PostgreSQLAlias="session"
 
 ########################################################################
 # For the FSSessionStoreImpl, the directory where pickle files should

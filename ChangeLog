@@ -1,3 +1,10 @@
+2003-07-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in: updated sessionHandler documentation.
+
+	* SkunkWeb/Services/sessionHandler/Session.py (getSessionID): fix
+	for session deletion.
+
 2003-07-19  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/manual/instConfig.txt: started to make changes.  Also,

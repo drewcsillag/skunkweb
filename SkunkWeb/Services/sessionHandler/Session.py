@@ -104,6 +104,7 @@ def removeSession(self):
         if sess:
             sess.delete()
         del self.__userSession
+        self.__sessionID=None
     sesskey=Configuration.SessionIDKey
     if self.requestCookie.has_key(sesskey):
         self.responseCookie[sesskey]=""
@@ -115,8 +116,9 @@ def getSessionID(self, create=1):
     obtain the session id from the request cookie, or, if not
     available, create a new one.
     '''
+    
     try:
-        return self.__sessionID
+        sid=self.__sessionID
     except AttributeError:
         sesskey=Configuration.SessionIDKey        
         try:
@@ -124,11 +126,13 @@ def getSessionID(self, create=1):
         except KeyError:
             # look in connection arguments for session id
             sid=self.args.get(sesskey)
-        if sid is None and create:
-            sid=uuid.uuid()
-        if sid:
-            self.__sessionID=sid
+            
+    if sid is None and create:
+        sid=uuid.uuid()
+    if sid:
+        self.__sessionID=sid
         return sid
+
 
 ####################################################################
 # hook for ServerStart
@@ -209,9 +213,13 @@ class Session(_dict):
         self._deleted=1
                    
     def age(self):
+        if self._deleted:
+            return 0
         return self.store.age()
 
     def clear(self):
+        if self._deleted:
+            raise SessionError, "cannot clear deleted session"
         _dict.clear(self)
         self._dirty=1
 
