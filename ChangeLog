@@ -1,5 +1,9 @@
 2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/AE/mime.types: added inc and pyinc extensions.
+
+2001-11-14  Jacob Smullyan  <smulloni@smullyan.org>
+
 	* SkunkWeb/Makefile.in: fix for nasty bug: improper conditional 
 	tests (ifeq(@THING@, ' ') rather than ifeq(@THING@,) )
 
@@ -18,7 +22,7 @@
 	--with-docsdir options.
 
 
-2001-11-08  Jacob Smullyan  <smulloni@skunk.org>
+2001-11-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/mod_skunkweb/modskunkweb_error.html: Removed references 
 	to AED.

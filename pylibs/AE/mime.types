@@ -279,9 +279,9 @@ x-conference/x-cooltalk		ice
 #
 # Skunk - specific mime types
 #
-text/x-stml-component		comp
+text/x-stml-component		comp inc
 text/x-stml-data-component	dcmp
-text/x-stml-python-component	pycomp
+text/x-stml-python-component	pycomp pyinc
 text/x-stml-python-data-component	pydcmp
 application/x-complex-message-catalog	cat
 application/x-simple-message-catalog	msg
