@@ -1,3 +1,16 @@
+2002-01-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sample_webdocs/demo/gallery/comp/list_thumbnails.dcmp:
+	use the new queryargs argument to <:img:>.
+
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:img:>}}): Added
+	documentation of queryargs argument to <:img:> tag.
+	(section{\texttt{<:include:>}}): documented the .inc and .pyinc
+	extensions. 
+
+	* SkunkWeb/Services/templating/HTMLTags.py (ImageTag.genCode):
+	Modified <:img:> tag to take queryargs.
+
 2002-01-10  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sample_webdocs/demo/index.html: acknowledged the
@@ -24,7 +37,8 @@
 
 	* pylibs/Date/__init__.py: lagging fix after the *many* change below.
 
-	* SkunkWeb/sample_webdocs/demo/geeknews/dcomps/newsforge.pydcmp: fixed so it works because they changed their xml format
+	* SkunkWeb/sample_webdocs/demo/geeknews/dcomps/newsforge.pydcmp:
+	fixed so it works because they changed their xml format 
 
 2001-12-26  Andrew Csillag  <drew@localhost.localdomain>
 
@@ -54,12 +68,13 @@
 
 2001-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 
-	* pylibs/vfs/vfs.py (MultiFS): sketch of fs that mounts other fs'es, soon to replace the list of fses
-	used by AE.
+	* pylibs/vfs/vfs.py (MultiFS): sketch of fs that mounts other
+	fs'es, soon to replace the list of fses used by AE.
 
 2001-12-14  Andrew Csillag  <drew@localhost.localdomain>
 
-	* pylibs/PyDO/sapdbconn.py, pylibs/PyDO/sapdbgenscript.py, pylibs/PyDO/PyDBI.py: Added SAP database adaptor from Ulrich Eck
+	* pylibs/PyDO/sapdbconn.py, pylibs/PyDO/sapdbgenscript.py,
+	pylibs/PyDO/PyDBI.py: Added SAP database adaptor from Ulrich Eck 
 
 2001-12-12  Andrew Csillag  <drew@localhost.localdomain>
 
@@ -69,8 +84,8 @@
 
 	* SkunkWeb/Services/sessionHandler/Session.py (getSession): Added
 	optional cookieParam keyword arguments, constrained to 'path', 'domain',
-	and 'secure', for setting session cookie parameters at session creation time.
-	They are otherwise ignored.
+	and 'secure', for setting session cookie parameters at session
+	creation time. They are otherwise ignored.
 	
 2001-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 

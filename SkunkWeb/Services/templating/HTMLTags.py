@@ -18,7 +18,7 @@
 """
 Assortment of HTML tags - description???
 """
-# $Id: HTMLTags.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
+# $Id: HTMLTags.py,v 1.2 2001/08/10 17:35:32 drew_csillag Exp $
 
 from AE.CommonStuff import *
 import SkunkExcept
@@ -55,13 +55,18 @@ class ImageTag(DTTag):
     def genCode(self, indent, codeout, tagreg, tag):
         DTCompilerUtil.tagDebug(indent, codeout, tag)
         args=DTUtil.tagCall(tag, [
-            ('path'), 
+            ('path'), ('queryargs', {}),
 	    ('noescape', 'None')], kwcol = 'kw' )
         kw=DTCompilerUtil.pyifyKWArgs(tag, args['kw'])
         args=DTCompilerUtil.pyifyArgs(tag, args)
 
         codeout.write ( indent, '__h.OUTPUT.write ( '
-                '%s ( path = %s, noescape = %s, kwargs = %s ) )' % (self.func, args['path'], args['noescape'], kw) )
+                '%s ( path = %s, queryargs = %s, noescape = %s, kwargs = %s ) )' % \
+                        (self.func,
+                         args['path'],
+                         args['queryargs'],
+                         args['noescape'],
+                         kw) )
 
         # All done
 

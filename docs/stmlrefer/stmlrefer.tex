@@ -1142,9 +1142,11 @@ reuse them inside other STML documents. We call these
 ``embeddable'' STML documents components. They have a different
 file extension: while your regular STML documents end with
 the extension of the kind of output they generate (like
-\texttt{.html}), all STML component documents end with the file extension
-\texttt{.comp} (or \texttt{.dcmp} for data components; more about
-those later). 
+\texttt{.html}), all STML component documents end with the file
+extension
+\texttt{.inc} for include components, \texttt{.comp} for 
+regular components, (or \texttt{.dcmp} for data components; more about
+those later).
 
 If you have a block of HTML that must be included on 
 every page of your website, make it an STML component, 
@@ -1168,7 +1170,7 @@ STML component document named \texttt{name}
 in the namespace of the currently executing component.
 
 The format of the string for \texttt{name} is a path, such as
-\texttt{/foo/bar.comp} or \texttt{foo.comp}. If the path is
+\texttt{/foo/bar.inc} or \texttt{foo.inc}. If the path is
 \emph{absolute}, starting with a slash, the templating engine will
 look for the component at that path underneath your
 \texttt{documentRoot} of STML documents. If the path is
@@ -1181,17 +1183,17 @@ Unix or DOS command line (but you cannot escape the
 For example, you have these three files in your 
 documentRoot directory:
 
-\begin{verbatim}/header.comp
+\begin{verbatim}/header.inc
 /myDir/index.html
-/myDir/foo.comp
+/myDir/foo.inc
 \end{verbatim}
 
 Inside \texttt{/myDir/index.html}, you want to include both
 component files. You can use these tags, the first using an absolute
 path and the second using a relative path:
 
-\begin{verbatim}<:include /header.comp:>
-<:include foo.comp:>
+\begin{verbatim}<:include /header.inc:>
+<:include foo.inc:>
 \end{verbatim}
 
 Unlike the \texttt{<:component:>} \doref{tagcomponent}
@@ -1202,12 +1204,12 @@ For example, you have a template \texttt{/index.html} with
 the following code:
 
 \begin{verbatim}<:set myVar `5`:>
-<:include foo.comp:>
+<:include foo.inc:>
 <:val `myVar`:><BR>
 <:val `myOtherVar`:>
 \end{verbatim}
 
-and the STML component document \texttt{foo.comp} 
+and the STML component document \texttt{foo.inc} 
 contains this STML code:
 
 \begin{verbatim}<:set myVar `66`:>
@@ -1229,6 +1231,14 @@ print AE.Component.callComponent(name, argdict,
         compType=AE.Component.DT_INCLUDE)
 \end{verbatim}
 
+\strong{Re file extensions:} The \texttt{.inc} and \textt{.pyinc} file
+extensions were added in SkunkWeb 3.2; previous versions used the
+\texttt{.comp} and \texttt{.pycomp} file extensions for includes, and
+these will still work.  However, since it is rather important to
+distinguish the two types of components, using the new include
+extensions is recommended.
+
+
 \strong{NOTE:} The main thing to keep in mind here is that if you do
 the include from a Python component, things work as you would expect,
 but if you call it from Python code that isn't a component (or an
@@ -1236,15 +1246,17 @@ include), the included component runs in the namespace of the
 currently running component, not the namespace of the Python module
 you call it from.
 
-\subsection{Python component files (\texttt{.pycomp})}
+
+\subsection{Python component files (\texttt{.pyinc} and \texttt{.pycomp})}
 
 SkunkWeb also allows you to write includable components in pure Python
 code. This is sometimes more convenient when you wish to do a lot of
 programming and generate no (or little) HTML output for the
 user. These files are simple Python scripts and end in the file
-extension \texttt{.pycomp}.  Use them in the \texttt{<:include:>} or
-\texttt{<:component:>} \doref{tagcomponent} tags just as you would
-regular \texttt{.comp} component files.  See Python Components,
+extensions \texttt{.pyinc{ or  \texttt{.pycomp}.  Use them in the 
+\texttt{<:include:>} or \texttt{<:component:>} \doref{tagcomponent}
+tags, respectively,  just as you would include \textt{.inc} or regular
+\texttt{.comp} component files.  See Python Components,
 section \ref{pythoncode}, page \pageref{pythoncode})
 
 
@@ -1393,7 +1405,7 @@ to be executed before receiving her response. The component's cache
 will be updated ``offline'', behind the scenes.
 
 You can make all of your component calls automatically ``deferred'' by
-setting the SkunkWeb templating configuration variable
+setting the configuration variable
 \texttt{DeferByDefault} to 1.
 
 \subsection{``Forced'' component rendering}
@@ -1851,10 +1863,15 @@ print templating.UrlBuilder.url(path, queryargs, text,
 \section{\texttt{<:img:>}}
 \label{tagimg}
 
-\begin{verbatim}<:img path [noescape] [extra_args]:>\end{verbatim}
+\begin{verbatim}<:img path [queryargs] [noescape] [extra_args]:>\end{verbatim}
 
 creates an appropriate HTML \texttt{<IMG>} tag. 
 Arguments similar to \texttt{<:url:>} \doref{tagurl}. 
+
+The \texttt{queryargs} argument, if present, allows you to pass a
+dictionary of arguments as a querystring to the image document, as
+is useful for dynamically generated images (thumbnails, graphs,
+etc.). Defaults to an empty dictionary.
 
 The \texttt{noescape} argument, if present,
 tells SkunkWeb \emph{not} to escape URL-unsafe characters in the \texttt{path}
@@ -2011,7 +2028,7 @@ The \texttt{to_addrs} parameter is a list of strings
 string containing the subject line. The \texttt{msg} argument contains
 the entire message body as a single string. The \texttt{from_addr} argument
 is an optional string with the email address of the sender, 
-and it defaults to the address in the SkunkWeb \texttt{templating} personality's
+and it defaults to the address in the
 \texttt{FromAddress} configuration variable.
 
 
@@ -2351,7 +2368,7 @@ Python.  They are useful for when the operation of the component is
 code-heavy and/or not terribly markup-intensive.
 
 To call other components from within Python components, there is a
-function in the \texttt{templating} module called, aptly enough,
+function in the \texttt{AE.Component} module called, aptly enough,
 \texttt{callComponent} whose definition looks like this:
 
 \begin{verbatim}
@@ -2401,7 +2418,7 @@ print "The current URI is: <B>%s</B>" % CONNECTION.uri
 
 \section{Python Include Components}
 \label{pythonincl}
-The Python include component extension is \texttt{.pycomp}.
+The Python include component extension is \texttt{.pyinc}.
 Python include components have similar semantics as their STML
 counterparts.  All of the variable accessible in the calling documents
 namespace will appear in the global namespace of the Python component
@@ -2418,14 +2435,11 @@ Producing output works the same as in top-level python components.
 Regular Python components get the default global namespace (as would
 an STML component) and the component arguments in the global
 namespace.  The catch is that there is no \texttt{<:cache:>} tag
-in 
-Python
-unfortunately, but this can be done by setting the global variable
+in Python,  unfortunately, but this can be done by setting the global variable
 named \texttt{__expiration} to the number of seconds past the Epoch
-(12:00am 1/1/1970 UTC) at which this component will expire.  Sounds
-nasty, well of course there is a simple way to compute this value!  In
-the \texttt{templating} (which is already in the global namespace,
-no need to import it), there are two functions which mimic STML's
+(12:00am 1/1/1970 UTC) at which this component will expire.  This may sound
+nasty, but of course there is a simple way to compute this value!  In
+the \texttt{Date.TimeUtil} module) there are two functions which mimic STML's
 \texttt{<:cache:>} tag, \texttt{convertDuration} and
 \texttt{convertUntil}. 
 
@@ -2446,8 +2460,6 @@ Producing output works the same as in top-level python components.
 
 
 
-
-
 \section{Python Data Components}
 \label{pythondata}
 Python data components extension is \texttt{.pydcmp}.  Python data
@@ -2458,7 +2470,9 @@ there is no \texttt{<:return:>} tag in Python, nor can the Python
 level, where it is a syntax error).  So, in order to return a value
 from the data component, you 
 raise an exception of the proper type, \texttt{ReturnValue}, with the
-exception value being the return value.  
+exception value being the return value.  The ReturnValue exception is
+preloaded into the global namespace in which the component is
+executed, so it doesn't need to be imported.
 
 For example, to return the value of the variable foobar from a data
 component:
