@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: bootloader.py.in,v 1.4 2002/06/11 17:27:44 drew_csillag Exp $
+# $Id: bootloader.py.in,v 1.5 2002/07/11 22:57:00 smulloni Exp $
 # Time-stamp: <01/04/23 15:51:51 smulloni>
 ########################################################################
 import confvars as _c
@@ -48,7 +48,7 @@ def init(configFiles, SkunkRoot):
     #but would otherwise have to import SkunkWeb.Server to get everything
     def _stupidfunc():
         import sys
-        import Logger, traceback, signal, LogObj
+        import Logger, traceback, signal, LogObj, pwd, grp
         from SocketMan.SocketMan import SocketMan
         mods = sys.modules.keys() + ['SkunkWeb.Server']
         mods.sort()
@@ -74,6 +74,9 @@ def load():
 
 ########################################################################
 # $Log: bootloader.py.in,v $
+# Revision 1.5  2002/07/11 22:57:00  smulloni
+# configure changes to support other layouts
+#
 # Revision 1.4  2002/06/11 17:27:44  drew_csillag
 # fixed bug that made it not work with Python 2.1
 #
