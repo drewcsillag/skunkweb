@@ -517,7 +517,7 @@ class ViewableForm(Viewable, Form):
         return (layout, maxDepth, flds)        
 
 
-    def getView(self): 
+    def getView(self):
         elem=ecs.Form()
         if self.method:
             elem.setAttribute('method', self.method)
@@ -543,28 +543,75 @@ class ViewableForm(Viewable, Form):
             table.addElement(tr)
             table.addElement('\n')
 
+
         elem.addElement('\n')
         elem.addElement(table)
         elem.addElement('\n')
         return elem
 
 
-    def handleField(self, f, tr, table):
-        msg=self.errors.get(f)
+    def handleField(self, f, tr, table, colspan=0, fromList=0):
+        if not fromList:
+            # if we are not coming from a list [aka handleList()], then this method must check for errors itself
+            errTr = ecs.Tr()
+            numErr = self.handleError(errTr, f)
+            if numErr:
+                table.addElement(errTr)
+            
+        if f.description:
+            desTd = ecs.Td().addElement(f.description)
+            vwTd = ecs.Td().addElement(f.getView())
+            desTd.setAttribute('valign', 'top')
+            vwTd.setAttribute('valign', 'top')
+            if colspan:
+                vwTd.setAttribute('colspan', colspan)
+            tr.addElement(desTd)
+            tr.addElement(vwTd)
+        else:
+            td=ecs.Td().addElement(f.getView())
+            td.setAttribute('valign', 'top')
+            if colspan:
+                td.setAttribute('colspan', colspan)
+            else:
+                td.setAttribute('colspan', '2')
+            tr.addElement(td)
+        tr.addElement('\n')
+
+
+    def handleError(self, tr, fld):
+        numErrs = 0
+        msg=self.errors.get(fld)
         if msg:
+            numErrs = numErrs + 1
             em=ecs.Em(msg).setAttribute('class', 'form_error')
             td=ecs.Td(em).setAttribute('colspan', '2')
-            table.addElement(ecs.Tr().addElement(td))
-
-        if f.description:
-            tr.addElement(ecs.Td().addElement(f.description))
-            tr.addElement(ecs.Td().addElement(f.getView()))
-        else:
-            td=ecs.Td().addElement(f.getView()).setAttribute('colspan', '2')
             tr.addElement(td)
-
+        return numErrs    
 
     def handleList(self, list, tr, table):
+        errTr = ecs.Tr()
         for fnm in list:
             fld = self.fields[fnm]
-            self.handleField(fld, tr, table)
+            # handle the errors display...these will always span two columns
+            numErrs = self.handleError(errTr, fld)
+
+        if numErrs:
+            table.addElement(errTr)
+        
+        # some rows may have less items than the max depth, in which case we should
+        # not span the remaining columns or a very ugly GUI is created
+        colspan = 0
+        lstLen = len(list)
+        if lstLen < self.maxDepth:
+            # note that there are 2 <td> cells for each item in any row
+            colspan = 2 * (self.maxDepth - lstLen)
+        
+        for idx in range(0, lstLen):
+            fnm = list[idx]
+            fld = self.fields[fnm]
+            if idx == lstLen - 1:
+                # if we are on the last column, add the colspan, else add no colspan
+                self.handleField(fld, tr, table, colspan, fromList=1)
+            else:
+                self.handleField(fld, tr, table, 0, fromList=1)
+            
