@@ -1,9 +1,10 @@
-# Time-stamp: <01/09/03 23:17:47 smulloni>
-# $Id: scope.py,v 1.1 2001/09/03 23:08:32 smulloni Exp $
+# Time-stamp: <01/09/04 14:39:44 smulloni>
+# $Id: scope.py,v 1.2 2001/09/04 17:23:55 smulloni Exp $
 ########################################################################
 
 #  
-#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
+                      Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -20,8 +21,6 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # an object that transforms itself depending on its environment.
-# $Id: scope.py,v 1.1 2001/09/03 23:08:32 smulloni Exp $
-# Time-stamp: <01/05/04 11:01:26 smulloni>
 ########################################################################
 
 import fnmatch
