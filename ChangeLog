@@ -1,3 +1,9 @@
+2003-04-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/DT/DTTags.py (ImportTag.genCode): Permit items being
+	imported to be separated by commas as well as spaces: 
+	<:import os "getlogin, getuid":> now works.
+
 2003-04-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* Makefile.in, pylibs/Makefile.in, SkunkWeb/Makefile.in,
