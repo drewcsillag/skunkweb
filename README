@@ -1,7 +1,8 @@
 LICENSE
------------------------------- 
- Copyright (C) 2001 Andrew T. Csillag <drew_csillag@yahoo.com>,
-                    Jacob Smullyan <smulloni@smullyan.org>
+-------
+
+Copyright (C) 2001-2003, Andrew T. Csillag <drew_csillag@yahoo.com>,
+                          Jacob Smullyan <smulloni@smullyan.org>
  
      This program is free software; you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -19,23 +20,12 @@ LICENSE
   
 
 README for SkunkWeb
-------------------------------
-The installation instructions are in ``INSTALL''.  STML (Skunk
-Template Markup Language) operations and developer (the developer
-manual is currently old and incorrect, don't rely on it just yet)
-manuals are under docs/html and docs/paper-letter.
+-------------------
 
-***Note for those 
-If you have upgraded python from 2.1 to 2.2 you will notice that pickle is
-quite a bit more picky about the pickling of classes not defined in modules.
-There had been some mailling list activity about this at one point about
-things like this, but now Python 2.2 appears to have set the rule: you 
-cannot pickle objects that are not in modules.
+The installation instructions are in INSTALL. The STML (Skunk Template
+Markup Language), operations, and developer manuals are under
+docs/html (in html format) and docs/paper-letter (in pdf format).
 
-So if you get the following exception:
-PicklingError, "Can't pickle foo: its not found as __main__.foo"
-
-This is what's happening.
 
 Starting the SkunkWeb Server
 ------------------------------

@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.27 2002/08/16 15:56:15 drew_csillag Exp $
-# Time-stamp: <03/02/07 17:09:34 smulloni>
+# $Id: sw.conf.in,v 1.28 2003/02/08 03:23:44 smulloni Exp $
+# Time-stamp: <03/03/14 09:41:53 smulloni>
 
 ########################################################################
 #
@@ -679,6 +679,27 @@ documentRoot = '@DOCROOT@'
 # The path to append to the user's home directory for the userdir path.
 #
 # userDirPath = 'public_html'
+
+
+########################################################################
+# FOR THE usertracking SERVICE:
+########################################################################
+# these are the variables you are most likely to want to set; for others,
+# see the source of usertracking.py.
+
+# # set to 1 to turn it on, at top-level or in a scope
+#
+# usertrackingOn=0 
+
+# # change this to whatever name you prefer
+#
+# usertrackingCookieName='SKUNKTREK_ID'
+
+# # set this to some number of seconds (from the current time) if
+# # you want a persistent cookie
+#
+# usertrackingCookieExpires=None # for a two year cookie, 2*365*24*60*60
+
 
 ########################################################################
 # directive to include another conf file:

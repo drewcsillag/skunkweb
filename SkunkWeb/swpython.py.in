@@ -19,24 +19,39 @@
 import sys
 import getopt
 
+usage="""\
+Usage: swpython [options] [scriptname]
+    -c,--config-files=configfilelist    list of config files to load,
+                                        delimited by colons
+    -h,--help                           print this screen and exit
+    -i                                  if scriptname is provided,
+                                        run script and then start
+                                        interactive interpreter
+    -e,--execute=script                 execute script, then exit
+    -r,--redir-logs                     redirect logs to stderr
+    -q,--quiet                          make swpython be quieter
+"""    
+    
+
 def help():
-    print >> sys.stderr, ("Usage: swpython [-ih] [-c configfilelist] "
-                          "[scriptname]")
-    print >> sys.stderr
-    print >> sys.stderr, ("  -c,--config-files=configfilelist   list of config"
-                          " files to load delimited")
-    print >> sys.stderr, ("                                     by colons")
-    print >> sys.stderr, ("  -h,--help                          show this "
-                          "screen")
-    print >> sys.stderr, ("  -i                                 if scriptname"
-                          " is provided, run script")
-    print >> sys.stderr, ("                                     and then start"
-                          " interactive interpreter")
-    print >> sys.stderr, ("  -e,--execute=script                Execute script"
-                          " then exit")
-    print >> sys.stderr, ("  -r,--redir-logs                    Redirect logs"
-                          " to stderr")
-    print >> sys.stderr
+    print usage
+##    print >> sys.stderr, ("Usage: swpython [-ih] [-c configfilelist] "
+##                          "[scriptname]")
+##    print >> sys.stderr
+##    print >> sys.stderr, ("  -c,--config-files=configfilelist   list of config"
+##                          " files to load delimited")
+##    print >> sys.stderr, ("                                     by colons")
+##    print >> sys.stderr, ("  -h,--help                          show this "
+##                          "screen")
+##    print >> sys.stderr, ("  -i                                 if scriptname"
+##                          " is provided, run script")
+##    print >> sys.stderr, ("                                     and then start"
+##                          " interactive interpreter")
+##    print >> sys.stderr, ("  -e,--execute=script                Execute script"
+##                          " then exit")
+##    print >> sys.stderr, ("  -r,--redir-logs                    Redirect logs"
+##                          " to stderr")
+##    print >> sys.stderr
     sys.exit()
 
 #read command line, add -i option to go to interactive interpreter afterwards
@@ -44,9 +59,11 @@ interactive = None
 configFiles = None
 command = None
 redirlogs = None
+quiet=None
+
 try:
-    optlist, args = getopt.getopt(sys.argv[1:], 'c:hie:r', [
-        'help', 'config-files=', 'execute=', 'redir-logs'])
+    optlist, args = getopt.getopt(sys.argv[1:], 'c:hqie:r', [
+        'help', 'quiet', 'config-files=', 'execute=', 'redir-logs'])
 except getopt.GetoptError, val:
     sys.stderr.write("ERROR: %s\n" % val)
     help()
@@ -61,8 +78,10 @@ for (opt, optval) in optlist:
         command = optval
     elif opt == '-r' or opt == '--redir-logs':
         redirlogs = not redirlogs
+    elif opt == '-q' or opt=='--quiet':
+        quiet=1
 
-    else: # opt in ('--config-files', '-c'):
+    else: 
         configFiles = optval.split(':')
 
 SkunkWebPath = '@libdir@'
@@ -75,14 +94,14 @@ sys.path.append(bootloader._pylibsRoot)
 import ConfigLoader
 import SkunkWeb
 
-if not args:
+if (not quiet) and not args:
     print >> sys.stderr, "Initializing..."
 if configFiles is None:
     configFiles = [bootloader.DEFAULT_CONFIG_FILE_NAME]
 bootloader.init(configFiles, bootloader.SkunkRoot)
 import SkunkWeb.Server
 SkunkWeb.Server.addService = lambda *args: None
-if interactive:
+if interactive and not quiet:
     print >> sys.stderr, "Loading Services..."
 
 if redirlogs:

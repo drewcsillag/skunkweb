@@ -20,3 +20,8 @@ pylibs/            -- generally useful utility modules usable outside of
        uuid        -- generates universally unique identifiers
        skunkdoc    -- generates docs for stml templates... kinda forget 
                       that this exists
+       formlib     -- a library for defining and handling HTML forms
+       ecs         -- a simple XHTML generation library
+       vfs         -- a virtual file system library, used by SkunkWeb
+                      for access to the docroot.       
+       

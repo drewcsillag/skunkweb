@@ -1,5 +1,11 @@
 2003-04-03  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/sw.conf.in: added comments about usertracking.
+
+	* README: moved stuff about pickling errors to FAQ.
+
+	* HACKING: added some package descriptions.
+
 	* FAQ: reconciled conflicts, added an entry and did some editing.
 
 2003-04-03    <drew@loki.sai-office>

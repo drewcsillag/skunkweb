@@ -1,4 +1,5 @@
 #!@BASH@
+# -*-sh-*-
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -20,7 +21,7 @@
 # This is the manager script for SkunkWeb, used for stopping,
 # starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.3 2002/07/25 19:21:35 drew_csillag Exp $
+# $Id: swmgr.in,v 1.4 2003/04/02 22:28:22 smulloni Exp $
 
 umask 002
 
@@ -76,20 +77,31 @@ function run_as_user
 
 function get_pid_file
 {
-    run_as_user @bindir@/swpython -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
-    # echo @localstatedir@/run/sw.pid
+    run_as_user @bindir@/swpython -q -r -e 'import SkunkWeb,sys; print >> sys.__stdout__, SkunkWeb.Configuration.pidFile'
+}
+
+function configtest
+{
+    run_as_user @bindir@/swpython -q -e 'import sys; print "Syntax OK";'
 }
 
 
 function usage 
 {
-    echo "Usage: `basename $0` [options] {start|stop|restart}"
+    echo "Usage: `basename $0` [options] {start|stop|restart|configtest}"
     echo "Options:"
     echo "    -h     print this message and exit"
     echo "    -f     fast stop or restart; doesn't run swpython"
     echo "           to find the pid file"
     echo "           to determine location of pid file"
     echo "    -r     start skunkweb as root so it can bind to a low port"
+    echo
+    echo "stop, start, and restart perform the expected operations."
+    echo "Without the -f argument, stop and restart will verify that"
+    echo "the configuration files are parseable before stopping the"
+    echo "running server.  "
+    echo "configtest simply runs swpython and either terminates with"
+    echo "a Python exception or prints Syntax OK and exits."
     exit 1
 }
 
@@ -192,6 +204,9 @@ case "$1" in
 
 	echo "SkunkWeb restarted"
 	;;
+  configtest)
+        configtest
+        ;;
   *)
         usage
         ;;

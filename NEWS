@@ -7,6 +7,13 @@ Changes in 3.4 final
   without putting the url in quotes).
 * fixes for Python 2.1 and Python 2.3a2 compatibility.
 * an ISBN field added to formlib.
+* httpd service now adds goodies to the environment.
+* swmgr and swpython have additional command-line options.
+* the postgresql service and PostgreSql connection cache
+  have optional connection testing, as mysql has had for
+  some time.
+* fixes for sapdb and unicode in PyDO.
+* new AE.Cache options, runOutOfCache and dontCacheSource.
 
 Changes in 3.4b2
 ========================================

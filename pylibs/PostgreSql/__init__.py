@@ -21,6 +21,11 @@ from SkunkExcept import SkunkStandardError
 # The connect string dictionary 
 _users={}
 
+# an optional connection test; should be callable, take a connection
+# as an argument, and return a boolean indicating whether the
+# connection is valid
+connection_test = None
+
 def initUser(connUser, connParams):
     """
     Prior to using the module, you must call this function 
@@ -68,13 +73,30 @@ def getConnection(connUser):
             if connectArgs[0]:
                 if '|' in connectArgs[0]: #if specified port
                     host=connectArgs[0].replace('|', ':')
-            _connections[connectParams]=pgdb.connect(connectParams,
-                                                       host=host)
+            db=_connections[connectParams]=pgdb.connect(connectParams,
+                                                        host=host)
         except pgdb.Error:
             # XXX Do not raise the connect string! The trace may be seen
             # by users!!!
             raise SkunkStandardError, ('cannot connect to PostgreSQL: %s' % 
                   (sys.exc_info()[1],))
+    else:
+        db=_connections[connectParams]
+        if connection_test and not connection_test(db):
+            del db
+            del _connections[connectParams]
+            db=_connections[connectParams]=pgdb.connect(connectParams,
+                                                        host=host)
+    return db
 
-    return _connections[connectParams]
+
+# a reasonable test query
+def SimpleQueryTest(conn):
+    try:
+        # poor man's assertion
+        not conn._db.closed or 1 / 0
+        conn.cursor().execute("select CURRENT_USER")
+        return 1
+    except:
+        return 0
 
