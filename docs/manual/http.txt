@@ -1,0 +1,332 @@
+===================
+The SkunkWeb Manual
+===================
+
+---------------------------
+Chapter : HTTP
+---------------------------
+
+:Author: Brian Olsen
+:Version: 0.1
+:Status: Draft
+
+.. contents:: Table Of Contents
+.. section-numbering::
+
+
+
+Introduction
+============
+
+When SkunkWeb processes a top-level document, it passes into it a variable into it called ``CONNECTION``, which is a single object containing the interface to request and response variables and methods. (``CONNECTION`` is an object of the web.protocol.HTTPConnection class, which is found in the ``Services`` directory in a SkunkWeb installation.) For each request, a new ``CONNECTION`` object is created, which contains the information from the request, plus a list of default response information, which can be modified.
+
+
+For those using SkunkWeb components, remember that the CONNECTION object is in the top namespace, and needs to be passed to a component, if you plan to use a component other than a simple "include" component, you need to pass the ``CONNECTION`` object into the component through the ``argDict`` parameter.
+
+
+This chapter is divided based on the distinct elements available in the HTTP interface.
+
+
+HTTP Headers
+------------
+
+This section deals with how to retrieve and modify HTTP Request and Response headers.
+
+**CONNECTION.requestHeaders**
+    This attribute contains a dictionary of request headers retrieved when the web server sent the information to SkunkWeb. The CONNECTION.requestHeaders attribute contains standard HTTP headers such as "Cookie", "User-Agent", "Connection", "Host", "Keep-Alive", etc.
+
+
+**CONNECTION.responseHeaders**
+    This contains a dictionary of response headers that will be sent to the requesting client when the request is finished processing. The information in the CONNECTION.responseHeaders dictionary is modifiable, and new headers can be added to this attribute. 
+
+For example, if you needed to send a file not of the "text/html" Content-Type, such as a PDF file, you can do this::
+
+    CONNECTION.responseHeaders["Content-Type"] = "application/pdf"
+    CONNECTION.responseHeaders["Filename"] = "mypdf.pdf"
+
+
+**CONNECTION.setContentType()**
+    You can also set the content type of the response using this method. 
+    
+To set the content type of the response, you can use the CONNECTION.setContentType() method::
+    
+    CONNECTION.setContentType("application/pdf")
+    
+
+**CONNECTION.setStatus()**
+    This method sets the response code in the HTTP header.
+
+For example, the line below::
+    
+    CONNECTION.setStatus(404)
+    
+    
+You need to provide in the output that says what occurred::
+
+    CONNECTION.setStatus(404)
+    print "Page (" + CONNECTION.uri + ") Not Found."
+    
+(By the way, 404 errors are handled for you, so the above is just for demonstration.)
+
+
+HTTP Request Information
+------------------------
+
+This section discusses information received from the request, such as HTTP arguments, CGI environment variables, and the like.
+
+**CONNECTION.args**
+    This contains a dictionary of all of the HTTP arguments passed through the request, regardless of the HTTP method used (either POST or GET). 
+
+For example, if you had a URL like this::
+    
+    http://www.example.com/index.py?myArg=1
+    
+One can print out the "myArg" argument like this::
+
+    print CONNECTION.args["myArg"]
+    
+The above code will print "1". If you had a HTML form input like this::
+
+    <input type="hidden" name="myInput" value="2"/>
+
+The below code will print "2"::
+
+    print CONNECTION.args["myInput"]
+    
+
+**CONNECTION.extract_args()**
+    This method takes a number of undefined arguments and keyword arguments and returns a dictionary of the found values from the HTTP argument list (either from a POST or GET request.) 
+
+To retrieve a number of HTTP arguments and import a new dictionary into a variable called "newArgs", you would do this::
+
+    newArgs = CONNECTION.extract_args(baz, foo=1, bar=2)
+    
+
+In this example, we are searching for three HTTP arguments, "baz", "foo" and "bar". We are expecting that the "baz" argument exists, but for "foo" and "bar", we are setting default values to them in case those two HTTP arguments do not exist.
+
+    Note the order of the arguments - first, all of the HTTP arguments without default values are listed, then the HTTP arguments with default values are listed.
+
+**CONNECTION.env**
+    This attribute contains a CGI-like environment dictionary retrieved from the source HTTP server (either Apache or SkunkWeb's httpd service.)
+
+**CONNECTION.method**
+    This attribute contains the HTTP method the user requested with. It can be POST or GET (or if you want to get creative, any of the other HTTP methods available.) This information can also be retrieved in the CONNECTION.env['REQUEST_METHOD'] dictionary index.
+
+**CONNECTION.host**
+    This contains the host name of the SkunkWeb server.
+    
+**CONNECTION.uri**
+    The URI sent by the user to SkunkWeb. This might not be necessarily the URI sent by the client, but instead could be the URI created after using the SkunkWeb rewrite service or through mod_rewrite.
+
+**CONNECTION.realUri**
+    This is the actual URI sent by the client, untouched by a URL rewriter.
+
+
+Cookies
+-------
+
+There are two attributes that allow you to retrieve and set cookies.
+
+**CONNECTION.requestCookie**
+    This attribute contains a Cookie object (an instance of the SimpleCookie class in the Python Standard Library; view the Python Library Reference for more information) of the cookies sent by the client. 
+
+You can obtain information about the cookie, for example, by using the .value attribute in CONNECTION.requestCookie::
+
+    # I have a cookie named "id" and here is its value
+    print CONNECTION.requestCookie["id"].value
+    
+    # and here is the path for this cookie
+    print CONNECTION.requestCookie["id"]["path"]
+
+
+**CONNECTION.responseCookie**
+    This attribute contains a Cookie object (an instance from the SimpleCookie class in the Python standard library) that contains the cookies that will be sent to the client. 
+
+Here is an example of setting the cookie "myCookie"::
+
+    CONNECTION.responseCookie["myCookie"] = "12345"
+    CONNECTION.responseCookie["myCookie"]["path"] = "/"
+    CONNECTION.responseCookie["myCookie"]["domain"] = "www.example.com"
+    CONNECTION.responseCookie["myCookie"]["expires"] = "29-Apr-2003 15:00:00 GMT"   
+
+
+Redirection
+-----------
+
+**CONNECTION.redirect()**
+    This method takes one argument, the URL that the client should be redirected to. 
+
+If you want to redirect the client to "http://www.skunkweb.org", you would type this::
+
+    CONNECTION.redirect("http://www.skunkweb.org")
+    
+
+File Uploads
+------------
+
+If the HTML form was a form to upload a file::
+
+     <form enctype="multipart/form-data" method="POST">
+        <input type="file" NAME="myFile" size="40" /><br />
+        <input type="submit" />
+     </form>
+     
+then the file is stored in an object, which is an instance of the web.protocol._File class. The _File class has two attributes, filename and content::
+
+    print CONNECTION.args["myFile"].filename
+    
+    f = open(IMAGE_PATH + filename, "w")
+    f.write(CONNECTION.args["myFile"].content)
+    f.close()
+        
+    If you plan to do file uploads, it is suggested to set the documentTimeout parameter in sw.conf to some liberal value:
+    
+    Scope(Location('upload.html', documentTimeout=120))
+    
+Browser Information
+-------------------
+
+Information about the user's browser can be obtained through ``CONNECTION.browser.`` The ``browser`` attribute contains a number of its own attributes, each with different information about the user's browser.
+
+**CONNECTION.browser.name**
+    This will output the name of the browser (or browser type.) For example, if the browser is a Mozilla browser, what will output is "Mozilla."
+
+**CONNECTION.browser.version**
+    This outputs the version number of the browser. It generally takes the first version number it finds. For example, if we had this string::
+
+        Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.0.1) Gecko/20030306 Camino/0.7
+
+It would output "5.0".
+
+**CONNECTION.browser.lang**
+    This outputs the language set for the user's browser. If nothing is mentioned, this is blank.
+
+
+
+
+
+
+Session Management
+==================
+
+As a related part of the HTTP interface, session management in SkunkWeb is a way to manage the sessions of users as they go through a web application, using cookies. (URL-based sessions are not supported at this point.)
+
+SkunkWeb's session interface can store session information in a number of different backends:
+
+1. PostgreSQL
+2. MySQL
+3. Through The Component Cache
+4. The Filesystem
+5. Using PyDO (With PyDO, you can use the cached connections stored with supported database systems. Thus, this would be better than the first two backends listed here, because it is more efficient with connections, and it also supports all the database systems that PyDO supports.)
+
+Each one would be used based on your web application requirements and/or network configuration. To switch between them though is not complex.
+
+
+Setting Up A Session Backend
+----------------------------
+
+
+
+Reaping Old Sessions With MySQL And PostgreSQL
+----------------------------------------------
+
+[TODO]
+
+
+Using The Session API
+---------------------
+
+With all that above in place, you can start using the session features. You would get the session object from the CONNECTION object. When you retrieve the session, the session acts like a Python dictionary - you can add, delete and find session information like you would finding information with a Pythonic dictionary.
+
+Here is a rundown of all the session functions.
+
+**CONNECTION.getSession()**
+    You would use this method to retrieve the session information. This method returns a session object with a dictionary-like interface. It requires one argument, 'create' and optional parameters for the cookie to be set. 
+
+    To create a session, you would do this::
+    
+        session = CONNECTION.getSession(create=0)
+        
+        if session == None: # the session didn't exist
+            session = CONNECTION.getSession(create=1) 
+            # or session = CONNECTION.getSession(create=1, path="/", domain="example.com", secure=1)
+            
+            session["someArbitraryData"] = "Look, I am data!"
+            
+        
+        print session["someArbitraryData"]
+        
+        
+**CONNECTION.getSessionID()**
+    You can get the session ID of the current session using this method. This one is pretty straightforward - it takes one argument, 'create', just like in CONNECTION.getSession().
+
+    Here is an example if its use::
+    
+        print CONNECTION.getSessionID(create=0)
+
+
+**CONNECTION.removeSession()**
+    This method deletes the user's session and its data. It does not delete the cookie on the user's end, but just resets it to a blank value. [TODO: Or this is what it should do - find out.] 
+
+    To use::
+    
+        CONNECTION.removeSession()
+    
+    
+
+The below methods are available after using the CONNECTION.getSession() method, like this::
+
+    session = CONNECTION.getSession(create=0)
+    
+The methods are part of the sessionHandler.Session.Session class. Most methods in the Session class are the same as the Python dictionary methods. A few are relevant though.
+
+**session.getID()**
+    This returns the session ID, like CONNECTION.getSessionID. 
+
+**session.save()**
+    Well, this is not really necessary in most transactions, but if you are going to redirect to another page on the same server that has access to the session data or to another SkunkWeb server that has access to the session data, you have to call this. No choice - unless you don't want to save the data. Here is an example::
+    
+        session = CONNECTION.getSession(create=0)
+        session["someUserData"] = "This is useless user data!"
+        session.save()  
+        CONNECTION.redirect("http://www.example.com/skunkweb/mypage2.py")
+
+
+[TODO: There are more API elements to look at here.]
+        
+
+
+HTTP Authentication
+-------------------
+
+[TODO]
+
+CGI Services
+------------
+
+There are two Services in SkunkWeb that allow you to use CGIs within SkunkWeb.
+
+1. ``pycgi``: This allows you to use CGIs, written in Python, to be executed within a SkunkWeb process, as if it was a regular SkunkWeb top-level document.
+
+2. ``extcgi``: This allows you to run CGIs, written in either Python or some other language, in SkunkWeb. They would execute like normal CGIs, that is, it will load up the appropriate interpreter and execute the code within the interpreter and return the results.
+
+
+pycgi
+~~~~~
+
+Python CGI scripts, using pycgi, are stored in a document root. The CGI will only serve out if the pycgi handler is turned on to serve CGIs from a particular document root. To setup pycgi:
+
+1. In sw.conf, in the ``services`` list, add to it ``'pycgi'``.
+2. If the entire SkunkWeb server will only serve out CGIs, then you need to set the ``job`` configuration parameter in sw.conf to ``PYCGI_JOB``. Else, you need to make a scope and set the ``job`` parameter there. For example, if we only let CGIs execute in a pseudo-directory "cgi-bin", we would scope it like this::
+
+    Scope(Location('cgi-bin', documentRoot=/path/to/cgis, job=PYCGI_JOB))
+    
+3. When finished, save the sw.conf file, restart SkunkWeb, and drop your CGIs into the directory that you specified and hit the CGI in your browser to see it work.
+
+(Obviously, there are security precautions you need to take into account, such as file permissions and the like.)
+
+
+extcgi
+~~~~~~
+
+[TODO]
