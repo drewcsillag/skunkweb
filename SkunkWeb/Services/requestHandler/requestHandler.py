@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: requestHandler.py,v 1.2 2001/10/02 00:06:35 smulloni Exp $
+# $Id: requestHandler.py,v 1.3 2001/10/30 15:40:11 drew_csillag Exp $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 
@@ -120,6 +120,8 @@ class DocumentTimeout(exceptions.Exception): pass
         
 def SIGALRMHandler(*args):
     Configuration.trim()
+    ERROR('Throwing timeout exception')
+    signal.alarm(1) # in case they catch this exception
     raise DocumentTimeout, "timeout reached"
 
 
@@ -232,6 +234,9 @@ def addRequestHandler(protocol, ports):
 
 ########################################################################
 # $Log: requestHandler.py,v $
+# Revision 1.3  2001/10/30 15:40:11  drew_csillag
+# fixed a debug message so it won't barf on a tuple
+#
 # Revision 1.2  2001/10/02 00:06:35  smulloni
 # fixes for unix sockets, which were broken due to profound cognitive
 # impairment.
