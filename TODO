@@ -1,5 +1,5 @@
-#   Time-stamp: <02/05/10 12:21:30 smulloni> 
-#   $Id: TODO,v 1.38 2002/04/01 00:40:13 smulloni Exp $
+#   Time-stamp: <2002-06-18 17:05:26 acsillag> 
+#   $Id: TODO,v 1.39 2002/05/10 16:22:15 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -22,57 +22,29 @@ Do Quick release
 
 SkunkWeb 3.2
 ------------------------------
+L support for BETWEEN in PYDO.operators
 
-* add favicon.ico to demo content and SkunkWeb site in general
 TESTING:
-
-X vfs !!!
-X PyDO (including operators!)
 * userdir (I suspect scoping bug)
 
 NEW CODING:
-
-X pluggable mime-type handlers
 * tweak makefiles (for RPM_BUILD_ROOT) and documentation
 * gallery demo: multiple directories, config file 
-@ support for extra path info and urls with params after a semicolon
-L support for BETWEEN in PYDO.operators
-X documentRootFS should be single FS (maybe?)
-X vfs.MultiFS should support callable mounts
-X product service should use dynamic mount for products, fluctuating
-  depending on value of documentRoot
 + wizard -- show required fields, show picture of skunk
 
-CHORES
-
-* remove pars and references to it in configure
-
---
-
-X pluggable file retrieval system for AE (would have to rework pars)
-  parfile should use relative paths, like zip; parfs should work.
-
-X CGI adaptor (in place of mod_skunkweb, etc.)
-X! configure refinements (js) 
-X vfs: path translation for archive files 
-X fix any references to DateTime to mx.DateTime (or handle both)
-X update PyDO docs for sapdb
-X update MySQL driver
-X vfs: make mounts show up in directory listings for MultiFS;
-  make archive fses in which archives contain only a fragment of 
-  a filesystem still work
-X fix so everything (including PyDO) works with Python 2.2
-X product service and product packaging utility
-X import hook so we can import modules from the VFS (necessary for products).
+DOCS
+* a doc on the website that tells of the protocol frontends we support --
+  HTTP, FastCGI, SCGI, aecgi, and soon mod_jk and xitami
+* probably expand the above doc to the marketing bullet-points -- perhaps
+  a whitepaper too?
 
 SkunkWeb 3.3
 ------------------------------
-
 * testing framework built using product service (so client scripts 
   can know the location of server-side components they call)
 ? DAV support built on httpd
 * sapdb service, package and caching connection from PyDO
-* convert from using Makefile.pre.in to using distutils to build
+? convert from using Makefile.pre.in to using distutils to build
   and install our C modules 
 * support for running python cgis persistently, for running viewcvs, 
   mailman scripts, etc.
@@ -80,18 +52,15 @@ SkunkWeb 3.3
 ? dynamic scoping: to implement things like "if a url matches
   r'/~(\w)/(.*)', make Configuration.documentRootFS be
   LocalFS(os.path.expanduser('~%s') % username)" 
-X a rewrite service or builtin facility) that makes url rewriting
-  possible without writing a service, permits multiple rewriting
-  schemes to coexist without hook function order being an issue, and
-  works with scoping (perhaps a Rewrite directive for sw.conf?)
 ? ZODB FS implementation.
 ? sessionHandler's FSSessionStore rewritten to use VFS.
-X an authorization service that supports cookie, basic, digest,
-  and pluggable authorization stores.
 ? image handling service, built on basis of mime-type-specific handlers
 * reintroduce hot-debugging as an optional configuration dependency;
   write extension module using Pyrex?
-* Xitami adapter for SkunkWeb
+* Xitami adapter for SkunkWeb -- see webpages/xitami/index12.htm under the
+  Xitami distro
+* Apache Tomcat adaptor for SkunkWeb -- see jakarta-tomcat-connectors source
+  (at least in 4.0.4) under jk/doc
 * rewrite enhancements
 
 Future stuff
@@ -163,6 +132,36 @@ N add a superteam service
 
 DONE
 ------------------------------
+X an authorization service that supports cookie, basic, digest,
+  and pluggable authorization stores.
+X a rewrite service or builtin facility) that makes url rewriting
+  possible without writing a service, permits multiple rewriting
+  schemes to coexist without hook function order being an issue, and
+  works with scoping (perhaps a Rewrite directive for sw.conf?)
+X vfs !!!
+X PyDO (including operators!)
+X remove pars and references to it in configure
+X add favicon.ico to demo content and SkunkWeb site in general
+X pluggable file retrieval system for AE (would have to rework pars)
+  parfile should use relative paths, like zip; parfs should work.
+X CGI adaptor (in place of mod_skunkweb, etc.)
+X! configure refinements (js) 
+X vfs: path translation for archive files 
+X fix any references to DateTime to mx.DateTime (or handle both)
+X update PyDO docs for sapdb
+X update MySQL driver
+X vfs: make mounts show up in directory listings for MultiFS;
+  make archive fses in which archives contain only a fragment of 
+  a filesystem still work
+X fix so everything (including PyDO) works with Python 2.2
+X product service and product packaging utility
+X import hook so we can import modules from the VFS (necessary for products).
+@ support for extra path info and urls with params after a semicolon
+X pluggable mime-type handlers
+X documentRootFS should be single FS (maybe?)
+X vfs.MultiFS should support callable mounts
+X product service should use dynamic mount for products, fluctuating
+  depending on value of documentRoot
 X add semi-autoindex functionality
 X update PyDO/postconn docs about host|port thing
 X update PyDO/postconn docs about SERIAL columns
