@@ -1,3 +1,7 @@
+2002-11-25  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/formlib/views.py: wrapped some long lines.
+
 2002-11-25    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/views.py (ViewableForm.handleError): made it

@@ -25,10 +25,10 @@ import ecs
 class Viewable(object):
     def __init__(self, **view_attrs):
         if view_attrs.has_key('value'):
-            # setting value as a view attribute is not correct as the value of a field is
+            # setting value as a view attribute is
+            # not correct as the value of a field is
             # based initially upon the default value
-            raise ValueError
-            
+            raise ValueError, "value is not a settable view attribute"
         self.view_attrs=view_attrs
 
     def getView(self):
@@ -177,7 +177,13 @@ class TextAreaField(ViewableField):
                  default=None,
                  required=0,
                  **view_attrs):
-        ViewableField.__init__(self, name, description, default, required,  multiple=0,  **view_attrs)
+        ViewableField.__init__(self,
+                               name,
+                               description,
+                               default,
+                               required,
+                               multiple=0,
+                               **view_attrs)
         
         
     def getView(self):
@@ -197,13 +203,27 @@ class SelectField(ViewableDomainField):
     """\
     A component view which accepts a list of options for composing a <select> field:
     - a list of strings ['1','2', '3'] becomes
-      <select><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+      <select>
+       <option value="1">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option>
+      </select>
 
-    - a list of two element string tuples [('One', '1'), ('Two', '2')] becomes
-      <select><option value="1">One</option><option value="2">Two</option></select>
+    - a list of two element string tuples
+      [('One', '1'), ('Two', '2')] becomes
+      <select>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+      </select>
 
-    - a list of tuples, each  containing a string key and a subgroup list ['My Subgroup', ['1', '2']]:
-      <select><optgroup label="My Subgroup"><option value="1">1</option><option value="2">2</option></optgroup></select>
+    - a list of tuples, each  containing a string key and a subgroup
+      list ['My Subgroup', ['1', '2']]:
+      <select>
+       <optgroup label="My Subgroup">
+        <option value="1">1</option>
+        <option value="2">2</option>
+       </optgroup>
+      </select>
 
     Various combinations of the above basic listing schemes are possible 
     """
