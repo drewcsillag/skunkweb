@@ -1,3 +1,11 @@
+2004-01-20  Brian Olsen  <brian@qinternet.com>
+
+	* pylibs/PyDO/PyDO.py "order" for get...() methods can accept a
+	string or tuple of strings and tuples. Each tuple in the tuple must
+	contain two values, the column name and "ASC" or "DESC".
+
+	* pylibs/PyDO/PyDO2.py Same feature addition as in PyDO.py.
+
 2004-01-15  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* pylibs/AE/Cache.py (_mcCompileFunc): fix for Windows line
