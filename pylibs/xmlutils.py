@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <03/06/18 13:10:51 smulloni>
+# Time-stamp: <04/03/10 18:47:35 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -136,6 +136,22 @@ class XMLElement:
                 buff.append('/>')
         return ''.join(buff)
 
+    def __eq__(self, other):
+        try:
+            oname=other.name
+            onamespace=other.getNamespace()
+            ochildren=other.getChildren()
+        except AttributeError:
+            return False
+        else:
+            if self.name!=oname or onamespace!=self.getNamespace():
+                return False
+            if self.children==ochildren:
+                return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def hasAttribute(self, name):
         return self.__attributes.has_key(name)
             
@@ -231,6 +247,10 @@ class XMLElement:
     def getChild(self, name, namespace=None, index=0):
         i=-1
         for kid in self.children:
+            try:
+                nm=kid.name
+            except AttributeError:
+                continue
             if kid.name==name and (namespace==None \
                                    or namespace==kid.getNamespace()):
                 i+=1

@@ -1,3 +1,8 @@
+2004-03-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/xmlutils.py (XMLElement.__eq__, __ne__): added rich
+	comparison methods for testing equality; fix for AttributeError.
+
 2004-03-12  Jacob Smullyan <smulloni@smullyan.org>
      	* pylibs/PyDO/PyDO2.py: removed use of string module
 	in favor of string methods (stylistic nit-pick).
