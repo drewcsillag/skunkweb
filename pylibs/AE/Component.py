@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Component.py,v 1.10 2003/04/19 14:19:35 smulloni Exp $
+# $Id: Component.py,v 1.11 2003/05/01 20:45:58 drew_csillag Exp $
 # Time-stamp: <2001-07-10 12:20:38 drew>
 ########################################################################
 
@@ -70,19 +70,35 @@ def strBool(s):
     return 0
 
 NO, YES, DEFER, FORCE, OLD = range(5)
+
+
+_cachedict={'yes' : YES,
+            'true' : YES,
+            '1' : YES,
+            't' : YES,
+            'y' : YES,
+            'defer' : DEFER,
+            '2' : DEFER,
+            'force' : FORCE,
+            '3' : FORCE,
+            'old' : OLD,
+            '4' : OLD}
+
 def strCache(s):
-    s = str(s)
-    s = s.lower()
+    s = (str(s)).lower()
     DEBUG(COMPONENT, 's is %s' % s)
-    if s in ('yes','true', '1', 't', 'y'):
-        return YES
-    elif s in ('defer', '2'):
-        return DEFER
-    elif s in ('force', '3'):
-        return FORCE
-    elif s in ('old', '4'):
-        return OLD
-    return NO
+    return _cachedict.get(s, NO)
+##    if s in ('yes','true', '1', 't', 'y'):
+##        return YES
+##    elif s in ('defer', '2'):
+##        return DEFER
+##    elif s in ('force', '3'):
+##        return FORCE
+##    elif s in ('old', '4'):
+##        return OLD
+##    return NO
+
+
 
 class ComponentHandler:
     """
@@ -107,11 +123,6 @@ class DefaultComponentHandler(ComponentHandler):
                        cache,
                        compType,
                        srcModTime):
-
-        #if cache and not cache == DEFER:
-        #    #if defer is None or defer == -1:
-        #    cache = cfg.Configuration.defaultDefer and DEFER or cache
-        #DEBUG(COMPONENT, "callComponent %s %s" % (name, cache))
 
         name = _rectifyRelativeName(name)
         
@@ -159,26 +170,6 @@ class DefaultComponentHandler(ComponentHandler):
         #DEBUG(COMPONENT, "cache available")
 
         if cached.valid or cache == OLD: # cache not expired?
-            #if cache == OLD:
-            #    DEBUG(COMPONENT, 'cache %s, specified OLD'  % (
-            #        cached.valid and 'ok' or 'expired'))
-            #else: #cache is valid anyway
-            #    DEBUG(COMPONENT, "cache ok, using it")
-            #    if DEBUGIT(COMPONENT_TTL):
-            #        DEBUG(COMPONENT_TTL, "component %s" % name)
-            #        if cached.ttl >= 3600:
-            #            h = int(cached.ttl / 3600)
-            #            ttl = cached.ttl - h*3600
-            #            m = int(ttl / 60)
-            #            s = ttl - m*60
-            #            DEBUG(COMPONENT_TTL, "ttl %sh %sm %ss" % (h, m, s))
-            #        elif cached.ttl >= 60:
-            #            ttl = cached.ttl
-            #            m = int(ttl / 60)
-            #            s = ttl - m*60
-            #            DEBUG(COMPONENT_TTL, "ttl %sm %ss" % (m, s))
-            #        else:
-            #            DEBUG(COMPONENT_TTL, "ttl %ss" % cached.ttl)
             ACCESS("using cached form of %s" % name)
             if cached.valid:
                 expired = 0
@@ -191,12 +182,6 @@ class DefaultComponentHandler(ComponentHandler):
 
         if not (cache == DEFER) or _doingDeferred: # non-deferred execution?
             ACCESS("rendering %s (cache=yes)" % name)
-            #if not (cache == DEFER):
-            #    DEBUG(COMPONENT, "not deferred, rendering and caching")
-            #else:
-            #    DEBUG(COMPONENT,
-            #          "defer request overridden, rendering and caching now")
-            # render and cache
             return _renderComponentAndCache(name,
                                             argDict,
                                             auxArgs,
@@ -233,6 +218,43 @@ class DefaultComponentHandler(ComponentHandler):
 
 
 defaultHandler=DefaultComponentHandler()
+
+class CascadingComponentHandler(ComponentHandler):
+    def callComponent(self,
+                      callProtocol,
+                      name,
+                      argDict,
+                      cache,
+                      compType,
+                      srcModTime):
+        """
+        a protocol for component calls where
+        the actual component called is the first
+        encountered with a given base name, starting
+        at the specified path and ascending upwards until
+        the cascade root (by default, /).
+        """
+        # parse name to find if a root is specified.
+        i=name.find('...')
+        if i==-1:
+            root='/'
+            path=name
+        else:
+            root=name[:i] or '/'
+            path=name[i+3:]
+        path=rectifyRelativeName(path)
+        root=rectifyRelativeName(root)
+        # this will raise an exception if not found
+        comp=Cache._findPath(path, root)
+        return defaultHandler.callComponent(None,
+                                            comp,
+                                            argDict,
+                                            cache,
+                                            compType,
+                                            srcModTime)
+
+componentHandlers['cascade']=CascadingComponentHandler()       
+            
 
 def callComponent (name, argDict, cache = 0,
                    compType = DT_REGULAR,
@@ -382,70 +404,3 @@ def _getAuxArgs( argDict ):
 
     return ret
 
-########################################################################
-# $Log: Component.py,v $
-# Revision 1.10  2003/04/19 14:19:35  smulloni
-# changes for scopeable
-#
-# Revision 1.9  2002/08/13 14:41:01  drew_csillag
-# added rectifyRelativeName, which is just an alias of _rectifyRelativeName
-#
-# Revision 1.8  2002/06/25 15:08:59  drew_csillag
-# 	* pylibs/AE/Component.py: made it so the componentStack gets
-# 	trimmed properly.  When adding frames, we used to blindly append
-# 	to the componentStack which was fine unless an exception was
-# 	handled, in which case, there was extra stuff in the
-# 	componentStack (the frame that blew the exception).  Now, if the
-# 	topOfComponentStack is a valid index into the componentStack (due
-# 	to a caught exception), we replace from the top to the end of the
-# 	stack with a list containing the new frame, thus removing any
-# 	frame residues left from caught exceptions.
-#
-# Revision 1.7  2001/10/28 17:35:09  drew_csillag
-# finally got the caching bug fixed for good
-#
-# Revision 1.6  2001/10/25 01:27:53  drew_csillag
-# fixed so expiration actually works properly
-#
-# Revision 1.5  2001/08/27 19:52:51  drew_csillag
-# commented out more DEBUG statements
-#
-# Revision 1.4  2001/08/27 18:29:21  drew_csillag
-# * pylibs/AE/Component.py(_realRenderComponent): only tracks
-# time if debug flag is set
-#
-# Revision 1.3  2001/08/09 22:53:40  drew_csillag
-# ok, I'm a moron...  Copied the argument list from the def: to the call,
-# default arguments included, which of course become keyword arguments....
-#
-# DUH!!!!!!
-#
-# Revision 1.2  2001/08/09 22:14:44  drew_csillag
-# made so if call fullCallComponent, can figure out if it:
-#   a) was rendered
-#   b) was expired
-#
-# Revision 1.1.1.1  2001/08/05 15:00:41  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.19  2001/08/02 22:53:23  drew
-# fixed so include actually works
-#
-# Revision 1.18  2001/07/19 16:00:42  drew
-# removed default defer option
-#
-# Revision 1.17  2001/07/09 20:38:41  drew
-# added licence comments
-#
-# Revision 1.16  2001/07/09 16:32:39  drew
-# Component calls now can be yes, no, defer, force, old!
-#
-# Revision 1.15  2001/04/24 22:48:55  smullyan
-# AE.Component.DefaultComponentHandler is now a subclass of
-# ComponentHandler(duh).  Beginning to sketch aed_compat service.
-#
-# Revision 1.14  2001/04/13 04:21:23  smullyan
-# removed "file://" protocol for component calls, which made no sense.
-#
-########################################################################

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.16 2003/05/01 20:45:58 drew_csillag Exp $
+#$Id: Cache.py,v 1.17 2003/05/07 18:06:37 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -351,17 +351,6 @@ def _getPathFSAndMinistat(name):
     """
     path, st=_getPathAndMinistat(name)
     return path, Configuration.documentRootFS, st
-##    path=_fixPath(Configuration.documentRoot, name)
-##    st=fs.ministat(path)
-##    return (path, fs, st)
-##    for fs in Configuration.documentRootFS:
-##        try:
-##            st=fs.ministat(path)
-##            return (path, fs, st)
-##        except:
-##            continue
-##    raise vfs.VFSException, "file %s not found" % path
-    
 
 ## doc root access
 def _statDocRoot(name):
@@ -383,6 +372,19 @@ def _openDocRoot(name, mode='r'):
     """
     path, fs, st=_getPathFSAndMinistat(name)
     return fs.open(path, mode)
+
+def _findPath(name, root='/'):
+    docroot=Configuration.documentRoot
+    path=_fixPath(docroot, name)
+    root=_fixPath(docroot, root)
+    dname, fname=os.path.split(path)
+    ret=Configuration.documentRootFS.find_path(dname, fname, root)
+    if not ret:
+        raise FileNotFoundException, path
+    ret=ret[len(docroot):]
+    if not ret.startswith('/'):
+        return '/%s' % ret
+    return ret
 
 ## component cache access
 def _storeCachedComponent( path, value, svr ):
@@ -534,6 +536,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.17  2003/05/07 18:06:37  drew_csillag
+# added noTagDebug
+#
 # Revision 1.16  2003/05/01 20:45:58  drew_csillag
 # Changed license text
 #

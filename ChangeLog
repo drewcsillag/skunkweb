@@ -1,3 +1,10 @@
+2003-06-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Component.py (CascadingComponentHandler): added a
+	cascading component handler.
+
+	* pylibs/AE/Cache.py (_findPath): wrapper for vfs.FS.find_path.
+
 2003-06-08  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/manual/params.txt, docs/manual/instConfig.txt: adding BO's 
