@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.7 2002/01/21 22:56:03 smulloni Exp $
+# $Id: Makefile.in,v 1.8 2002/01/24 04:46:38 smulloni Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -118,7 +118,7 @@ install:
 	done
 
 	for comp in ${components}; do \
-	    if $(MAKE) -C $${comp} install; \
+	    if (cd $${comp}; $(MAKE) install); \
 	    then :; \
 	    else \
 		exit 1;\
@@ -146,19 +146,22 @@ install:
 
 distclean: clean
 	for comp in $(components); do \
-	    $(MAKE) -C $${comp} distclean; \
+	    (cd $${comp}; $(MAKE) distclean); \
 	done
 	-rm -f Makefile config.log config.status skunkweb.py sw.conf swmgr
 	-rm -f swpython.py SkunkWeb/bootloader.py
 
 clean: 
 	for comp in $(components); do \
-	    $(MAKE) -C $${comp} clean; \
+	    (cd $${comp}; $(MAKE) clean); \
 	done
 	-rm -f *~
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.8  2002/01/24 04:46:38  smulloni
+# fixed typo.
+#
 # Revision 1.7  2002/01/21 22:56:03  smulloni
 # cause gallery demo to be installed.
 #

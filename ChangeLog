@@ -1,3 +1,8 @@
+2002-01-25  Andrew Csillag  <drew@localhost.localdomain>
+
+	* Makefile.in, SkunkWeb/Makefile.in, pylibs/Makefile.in: made so
+	BSD Make won't barf on them.
+
 2002-01-23  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Makefile.in (DEMO_FILES): fixed typo.
