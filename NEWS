@@ -1,6 +1,12 @@
 Changes in 3.4 final
 ========================================
 * vfs.LocalFS now follows symlinks by default.
+* new usertracking service.
+* DT.DTLexer now permits colons in the plaintext 
+  state (you can now write <:url http://foo.com noescape=1:>
+  without putting the url in quotes).
+* fixes for Python 2.1 and Python 2.3a2 compatibility.
+* an ISBN field added to formlib.
 
 Changes in 3.4b2
 ========================================
