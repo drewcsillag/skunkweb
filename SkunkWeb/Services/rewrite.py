@@ -1,5 +1,5 @@
-# Time-stamp: <02/04/27 13:28:47 smulloni>
-# $Id: rewrite.py,v 1.1 2002/02/15 05:08:39 smulloni Exp $
+# Time-stamp: <02/05/01 12:59:44 smulloni>
+# $Id: rewrite.py,v 1.2 2002/04/27 19:28:48 smulloni Exp $
 
 ########################################################################
 #  
@@ -81,14 +81,14 @@ class Redirect(DynamicRewriter):
 
 ########################################################################
 
-def _dorewrite(match, connection, sessionDict, replacement):
+def _dorewrite(match, connection, sessionDict, replacement, key):
     if callable(replacement):
         if isinstance(replacement, DynamicRewriter):
             replacement.refresh(connection, sessionDict)
         connection.uri = match.re.sub(replacement, connection.uri)
     else:
         connection.uri = match.expand(replacement)
-    groupdict=m.groupdict()
+    groupdict=match.groupdict()
     if Configuration.rewriteMatchToArgs:
         connection.args.update(groupdict)
     sessionDict['rewriteRules'][key].update(groupdict)
@@ -132,7 +132,7 @@ def _rewritePre(connection, sessionDict):
             except:
                 logException()
 
-            _dorewrite(m, connection, sessionDict, rule[1])
+            _dorewrite(m, connection, sessionDict, rule[1], key)
             
             try:
                 DEBUG(REWRITE, 'executing PostRewrite hook')
@@ -167,6 +167,9 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.2  2002/04/27 19:28:48  smulloni
+# implemented dynamic rewriting in rewrite service; fixed Include directive.
+#
 # Revision 1.1  2002/02/15 05:08:39  smulloni
 # added Spruce Weber's rewrite service.
 #

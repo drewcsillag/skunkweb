@@ -1,3 +1,6 @@
+2002-05-01  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/rewrite.py (_dorewrite): fixed typo.
 
 2002-04-29  Andrew Csillag  <drew@localhost.localdomain>
 
