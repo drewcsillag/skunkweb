@@ -2,6 +2,7 @@
 
 	* pylibs/flowmgr/parser.py: parser for flow manager, partially
 	verified.  
+	(pyeval): made it a function, not a lambda.
 
 2002-08-30  Jacob Smullyan  <jsmullyan@wnyc.org>
 

@@ -1,5 +1,5 @@
-# Time-stamp: <02/09/04 15:01:07 smulloni>
-# $Id: parser.py,v 1.1 2002/09/03 20:40:36 smulloni Exp $
+# Time-stamp: <02/09/04 15:13:46 smulloni>
+# $Id: parser.py,v 1.2 2002/09/04 19:05:25 smulloni Exp $
 
 ####################################################################### 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -250,8 +250,15 @@ class Expr:
         else:
             raise ExprTypeNotSupported, self.type
         
-EXPR_TYPE_MAP={'pyeval' : lambda x, s: eval(x, {}, s)} 
-        
+def pyeval(data, state):
+    if type(data) in (types.ListType, types.TupleType):
+        data=''.join(data)
+    else:
+        data=str(data)
+    return eval(data, {}, state)
+
+EXPR_TYPE_MAP={'pyeval' : pyeval}
+
 class Field:
     def __init__(self, fieldname, data, id=None):
         self.fieldname=fieldname
