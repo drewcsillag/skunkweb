@@ -25,7 +25,7 @@ class Config:
         added for compatibility with the
         config object used by SkunkWeb
         """
-        self._mergeDefaultsKw(kw)
+        self._mergeDefaultsKw(**kw)
         for dict in args:
             self._mergeDict(dict)
 

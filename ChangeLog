@@ -1,3 +1,8 @@
+2003-04-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/cfg.py (Config.mergeDefaults): fixed typo
+	that has been there forever.
+
 2003-04-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/MySQL/__init__.py: cleanup of SimpleQueryTest, thanks to
