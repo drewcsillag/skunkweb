@@ -14,7 +14,7 @@ LoadModule skunkweb_module @APACHE_MODULES_DIR@/mod_skunkweb.so
 
 # Socket address of SkunkWeb.  Either a path to a unix domain socket or
 # a host:port pair for a TCP socket
-SkunkWebSocketAddress @prefix@/var/aedsock
+SkunkWebSocketAddress localhost:9888
 
 # Number of times to retry accessing the SkunkWeb
 SkunkWebRetries	3	
