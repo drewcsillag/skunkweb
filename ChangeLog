@@ -1,3 +1,7 @@
+2001-12-26  Andrew Csillag  <drew@localhost.localdomain>
+
+	* docs/stmlrefer/stmlrefer.tex: fixed desc of <:msg:> tag
+
 2001-12-20  Andrew Csillag  <drew@localhost.localdomain>
 
 	* pylibs/DateTime.py: removed
