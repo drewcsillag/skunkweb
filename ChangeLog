@@ -6,7 +6,7 @@
 
 	* SkunkWeb/Services/httpd/protocol.py
 	(HTTPMethodRequestParser._getEnv):  permit httpd service to be run
-	on a UNIX socket, as requested by Remi Dilon. 
+	on a UNIX socket, as requested by Remi Delon. 
 
 2003-02-11  Jacob Smullyan  <smulloni@smullyan.org>
 
