@@ -87,17 +87,19 @@ class DTToken:
     def __repr__(self):
         import string
         tupvals=string.join(map(repr, self.tupargs),' ')
-
-        if tupvals: tupvals=' '+tupvals
-
+        if tupvals:
+            tupvals=' '+tupvals
         dl=[]
         for k,v in self.dictargs.items():
             dl.append('%s=%s' % (k, repr(v)))
         dictvals=string.join(dl, ' ')
-
-        if dictvals: dictvals=' '+dictvals
-
-        return '<:%s%s%s:>' % (self.tagname,tupvals,dictvals)
+        if dictvals:
+            dictvals=' '+dictvals
+        close=self.isclose and '/' or ''
+        return '<:%s%s%s%s:>' % (close,
+                                 self.tagname,
+                                 tupvals,
+                                 dictvals)
 
 (INIT, GOTLT, PLAINTAGTEXT, SQUOT, BQUOT, DQUOT, GOTCCOL, BACKSLASH,
  BEGINCOMMENTCHECK, INCOMMENT, INCOMMENTSTAR, INCOMMENTSTARCOL) = range(12)
