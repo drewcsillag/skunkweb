@@ -3,6 +3,7 @@ What is PyDO?
 PyDO is a Object-Relational database access tool. Unlike many other
 O-R database access tools, PyDO:
 
+    * easy to wrap your head around
     * doesn't constrain your schema to what it thinks databases should
       look like
     * if you need/want to override the way it does it's work, it's not
@@ -30,8 +31,9 @@ Get it at:
     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
 
 If you are going to use MySQL, get, build and install the Python MySQL
-module.  The MySQL stuff hasn't been extensively tested, so you may
-have problems!  Let me know though and we'll remedy that.
+module.  The MySQL stuff hasn't been extensively tested, and as such
+may be quite broken, so you may have problems!  Let me know though and
+we'll remedy that.
 
 Files of Note:
     PyDBI.py      - the database code loader thing
@@ -41,6 +43,7 @@ Files of Note:
     mysqlconn.py  - the MySQL driver
     overview      - An overview of PyDO and why it's cool
     example       - a walk through example on how to write PyDO objects
+    example.py    - a very simple sample PyDO-using module
     doc           - a bit more granular detail on PyDO stuff
     conn.readme   - what the connection interface object looks like
     ogenscript.py - a cool PyDO class generator that grovels over the
