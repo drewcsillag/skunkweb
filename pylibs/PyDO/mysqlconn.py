@@ -64,7 +64,7 @@ class PyDOMySQL:
     
     def sqlStringAndValue(self, val, attr, dbtype):
         newval = self.typeCheckAndConvert(val, attr, dbtype)
-        if _isString(dbtype):
+        if _isString(dbtype) and not val is None:
             newval = "'" + MySQLdb.escape_string(str(newval)) + "'"
         return str(newval), None
 
