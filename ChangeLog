@@ -1,3 +1,10 @@
+2002-07-23  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/util/cache_reaper.py.in: add @libdir@/pylibs to
+	sys.path, and set default cache directory to @prefix@/cache.
+	Thanks to Simo Salminen for pointing out that this would be a good
+	idea.
+
 2002-07-20  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/ae_component.py (__initConfig): error

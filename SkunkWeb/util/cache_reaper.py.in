@@ -17,6 +17,8 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 import sys
+
+sys.path.append('@libdir@/pylibs')
 import os
 import cPickle
 import time
@@ -29,7 +31,7 @@ from SkunkExcept import *
 _CACHE_EXP_MODE = 0740
 
 conf = Config.Config([
-    Config.el('cachedir', 'cache directory', '@prefix@/webcache',
+    Config.el('cachedir', 'cache directory', '@prefix@/cache',
               'c', 'cachedir', 'pathtocache'),
     Config.el('deadtime', 'how long after cache entry dies do we delete it',
               24 * 60 * 60, 'd', 'deadtime', 'seconds', convert_hook = int),
