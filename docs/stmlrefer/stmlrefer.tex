@@ -1743,7 +1743,7 @@ cache control:
 \section{\texttt{<:import:>}}
 \label{tagimport}
 
-\begin{verbatim}<:import name [items]:>\end{verbatim}
+\begin{verbatim}<:import name [items] [as]:>\end{verbatim}
 
 Imports a Python code module into the STML template. This
 is practically identical to the \texttt{import}
@@ -1755,6 +1755,8 @@ in the module to copy into the STML template's namespace.
 If items is '*', all names in the module (that don't begin
 with '_') are copied into the STML template's namespace.
 
+If the \texttt{as} parameter is specified, it acts just like the
+\texttt{as} clause to the Python \texttt{import} statement.
 Some examples, with their equivalents in straight Python:
 
 \begin{argdesc}
@@ -1764,6 +1766,7 @@ Some examples, with their equivalents in straight Python:
 \item[<:import string find:>]   \texttt{from string import find}
 \item[<:import string "find replace join":>]   \texttt{from string import find, replace, join}
 \item[<:import string *:>]   \texttt{from string import *}
+\item[<:import string find string_find:> \texttt{from string import find as string_find}
 \end{argdesc}
 
 \textbf{Note on where modules come from:} When you
