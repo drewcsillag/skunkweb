@@ -1,3 +1,9 @@
+2001-11-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/userdir.py (__initHooks): changed hooks used,
+	so userdir will work with httpd (cleanup was broken, as EndSession
+	is only called by httpd at the end of an http session).
+
 2001-10-30  Andrew Csillag  <drew@localhost.localdomain>
 
 	* 3.1.3 cut
