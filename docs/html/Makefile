@@ -48,6 +48,9 @@ devel/devel.html:  ../devel/devel.tex ../devel/ae.tex
 stmlrefer/stmlrefer.html: ../stmlrefer/stmlrefer.tex
 	$(MKHTML) $(TOPDIR)/stmlrefer/stmlrefer.tex
 
+opman/opman.html: ../opman/opman.tex
+	$(MKHTML) $(TOPDIR)/opman/opman.tex
+
 clean:
 	echo
 
@@ -61,12 +64,12 @@ distclean realclean clobber: clean
 
 # It's at the end of the file since it wedges font-lock in XEmacs.
 
-BOILERPLATE=$(TOPDIR)/texinputs/boilerplate.tex
-index.html: $(TOPDIR)/html/index.html.in $(BOILERPLATE)
-	REL=`grep '\\release{' $(BOILERPLATE) | sed 's/.*\\release{\(.*\)}.*$$/\1/'`; \
-		REL=`echo "$$REL" | sed 's/[$$]//g'`; \
-		sed "s/@RELEASE@/$$REL/g" $< >TEMP
-	DATE=`grep '\\date{' $(BOILERPLATE) | sed 's/.*\\date{\(.*\)}.*$$/\1/'` ; \
-		if [ "$$DATE" = '\today' ] ; then DATE=`date '+%B %e, %Y'`;fi;\
-		sed "s/@DATE@/$$DATE/g" TEMP >$@
-	rm -f TEMP
+#BOILERPLATE=$(TOPDIR)/texinputs/boilerplate.tex
+#index.html: $(TOPDIR)/html/index.html.in $(BOILERPLATE)
+#	 REL=`grep '\\release{' $(BOILERPLATE) | sed 's/.*\\release{\(.*\)}.*$$/\1/'`; \
+#		 REL=`echo "$$REL" | sed 's/[$$]//g'`; \
+#		 sed "s/@RELEASE@/$$REL/g" $< >TEMP
+#	 DATE=`grep '\\date{' $(BOILERPLATE) | sed 's/.*\\date{\(.*\)}.*$$/\1/'` ; \
+#		 if [ "$$DATE" = '\today' ] ; then DATE=`date '+%B %e, %Y'`;fi;\
+#		 sed "s/@DATE@/$$DATE/g" TEMP >$@
+#	 rm -f TEMP
