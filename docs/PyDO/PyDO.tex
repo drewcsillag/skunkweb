@@ -207,8 +207,11 @@ connection):
 \item[pydo:postgresql:user:cache] uses the connection caching of the
 \texttt{PostgreSql} pylib that is used by the \texttt{postgresql}
 SkunkWeb service.
-\item[pydo:postgresql:normal_postgresql\_connstr] use the \texttt{pgdb}
-module directly.
+\item[pydo:postgresql:normal\_postgresql\_connstr] use the
+\texttt{pgdb} module directly.  In addition, if, in lieu of the host
+portion of the normal PostgreSQL connection string you put
+\texttt{host|port} instead, it will connect to the database listening
+on the port \emph{port} instead of the default port.
 \end{argdesc}
 
 For MySQL, which hasn't been tested all that much, only the non-caching
