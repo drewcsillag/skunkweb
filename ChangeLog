@@ -1,3 +1,8 @@
+2002-03-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Makefile.in (DEMO_FILES): adding Drew's new files to 
+	makefile
+
 2002-03-18  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/sample_webdocs/demo/geeknews/newsvac.comp, dcomps/newsvac.pydcmp:
