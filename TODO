@@ -1,5 +1,5 @@
-#   Time-stamp: <2001-10-01 10:52:39 drew> 
-#   $Id: TODO,v 1.14 2001/09/21 20:16:31 drew_csillag Exp $
+#   Time-stamp: <2001-10-24 21:31:33 drew> 
+#   $Id: TODO,v 1.15 2001/10/01 14:48:45 drew_csillag Exp $
 
 * - TODO
 - - low priority
@@ -20,14 +20,11 @@ Push release to sourceforge
 Do Quick release
     https://sourceforge.net/project/admin/qrs.php?package_id=&group_id=32756
 
-SkunkWeb 3.1
-------------------------------
-* unix socket fixes
-
 SkunkWeb 3.2
 ------------------------------
 * pluggable file retrieval system for AE (would have to rework pars)
 * DAV support built on httpd;
+* CGI adaptor (in place of mod_skunkweb, etc.)
 
 Future stuff
 ------------------------------

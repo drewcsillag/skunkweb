@@ -1,3 +1,13 @@
+2001-10-24  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* ACKS: added Stephen Coursen
+
+	* pylibs/AE/Executables.py: fixed so that stdout always points
+	to the right place
+
+	* pylibs/AE/Component.py: fix so expiration actually works (
+	specifically <:cache tags:>)
+	
 2001-10-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/devel/devel.tex (subsection{The \texttt{SkunkWeb.Configuration} ``Module''}): 
