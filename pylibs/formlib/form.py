@@ -19,7 +19,7 @@
 from containers import FieldContainer
 from hooks import Hook
 
-__all__=['UNDEF', 'Field', 'DomainField', 'Form']
+__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError']
 
 UNDEF=object()
 
@@ -78,9 +78,7 @@ class Field(object):
         
     def validate(self, form=None):
         """\
-        Override to return a mapping where the key is the
-        subclass instance failing validation and the
-        value is a message indicating the validation failure
+        Override to return a list of FormErrors
         """
         pass
 
@@ -154,7 +152,8 @@ class Form(object):
         self.validators=validators or []
         self.processHook=Hook(processors)
         self.submitted=None
-        self.errors={}
+        self.errors=FieldContainer(fieldmapper=_getfield,
+                                   storelists=1)
         self.state=None
 
     def getData(self):
@@ -179,17 +178,16 @@ class Form(object):
         for f in self.fields:
             f.clearValue()
         self.submitted=0
-        self.errors={}
+        self.errors[:]=[]
         self.state=None
         
     def validate(self):
-        errors={}
+        self.errors[:]=[]
         for l in ([f.validate for f in self.fields], self.validators):
             for func in l:
                 e=func(self)
                 if e:
-                    errors.update(e)
-        self.errors=errors
+                    self.errors.extend(e)
 
     def process(self, argdict, statemgr, ns):
         # this needs to have some arguments; for instance,
@@ -199,8 +197,14 @@ class Form(object):
         # in more or less everything available in the dispatcher.
         return self.processHook(self, argdict, statemgr, ns)
     
-    def next(self):
-        pass
-
 def _getname(x):
     return x.name
+
+class FormError(object):
+    def __init__(self, field, errormsg):
+        self.field=field
+        self.errormsg=errormsg
+
+def _getfield(x):
+    return x.field
+

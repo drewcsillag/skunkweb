@@ -1,10 +1,20 @@
 2002-11-25    <smulloni@smullbola.smullyan.org>
 
+	* pylibs/formlib/validates.py: changed the validation routines
+	to use FormError lists.
+
+	* pylibs/formlib/form.py (Form.validate): errors is now a
+	FieldContainer storing lists of FormErrors for every field.
+
+	* pylibs/formlib/views.py (ViewableForm.getView): made form view
+	work with a list of errors returned for a field rather than a
+	single one. 
+
 	* pylibs/formlib/dispatcher.py (LinearFlowManager.next): removed
 	unnecessary End class, and permit a Goto with a null formname.
 
 	* test/formlib/htdocs/test{1-4}.pyinc: changed value view_attr to
-	default in several places.
+	default in several places; changed validation to use FormErrors.
 
 2002-11-24  Jacob Smullyan  <smulloni@smullyan.org>
 

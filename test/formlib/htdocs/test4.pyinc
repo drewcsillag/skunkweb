@@ -23,23 +23,23 @@ subfld = SubmitField(default="Submit")
 fields=[usernmfld, passwordfld, visitedfld, firstnmfld, lastnmfld, statefld, provincefld, countryfld, postalfld, subfld]
 
 def validate(form):
-    errors={}
+    errors=[]
     usnm = form.fields['username']
     psswd = form.fields['password']
     cntry = form.fields['country']
     prov = form.fields['province']
 
     if not usnm.value:
-        errors[usnm] = 'Please enter a valid username to submit changes.'
+        errors.append(FormError(usnm, 'Please enter a valid username to submit changes.'))
     if not psswd.value:
-        errors[psswd] = 'Please enter a valid password to submit changes.'
+        errors.append(FormError(psswd,'Please enter a valid password to submit changes.'))
 
     if cntry.value != "US":
         if not prov.value:
-            errors[prov]="Please enter a province for non-US residents."
+            errors.append(FormError(prov,"Please enter a province for non-US residents."))
 
     if errors:
-        errors[form]='There were errors with your submission.'
+        errors.append(FormError(form, 'There were errors with your submission.'))
 
     return errors
 

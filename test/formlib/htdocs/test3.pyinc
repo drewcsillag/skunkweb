@@ -30,13 +30,14 @@ fields=[TextField('username',
         ]
 
 def validate(form):
-    errors={}
+    errors=[]
     if form.fields.has_key('username') \
            and form.fields['username'].value=='bizarre':
-        errors[form.fields['username']]='No bizarre usernames, please'
+        errors.append(FormError(form.fields['username'], 'No bizarre usernames, please'))
     if errors:
-        errors[form]='There were errors with your submission, fruitcake.'
+        errors.append(FormError(form, 'There were errors with your submission, fruitcake.'))
     return errors
+
 form=ViewableForm(name="test2",
                   method="POST",
                   fields=fields,

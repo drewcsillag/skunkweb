@@ -1,20 +1,48 @@
 from formlib import *
 
-psswdFld = PasswordField('password', description="Required Password", size="40", maxlength="39", required=1)
-txtFld = TextField('textfield', description="Required Textfield", size="40", maxlength="39", required=1)
-btnIptFld = ButtonInputField('buttoninput', description="ButtonInputField", size="40", maxlength="39", default="Click Me")
+psswdFld = PasswordField('password',
+                         description="Required Password",
+                         size="40",
+                         maxlength="39",
+                         required=1)
+txtFld = TextField('textfield',
+                   description="Required Textfield",
+                   size="40",
+                   maxlength="39",
+                   required=1)
+btnIptFld = ButtonInputField('buttoninput',
+                             description="ButtonInputField",
+                             size="40",
+                             maxlength="39",
+                             default="Click Me")
 fileFld = FileField('file', description="FileField", size="40")
-hdnFld = HiddenField('hidden', description="HiddenField", default="default")
-imgFld = ImageField('image', description="ImageField", src="http://skunkweb.sourceforge.net/images/skunkWEB1_04.gif")
-btnFld = ButtonField("content", 'button', 'ButtonField', default='default') 
-txtAreaFld = TextAreaField("textarea", description="TextAreaField", rows="5", cols="20", default="default value")
+hdnFld = HiddenField('hidden',
+                     description="HiddenField",
+                     default="default")
+imgFld = ImageField('image',
+                    description="ImageField",
+                    src="http://skunkweb.sourceforge.net/images/skunkWEB1_04.gif")
+btnFld = ButtonField("content",
+                     'button',
+                     'ButtonField',
+                     default='default') 
+txtAreaFld = TextAreaField("textarea",
+                           description="TextAreaField",
+                           rows="5",
+                           cols="20",
+                           default="default value")
 
 selFld = SelectField('select', 
-                     ['singlestring', ('Non grouped value', 'non_grouped_value' ), ('Default', 'default'), 
+                     ['singlestring',
+                      ('Non grouped value', 'non_grouped_value' ),
+                      ('Default', 'default'), 
                       ('Sublist of single strings', ['1', '2' ,'3']),
                       ('Sublist of tuples', [('One','1'),('Two','2'),('Three','3')])
                      ],
-                     'Required SelectField', default='default', required=1, multiple=1)
+                     'Required SelectField',
+                     default='Required SelectField',
+                     required=1,
+                     multiple=1)
 
 checkboxGrpFld = ButtonGroupField('checkboxgroup', 
                                   ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 

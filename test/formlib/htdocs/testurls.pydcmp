@@ -3,13 +3,16 @@ import os
 import AE.Component
 import SkunkWeb.Configuration
 
-testRE=re.compile(r'^test(\d*)\.html$')
+testRE=re.compile(r'^test(.*)\.html$')
 
 def getTestUrls(fs, directory):
     m=[testRE.match(x) for x in fs.listdir(directory)]
-    f=[(int(y.group(1)), y.group(0)) for y in filter(None, m)]
+    f=[x.group(0) for x in filter(None, m)]
     f.sort()
-    return [x[1] for x in f]
+    return f
+    #f=[(int(y.group(1)), y.group(0)) for y in filter(None, m)]
+    #f.sort()
+    #return [x[1] for x in f]
     
 directory=os.path.dirname(SkunkWeb.Configuration.documentRoot+AE.Component.rectifyRelativeName(uri))+'/'
 fs=SkunkWeb.Configuration.documentRootFS
