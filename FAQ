@@ -8,15 +8,19 @@ NOTE: the anwers to questions 1,2,3,4 may be out of date!!!!
 4) SkunkWeb/PHP comparison
 5) Is there any way of allowing [some] files to be passed straight through, 
    without compiling them?
-6) Is there any way for a pydcmp to get hold of the value of docroot?
+6) Is there any way to get hold of the value of the document root 
+from within a component?
 7) How do you run CGIs and SkunkWeb with mod_skunkweb in the same
    server or virtual host? SkunkWebExclude doesn't work!
 8) My sw.conf file is unmanageable!  Can I break it up into several files?
 9) How do I get at what in CGI land would be PATH_INFO?
-10) I wan't to make the <:val:> tag shorter like ASP/PSP.  
-11) Is it possible to add to a list of file extensions which types of
+10) I've upgraded from Python 2.1 to 2.2, and now I'm getting an
+   exception: PicklingError, "Can't pickle foo: its not found as
+   __main__.foo".  What is going on?
+11) I wan't to make the <:val:> tag shorter like ASP/PSP.  
+12) Is it possible to add to a list of file extensions which types of
     top-level documents SkunkWeb can process?
-12) I want to run multiple virtual servers. 
+13) I want to run multiple virtual servers. 
 
 
 ----------------------------------------------------------------------
@@ -75,10 +79,10 @@ file in the docs directory, that goes into a bit more detail.
  * ZODB is the filesystem.  Many people have written about how having
    the templates in the ZODB instead of a filesystem can be a pain
    because you can't use all of your usual filesystem
-   tools/editors/etc. so I won't go into too much detail on it.  SkunkWeb 
-   uses a virtual filesystem, so it can use the local file system or other 
-   data stores in arbitrarily configurable combination, depending on
-   your needs.
+   tools/editors/etc., so I won't go into too much detail on it.
+   SkunkWeb uses a virtual filesystem, so it can use the local file
+   system or other data stores in arbitrarily configurable
+   combination, depending on your needs.
 
  * Zope has a whole web-based content management system.  Again, for
    the less experienced, this is a plus, but if you are dealing with
@@ -86,8 +90,8 @@ file in the docs directory, that goes into a bit more detail.
    pain.  
 
  * To call arbitrary code from Zope templates, you have to create
-   Python Method objects, which let's be honest, is a pain.  STML has
-   an import tag which allows you to just get to work.
+   Python Method objects.  STML has an import tag which allows you to
+   just get to work.
 
  * SkunkWeb doesn't force programmers to accept magical implicit behaviors 
    like acquisition, as Zope does; you don't need to "drink the Kool-Aid" and
@@ -190,8 +194,7 @@ Can you add a SkunkWeb-PHP comparison to your FAQ?
    supports two (Python and STML) and could support more (an ASP-style
    templating language comes to mind).
  
-5)Dave Swegen wrote:
-> Is there any way of allowing [some] files to be passed straight through, 
+5)Is there any way of allowing [some] files to be passed straight through, 
 without compiling them?
 
 One solution is a scoping directive in sw.conf (or in another file which you 
@@ -205,9 +208,8 @@ wanted also.  If you are using Apache, the SkunkWebExcludeDocs
 directive can also be used to make Apache serve a tree of documents
 with its default handler.
 
-6)On Fri, Oct 12, 2001 at 10:33:42AM +0100, Dave Swegen wrote:
-> Is there any way for a pydcmp to get hold of the value of docroot? At
-> the moment I'm having to hardcode the value in, which is somewhat ugly.
+6) Is there any way to get hold of the value of the document root 
+from within a component?
 
 Sure.
 
@@ -253,18 +255,35 @@ Include("/usr/local/skunk/etc/rewrite.conf") # etc.
 
 9) How do I get at what in CGI land would be PATH_INFO?
 
-Add the rewrite service to your sw.conf services listing and 
+SkunkWeb does not by default populate the PATH_INFO
+environmental variable (at least not with meaningful information).
+However, there are several ways of doing it.
+
+You can add the rewrite service to your sw.conf services listing and 
 add this:
 
-rewriteRules=(r'(.*\..*?)(?P<pathinfo>/.*)', r'\1')
+rewriteRules=[(r'(.*\..*?)(?P<pathinfo>/.*)', r'\1')]
 
 and a cgi argument (accessed via CONNECTION.args or <:args:>) named
-pathinfo will contain what you want.  The vfs.FS method split_extra()
-will also give you this if you compare a requested path with the
-filesystem; but SkunkWeb does not by default populate the PATH_INFO
-environmental variable.
+pathinfo will contain what you want.  This will work for paths
+like /index.html/garbanzo/fudge.  Or, also using rewrite, 
+you can use the ExtraPathFinder dynamic rewriter:
 
-10) I wan't to make the <:val:> tag shorter like ASP/PSP.  
+rewriteRules=[(r'/where/I/want/this/pathinfo', ExtraPathFinder())]
+
+This uses the vfs.FS split_extra() method to compare a requested path 
+with the filesystem.
+
+10) I've upgraded from Python 2.1 to 2.2, and now I'm getting an
+exception: PicklingError, "Can't pickle foo: its not found as
+__main__.foo".  What is going on?
+
+In Python 2.2, it is no longer possible to pickle classes or functions
+that are not defined in modules, because the definitions of said objects
+are not stored in the pickle and need to be retrieved by the unpickler.
+
+
+11) I wan't to make the <:val:> tag shorter like ASP/PSP.  
 
 There are a couple of solutions here.  First you can make a <:v:> tag
 (to save typing val), by creating a service that contains:
@@ -292,7 +311,7 @@ between the backticks.
 (global-set-key "\M-c" 'insert-val-tag)
 
 
-11) Is it possible to add to a list of file extensions which types of
+12) Is it possible to add to a list of file extensions which types of
 top-level documents SkunkWeb can process?
 
 Yes!
@@ -320,7 +339,7 @@ However, if you wanted to use a different file extension to be text/html
 extension to mime.types.
  
 
-12) I want to run multiple virtual servers. 
+13) I want to run multiple virtual servers. 
 
 Obviously, you have to configure them at the Apache level (assuming
 you're using mod_skunkweb) and enable SkunkWeb processing for them.
@@ -334,3 +353,4 @@ Scope(Host('bar.org',
             documentRoot='/home/bar/public_html',
             componentCacheRoot='/path/to/bar-cache',
             compileCacheRoot='/path/to/bar-cache'))
+

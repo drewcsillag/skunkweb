@@ -1,3 +1,7 @@
+2003-04-03  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* FAQ: reconciled conflicts, added an entry and did some editing.
+
 2003-04-03    <drew@loki.sai-office>
 
 	* pylibs/AE/Cache.py: added runOutOfCache and dontCacheSource
@@ -8,7 +12,21 @@
 
 	* ACKS: added Hy Ginsberg
 
+2003-04-02  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+
+	* pylibs/PostgreSql/__init__.py (SimpleQueryTest): added
+	connection_test capability to verify connections (useful
+	if the database is being accessed remotely and connections
+	are liable to intermittently going south).
+
+	* SkunkWeb/SkunkWeb/Server.py (start): removing "server starting"
+	message that I don't want to see any more. 
+	
 2003-04-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/swpython.py.in (usage): added "-q", "--quiet" options
+	to suppress the "Initializing..." message that I'm tired of
+	seeing.
 
 	* SkunkWeb/swmgr.in: You can now stop or restart the daemon
 	without running swpython if you pass swmgr the "-f" option (and if
