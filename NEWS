@@ -2,7 +2,7 @@ Changes in 3.2.3
 ========================================
 * added support for the SCGI Protocol 
   - http://www.mems-exchange.org/software/scgi/
-* document updates/revamps (currently stmlrefer and ops)
+* document updates/revamps (currently stmlrefer)
 * now is more persistant about the timeout exception (it's reraised each
   second after a timeout occurs)
 * now should build with non-GNU makes (specifically BSD make)
