@@ -87,13 +87,39 @@ class Portuguese(_DateLocale):
 
 Portuguese = Portuguese()
 
+
+class German(_DateLocale):
+    """The german date locale"""
+    Weekday = ('Montag','Dienstag','Mittwoch','Donnerstag',
+              'Freitag','Samstag','Sonntag')
+
+    Day = _make_day_lookup(Weekday)
+
+    WeekdayAbbr = ('Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So')
+
+    DayAbbr = _make_day_lookup(WeekdayAbbr)
+
+    Month = (None,
+	     'Januar','Februar','März','April','Mai','Juni',
+	     'Juli','August','September','Oktober','November','Dezember')
+
+    MonthAbbr = (None,
+		'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
+		'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez')
+
+    YourTime = 'ihre lokale Zeit'
+
+German = German()
+
+
 ###
 
 _langs = {'eng': English,
           'esp': Spanish,
 	  # backward compatibility
           'spa': Spanish,
-	  'por': Portuguese}
+	  'por': Portuguese,
+          'deu': German}
 
 def lang_lookup(lang='eng'):
     """get locale by 3 letter iso code"""
