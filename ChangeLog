@@ -1,6 +1,10 @@
 2001-08-10  Drew Csillag  <drew@starmedia.net>
 
-	* added FAQ
+	* Skunkweb 3.0 beta 2 cut
+	
+	* setup.py: removed.. Way out of date an no longer necessary
+	
+	* FAQ: added
 
 2001-08-10  Jacob Smullyan  <smulloni@smullyan.org>
 
