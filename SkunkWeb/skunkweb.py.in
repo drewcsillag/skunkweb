@@ -1,4 +1,5 @@
 #!@PYTHON@
+# -*- python -*-
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -64,6 +65,13 @@ mods = bootloader.init(configFiles, bootloader.SkunkRoot)
 
 ##NEW
 from SkunkWeb import Configuration
+#if started as root, and the owner is not root
+# AND the userToRunAs option hasn't been set, somebody fucked up
+if (os.getuid() == 0
+    and "@OWNER@" != 'root'
+    and not hasattr(Configuration, 'userToRunAs')):
+    raise "ConfigurationError", "I refuse to start as root when I'm not owned by root and the userToRunAs option hasn't been set"
+
 if hasattr(Configuration, 'groupToRunAs'):
     import grp
     try:
