@@ -1,5 +1,6 @@
 Changes in 3.4 final
 ========================================
+* swpython can now be used in a #! line
 * vfs.LocalFS now follows symlinks by default.
 * new usertracking service.
 * DT.DTLexer now permits colons in the plaintext 

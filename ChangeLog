@@ -1,3 +1,19 @@
+2003-05-02    <drew@loki.sai-office>
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py (_canRead): added
+	try block to ignore a socket error so it doesn't get logged.
+
+	* SkunkWeb/configure: regenerated
+
+	* SkunkWeb/Makefile.in: addd stuff for swpython.c.in
+
+	* SkunkWeb/configure.in: added stuff for swpython.c.in
+
+	* SkunkWeb/swpython.c: added
+
+	* NEWS: updated re: swpython
+	
+
 2003-05-01    <drew@loki.sai-office>
 
 	* README: changed license stuff
