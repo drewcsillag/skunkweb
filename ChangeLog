@@ -1,3 +1,8 @@
+2002-12-18    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/views.py (ViewableForm.__init__): another default
+	value gotcha.
+
 2002-12-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/ecs/xhtml.py (CONTAINER_ELEMENTS): added 'li', which

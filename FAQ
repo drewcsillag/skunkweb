@@ -233,5 +233,8 @@ add this:
 rewriteRules=(r'(.*\..*?)(?P<pathinfo>/.*)', r'\1')
 
 and a cgi argument (accessed via CONNECTION.args or <:args:>) named
-pathinfo will contain what you want.
+pathinfo will contain what you want.  The vfs.FS method split_extra()
+will also give you this if you compare a requested path with the
+filesystem; but SkunkWeb does not by default populate the PATH_INFO
+environmental variable.
 

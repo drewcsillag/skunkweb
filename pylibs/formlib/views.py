@@ -792,7 +792,7 @@ class ViewableForm(Viewable, Form):
                  fields=None,
                  validators=None,
                  processors=None,
-                 layout=StackLayout(),
+                 layout=None,
                  **view_attrs):
         
         Form.__init__(self,
@@ -804,7 +804,7 @@ class ViewableForm(Viewable, Form):
                       validators,
                       processors)
         Viewable.__init__(self, **view_attrs)
-        self.layout=layout
+        self.layout=layout or StackLayout()
 
     def _get_fields(self):
         return self._fields
