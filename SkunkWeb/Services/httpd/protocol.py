@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py,v 1.10 2003/06/07 20:50:06 smulloni Exp $
+# $Id: protocol.py,v 1.11 2003/09/08 00:49:20 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -471,9 +471,11 @@ class HTTPProtocol(Protocol):
         if not server:
             respp['server'] = 'SkunkWeb %s' % Configuration.SkunkWebVersion
         resl = ["%s %s" % (httpVersion, status)]
-        for k,v in respp.items():
-            resl.append("%s: %s" % (self._fixHeader(k), v))
-        return "\r\n".join(resl)+"\r\n\r\n"+respp.fp.read()
+        for k in respp.keys():
+            kf=self._fixHeader(k)
+            for v in respp.getheaders(k):
+                resl.append("%s: %s" % (kf, v))
+        return "%s\r\n\r\n%s" % ("\r\n".join(resl), respp.fp.read())
         
     def marshalException(self, exc_text, sessionDict):
         res=RequestFailed(constants.WEB_JOB, exc_text, sessionDict)
