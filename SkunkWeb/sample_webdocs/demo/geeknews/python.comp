@@ -1,0 +1,17 @@
+<:cache duration=10m:>
+<P>
+<A NAME="python"><B>Python News from <A HREF="http://www.python.org">Python Website</A></B></A><BR>
+<:try:>
+    <font size=-1>
+    <:datacomp items dcomps/python.pydcmp:>
+    <ul>
+    <:for `items` item:>
+    <li><A HREF="<:val `item.link`:>"><:val `item.title`:></a> <:val `item.desc`:></li>
+    <:/for:>
+    </ul>
+    </font>
+<:except:>
+freshmeat headlines unavailable
+<:cache duration=0m:>
+<:/try:> 
+
