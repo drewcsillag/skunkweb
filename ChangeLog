@@ -1,5 +1,19 @@
 2002-11-26    <smulloni@smullbola.smullyan.org>
 
+	* test/formlib/htdocs/testNestedList.pyinc: added some debug output.
+
+	* pylibs/formlib/form.py (Field.__init__): fields now have a "setable"
+	attribute; if a field is setable, it will be nulled out if you setData
+	on a form containing it with a dictionary that doesn't include its 
+	fieldname.  Hidden fields and submit inputs are not setable.
+	(DomainField.in_domain): handle None and (currently) [None]; the latter
+	shouldn't be the value returned for multiple field that hasn't gotten 
+	a submission -- it should be either None or [] -- but that is what it is
+	at the moment.
+
+	* pylibs/formlib/views.py (_requirable.validate): hack-type fix
+	for required fields.
+
 	* pylibs/formlib/dispatcher.py (FormDispatcher.dispatch): 
 	pass state to next().
 

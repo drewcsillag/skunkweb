@@ -28,10 +28,12 @@ class Field(object):
                  name,
                  description,
                  default=None,
-                 multiple=0):
+                 multiple=0,
+                 setable=1):
         self.name=name
         self.description=description
         self.__multiple=multiple
+        self.setable=setable
         if default==None:
             self.clearDefault()
         else:
@@ -39,13 +41,13 @@ class Field(object):
         self.clearValue()
 
     def _get_default(self):
-        return self.__default
+        return self._default
 
     def _set_default(self, default):
-        self.__default=self.checkValue(default)
+        self._default=self.checkValue(default)
 
     def clearDefault(self):
-        self.__default=None
+        self._default=None
 
     default=property(_get_default, _set_default)
         
@@ -71,7 +73,7 @@ class Field(object):
     def checkValue(self, value):
         isseq=isinstance(value, list) or isinstance(value, tuple)
         if self.multiple and not isseq:
-            return [value]
+            return value is not None and [value] or []
         elif isseq and not self.multiple:
             raise ValueError, "value cannot be a sequence for this field"
         return value
@@ -112,6 +114,9 @@ class DomainField(Field):
     domain=property(_get_domain, _set_domain)
 
     def in_domain(self, value, domain=None):
+        if (self.multiple and value==[]) or \
+           ((not self.multiple) and value==None):
+            return 1
         if not domain:
             domain=self.domain
         if value in domain:
@@ -163,10 +168,13 @@ class Form(object):
         return d
 
     def setData(self, data):
-        for k, v in data.iteritems():
-            f=self.fields.get(k)
-            if f:
-                f.value=v
+        for f in self.fields:
+            if f.setable:
+                f.value=data.get(f.name)
+##        for k, v in data.iteritems():
+##            f=self.fields.get(k)
+##            if f:
+##                f.value=v
 
     def submit(self, data):
         self.reset()

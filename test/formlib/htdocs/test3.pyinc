@@ -25,7 +25,8 @@ fields=[TextField('username',
                           'FedEx',
                           'pony express'],
                          description='Shipping Method',
-                         default='UPS'),
+                         default='UPS',
+                         multiple=1),
         SubmitField(default="Submit"),
         ]
 

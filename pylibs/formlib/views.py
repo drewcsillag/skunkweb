@@ -36,7 +36,7 @@ class Viewable(object):
 
 class _requirable(object):
     def validate(self, form=None):
-        if self.required and not self.value:
+        if self.required and self.value in (None, [], ''):
             d={'name' : self.name,
                'description' : self.description}
             try:
@@ -52,9 +52,10 @@ class ViewableField(_requirable, Field, Viewable):
                  default=None,
                  required=0,
                  multiple=0,
+                 setable=1,
                  **view_attrs):
         self.required = required
-        Field.__init__(self, name, description, default, multiple)
+        Field.__init__(self, name, description, default, multiple, setable)
         Viewable.__init__(self, **view_attrs)
 
 class ViewableDomainField(_requirable, DomainField, Viewable):
@@ -83,6 +84,7 @@ class InputField(ViewableField):
                  description=None,
                  default=None,
                  required=0,
+                 setable=1,
                  **view_attrs):
         ViewableField.__init__(self,
                                name,
@@ -90,6 +92,7 @@ class InputField(ViewableField):
                                default,
                                required,
                                multiple=0,
+                               setable=setable,
                                **view_attrs)
 
     def getView(self):
@@ -122,18 +125,21 @@ class FileField(InputField):
 
 class HiddenField(InputField):
     type="hidden"
-
+    setable=0
+    
 class SubmitField(InputField):
     type="submit"
     def __init__(self,
                  name=None,
                  description=None,
                  default=None,
+                 setable=0,
                  **view_attrs):
         InputField.__init__(self,
                             name,
                             description,
                             default,
+                            setable=setable,
                             **view_attrs)
 
 class ImageField(InputField):
@@ -437,7 +443,9 @@ class ButtonGroupField(ViewableDomainField):
         raise ValueError, "could not parse option: %s" % option
 
     def _update_checked_state(self, option):
-        if self.multiple:
+        if self.value is None:
+            option.checked=None
+        elif self.multiple:
             option.checked=option.value in self.value
         else:
             option.checked=option.value==self.value
@@ -507,7 +515,14 @@ class ViewableForm(Viewable, Form):
                  **view_attrs):
         
         self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
-        Form.__init__(self, name, method, action, enctype, flatfields, validators, processors)
+        Form.__init__(self,
+                      name,
+                      method,
+                      action,
+                      enctype,
+                      flatfields,
+                      validators,
+                      processors)
         Viewable.__init__(self, **view_attrs)
 
     def setFields(self, fields):

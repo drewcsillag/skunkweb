@@ -1,4 +1,6 @@
 from formlib import *
+import pprint
+
 
 psswdFld = PasswordField('password', description="Required Password", size="20", maxlength="39", required=1)
 txtFld = TextField('textfield', description="Required Textfield", size="20", maxlength="39", required=1)
@@ -19,8 +21,15 @@ selFld = SelectField('select',
                      'Required SelectField', default='default', required=1, multiple=1, size=5)
 
 checkboxGrpFld = ButtonGroupField('checkboxgroup', 
-                                  ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
-                                  'Required Checkboxes', default='default', required=1, multiple=1)  
+                                  ['singlestring',
+                                   ('default', 'Default'),
+                                   ('1', '1'),
+                                   ('2', '2'),
+                                   'singlestring2'], 
+                                  description='Required Checkboxes',
+                                  default='default',
+                                  required="You betta fill this out",
+                                  multiple=1)  
 # add a clearing of default to ensure that defaults can be empty...test was failing
 # on 11/26/2002
 checkboxGrpFld.clearDefault()
@@ -29,8 +38,8 @@ radioGrpFld = ButtonGroupField('radiogroup',
                                ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
                                'Radio', 'default', multiple=0)
 
-chkbox = ButtonGroupField('acheckbox', ['required'], 'Checkbox', '', multiple=1, required=1)
-sbmtFld = SubmitField("submit", description="SubmitField")
+chkbox = ButtonGroupField('acheckbox', ['foople', 'required'], 'Checkbox', None, multiple=1, required=1)
+sbmtFld = SubmitField("submit", default="Submit Thyself", description="SubmitField")
  
 fields = [ 
          imgFld,
@@ -50,7 +59,15 @@ form = ViewableForm(name="testAllViews", method="POST", fields=fields, validator
 import ecs
 if CONNECTION.method == "POST":
     form.submit(CONNECTION.args)
+    print ecs.H4('form data')
+    print ecs.Pre(pprint.pformat(form.getData()))
+    print
+
     if form.errors:
+        print ecs.H4('form errors')
+        print ecs.Pre(pprint.pformat([(x.field.name, x.errormsg) for x in form.errors]))
+        print
+        
         print ecs.H3("ERROR")
     else:
         print ecs.H3("Successful form submission.  Values were:")
