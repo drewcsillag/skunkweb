@@ -111,9 +111,10 @@ class PyDOPostgreSQL:
 
     def typeCheckAndConvert(self, val, aname, attr):
         if _isDateKind(attr):
-            if not Date.isDateTime(val) and not val == PyDBI.SYSDATE:
-                raise TypeError,'trying to assign %s to %s and is not a date'%(
-                    val, aname)
+            if (not Date.isDateTime(val)) and not val == PyDBI.SYSDATE:
+                raise TypeError,'trying to assign %s to %s and is not a date, being of type %s ' %  (val,
+                                                                                                     aname,
+                                                                                                     type(val))
             val = _dateConvertToDB(val)
         elif _isNumber(attr):
             if attr in ('FLOAT4', 'FLOAT8'):
@@ -185,7 +186,7 @@ def _dateConvertFromDB(d):
     
 
 def _dateConvertToDB(d):
-    if d == PyDBI.SYSDATE:
+    if not Date.isDateTime(d) and d == PyDBI.SYSDATE:
         return "'now'"
     return "'" + str(d)[:-3] + "'"
 

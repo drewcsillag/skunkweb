@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # $Author: smulloni $
-# $Revision: 1.2 $
+# $Revision: 1.3 $
 # Time-stamp: <01/05/04 15:28:13 smulloni>
 ########################################################################
 
@@ -221,6 +221,9 @@ class Session:
         self.__data[key]=value
         self.__dirty=1
 
+    def get(self, key, default):
+        return self.__data.get(key, default)
+
     def touch(self): 
         if not self._touched:
             self.__store.touch()
@@ -250,6 +253,17 @@ class SessionStore:
     
 ########################################################################
 # $Log: Session.py,v $
+# Revision 1.3  2001/08/13 01:08:09  smulloni
+# added an evil boolean flag and an InitRequest hook to reset it.  These ensure
+# that a session store is only touched if the session has not already been
+# saved.  Unfortunately,  when a session is made dirty and then a
+# redirect is performed, the next request can be handled by another process
+# before the previous process is done persisting the session data, and the
+# best workaround at present is to manually save the session before the
+# redirect.  But this would have caused two database (or filesystem) hits
+# for that request alone, one to save the session and another to update its
+# timestamp; this change prevents that.
+#
 # Revision 1.2  2001/08/10 20:59:55  smulloni
 # fix to removeSession()
 #

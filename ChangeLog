@@ -1,3 +1,12 @@
+
+2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/postconn.py (_dateConvertToDB): added type check to prevent a TypeError from 
+	being raised for just about everything
+
+	* SkunkWeb/Services/sessionHandler/Session.py (Session.get): added get() to Session object.
+
+
 2001-08-13  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* configure.in, configure, docs/opman/opman.tex: no longer require
@@ -5,8 +14,6 @@
 	xargs we use -- removed GNU dependancy.  Cleaned up configure.in a
 	bit (mostly removed a bunch of commented out things).
 
-############################################################
-	
 	* 3.0 Beta 2 recut.
 
 2001-08-12  Jacob Smullyan  <smulloni@smullyan.org>
