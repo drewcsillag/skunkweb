@@ -35,7 +35,7 @@ Changes in 3.4 final
   had to use a combination of push() and pop().  That would probably
   still work, but you can also directly set the attribute, and then
   unset it later.
-  6. pop() used to requir a index, but the only index it ever made sense
+  6. pop() used to require a index, but the only index it ever made sense
   to use was 0; the index parameter is now dropped (and in fact the
   underlying array of dictionaries is kept in the opposite order).
   7. the scope matchers are no longer accessible as the "matchers"
