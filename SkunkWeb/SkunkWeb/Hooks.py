@@ -1,3 +1,7 @@
+# Time-stamp: <01/08/11 19:38:04 smulloni>
+# $Id$
+
+########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -15,13 +19,12 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Hooks.py,v 1.8 2001/07/09 20:38:40 drew Exp $
-# Time-stamp: <01/04/09 15:25:35 smulloni>
 ########################################################################
 
 from UserList import UserList
-from SkunkWeb.ServiceRegistry import CORE
 from fnmatch import fnmatchcase
+from SkunkWeb.ServiceRegistry import CORE
+from SkunkWeb.LogObj import DEBUG
 
 class Hook(UserList):
     def __call__(self, *args, **kw):
@@ -36,8 +39,6 @@ ServerStart = Hook()
 ########################################################################
 
 class KeyedHook:
-    """
-    """
     def __init__(self):
         self.pairList=SearchablePairList()
         self.__memoDict={}
@@ -72,9 +73,10 @@ class KeyedHook:
         return funcList
 
     def __call__(self, jobName, *args, **kw):
-        from SkunkWeb.LogObj import DEBUG
         for f in self._getFuncList(jobName):
-            DEBUG(CORE, "calling %s with args (%s, %s)" % (str(f), str(args), str(kw)))
+            DEBUG(CORE, "calling %s with args (%s, %s)" % (str(f),
+                                                           str(args),
+                                                           str(kw)))
             try:
                 retVal=f(*args, **kw)
                 if retVal is not None:
@@ -95,11 +97,13 @@ class SearchablePairList:
 
     def getMatchList(self, key):
 
-        return filter(lambda pair, key=key: fnmatchcase(str(key), pair[0]), self.orderedPairs)
+        return filter(lambda pair, key=key: fnmatchcase(str(key),
+                                                        pair[0]),
+                      self.orderedPairs)
 
     def keyMatches(self, key):
-        # rather than returning 1 and 0 here, return a tuple of the indexes into
-        # the pairlist of the matches.
+        # rather than returning 1 and 0 here, return a tuple
+        # of the indexes int the pairlist of the matches.
         matches=[]
         i=0
         for pair in self.orderedPairs:
@@ -116,6 +120,10 @@ class SearchablePairList:
 
 ########################################################################
 # $Log: Hooks.py,v $
+# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
+# take 2 of import
+#
+#
 # Revision 1.8  2001/07/09 20:38:40  drew
 # added licence comments
 #
