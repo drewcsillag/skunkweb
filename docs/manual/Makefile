@@ -12,3 +12,6 @@ manual.tex: ${FILES}
 
 manual.pdf: manual.tex
 	${PDFLATEX} manual.tex
+
+clean:
+	-rm *.html *.tex *.out *.log *.aux *.pdf
