@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
 from containers import FieldContainer
-from form import Field, DomainField, Form, FormError, _getname
+from form import Field, DomainField, Form, FormError, _getname, CompositeField, _defaultValueComposer
 from containers import Set
 import ecs
 
@@ -75,6 +75,7 @@ class ViewableDomainField(_requirable, DomainField, Viewable):
                              default,
                              multiple)
         Viewable.__init__(self, **view_attrs)
+
 
 class InputField(ViewableField):
     type=None
@@ -512,118 +513,170 @@ class ButtonOption(Viewable):
         return elem
 
 ########################################################################
-# the form itself.
+# The layouts used to provide form views
 ########################################################################
+class Layout(object):
+    "Superclass for ViewableForm layouts"
+    def handleError(self, form, tr, fld):
+        numErrs = 0
+        msgs=form.errors.get(fld)
+        if msgs:
+            msg='\n'.join([x.errormsg for x in msgs])
+            numErrs = numErrs + 1
+            em=ecs.Em(msg).setAttribute('class', 'form_error')
+            pr = ecs.Pre(em)
+            td=ecs.Td(pr).setAttribute('colspan', '2')
+            tr.addElement(td)
+        return numErrs    
+    
 
-class ViewableForm(Viewable, Form):
-    def __init__(self,
-                 name=None,
-                 method=None,
-                 action=None,
-                 enctype=None,
-                 fields=None,
-                 validators=None,
-                 processors=[],
-                 **view_attrs):
-        
-        #self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
-        Form.__init__(self,
-                      name,
-                      method,
-                      action,
-                      enctype,
-                      fields,
-                      validators,
-                      processors)
-        Viewable.__init__(self, **view_attrs)
 
-    def _get_fields(self):
-        return self._fields
-
-    def _set_fields(self, fields):
-        self.layout, self.maxDepth, flatfields = self.generateLayout(fields)
-        Form._set_fields(self, flatfields)
-
-    fields=property(_get_fields, _set_fields)
-
-    def generateLayout(self, fields):
+class FlowLayout(Layout):
+    "A simple layout which arranges its items in a columnar, single row view"
+    def layoutFields(self, form, table=ecs.Table()):
         """\
-        Iterates over the given list of fields and generates a "layout"
-        which is a listing of the names of fields listed
-        in the order which they will appear on screen.
+        Arranges the given form's ViewableField list into a flow layout, disregarding
+        any nesting within the field list...
+        all items are arranged in a single row following the order of the field list
+        from the first index of the list [and the first index of any nested list] to the last index:
+        [1, [2,3], 4, [5,6,7]]
 
-        Returns (layout, maxDepth, fields)
+        produces
 
-        where
-        
-        layout = a possibly nested list of field names
-        maxDepth = the length of the longest sublist of fields
-        field = a flat [one-dimensional] list of the fields for the form,
-        necessary for Form construction 
+        <table>
+        <tr><td>1.description</td><td>1.getView()</td><td>2.description</td><td>2.getView()</td>
+        <td>3.description</td><td>3.getView()</td><td>4.description</td><td>4.getView()</td>
+        <td>5.description</td><td>5.getView()</td><td>6.description</td><td>6.getView()</td>
+        <td>7.description</td><td>7.getView()</td></tr>
+        </table>
         """
-        maxDepth = 1 # the longest sublist of fields
-        flds = []
-        layout = []
-        for tstfld in fields:
-            if isinstance(tstfld, list) or isinstance(tstfld, tuple):
-                sublst = []
-                if len(tstfld) > maxDepth:
-                    maxDepth = len(tstfld)
-                for subfld in tstfld:
-                    flds.append(subfld)
-                    sublst.append(subfld.name)
-                layout.append(sublst)    
-            else:         
-                flds.append(tstfld)
-                layout.append(tstfld.name)
+        errTr = ecs.Tr()
+        numErr = 0
+        for fld in form.fields:
+            numErr = numErr + self.handleError(form, errTr, fld)
+            
+        if numErr:
+            table.addElement(errTr)
 
-        return (layout, maxDepth, flds)        
+        tr = ecs.Tr()
+        for fld in form.fields:
+            if not isinstance(f, Viewable):
+                # non-viewable fields are not directly displayed
+                # TODO:  this is a bit of a poor hack...
+                continue
+            
+            if f.description:
+                desTd = ecs.Td().addElement(f.description)
+                vwTd = ecs.Td().addElement(f.getView())
+                desTd.setAttribute('valign', 'top')
+                vwTd.setAttribute('valign', 'top')
+                tr.addElement(desTd)
+                tr.addElement(vwTd)
+            else:
+                td=ecs.Td().addElement(f.getView())
+                td.setAttribute('valign', 'top')
+                td.setAttribute('colspan', '2')
+                tr.addElement(td)
+        tr.addElement('\n')
+        table.addElement(tr)
+        return table
 
 
-    def getView(self):
-        elem=ecs.Form()
-        if self.method:
-            elem.setAttribute('method', self.method)
-        if self.enctype:
-            elem.setAttribute('enctype', self.enctype)
-        if self.action:
-            elem.setAttribute('action', self.action)
-        elem.attributes.update(self.view_attrs)
-        table=ecs.Table()
-        table.addElement('\n')
-        top_level_errors=self.errors.get(self)
-        if top_level_errors:
-            top_level_error='<br />'.join([x.errormsg for x \
-                                           in top_level_errors])
-            em=ecs.Em(top_level_error).setAttribute('class',
-                                                    'form_error')
-            tr=ecs.Tr().addElement(ecs.Td(em)\
-                                   .setAttribute('colspan',
-                                                 str(2 * self.maxDepth)))
+class StackLayout(Layout):
+    "A simple layout which arranges its items in a single column of many rows"
+    def layoutFields(self, form, table=ecs.Table() ):
+        """\
+        Arranges the given form's ViewableField list into a stack layout, disregarding any
+        nesting within the field list...all items are arranged in a single column following
+        the order of the field list from the first index of the list [and
+        the first index of any nested list] to the last index:
+        [1, [2,3], 4, [5,6,7]]
+
+        produces
+
+        <table>
+        <tr><td>1.description</td><td>1.getView()</td></tr>
+        <tr><td>2.description</td><td>2.getView()</td></tr>        
+        <tr><td>3.description</td><td>3.getView()</td></tr>
+        <tr><td>4.description</td><td>4.getView()</td></tr>
+        <tr><td>5.description</td><td>5.getView()</td></tr>
+        <tr><td>6.description</td><td>6.getView()</td></tr>
+        <tr><td>7.description</td><td>7.getView()</td></tr>
+        </table>
+        """
+        for fld in form.fields:
+            if not isinstance(fld, Viewable):
+                # non-viewable fields are not directly displayed
+                # TODO:  this is a bit of a poor hack...
+                continue
+
+            errTr = ecs.Tr()
+            numErr = self.handleError(form, errTr, fld)
+            if numErr:
+                table.addElement(errTr)
+                
+            tr = ecs.Tr()
+            if fld.description:
+                desTd = ecs.Td().addElement(fld.description)
+                vwTd = ecs.Td().addElement(fld.getView())
+                desTd.setAttribute('valign', 'top')
+                vwTd.setAttribute('valign', 'top')
+                tr.addElement(desTd)
+                tr.addElement(vwTd)
+            else:
+                td=ecs.Td().addElement(fld.getView())
+                td.setAttribute('valign', 'top')
+                td.setAttribute('colspan', '2')
+                tr.addElement(td)
+            tr.addElement('\n')
             table.addElement(tr)
-            table.addElement('\n')
-        for tstFnm in self.layout:
+        return table
+
+
+
+class NestedListLayout(Layout):
+    "A layout which mimics the structure of a given nested list as a tabular display"
+    def layoutFields(self, form, table=ecs.Table()):
+        """\
+        Arranges the given form's ViewableField list into a tabular display based
+        upon the nesting of the given field list...
+        column spanning is based upon the maximum depth of the largest nested list:
+        [1, [2,3], 4, [5,6,7]]
+
+        produces
+
+        <table>
+        <tr><td>1.description</td><td colspan="5">1.getView()</td></tr>
+        <tr><td>2.description</td><td>2.getView()</td><td>3.description</td><td colspan="3">3.getView()</td></tr>
+        <tr><td>4.description</td><td colspan="5">4.getViews()</td></tr>
+        <tr><td>5.description</td><td>5.getView()</td><td>6.description</td><td>6.getView()</td>
+        <td>7.description</td><td>7.getView()</td></tr>
+        </table>
+
+        where ecs.Table is returned by the method:
+        
+        1) if a table was passed to the method, the same table is returned with the fields laid out inside it
+        2) if a table was not passed, the default table is generated and returned with the fields laid out 
+        """
+        for tstFnm in form.fieldLayout:
             tr=ecs.Tr() 
             if isinstance(tstFnm, list) or isinstance(tstFnm, tuple):
-                self.handleList(tstFnm, tr, table)
+                self.handleList(form, tstFnm, tr, table)
             else: 
-                self.handleField(self.fields[tstFnm], tr, table)
+                self.handleField(form, form.fields[tstFnm], tr, table)
             table.addElement(tr)
             table.addElement('\n')
 
+        return table    
 
-        elem.addElement('\n')
-        elem.addElement(table)
-        elem.addElement('\n')
-        return elem
 
-    def handleList(self, list, tr, table):
+    def handleList(self, form, list, tr, table):
         errTr = ecs.Tr()
         ttlErr = 0
         for fnm in list:
-            fld = self.fields[fnm]
+            fld = form.fields[fnm]
             # handle the errors display...these will always span two columns
-            numErrs = self.handleError(errTr, fld)
+            numErrs = self.handleError(form, errTr, fld)
             if not numErrs:
                 # if there were no errors, we need to add an empty TD for
                 #this field's error
@@ -640,37 +693,39 @@ class ViewableForm(Viewable, Form):
         # not span the remaining columns or a very ugly GUI is created
         colspan = 0
         lstLen = len(list)
-        if lstLen < self.maxDepth:
+        if lstLen < form.maxDepth:
             # note that there are 2 <td> cells for each item in any row
-            colspan = 2 * (self.maxDepth - lstLen)
+            colspan = 2 * (form.maxDepth - lstLen)
         
         for idx in range(0, lstLen):
             fnm = list[idx]
-            fld = self.fields[fnm]
+            fld = form.fields[fnm]
 
             if not isinstance(fld, Viewable):
                 # non-viewable fields are not directly displayed
+                # TODO:  this is a bit of a poor hack...
                 return
             
             if idx == lstLen - 1:
                 # if we are on the last column, add the colspan, else add no
                 #colspan
-                self.handleField(fld, tr, table, colspan, fromList=1)
+                self.handleField(form, fld, tr, table, colspan, fromList=1)
             else:
-                self.handleField(fld, tr, table, 0, fromList=1)
+                self.handleField(form, fld, tr, table, 0, fromList=1)
                 
 
-    def handleField(self, f, tr, table, colspan=0, fromList=0):
+    def handleField(self, form, f, tr, table, colspan=0, fromList=0):
         if not fromList:
             # if we are not coming from a list [aka handleList()],
             # then this method must check for errors itself
             errTr = ecs.Tr()
-            numErr = self.handleError(errTr, f)
+            numErr = self.handleError(form, errTr, f)
             if numErr:
                 table.addElement(errTr)
 
         if not isinstance(f, Viewable):
             # non-viewable fields are not directly displayed
+            # TODO:  this is a bit of a poor hack...
             return 
             
         if f.description:
@@ -694,17 +749,133 @@ class ViewableForm(Viewable, Form):
         return 
 
 
-    def handleError(self, tr, fld):
-        numErrs = 0
-        msgs=self.errors.get(fld)
-        if msgs:
-            msg='\n'.join([x.errormsg for x in msgs])
-            numErrs = numErrs + 1
-            em=ecs.Em(msg).setAttribute('class', 'form_error')
-            pr = ecs.Pre(em)
-            td=ecs.Td(pr).setAttribute('colspan', '2')
-            tr.addElement(td)
-        return numErrs    
+
+########################################################################
+# the form itself.
+########################################################################
+
+class ViewableForm(Viewable, Form):
+    def __init__(self,
+                 name=None,
+                 method=None,
+                 action=None,
+                 enctype=None,
+                 fields=None,
+                 validators=None,
+                 processors=[],
+                 layout=StackLayout(),
+                 **view_attrs):
+        
+        Form.__init__(self,
+                      name,
+                      method,
+                      action,
+                      enctype,
+                      fields,
+                      validators,
+                      processors)
+        Viewable.__init__(self, **view_attrs)
+        self.layout=layout
+
+    def _get_fields(self):
+        return self._fields
+
+    def _set_fields(self, fields):
+        flatfields, self._fieldLayout, self.maxDepth = self._flattenFields(fields)
+        Form._set_fields(self, flatfields)
+
+    fields=property(_get_fields, _set_fields)
+
+    def _get_fieldLayout(self):
+        return self._fieldLayout
+
+    def _set_fieldLayout(self, newLayout):
+        """\
+        Means for manipulating the layout of the fields of a form without reinitializing the set of fields.
+        Expects a possibly nested list of field name against which the current layout object will construct a view.
+        """
+        self._fieldLayout=newLayout
+
+    fieldLayout=property(_get_fieldLayout, _set_fieldLayout)     
 
 
-            
+    def _flattenFields(self, fields):
+        """\
+        Ensures that the given list of fields is flattened into a one-dimensional list as required by Form superclass
+        also flattens the fields used for generating a layout into a listing of field names which mimics any nesting in the
+        original, unflattened field list
+
+        returns
+
+        (flatfields, layoutfields, maxDepth)
+        """
+        maxDepth = 1 # the longest sublist of fields
+        flds = []
+        layout = []
+        for tstfld in fields:
+            if isinstance(tstfld, list) or isinstance(tstfld, tuple):
+                sublst = []
+                if len(tstfld) > maxDepth:
+                    maxDepth = len(tstfld)
+                for subfld in tstfld:
+                    flds.append(subfld)
+                    sublst.append(subfld.name)
+                layout.append(sublst)    
+            else:         
+                flds.append(tstfld)
+                layout.append(tstfld.name)
+        return (flds, layout, maxDepth)
+    
+
+    def getView(self):
+        elem=ecs.Form()
+        if self.method:
+            elem.setAttribute('method', self.method)
+        if self.enctype:
+            elem.setAttribute('enctype', self.enctype)
+        if self.action:
+            elem.setAttribute('action', self.action)
+        elem.attributes.update(self.view_attrs)
+        table=ecs.Table()
+        table.addElement('\n')
+        top_level_errors=self.errors.get(self)
+        if top_level_errors:
+            top_level_error='<br />'.join([x.errormsg for x \
+                                           in top_level_errors])
+            em=ecs.Em(top_level_error).setAttribute('class',
+                                                    'form_error')
+            tr=ecs.Tr().addElement(ecs.Td(em)\
+                                   .setAttribute('colspan',
+                                                 str(2 * self.maxDepth)))
+            table.addElement(tr)
+            table.addElement('\n')
+
+        self.layout.layoutFields(self, table)    
+        elem.addElement('\n')
+        elem.addElement(table)
+        elem.addElement('\n')
+        return elem
+
+
+########################################################################
+# viewable version of the composite field
+########################################################################
+
+class ViewableCompositeField(Viewable, CompositeField):
+    def __init__(self,
+                 name,
+                 description,
+                 default=None,
+                 multiple=1,
+                 setable=1,
+                 componentFields=[],
+                 componentFieldDelimiter='_',
+                 valueComposer=_defaultValueComposer,
+                 layout=StackLayout()):
+        CompositeField.__init__(self, name, description, default, multiple, setable, componentFields, componentFieldDelimiter,\
+                                valueComposer)
+        self.layout = layout
+
+    def getView(self):
+        return self.layout.layoutFields(self.components)
+
