@@ -150,6 +150,20 @@ class ButtonField(ViewableField):
         
 
 class TextAreaField(ViewableField):
+    def __init__(self,
+                 name,
+                 description=None,
+                 default=None,
+                 **view_attrs):
+        Field.__init__(self, name, description, default, multiple=0)
+        
+        if view_attrs.has_key('value'):
+            # setting value as a textarea *attribute* is not correct as the value of a text area is
+            # it's child text element (set by the default parameter),  therefore don't permit 'value' as a constructor keyword arg
+            del view_attrs['value']
+            
+        Viewable.__init__(self, **view_attrs)
+        
     def getView(self):
         elem=ecs.Textarea()
         if self.name is not None:
