@@ -1,3 +1,9 @@
+2001-09-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in, SkunkWeb/Services/httpd/__init__.py, 
+	SkunkWeb/Services/httpd/protocol.py: improved handling of SERVER_NAME; 
+	added ServerName configuration variable
+
 2001-09-06  Drew Csillag  <drew@starmedia.net>
 
         * pylibs/PyDO/doc: documentation of |port thing
