@@ -1,5 +1,8 @@
 2002-10-25  Jacob Smullyan  <jsmullyan@wnyc.org>
 
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:url:>}}): Added
+	documentation about the abs argument to <:url:>.
+
 	* SkunkWeb/Services/templating/UrlBuilder.py (_genUrl): fixed url
 	generation so it handles "need_full" argument correctly; now
 	handles https and relies less on the presence of the Host request
