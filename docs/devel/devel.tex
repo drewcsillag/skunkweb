@@ -1,3 +1,8 @@
+%The Developer guide could break down
+%into subsections for each service and talk about what's available from
+%STML/Python and what the APIs are.  Then a section on how to write a new
+%service.
+
 \documentclass{manual}
 \usepackage{makeidx}
 \usepackage[nottoc]{tocbibind} % make so bib and ind are in toc
@@ -48,7 +53,23 @@ are preserved on all copies.
 \tableofcontents
 
 \chapter{Introduction}
-This is the intro
+This document is intended for the SkunkWeb developer that needs to get
+more into the inner guts of the SkunkWeb server.  This document will
+describe the inner architecture of the server, the file formats used,
+the core APIs, the APIs of foundation services,
+%%basically things like auth, httpd, requestHander, web, etc.
+as well as how to
+write SkunkWeb services.
+
+It is assumed that you are familliar with the SkunkWeb server,
+i.e. you don't need to be told that what \texttt{<:component
+foo.comp:>} would do, and that you know Python well.
+
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Core Services}
