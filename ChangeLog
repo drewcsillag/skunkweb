@@ -1,5 +1,8 @@
 2002-04-18  Andrew Csillag  <drew@localhost.localdomain>
 
+	* SkunkWeb/Services/cookieauth/login.html: now handles invalid login 
+	properly w.r.t. original query args.
+
 	* pylibs/PyDO/pgenscript.py: applied clean up patch from Greg
 	Brauer
 
