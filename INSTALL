@@ -17,7 +17,6 @@ Marc Andre Lemburg's eGenix mx Extensions
     http://www.lemburg.com/files/python/eGenix-mx-Extensions.html
 An ANSI C compiler
 GNU install 
-
 GNU xargs (solaris xargs works ok too)
 GNU find (part of the GNU findutils) -- non-GNU ones may work too, but
    we've had mixed results
@@ -49,11 +48,11 @@ configure options are also available:
 Additional options if building SkunkWeb:
   --with-webdoc           Install some sample content
   --with-services=svcs    Specify the list of services to install
-                           space delimited list of personas to install, valid
-                           names are:
+                           space delimited list of personas to install;
+                           valid names are:
 
                            sessionHandler, requestHandler, remote,
-                           ae_component, remote_client, aed_compat,
+                           ae_component, remote_client,
                            aecgi, httpd, basicauth, pars,
                            templating, web, oracle, posgresql, mysql
                           Default is to install them all
@@ -64,4 +63,4 @@ Additional options if building SkunkWeb:
 
 Once ``configure'' has completed, simply type ``make; make install''.
 
-$Id: INSTALL,v 1.1.1.1 2001/08/05 14:58:15 drew_csillag Exp $
+$Id: INSTALL,v 1.2 2001/08/05 15:31:31 drew_csillag Exp $
