@@ -18,7 +18,7 @@
 """
 This module implements the component family of tags
 """
-# $Id: ComponentTag.py,v 1.2 2002/05/06 20:19:51 smulloni Exp $
+# $Id: ComponentTag.py,v 1.3 2002/06/18 15:08:56 drew_csillag Exp $
 
 import Component
 from CommonStuff import *
@@ -112,7 +112,7 @@ class DataComponentTag(DTTag):
         varname = DTCompilerUtil.checkName(tag, 'var', args['var'],
                                            pargs['var'])
         if args['__args__']:
-            argsarg == DTCompilerUtil.getTempName()
+            argsarg = DTCompilerUtil.getTempName()
             codeout.write(indent, '%s = %s' % (argsarg, args['__args__']))
             codeout.write(indent, 'if type(%s) != __h.types.DictType:' % argsarg)
             codeout.write(indent+4, 'raise TypeError, "__args__ argument must'
