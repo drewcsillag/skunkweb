@@ -1,3 +1,8 @@
+2001-08-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/postconn.py (PyDOPostgreSQL._dateConvertFromDB): fixed date parsing bug 
+	and several import problems
+
 2001-08-08  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* configure, configure.in: no longer "require" GNU make since we

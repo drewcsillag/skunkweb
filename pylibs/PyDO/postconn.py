@@ -14,19 +14,28 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-#   
-#currently unsupported PostgreSql types
-# bool bytea int2vector regproc tid xid cid oidvector SET smgr point
-# lseg path box polygon line unknown circle money macaddr inet cidr
-# aclitem bpchar bit varbit
+#
+
+"""
+currently unsupported PostgreSql types:
+
+ bool bytea int2vector regproc tid xid cid oidvector SET smgr point
+ lseg path box polygon line unknown circle money macaddr inet cidr
+ aclitem bpchar bit varbit
+
+connect args is 'host:database:user:password:opt:debug_tty'
+
+field names should be in lower case!
+"""
 
 import types
 import string
 import PyDBI
+import Date
 import DateTime
-from PostgreSql.PyGreSQL import pgdb
+import pgdb
 
-#connect args is 'host:database:user:password:opt:debug_tty'
+
 class PyDOPostgreSQL:
     def __init__(self, connectArgs):
         connectArgs = string.split(connectArgs,':')
@@ -141,7 +150,7 @@ def _isDateKind(t):
         'TIMESTAMP', 'INTERVAL', 'DATE', 'TIME', 'ABSTIME', 'RELTIME',
         'TINTERVAL')
 
-def _dateConvertFromDB(d):
+def _dateConvertFromDB(d):    
     try: return DateTime.strptime(d, '%Y-%m-%d') #just Y/M/D
     except: pass
     
@@ -152,10 +161,16 @@ def _dateConvertFromDB(d):
     tz = d[dashind:]
     d = d[:dashind]
     try: return DateTime.strptime(d, '%H:%M:%S'), tz # timetz
-    except: pass 
+    except: pass
+    # NO -- it was already stripped off, above!  -- js Thu Aug  9 11:51:23 2001
     #strip off offset from gmt
-    d = d[:string.rindex(d, '-')]
-    return DateTime.strptime(d, '%Y-%m-%d %H:%M:%S') # full date
+    #d = d[:string.rindex(d, '-')]
+    try:
+        return DateTime.strptime(d, '%Y-%m-%d %H:%M:%S') # full date
+    except: 
+        #print "date passed to convert function: |%s|" % d
+        raise
+    
 
 def _dateConvertToDB(d):
     if d == PyDBI.SYSDATE:

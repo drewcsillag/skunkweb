@@ -15,14 +15,14 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: SkunkExcept.py,v 1.10 2001/07/27 16:09:24 drew Exp $
+# $Id: SkunkExcept.py,v 1.1.1.1 2001/08/05 15:00:23 drew_csillag Exp $
 
 """
 This module provides a set of exception classes for use in
 scripts, programs and servers which want a way to raise
 "warnings", "severe errors", "critical errors", and the like.
 
-The Skunk AED server, and several skunk.org "pylibs"
+The SkunkWeb server, and several skunk.org "pylibs"
 modules, use these exception classes. You can use them in 
 your own programs if you need escalating levels of errors.
 If you only need regular exceptions, use Python's built-in
