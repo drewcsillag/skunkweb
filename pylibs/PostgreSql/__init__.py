@@ -63,8 +63,8 @@ def getConnection(connUser):
     
     if not _connections.has_key(connectParams):
         try:
-            _connections[connectParams] = apply(pgdb.connect, connectParams)
-        except pgdb.error:
+            _connections[connectParams] = pgdb.connect(connectParams)
+        except pgdb.Error:
             # XXX Do not raise the conenct string! The trace may be seen
             # by users!!!
             raise SkunkStandardError, ('cannot connect to PostgreSQL: %s' % 
