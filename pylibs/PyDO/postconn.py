@@ -23,7 +23,7 @@ currently unsupported PostgreSql types:
  lseg path box polygon line unknown circle money macaddr inet cidr
  aclitem bpchar bit varbit
 
-connect args is 'host:database:user:password:opt:debug_tty'
+connect args is 'host[|port]:database:user:password:opt:debug_tty'
 
 field names should be in lower case!
 """
