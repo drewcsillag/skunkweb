@@ -1,3 +1,7 @@
+2003-07-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/manual/api.txt: various changes.
+
 2003-07-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/util/cache_reaper.py.in (walk_func): fix for missing

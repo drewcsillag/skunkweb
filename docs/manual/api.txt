@@ -17,157 +17,295 @@ Chapter 4: The SkunkWeb API
 Introduction
 ============
 
-This chapter discusses the APIs available in SkunkWeb. It will review usage of the APIs in both Python and STML contexts.
+This chapter discusses the APIs available in SkunkWeb. It will review
+usage of the APIs in both Python and STML contexts.
 
 
 The Application Environment Component API
 =========================================
 
-The AE ("Application Environment") package provides interfaces to allow developers to develop component-based web applications. Components, for AE, are Python scripts and/or STML pages that are "included" in the flow of applications.
+The AE ("Application Environment") package provides interfaces to
+allow developers to develop component-based web
+applications. Components, for AE, are Python scripts and/or STML pages
+that are "included" in the flow of applications.
 
-Components can allow developers to section out pieces of code, with the goal to reuse or to logically separate their applications in a number of distinct files. Each component can be cached to increase performance of the application server.
+Components can allow developers to section out pieces of code, with
+the goal to reuse or to logically separate their applications in a
+number of distinct files. Each component can be cached to increase
+performance of the application server.
 
-AE is very much a part of the SkunkWeb request/response process, for it provides an interface to execute application code when a user requests a page on a SkunkWeb server.
+AE is very much a part of the SkunkWeb request/response process, for
+it provides an interface to execute application code when a user
+requests a page on a SkunkWeb server.
 
 
 Understanding Components
 ------------------------
 
-A component in AE is a Python script or an STML page. It may contain any type of application code, or display code that is required for a SkunkWeb-based application to function. When called, the component is included into the flow of the application, similar to that if it was in the application itself.
+A component in AE is a Python script or an STML page. It may contain
+any type of application code or display code that is required for a
+SkunkWeb-based application to function.  When called, the component is
+included into the flow of the application, similar to that if it was
+in the application itself. 
 
-Since AE is part of the SkunkWeb request/response process, at the beginning of each request, a **top-level** document is called. The top-level document can be a Python script or an STML page. This document is URL accessible. If we had a Python script, for example, called ``index.py``, we can access it like so: ``http://www.example.com/index.py`` (if ``www.example.com`` ran with SkunkWeb.) When the top-level document is called, it receives a number of variables, most significant being the ``CONNECTION`` variable, which is the HTTP interface in SkunkWeb. For more information about the ``CONNECTION`` variable, consult the section *The SkunkWeb HTTP API*, later in this chapter, for more information.
+.. is the above a distinction without a difference?
 
-There are four types of components, each of them intended for a different purpose:
+Since AE is part of the SkunkWeb request/response process, at the
+beginning of each request, a **top-level** document is called. The
+top-level document can be a Python script or an STML page. This
+document is URL accessible. If we had a Python script, for example,
+called ``index.py``, we can access it like so:
+``http://www.example.com/index.py`` (if ``www.example.com`` ran with
+SkunkWeb.) When the top-level document is called, it receives a number
+of variables, most significant being the ``CONNECTION`` variable,
+which is the HTTP interface in SkunkWeb. For more information about
+the ``CONNECTION`` variable, consult the section *The SkunkWeb HTTP
+API*, later in this chapter, for more information.
+
+.. actually, I believe that CONNECTION is the only variable put into
+   the component namespace.
+
+There are four types of components, each of them intended for a
+different purpose:
 
 **include**
-	This is a very simple component. It executes the code (STML or Python, for example) and outputs the results if any output is returned. This type of component is "part" of the calling page in the sense that it shares the same "namespace". Because of this, you can use the variables and functions that are defined or imported on the calling page.
+    This is a very simple component. It executes the code (STML or
+    Python, for example) and outputs the results if any output is
+    returned. This type of component is "part" of the calling page
+    in the sense that it shares the same "namespace". Because of
+    this, you can use the variables and functions that are defined
+    or imported on the calling page.
 
 **regular**
-	This one is very much like the "include" component, but this is slightly different. Where "includes" cannot be cached, "regular components" can. This means that any output produced can be cached. You can selectively cache items, apply timeouts and such to these components, and still have the same behavior as a simpler include. The other difference between this and the include is that it does not share the variables, functions and the like with the top-level document or component that called it. You need to pass values into it if you need the values from the calling page or component.
+    This one is very much like the "include" component, but this
+    is slightly different. Where "includes" cannot be cached,
+    "regular components" can. This means that any output produced
+    can be cached. You can selectively cache items, apply timeouts
+    and such to these components, and still have the same behavior
+    as a simpler include. The other difference between this and
+    the include is that it does not share the variables, functions
+    and the like with the top-level document or component that
+    called it. You need to pass values into it if you need the
+    values from the calling page or component.
 
 **data**
-	This type of component returns a single value, which can then be cached. This type of component is sort of like a Python function, but with the ability to cache the output. Data components are useful when you have a piece of code that usually gets the same data in a certain period of time (maybe like a "Quote of the Day"). The data can be cached, and when it is cached, it does not need to re-execute the code in the component if the cache hasn't expired. 
+    This type of component returns a single value, which can then
+    be cached. This type of component is sort of like a Python
+    function, but with the ability to cache the output. Data
+    components are useful when you have a piece of code that
+    usually gets the same data in a certain period of time (maybe
+    like a "Quote of the Day"). The data can be cached, and when
+    it is cached, it does not need to re-execute the code in the
+    component if the cache hasn't expired.
 
-	Data components do not share the same namespace as the calling document or component, so variables and the like need to be passed into the component to access them within the data component.
+    Data components do not share the same namespace as the calling
+    document or component, so variables and the like need to be
+    passed into the component to access them within the data
+    component.
 
 **remote**
-	SkunkWeb can pass data or receive data from other SkunkWeb servers through the use of remote components. The remote component is a type of data component that allows you to receive values from other SkunkWeb servers. You can set up a remote SkunkWeb server, for example, to manage database connections, from which other SkunkWeb servers can receive data from the database using the SkunkWeb server setup to manage and output remote components.
+    SkunkWeb can pass data or receive data from other SkunkWeb
+    servers through the use of remote components. The remote
+    component is a type of data component that allows you to
+    receive values from other SkunkWeb servers. You can set up a
+    remote SkunkWeb server, for example, to manage database
+    connections, from which other SkunkWeb servers can receive
+    data from the database using the SkunkWeb server setup to
+    manage and output remote components.
 
-	As with regular and data components, the calling page does not share namespaces with the remote data component.
+    As with regular and data components, the calling page does not
+    share namespaces with the remote data component.
 
+    .. actually, remote components aren't a "kind" of component in
+       the same way that regular/data/include are.  They are a
+       different component protocol, and are called the same way.
+       All remote components are either includes, data components,
+       or regular components.  The use of remote components for
+       data is typical, though.
 
-All of these component types can be called with the ``callComponent()`` function in the ``AE.Component`` module. Each type of component is called like this::
+All of these component types can be called with the
+``callComponent()`` function in the ``AE.Component`` module. Each type
+of component is called like this::
 
-	from AE import Component
-	
-	Component.callComponent("my.comp", argDict={}, defer = None, compType=DT_XX, cache = XX)
-	
-	
+    from AE import Component
+    
+    Component.callComponent("my.comp", argDict={}, defer = None, compType=DT_XX, cache = XX)
+    
+    
 In the component call, we need to specify a few arguments to call the component:
 
 **name**
-	We must specify the path to the component. In the example above, we can say that the component is in the same directory as the calling page. This path can either be absolute or relative.
+    We must specify the path to the component. In the example
+    above, we can say that the component is in the same directory
+    as the calling page. This path can either be absolute or
+    relative.
 
 **argDict**
-	As discussed before, not all types of components share the same namespace as the calling page or component. With this parameter, you will be able to pass a number of variables, functions, classes or the like that should be accessible within the component. The variables are entered into the local namespace of the component, and from there, the variables passed into the component can be accessed like regular variables - you don't need to access an ``argDict`` dictionary to retrieve the values.
+    As discussed before, not all types of components share the
+    same namespace as the calling page or component. With this
+    parameter, you will be able to pass a number of variables,
+    functions, classes or the like that should be accessible
+    within the component. The variables are entered into the local
+    namespace of the component, and from there, the variables
+    passed into the component can be accessed like regular
+    variables - you don't need to access an ``argDict`` dictionary
+    to retrieve the values.
 
 **cache**
-	This parameter tells AE if and how this particular component is to be cached. (We specify the timeout value in the actual component itself.) There are certain values we can use here; these will be discussed shortly. The actual values are in the ``AE.Component`` module. Possible cache values include:
 
-	- NO: do not use the cache.
-	- YES: cache the output.
-	- DEFER: if there is an *expired* component available, deliver that cached component, and then, after the request is complete, create a new cache for that specific component. This actually offers a great improvement in speed: users do not need to wait for a component to be executed and cached before receiving a response. The component is cached *after* the response is completed.
-	- FORCE: This executes a caching procedure, whether or not the component is already cached.
-	- OLD: This is the opposite of ``FORCE``. It takes anything that is in cache, no matter how old it is. The only time it will cache is when there is no cache at all.
+    This parameter tells AE if and how this particular component
+    is to be cached. (We specify the timeout value in the actual
+    component itself.) There are certain values we can use here;
+    these will be discussed shortly. The actual values are in the
+    ``AE.Component`` module. Possible cache values include:
 
-If you do use the ``cache`` parameter, you must be aware that the arguments you pass, using the ``argDict`` parameter, must be, as Python calls it, "hashable". The reason for this is because AE needs to flatten each item into a short, unique value. It does this to look up cached output it has stored in disk cache. Here is a list of items that can be used in the ``argDict`` parameter when using ``cache``:
+    - NO: do not use the cache.
 
-	- Numbers, strings, dates and ``None`` are hashable.
-	- Tuples (immutable sequences) are hashable if and only if all the items within the tuple are hashable.
-	- Lists and dictionaries are *not* hashable. However, AE can make an exception here, as long as the items are either hashable or are lists or dictionaries. However, the component should not change the information in the list or dictionary. If it does change, it will only change *once*, but it will not appear in the cache, which will be used after the component is initially cached.
-	- ``DateTime`` objects are not hashable, but you can get away with it here, since AE can make them look like they are hashable.
-	- Any Python class you write *cannot* be used, *unless* you implement a __hash__ or __cachekey__ method in the class.
+    - YES: cache the output.
+
+    - DEFER: if there is an *expired* component available, deliver
+      that cached component, and then, after the request is
+      complete, create a new cache for that specific component. This
+      actually offers a great improvement in speed: users do not
+      need to wait for a component to be executed and cached before
+      receiving a response. The component is cached *after* the
+      response is completed.  - FORCE: This executes a caching
+      procedure, whether or not the component is already cached.  
+
+    - OLD: This is the opposite of ``FORCE``. It takes anything that
+      is in cache, no matter how old it is. The only time it will
+      cache is when there is no cache at all.
+
+If you do use the ``cache`` parameter, you must be aware that the
+arguments you pass, using the ``argDict`` parameter, must be, as
+Python calls it, "hashable". The reason for this is because AE needs
+to flatten each item into a short, unique value. It does this to look
+up cached output it has stored in disk cache. Here is a list of items
+that can be used in the ``argDict`` parameter when using ``cache``:
+
+    - Numbers, strings, dates and ``None`` are hashable.
+
+    - Tuples (immutable sequences) are hashable if and only if all
+      the items within the tuple are hashable.
+
+    - Lists and dictionaries are *not* hashable. However, AE can make
+      an exception here, as long as the items are either hashable or are
+      lists or dictionaries. However, the component should not change
+      the information in the list or dictionary. If it does change, it
+      will only change *once*, but it will not appear in the cache,
+      which will be used after the component is initially cached.  -
+      ``DateTime`` objects are not hashable, but you can get away with
+      it here, since AE can make them look like they are hashable.  -
+      Any Python class you write *cannot* be used, *unless* you
+      implement a __hash__ or __cachekey__ method in the class.
 
 **compType**
-	This parameters tells AE what type of component it is. We would actually pass certain constants into it, found in the ``AE.Component`` module to specify the type of component it is. Possible component types include:
 
-	- DT_INCLUDE
-	- DT_REGULAR
-	- DT_DATA
-	- DT_REMOTE
-	
+    This parameters tells AE what type of component it is. We would
+    actually pass certain constants into it, found in the
+    ``AE.Component`` module to specify the type of component it
+    is. Possible component types include:
+
+    - DT_INCLUDE
+    - DT_REGULAR
+    - DT_DATA
+    - DT_REMOTE
+    
 
 **defer**
-	[TODO]
+    [TODO]
 
 
-Further discussion about each type of component is further discussed in later sections.
+Further discussion about each type of component is further discussed
+in later sections.
 
 File Extensions
 ---------------
 
-By default, SkunkWeb comes with a number of acceptable file extensions which SkunkWeb knows about. Here is a list of file extensions:
+By default, SkunkWeb comes with a number of acceptable file extensions
+which SkunkWeb knows about. Here is a list of file extensions:
 
 - HTML/STML files:
-	* ``.html``
-	* ``.stml``
+    * ``.html``
+    * ``.stml``
 - STML includes and regular components:
-	* ``.inc``
+    * ``.inc``
 - STML data components:
-	* ``.dcmp``
+    * ``.dcmp``
 - Python files:
-	* ``.py``
+    * ``.py``
 - Python includes and regular components:
-	* ``.pyinc``
+    * ``.pyinc``
 - Python data components:
-	* ``.pydcmp``
+    * ``.pydcmp``
 
 
 Includes And Regular Components
 -------------------------------
 
-To start off, let's demonstrate how we would include a simple page, called "template.pyinc". To AE, the ".pyinc" extension means that it is an include, either an STML or a Python script::
+To start off, let's demonstrate how we would include a simple page,
+called "template.pyinc". To AE, the ".pyinc" extension means that it
+is an include, either an STML or a Python script::
 
-	from AE import Component
-	
-	a = Component.callComponent("template.pyinc", argDict={}, compType=Component.DT_INCLUDE)
-	print a
+    from AE import Component
+    
+    a = Component.callComponent("template.pyinc", argDict={}, compType=Component.DT_INCLUDE)
+    print a
 
-Notice two things here. First, we don't specify anything for the ``argDict``; the include shares the same namespace as the calling document. Second, our ``compType`` is ``Component.DT_INCLUDE``, denoting that this is just a simple include. Note that the variable ``DT_INCLUDE`` is in the ``AE.Component`` module. At the end, we can just print the results.
+Notice two things here. First, we don't specify anything for the
+``argDict``; the include shares the same namespace as the calling
+document. Second, our ``compType`` is ``Component.DT_INCLUDE``,
+denoting that this is just a simple include. Note that the variable
+``DT_INCLUDE`` is in the ``AE.Component`` module. At the end, we can
+just print the results.
 
 
 Here is an example of a call to a regular component::
 
-	from AE import Component
-	
-	someVal = "moo"
-	
-	a = Component.callComponent("template.pyinc", argDict={'CONNECTION': CONNECTION, 'someVal': someVal}, cache=Component.YES, compType=Component.DT_REGULAR)
+    from AE import Component
+    someVal = "moo"
+    a = Component.callComponent("template.pycomp", 
+                                argDict={'someVal': someVal}, 
+                                compType=Component.DT_REGULAR,
+                                cache=Component.YES)
+    print a
 
-	print a
 
+Things look very different here. First, as you can see, we are passing
+a value into the ``argDict``: ``someVal``. Second, we are using the
+``cache`` parameter, where we specify the variable from
+``AE.Component`` of what the cache type it should be. Finally, we
+specify that it is a regular component in the ``compType`` parameter.
+(The compType must match the actual type of the file.)
 
-Things look very different here. First, as you can see, we are passing two values into the ``argDict``: ``CONNECTION`` and ``someVal``. Second, we are using the ``cache`` parameter, where we specify the variable from ``AE.Component`` of what the cache type it should be. Finally, we specify that it is a regular component in the ``compType`` parameter.
+In STML, an include component can be called using the ``<:include:>``
+tag; for example::
 
-In STML, an include component can be called using the ``<:include:>`` tag. For the component above, we can call it like this::
-
-	<:include template.pyinc:>
-	
+    <:include template.pyinc:>
+    
 For an STML regular component, you would use the <:component:> tag::
 
-	<:component template.pyinc CONNECTION=`CONNECTION` someVal=`someVal` cache=yes:>
+    <:component template.pycomp 
+                someVal=`someVal` 
+                cache=yes:>
 
-You can pass a dictionary, just like with ``argDict`` in ``callComponent()`` by using ``__args__`` in the tag::
+You can pass a dictionary, just like with ``argDict`` in
+``callComponent()`` by using ``__args__`` in the tag::
 
-		<:component template.pyinc __args__=`{'CONNECTION': CONNECTION, 'someVal': someVal}` cache=yes:>
+        <:component template.pycomp 
+               __args__=`{'CONNECTION': CONNECTION, 
+                          'someVal': someVal}` 
+               cache=no:>
 
-Any arguments specified in ``__args__`` is overridden by the values that are explicitly defined in the tag. For example::
+Any arguments specified in ``__args__`` is overridden by the values
+that are explicitly defined in the tag. For example::
 
-	<:component foo.comp a="3" __args__=`{'a':"5", 'b': 5}`:>
-	
+    <:component foo.comp a="3" __args__=`{'a':"5", 'b': 5}`:>
+    
 In this case ``a`` would equal ``3`` in the component.
 
-In STML, the ``cache`` parameter can have anyone of these values, which correlate with the values specified earlier in this section:
+In STML, the ``cache`` parameter can have anyone of these values,
+which correlate with the values specified earlier in this section:
 
 - ``yes``
 - ``no``
@@ -178,36 +316,50 @@ In STML, the ``cache`` parameter can have anyone of these values, which correlat
 Data Components
 ---------------
 
-Data components, as mentioned, are components that return a single value. The value can be cached. This is useful if you have a piece of code that will usually output the same value; a data component that is cached does not need to be re-executed to get the value.
+Data components, as mentioned, are components that return a single
+value. The value can be cached. This is useful if you have a piece of
+code that will usually output the same value; a data component that is
+cached does not need to be re-executed to get the value.
 
 Data components can be called like this::
 
-	from AE import Component
-	
-	someVal = "moo"
-	
-	a = Component.callComponent("pyCode.pydcmp", argDict={'CONNECTION': CONNECTION, 'someVal': someVal}, cache=Component.DEFER, compType=Component.DT_DATA)
+    from AE import Component
+    someVal = "moo"
+    a = Component.callComponent("pyCode.pydcmp", 
+                                argDict={'spoon' : 'runcible', 
+                                         'someVal': someVal}, 
+					 compType=Component.DT_DATA,
+					 cache=Component.DEFER )
+    print a
+    
+This is very similar to how a regular component would look, except it
+uses the ``Component.DT_DATA`` variable to specify that it is a data
+component.
 
-	print a
-	
-This is very similar to how a regular component would look, except it uses the ``Component.DT_DATA`` variable to specify that it is a data component.
+In the data component, you need to return a single value. Since we do
+not have a ``<:return:>`` function in Python as we do in STML, we need
+to instead raise an exception. The value of the exception is the data
+we wish to pass through. Using ``raise``, we pass the ``ReturnValue``
+exception and then supply the value for it::
 
-In the data component, you need to return a single value. Since we do not have a ``<:return:>`` function in Python as we do in STML, we need to instead raise an exception. The value of the exception is the data we wish to pass through. Using ``raise``, we pass the ``ReturnValue`` exception and then supply the value for it::
+    cow = "moo"
+    raise ReturnValue, cow
+    
+In this data component, ``cow`` receives a value of ``moo``. Then the
+``ReturnValue`` exception is raised, with the value of ``cow``. So, we
+might have the below code that calls the above data component::
 
-	cow = "moo"
-	raise ReturnValue, cow
-	
-In this data component, ``cow`` receives a value of ``moo``. Then the ``ReturnValue`` exception is raised, with the value of ``cow``. So, we might have the below code that calls the above data component::
-
-	from AE import Component
-	
-	animalSound = Component.callComponent("cow.pydcmp", argDict={'CONNECTION': CONNECTION, 'someVal': someVal}, cache=Component.DEFER, compType=Component.DT_DATA)
-
+    from AE.Component import *
+    animalSound = callComponent("cow.pydcmp", 
+                                argDict={'CONNECTION': CONNECTION, 
+                                         'someVal': someVal}, 
+                                compType=Component.DT_DATA)
 
 The value of ``animalSound`` equals ``moo``.
 
 In STML, 
 
+.. TBD XXX
 
 Remote Components
 -----------------
@@ -218,201 +370,313 @@ Remote Components
 Component Cache Timeouts
 ------------------------
 
-Regular and data components can be cached. Those caches can expire. When they expire, they are automatically refreshed. [TODO: Is there a default expiration?] You can set the expiration time of a particular data or regular component by setting the global variable ``__expiration`` in the component itself. You need to specify how many seconds passed since the Unix epoch (12:00 AM 1/1/1970 UTC) when the component cache should expire. Since we do not have enough fingers and/or enough patience to count how many seconds it will be when the component should expire, we can use a nifty little utility in the SkunkWeb pylibs called ``Date.TimeUtil`` to solve this little woe.
+Regular and data components can be cached. Those caches can
+expire. When they expire, they are automatically refreshed. [TODO: Is
+there a default expiration?] You can set the expiration time of a
+particular data or regular component by setting the global variable
+``__expiration`` in the component itself. You need to specify how many
+seconds passed since the Unix epoch (12:00 AM 1/1/1970 UTC) when the
+component cache should expire. Since we do not have enough fingers
+and/or enough patience to count how many seconds it will be when the
+component should expire, we can use a nifty little utility in the
+SkunkWeb pylibs called ``Date.TimeUtil`` to solve this little woe.
 
-We could, for example, have a specific component expire in five minutes. We can use the ``convertDuration()`` function to specify our expiration::
+We could, for example, have a specific component expire in five
+minutes. We can use the ``convertDuration()`` function to specify our
+expiration::
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertDuration("5m")
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertDuration("5m")
 
-Note the argument usage in this function. You specify the integer value and then a letter-identifier to express the amount the duration covers. Here is a list of values that can be used:
+Note the argument usage in this function. You specify the integer
+value and then a letter-identifier to express the amount the duration
+covers. Here is a list of values that can be used:
 
 *integer* **d**
-	Cache for integer number of days. 
+    Cache for integer number of days. 
 *integer* **h**
-	Cache for integer number of hours. 
+    Cache for integer number of hours. 
 *integer* **m**
-	Cache for integer number of minutes. 
+    Cache for integer number of minutes. 
 *integer* **s**
-	Cache for integer number of seconds. 
-	
+    Cache for integer number of seconds. 
+    
 In STML, a component can use the <:cache:> tag to express duration::
 
-	<:cache duration=5m:>
-	
-There is another function that can be used to express when the cache should expire. This is the ``Date.TimeUtil.convertUntil()`` function. This can be also used in the STML ``<:cache:>`` tag, using the ``until`` parameter. 
+    <:cache duration=5m:>
+    
+There is another function that can be used to express when the cache
+should expire. This is the ``Date.TimeUtil.convertUntil()``
+function. This can be also used in the STML ``<:cache:>`` tag, using
+the ``until`` parameter.
 
-The ``convertUntil()`` function can take a number of different parameter strings depending on the caching requirements of your particular component.
+The ``convertUntil()`` function can take a number of different
+parameter strings depending on the caching requirements of your
+particular component.
 
-- The function can take a string in the form ``"hh:mm"`` or ``"hh:mm:ss"``. This specifies the hours and minutes (and optionally, seconds) on the 24-hour clock. This tells AE to expire the cache until the next occurence of that time. For example::
+- The function can take a string in the form ``"hh:mm"`` or
+  ``"hh:mm:ss"``. This specifies the hours and minutes (and optionally,
+  seconds) on the 24-hour clock. This tells AE to expire the cache until
+  the next occurence of that time. For example::
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil("14:00")
-	
-This component will expire everyday at 2 PM. If the component is first cached at ``13:30``, or 1:30 PM, then the cache will be refreshed at 2 PM. If the component is first cached at ``15:00`` or 3 PM, then it will expire 23 hours after the initial creation of the component cache. You can also specify multiple times like such::
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil("14:00")
+    
+  This component will expire everyday at 2 PM. If the component is first
+  cached at ``13:30``, or 1:30 PM, then the cache will be refreshed at 2
+  PM. If the component is first cached at ``15:00`` or 3 PM, then it
+  will expire 23 hours after the initial creation of the component
+  cache. You can also specify multiple times like such::
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil(("14:00", "23:00"))
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(("14:00", "23:00"))
 
-In STML, the above will look like this::
+  In STML, the above will look like this::
 
-	<:cache until=`("14:00", "23:00")` :>
-	
-The cache here will expire at 2PM and at 11PM everyday.
+    <:cache until=`("14:00", "23:00")` :>
+    
+  The cache here will expire at 2PM and at 11PM everyday.
 
-- The function can just take a minute string, in the form of ``:mm``. The cache, when specified as such, will expire, every hour, at the minute you specify. For example, if you want to expire at 15 past the hour, you can do this::
-	
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil(":15")
+- The function can just take a minute string, in the form of
+  ``:mm``. The cache, when specified as such, will expire, every hour,
+  at the minute you specify. For example, if you want to expire at 15
+  past the hour, you can do this::
+    
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(":15")
 
-In STML, it will look like this::
+  In STML, it will look like this::
 
-	<:cache until=:15 :>
-	
-Mutliple minutes can be expressed, by placing the time in a tuple::
+    <:cache until=:15 :>
+    
+  Multiple minutes can be expressed, by placing the time in a tuple::
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil((":00", ":15", ":30", ":45"))
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil((":00", ":15", ":30", ":45"))
 
-Every fifteen minutes, the cache will expire. This can be expressed in STML like this::
+  Every fifteen minutes, the cache will expire. This can be expressed in STML like this::
 
-	<:cache until=`(":00", ":15", ":30", ":45")`:>
+    <:cache until=`(":00", ":15", ":30", ":45")`:>
 
+- You can use a ``DateTime`` object to represent the time when it
+  refreshes the cache. The date and time used can come from a database,
+  for example, where and when the data is properly marshaled as a
+  ``DateTime`` instance. [TODO: Example]
 
-- You can use a ``DateTime`` object to represent the time when it refreshes the cache. The date and time used can come from a database, for example, where and when the data is properly marshaled as a ``DateTime`` instance. [TODO: Example]
+- You can refresh the cache at a specific date and time, using the ISO
+  format ``"yyyy-mm-dd"``, ``"yyyy-mm-dd hh:mm"``, ``"yyyy-mm-dd
+  hh:mm:ss"`` or US format, ``"mm/dd/yyyy"``, ``"mm/dd/yyyy hh:mm"``,
+  ``"mm/dd/yyyy hh:mm:ss"``. So, if you have a specific component that
+  should expire once in its lifetime, you would do something like this:
 
-- You can refresh the cache at a specific date and time, using the ISO format ``"yyyy-mm-dd"``, ``"yyyy-mm-dd hh:mm"``, ``"yyyy-mm-dd hh:mm:ss"`` or US format, ``"mm/dd/yyyy"``, ``"mm/dd/yyyy hh:mm"``, ``"mm/dd/yyyy hh:mm:ss"``. So, if you have a specific component that should expire once in its lifetime, you would do something like this:
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil("2003-08-01 07:00")
+    
+  This will expire on August 1, 2003 at 7 AM. In STML, it would look like this::
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil("2003-08-01 07:00")
-	
-This will expire on August 1, 2003 at 7 AM. In STML, it would look like this::
+    <:cache until="2003-08-01 07:00":>
 
-	<:cache until="2003-08-01 07:00":>
+  Again, you can specify multiple dates by putting the date strings into a tuple::
 
-Again, you can specify multiple dates by putting the date strings into a tuple::
+    import Date.TimeUtil
+    __expiration = Date.TimeUtil.convertUntil(("2003-08-01 07:00", "2004-08-01 07:00"))
 
-	import Date.TimeUtil
-	__expiration = Date.TimeUtil.convertUntil(("2003-08-01 07:00", "2004-08-01 07:00"))
+  And in STML:
 
-And in STML:
+    <:cache until=`("2003-08-01 07:00", "2004-08-01 07:00")`:>
+    
+- You can use a ``RelativeDateTime`` object from the ``DateTime``
+  module a a parameter. This allows you to specify a very detailed time,
+  like "expire every Sunday at noon." It is wise to read the
+  ``RelativeDateTime`` documentation fully, or else you might write
+  ``RelativeDateTime`` code that moves backwards in time. If this does
+  happen, an exception will be raised. If you wanted to do the above,
+  you can write this::
 
-	<:cache until=`("2003-08-01 07:00", "2004-08-01 07:00")`:>
-	
-- You can use a ``RelativeDateTime`` object from the ``DateTime`` module a a parameter. This allows you to specify a very detailed time, like "expire every Sunday at noon." It is wise to read the ``RelativeDateTime`` documentation fully, or else you might write ``RelativeDateTime`` code that moves backwards in time. If this does happen, an exception will be raised. If you wanted to do the above, you can write this::
+    import Date.TimeUtil, DateTime.RelativeDateTime
+    __expiration = Date.TimeUtil.convertUntil(DateTime.RelativeDateTime(weekday=0, hour=12, minute=0, second=0))
 
-	import Date.TimeUtil, DateTime.RelativeDateTime
-	__expiration = Date.TimeUtil.convertUntil(DateTime.RelativeDateTime(weekday=0, hour=12, minute=0, second=0))
+  In STML it would be::
 
-In STML it would be::
+    <:cache until=`RelativeDateTime(weekday=0, hour=17, minute=0, second=0)`:>
+    
 
-	<:cache until=`RelativeDateTime(weekday=0, hour=17, minute=0, second=0)`:>
-	
+Every item above can be grouped together in tuples; different formats
+can also be that are mentioned above can be grouped together. This can
+allow you to make a complex cache control on your components. Here is
+an example in STML of what is meant by this::
 
-Every item above can be grouped together in tuples; different formats can also be that are mentioned above can be grouped together. This can allow you to make a complex cache control on your components. Here is an example in STML of what is meant by this::
+    # expires the cache at 0, 15, 30, and 45 minutes after the hour
+    <:cache until=`(":00", ":15", ":30", ":45")`:>
 
-	# expires the cache at 0, 15, 30, and 45 minutes after the hour
-	<:cache until=`(":00", ":15", ":30", ":45")`:>
-
-	# expires the cache at 15 minutes after the hour,
-	# and also at 06:00 every day, and also
-	# at 5pm (17:00) on Sundays.
-	<:import DateTime "RelativeDateTime":>
-	<:cache until=`(":15", "06:00", 
-   		RelativeDateTime(
-    	    weekday=0, hour=17, 
-    	    minute=0, second=0))`:>
+    # expires the cache at 15 minutes after the hour,
+    # and also at 06:00 every day, and also
+    # at 5pm (17:00) on Sundays.
+    <:import DateTime "RelativeDateTime":>
+    <:cache until=`(":15", "06:00", 
+        RelativeDateTime(
+        weekday=0, hour=17, 
+        minute=0, second=0))`:>
 
 
 
 The Component Stack
 -------------------
 
-In the execution of components, you might have a component called on the page that the user requests. In the component which you called on the requesting page, another component is called, which make further execute some of your code. In the execution of the components, each component is put into a Python list called ``componentStack``. The ``componentStack`` contains each components' namespace, the name of the component and passed arguments. This means that, for example, you can extract any variable or function defined in one component and use it within another.
+In the execution of components, you might have a component called on
+the page that the user requests. In the component which you called on
+the requesting page, another component is called, which may further
+execute some of your code. In the execution of the components, each
+component is put into a Python list called ``componentStack``. The
+``componentStack`` contains each component's namespace, the name of
+the component and passed arguments. This stack is globally available,
+which means that, for example, you can extract any variable or
+function defined in one component and use it within another.  (That
+doesn't mean that it is good practice to do so, however.)
 
-The component stack only exists with data and regular components, as includes share the same namespace as the calling document.
+The component stack only exists with data and regular components, as
+includes share the same namespace as the calling document.
 
-For example, if we have two components, ``my.pydcmp`` and ``myOther.pydcmp``, where the first one, ``my.pydcmp`` is called in the requesting document::
+For example, if we have two components, ``my.pycomp`` and
+``myOther.pydcmp``, where the first one, ``my.pycomp`` is called in
+the requesting document::
 
-	AE.Component.callComponent("my.pydcmp", argDict={'action': action}, compType=AE.Component.DT_REGULAR)
+    out=AE.Component.callComponent("my.pycomp", 
+                                   argDict={'action': action}, 
+                                   compType=AE.Component.DT_REGULAR)
 
-and in ``my.pydcmp``, we call the ``myOther.pydcmp`` component::
+and in ``my.pycomp``, we call the ``myOther.pydcmp`` component::
 
-		AE.Component.callComponent("myOther.pydcmp", argDict={'action': action}, compType=AE.Component.DT_REGULAR)
+        val=AE.Component.callComponent("myOther.pydcmp", 
+                                       argDict={'action': action}, 
+                                       compType=AE.Component.DT_DATA)
 
-	
-What we created is a "stack" of components, where the requesting document is on the top of the stack, and ``myOther.pydcmp`` is on the bottom of the stack. 
+    
+What we created is a "stack" of components, where the requesting
+document is on the top of the stack, and ``myOther.pydcmp`` is on the
+bottom of the stack.
 
-The component stack is accessible through the ``componentStack`` variable, which is a part of AE. 
+The component stack is accessible through the ``componentStack``
+variable, which is an attribute of of the ``AE.Component`` module.
 
-The component stack is relative to where the execution currently lies. If ``myOther.pydcmp`` has completed execution, then the top of the component stack is now ``my.pydcmp`` and ``myOther.pydcmp`` will no longer be available. Because of this, you can really only "look down" the component stack, not up.
+The component stack is relative to where the execution currently
+lies. If ``myOther.pydcmp`` has completed execution, then the top of
+the component stack is now ``my.pycomp`` and ``myOther.pydcmp`` will
+no longer be available. Because of this, you can really only "look
+down" the component stack, not up.
 
-To display how this might look, we will use a little Python code in ``myOther.pydcmp`` to demonstrate, using our example::
+To display how this might look, we will use a little Python code in
+``myOther.pydcmp`` to demonstrate, using our example::
 
-	from AE.Component import componentStack
+    from AE.Component import componentStack
 
-	# this is all the information in the requested document.
-	requestingDocument = componentStack[0] 
-	
-	# this is the second component called in execution.
-	mypydcmp = componentStack[1] 
-	
-	# this is the last component in the list. This can only be accessed by the 		
-	# current component - (myOther.pydcmp)
-	myOtherpydcmp = componentStack[2]
-	
-In this example, ``requestingDocument`` does not know of the existence of the last item in the stack - it thinks itself is the last item in the stack! It only "knows" the existence of another component, which it will "allow" it to be the last item in the stack. This goes through the line of executing components - the very last component (or the top component) "knows" the "complete order" of the executing components in its specific execution order, but lower ones only "know" what is below it. 
+    # this is all the information in the requested document.
+    requestingDocument = componentStack[0] 
+    
+    # this is the second component called in execution.
+    mypydcmp = componentStack[1] 
+    
+    # this is the last component in the list. This can only be accessed by the          
+    # current component - (myOther.pydcmp)
+    myOtherpydcmp = componentStack[2]
+    
+In this example, ``requestingDocument`` does not know of the existence
+of the last item in the stack - it thinks itself is the last item in
+the stack! It only "knows" the existence of another component, which
+it will "allow" it to be the last item in the stack. This goes through
+the line of executing components - the very last component (or the top
+component) "knows" the "complete order" of the executing components in
+its specific execution order, but lower ones only "know" what is below
+it.
 
-Each index in the ``componentStack`` is actually an object containing a number of attributes that represent things within a specific component. (For them geeky types, the ``componentStack`` list index item is actually an instance of the AE.Component.ComponentStackFrame class.) Below is a a list of attributes in a component stack index:
+Each index in the ``componentStack`` is actually an object containing
+a number of attributes that represent things within a specific
+component. (For them geeky types, the ``componentStack`` list index
+item is actually an instance of the AE.Component.ComponentStackFrame
+class.) Below is a a list of attributes in a component stack index:
 
 **name**
-	The value of this attribute equals the relative path and name of the component you are retrieving information from. If you were retreiving the name of ``my.pydcmp`` in ``myOther.pydcmp``, we would use something like this::
-	
-		print componentStack[1].name
-	
+
+    The value of this attribute equals the relative path and name of
+    the component you are retrieving information from. If you were
+    retreiving the name of ``my.pydcmp`` in ``myOther.pydcmp``, we
+    would use something like this::
+    
+        print componentStack[1].name
+    
 **namespace**
-	This is a dictionary of all the variables, modules, packages, functions and classes imported into the particular namespace. So, if you want to grab a variable, possibly called "foo" in the requesting document, which is the bottom of the stack, you can do this::
 
-		print componentStack[0].namespace.get("foo")
-	
-	If you had a function called ``bar()``, you can grab it in the current components namespace::
+    This is a dictionary of all the variables, modules, packages,
+    functions and classes imported into the particular namespace. So,
+    if you want to grab a variable, possibly called "foo" in the
+    requesting document, which is the bottom of the stack, you can do
+    this::
 
-		myFunc = componentStack[0].namespace.get("bar")
-		print myFunc()
+        print componentStack[0].namespace.get("foo")
+    
+    If you had a function called ``bar()``, you can grab it in the
+    current components namespace::
+
+        myFunc = componentStack[0].namespace.get("bar")
+        print myFunc()
 
 **executable**
-	This is an object that contains the executable code for the specific component. This attribute is an object of either ``AE.Executables.PythonExecutable`` or ``AE.Executables.STMLExecutable``, depending on what the component is. No matter what, they both have the same methods, though implemented differently.
 
-	The outputted object contains two methods, ``mergeNamespaces()`` and ``run()``. ``mergeNamespaces()`` would be used to merge two namespaces together, let's say after a data component raises the ``ReturnValue`` exception, to pass data to the calling component. [TODO: write more about this when this is figured out.] ``run()`` contains the actual code that can be executed.
+    This is an object that contains the executable code for the
+    specific component. This attribute is an object of either
+    ``AE.Executables.PythonExecutable`` or
+    ``AE.Executables.STMLExecutable``, depending on what the component
+    is. No matter what, they both have the same methods, though
+    implemented differently.
 
-	The best advice here is that if you absolutely need to re-execute a component, then it is here to use. However, be *absolutely aware* that if you use ``run()``, you can end up with a RuntimeError exception, if the component you are re-executing calls the currently executing component (ala, recursion overload.)
+    The outputted object contains two methods, ``mergeNamespaces()``
+    and ``run()``. ``mergeNamespaces()`` would be used to merge two
+    namespaces together, let's say after a data component raises the
+    ``ReturnValue`` exception, to pass data to the calling
+    component. [TODO: write more about this when this is figured out.]
+    ``run()`` contains the actual code that can be executed.
 
-	To reach the recursion depth for your Python installation, you can do this::
-		
-		b = componentStack[1].executable
-		b.run()
-		
+    The best advice here is that if you absolutely need to re-execute
+    a component, then it is here to use. However, be *absolutely
+    aware* that if you use ``run()``, you can end up with a
+    RuntimeError exception, if the component you are re-executing
+    calls the currently executing component (ala, recursion overload.)
+
+    To reach the recursion depth for your Python installation, you can do this::
+        
+        b = componentStack[1].executable
+        b.run()
+        
 
 **argDict**
-	This is a dictionary containing the list of arguments passed to the specific component. If you called ``my.pydcmp`` like this::
-		
-		AE.Component.callComponent("my.pydcmp", argDict={'action': 'search'}, compType=DT_REGULAR)
 
-	Then the dictionary represented in the ``argDict`` parameter in ``callComponent()`` will be accessible through this attribute.
+    This is a dictionary containing the list of arguments passed to
+    the specific component. If you called ``my.pydcmp`` like this::
+        
+        AE.Component.callComponent("my.pydcmp", 
+                                   argDict={'action': 'search'}, 
+                                   compType=DT_REGULAR)
+
+    Then the dictionary represented in the ``argDict`` parameter in
+    ``callComponent()`` will be accessible through this attribute.
 
 
 **auxArgs**
-	[TODO: Need to look at this more]
+    [TODO: Need to look at this more]
 
 **compType**
-	The value of this attribute, which represents the type of component used. Here is a list of the component types and their corresponding values:
 
-		- DT_REGULAR: 0
-		- DT_DATA: 1
-		- DT_INCLUDE: 2
+    The value of this attribute, which represents the type of
+    component used. Here is a list of the component types and their
+    corresponding values:
+
+        - DT_REGULAR: 0
+        - DT_DATA: 1
+        - DT_INCLUDE: 2
 
 
-There is another variable in ``AE.Component`` to be aware of, and that is ``topOfComponentStack``. [TODO: Finish this.]
+There is another variable in ``AE.Component`` to be aware of, and that
+is ``topOfComponentStack``. [TODO: Finish this.]
 
 [TODO: resetComponentStack()]
 
@@ -420,9 +684,19 @@ There is another variable in ``AE.Component`` to be aware of, and that is ``topO
 Component Stack Advice
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Since you have full access to every other components attributes in a currently executing component, a lot of power is handed to you. If you absolutely require it, then it is okay to use it. But generally, if there is a lot of "hopping" around the component stack, without using the proper facilities (like ``argDict`` in ``callComponent()``) the complexity of your code is bound to increase. 
+Since you have full access to every other components attributes in a
+currently executing component, a lot of power is handed to you. If you
+absolutely require it, then it is okay to use it. But generally, if
+there is a lot of "hopping" around the component stack, without using
+the proper facilities (like ``argDict`` in ``callComponent()``) the
+complexity of your code is bound to increase.
 
-For most occasions, the dictionary of values you pass in the ``argDict`` parameter in the ``callComponent()`` function will be the values that you will be using throughout each of your components. It is best to stick with those and only use the above features when your application absolutely demands it (or you wrote yourself into a hole you can't get out.)
+For most occasions, the dictionary of values you pass in the
+``argDict`` parameter in the ``callComponent()`` function will be the
+values that you will be using throughout each of your components. It
+is best to stick with those and only use the above features when your
+application absolutely demands it (or you wrote yourself into a hole
+you can't get out.)
 
 
 Caching Functions
@@ -434,79 +708,107 @@ Caching Functions
 Logging
 -------
 
-AE provides an interface to allow your application to log certain events and the like in default logs. The logging functions are in ``AE.Logs``.
+AE provides an interface to allow your application to log certain
+events and the like in default logs. The logging functions are in
+``AE.Logs``.
 
 
 Message Catalogs
 ----------------
 
 
-Message Catalogs, for SkunkWeb, serve two purposes. First, if you want to have a single location where all of your error messages and such are held (thus making error messages easier to modify since you don't have to go through a bunch of templates to make changes), you can use a message catalog, and then just reference that message catalog in your template. The other reason you might want to use it is if you have a multi-lingual site and you need to easily switch between languages depending on the request. 
+Message Catalogs, for SkunkWeb, serve two purposes. First, if you want
+to have a single location where all of your error messages and such
+are held (thus making error messages easier to modify since you don't
+have to go through a bunch of templates to make changes), you can use
+a message catalog, and then just reference that message catalog in
+your template. The other reason you might want to use it is if you
+have a multi-lingual site and you need to easily switch between
+languages depending on the request.
 
-A message catalog is just a basic Python dictionary held in a file. If you had a file called "messages.cat", it can contain something like this::
+A message catalog is just a basic Python dictionary held in a file. If
+you had a file called "messages.cat", it can contain something like
+this::
 
-	{'english': {'welcome': 'Welcome to the site!', 
-            'goodbye': 'Have a nice day!'}}
+    {'english': {'welcome': 'Welcome to the site!', 
+        'goodbye': 'Have a nice day!'}}
 
-(Simple message catalogs start with `.msg`; multi-lingual catalogs usually start with `.cat`.)
+(Simple message catalogs start with `.msg`; multi-lingual catalogs
+usually start with `.cat`.)
 
-To call the message catalog, in STML, you would just type something like this::
+To call the message catalog, in STML, you would just type something
+like this::
 
-	from AE.Cache import getMessageCatalog
-	from AE.MsgCatalog import getMessage
-	
-	myCat = getMessageCatalog("catalogs/messages.cat")
-	print getMessage(myCat, "welcome", "english")
-	
-in STML::	
-	
-	<:catalog catalogs/messages.cat myCat:>
-	<:msg myCat welcome lang=english:>
+    from AE.Cache import getMessageCatalog
+    from AE.MsgCatalog import getMessage
+    
+    myCat = getMessageCatalog("catalogs/messages.cat")
+    print getMessage(myCat, "welcome", "english")
+    
+in STML::       
+    
+    <:catalog catalogs/messages.cat myCat:>
+    <:msg myCat welcome lang=english:>
 
-The first line loads up the file containing your message catalog. The second line displays the contents of the message ``welcome`` in the ``english`` dictionary. Note the parameters in the ``<:msg:>`` tag - in ``<:catalog:>`` we place the contents of ``messages.cat`` into ``myCat``, and then in the second line, we access ``myCat`` to get the item ``welcome`` under the language ``english``. 
+The first line loads up the file containing your message catalog. The
+second line displays the contents of the message ``welcome`` in the
+``english`` dictionary. Note the parameters in the ``<:msg:>`` tag -
+in ``<:catalog:>`` we place the contents of ``messages.cat`` into
+``myCat``, and then in the second line, we access ``myCat`` to get the
+item ``welcome`` under the language ``english``.
 
 If you had two languages, for example::
 
-	{'english': {'welcome': 'Welcome to the site!', 'goodbye': 'Have a nice day!'}, 
+    {'english': {'welcome': 'Welcome to the site!', 'goodbye': 'Have a nice day!'}, 
      'piglatin': {'welcome': 'Elcomway otay hetay itesay!', 'goodbye': 'Avehay ay icenay ayday!'}}
 
 You can access the second language like this::
 
-	from AE.Cache import getMessageCatalog
-	from AE.MsgCatalog import getMessage
-	
-	myCat = getMessageCatalog("catalogs/messages.cat")
-	print getMessage(myCat, "welcome", "piglatin")
+    from AE.Cache import getMessageCatalog
+    from AE.MsgCatalog import getMessage
+    
+    myCat = getMessageCatalog("catalogs/messages.cat")
+    print getMessage(myCat, "welcome", "piglatin")
 
 in STML::
 
-	<:catalog catalogs/messages.cat myCat:>
-	<:msg myCat welcome lang=piglatin:>
+    <:catalog catalogs/messages.cat myCat:>
+    <:msg myCat welcome lang=piglatin:>
 
-What would output is: ``Elcomway otay hetay itesay!``. If the ``welcome`` did not exist, then it would just output a blank string.
+What would output is: ``Elcomway otay hetay itesay!``. If the
+``welcome`` did not exist, then it would just output a blank string.
 
-You can do a little variable substitution in your message catalog. For example, if you wanted to have the welcome message say ``Welcome to the site, John!``, but have the name change depending on different circumstances, you can do this: add a variable in the message catalog and then add the variable name in your ``<:msg:>`` tag or in the ``getMessage()`` function. This is what the message catalog can look like::
+You can do a little variable substitution in your message catalog. For
+example, if you wanted to have the welcome message say ``Welcome to
+the site, John!``, but have the name change depending on different
+circumstances, you can do this: add a variable in the message catalog
+and then add the variable name in your ``<:msg:>`` tag or in the
+``getMessage()`` function. This is what the message catalog can look
+like::
 
-	{'english': 
-	{'welcome': 'Welcome to the site, [[name]]!'}}
+    {'english': 
+    {'welcome': 'Welcome to the site, [[name]]!'}}
 
 When you call it in STML, like so::
 
-	<:catalog catalogs/messages.cat messages:>
-	<:msg messages welcome lang=english name=John:>
+    <:catalog catalogs/messages.cat messages:>
+    <:msg messages welcome lang=english name=John:>
 
 or in Python::
 
-	from AE.Cache import getMessageCatalog
-	from AE.MsgCatalog import getMessage
-	
-	myCat = getMessageCatalog("catalogs/messages.cat")
-	print getMessage(myCat, "welcome", "english", {'name': 'John'})
+    from AE.Cache import getMessageCatalog
+    from AE.MsgCatalog import getMessage
+    
+    myCat = getMessageCatalog("catalogs/messages.cat")
+    print getMessage(myCat, "welcome", "english", {'name': 'John'})
 
 
-The ``name`` in the message catalog is replaced with the name that you use in the ``<:msg:>`` tag or the ``getMessage()`` function.
+The ``name`` in the message catalog is replaced with the name that you
+use in the ``<:msg:>`` tag or the ``getMessage()`` function.
 
-``<:msg:>`` also has a parameter, similar to that in the ``<:val:>`` tag, where it allows you to format the results. The ``fmt`` parameter can take any one of these string parameters:
+``<:msg:>`` also has a parameter, similar to that in the ``<:val:>``
+tag, where it allows you to format the results. The ``fmt`` parameter
+can take any one of these string parameters:
 
  * "plain" or "plaintext": No escaping. This is the default.
  * "latin" or "latinquote": Escape only extended characters to ISO Latin1 entities: ’ become &iacute;, etc.
@@ -515,36 +817,40 @@ The ``name`` in the message catalog is replaced with the name that you use in th
  * "fulluri" or "fullurl": Escape every character into URL-safe %XX format.
  * "base64": base64 encodes the string.
 
-In Python, you would use the ``DT.DTCommon.ValFmtRgy`` list to specify the format to use.
+In Python, you would use the ``DT.DTCommon.ValFmtRgy`` list to specify
+the format to use.
 
-So, if you have some type of character in your message that looks oddly familiar to a angle bracket, used in HTML, you can use, for example, the ``html`` formatting to fix that. Here is an example of the message catalog:
+So, if you have some type of character in your message that looks
+oddly familiar to a angle bracket, used in HTML, you can use, for
+example, the ``html`` formatting to fix that. Here is an example of
+the message catalog:
 
-	{'english': 
-	{'welcome': 'Welcome to the site, <[[name]]>!'}}
+    {'english': 
+    {'welcome': 'Welcome to the site, <[[name]]>!'}}
 
 To get the above message to display correctly, we would do something like this::
 
-	from AE.Cache import getMessageCatalog
-	from AE.MsgCatalog import getMessage
-	from DT.DTCommon import ValFmtRgy
-	
-	myCat = getMessageCatalog("catalogs/messages.cat")
-	print getMessage(myCat, "welcome", "english", ValFmtRgy["html"])
-	
+    from AE.Cache import getMessageCatalog
+    from AE.MsgCatalog import getMessage
+    from DT.DTCommon import ValFmtRgy
+    
+    myCat = getMessageCatalog("catalogs/messages.cat")
+    print getMessage(myCat, "welcome", "english", ValFmtRgy["html"])
+    
 
 In STML::
 
-	<:catalog catalogs/messages.cat myCat:>
-	<:msg myCat welcome lang=english fmt=html name=Brian:>
+    <:catalog catalogs/messages.cat myCat:>
+    <:msg myCat welcome lang=english fmt=html name=Brian:>
 
 
 This will output::
 
-	Welcome to the site, <Brian>!
+    Welcome to the site, <Brian>!
 
 Without the `fmt=html`, we would get this::
 
-	Welcome to the site, !
+    Welcome to the site, !
 
 (At least in the browser screen. You can see this if you saw the source code of the final output.)
 
@@ -560,14 +866,14 @@ If you are not building a multi-lingual site, you can still use the ``lang`` par
 
 I have two sections on my site, for example, called "search" and "add". Here could be my message catalog::
 
-	{'search': {'noRecordsFound': 'There were no records found'}, 'add': {'addError': 'The item could not be added.}}
+    {'search': {'noRecordsFound': 'There were no records found'}, 'add': {'addError': 'The item could not be added.}}
 
 Now, if an error comes up, like in a search, I can have this code execute::
 
-	<:if `error`:>
-   		<:catalog catalogs/messages.cat errorMsg:>
-   		<:msg errorMsg noRecordsFound  lang=search:>
-   	<:/if:>
+    <:if `error`:>
+        <:catalog catalogs/messages.cat errorMsg:>
+        <:msg errorMsg noRecordsFound  lang=search:>
+    <:/if:>
 
 
 So, if there is an error, `There were no records found` will display.
@@ -578,29 +884,29 @@ Configuration Options
 There are two configuration options in ``sw.conf`` that is related to message catalogs:
 
 **DefaultLanguage**
-	 Here, we specify the language to use if the ``lang`` parameter is not specified in the ``<:msg:>`` parameter.
+     Here, we specify the language to use if the ``lang`` parameter is not specified in the ``<:msg:>`` parameter.
 
 **strictMessageCatalogs** 
-	if set to 1, it will return an error if you ask for a message that is not available in the catalog. This is turned off by default, meaning that it will just return a blank string instead.
+    if set to 1, it will return an error if you ask for a message that is not available in the catalog. This is turned off by default, meaning that it will just return a blank string instead.
 
 
 Miscellaneous Functions
 -----------------------
 
 **AE.Component.rectifyRelativeName()**
-	This will return the full path of path as taken as relative to the directory of the currently executing component. For example: if the currently executing component is /foo/bar/baz.comp calling::
+    This will return the full path of path as taken as relative to the directory of the currently executing component. For example: if the currently executing component is /foo/bar/baz.comp calling::
 
-		AE.Component.rectifyRelativeName('.')
+        AE.Component.rectifyRelativeName('.')
 
-	will return ``/foo/bar/`` and::
+    will return ``/foo/bar/`` and::
 
-		AE.Component.rectifyRelativeName('doofus')
+        AE.Component.rectifyRelativeName('doofus')
 
-	will return ``/foo/bar/doofus`` and::
+    will return ``/foo/bar/doofus`` and::
 
-		AE.Component.rectifyRelativeName('/absolute/path')
+        AE.Component.rectifyRelativeName('/absolute/path')
 
-	will return ``/absolute/path``. 
+    will return ``/absolute/path``. 
 
 
 Configuration Options For AE
@@ -614,14 +920,14 @@ General Parameters
 These parameters are general in focus and relate to all of AE in general.
 
 **documentRoot**
-	This parameter specifies the root of all the documents to be served are. So, when you type in, for example, ``http://www.example.com/index.py``, SkunkWeb will search for the ``index.py`` file, beginning in the document root you specify. The default is ``<SKUNKWEB_DIR>/docroot``. This parameter can be scoped, so SkunkWeb can serve out multiple applications with different document roots.
+    This parameter specifies the root of all the documents to be served are. So, when you type in, for example, ``http://www.example.com/index.py``, SkunkWeb will search for the ``index.py`` file, beginning in the document root you specify. The default is ``<SKUNKWEB_DIR>/docroot``. This parameter can be scoped, so SkunkWeb can serve out multiple applications with different document roots.
 
 **documentRootFS**
-	Here, you would specify the type of file system that is represented in the ``documentRoot`` parameter. Since SkunkWeb can support different types of "file systems", in the sense of how it gets specific files, you can specify different "virtual" file system implementations. Specifically, SkunkWeb can look for pages in .zip files and .tar files, intended to allow developers to package their solutions in a single file.
+    Here, you would specify the type of file system that is represented in the ``documentRoot`` parameter. Since SkunkWeb can support different types of "file systems", in the sense of how it gets specific files, you can specify different "virtual" file system implementations. Specifically, SkunkWeb can look for pages in .zip files and .tar files, intended to allow developers to package their solutions in a single file.
 
-	By default, the ``documentRootFS`` parameter is ``vfs.LocalFS()``. If you plan to use archive files, then use ``vfs.MultiFS()``. 
+    By default, the ``documentRootFS`` parameter is ``vfs.LocalFS()``. If you plan to use archive files, then use ``vfs.MultiFS()``. 
 
-	More information about using archive files to deliver your applications with SkunkWeb, read the *Product Services* section, later in this chapter.
+    More information about using archive files to deliver your applications with SkunkWeb, read the *Product Services* section, later in this chapter.
 
 
 
@@ -631,13 +937,13 @@ Caching Parameters
 The caching parameters specified is intrinsically linked to how components are served from AE. Since caching is a critical part of AE, these parameters need to be set, depending on your application and the SkunkWeb configuration.
 
 **componentCacheRoot**
-	[TODO]
+    [TODO]
 
 **compileCacheRoot**
-	[TODO]
-	
+    [TODO]
+    
 **useCompileMemoryCache**
-	When this is set to ``1``, then the cache will reside in RAM instead of on disk. This will increase your memory footprint a little bit, but, at the same time, you might see some speed improvements - it eliminates disk I/O, and definitely, CPU utilization.
+    When this is set to ``1``, then the cache will reside in RAM instead of on disk. This will increase your memory footprint a little bit, but, at the same time, you might see some speed improvements - it eliminates disk I/O, and definitely, CPU utilization.
 
 
 
@@ -673,40 +979,40 @@ HTTP Headers
 This section deals with how to retrieve and modify HTTP Request and Response headers.
 
 **CONNECTION.requestHeaders**
-	This attribute contains a dictionary of request headers retrieved when the web server sent the information to SkunkWeb. The CONNECTION.requestHeaders attribute contains standard HTTP headers such as "Cookie", "User-Agent", "Connection", "Host", "Keep-Alive", etc.
+    This attribute contains a dictionary of request headers retrieved when the web server sent the information to SkunkWeb. The CONNECTION.requestHeaders attribute contains standard HTTP headers such as "Cookie", "User-Agent", "Connection", "Host", "Keep-Alive", etc.
 
 
 **CONNECTION.responseHeaders**
-	This contains a dictionary of reponse headers that will be sent to the requesting client when the request is finished processing. The information in the CONNECTION.responseHeaders dictionary is modifiable, and new headers can be added to this attribute. 
+    This contains a dictionary of reponse headers that will be sent to the requesting client when the request is finished processing. The information in the CONNECTION.responseHeaders dictionary is modifiable, and new headers can be added to this attribute. 
 
 For example, if you needed to send a file not of the "text/html" Content-Type, such as a PDF file, you can do this::
 
-	CONNECTION.responseHeaders["Content-Type"] = "application/pdf"
-	CONNECTION.responseHeaders["Filename"] = "mypdf.pdf"
+    CONNECTION.responseHeaders["Content-Type"] = "application/pdf"
+    CONNECTION.responseHeaders["Filename"] = "mypdf.pdf"
 
 
 **CONNECTION.setContentType()**
-	You can also set the content type of the response using this method. 
-	
+    You can also set the content type of the response using this method. 
+    
 To set the content type of the response, you can use the CONNECTION.setContentType() method::
-	
-	CONNECTION.setContentType("application/pdf")
-	
+    
+    CONNECTION.setContentType("application/pdf")
+    
 
 **CONNECTION.setStatus()**
-	This method sets the response code in the HTTP header.
+    This method sets the response code in the HTTP header.
 
 For example, the line below::
-	
-	CONNECTION.setStatus(404)
-	
-	
+    
+    CONNECTION.setStatus(404)
+    
+    
 This method merely sets the status code in the response header. 
-	
+    
 You need to provide in the output that says what occurred::
 
-	CONNECTION.setStatus(404)
-	print "Page (" + CONNECTION.uri + ") Not Found."
+    CONNECTION.setStatus(404)
+    print "Page (" + CONNECTION.uri + ") Not Found."
 
 
 HTTP Request Information
@@ -715,51 +1021,51 @@ HTTP Request Information
 This section discusses information received from the request, such as HTTP arguments, CGI environment variables, and the like.
 
 **CONNECTION.args**
-	This contains a dictionary of all of the HTTP arguments passed through the request, regardless of the HTTP method used (either POST or GET). 
+    This contains a dictionary of all of the HTTP arguments passed through the request, regardless of the HTTP method used (either POST or GET). 
 
 For example, if you had a URL like this::
-	
-	http://www.example.com/index.py?myArg=1
-	
+    
+    http://www.example.com/index.py?myArg=1
+    
 One can print out the "myArg" argument like this::
 
-	print CONNECTION.args["myArg"]
-	
+    print CONNECTION.args["myArg"]
+    
 The above code will print "1". If you had a HTML form input like this::
 
-	<input type="hidden" name="myInput" value="2"/>
+    <input type="hidden" name="myInput" value="2"/>
 
 The below code will print "2"::
 
-	print CONNECTION.args["myInput"]
-	
+    print CONNECTION.args["myInput"]
+    
 
 **CONNECTION.extract_args()**
-	This method takes a number of undefined arguments and keyword arguments and returns a dictionary of the found values from the HTTP argument list (either from a POST or GET request.) 
+    This method takes a number of undefined arguments and keyword arguments and returns a dictionary of the found values from the HTTP argument list (either from a POST or GET request.) 
 
 To retrieve a number of HTTP arguments and import a new dictionary into a variable called "newArgs", you would do this::
 
-	newArgs = CONNECTION.extract_args(baz, foo=1, bar=2)
-	
+    newArgs = CONNECTION.extract_args(baz, foo=1, bar=2)
+    
 
 In this example, we are searching for three HTTP arguments, "baz", "foo" and "bar". We are expecting that the "baz" argument exists, but for "foo" and "bar", we are setting default values to them in case those two HTTP arguments do not exist.
 
-	Note the order of the arguments - first, all of the HTTP arguments without default values are listed, then the HTTP arguments with default values are listed.
+    Note the order of the arguments - first, all of the HTTP arguments without default values are listed, then the HTTP arguments with default values are listed.
 
 **CONNECTION.env**
-	This attribute contains a CGI-like environment dictionary retrieved from the source HTTP server (either Apache or SkunkWeb's httpd service.) [TODO: Is it modifiable?]
+    This attribute contains a CGI-like environment dictionary retrieved from the source HTTP server (either Apache or SkunkWeb's httpd service.) [TODO: Is it modifiable?]
 
 **CONNECTION.method**
-	This attribute contains the HTTP method the user requested with. It can be POST or GET (or if you want to get creative, any of the other HTTP methods available.) This information can also be retrieved in the CONNECTION.env['REQUEST_METHOD'] dictionary index.
+    This attribute contains the HTTP method the user requested with. It can be POST or GET (or if you want to get creative, any of the other HTTP methods available.) This information can also be retrieved in the CONNECTION.env['REQUEST_METHOD'] dictionary index.
 
 **CONNECTION.host**
-	This contains the host name that sent the request headers to the SkunkWeb server. [TODO: look into this.]
+    This contains the host name that sent the request headers to the SkunkWeb server. [TODO: look into this.]
 
 **CONNECTION.uri**
-	The URI sent by the user to SkunkWeb. This might not be necessarily the URI sent by the client, but instead could be the URI created after using the rewrite service or through mod_rewrite.
+    The URI sent by the user to SkunkWeb. This might not be necessarily the URI sent by the client, but instead could be the URI created after using the rewrite service or through mod_rewrite.
 
 **CONNECTION.realUri**
-	This is the actual URI sent by the client, untouched by a URL rewriter.
+    This is the actual URI sent by the client, untouched by a URL rewriter.
 
 
 Cookies
@@ -768,67 +1074,67 @@ Cookies
 There are two attributes that allow you to retrieve and set cookies.
 
 **CONNECTION.requestCookie**
-	This attribute contains a Cookie object (an instance of the SimpleCookie class in the Python Standard Library; view the Python Library Reference for more information) of the cookies sent by the client. 
+    This attribute contains a Cookie object (an instance of the SimpleCookie class in the Python Standard Library; view the Python Library Reference for more information) of the cookies sent by the client. 
 
 You can obtain information about the cookie, for example, by using the .value attribute in CONNECTION.requestCookie::
 
-	# I have a cookie named "id" and here is its value
-	print CONNECTION.requestCookie["id"].value
-	
-	# and here is the path for this cookie
-	print CONNECTION.requestCookie["id"]["path"]
+    # I have a cookie named "id" and here is its value
+    print CONNECTION.requestCookie["id"].value
+    
+    # and here is the path for this cookie
+    print CONNECTION.requestCookie["id"]["path"]
 
 
 **CONNECTION.responseCookie**
-	This attribute contains a Cookie object (an instance from the SimpleCookie class in the Python standard library) that contains the cookies that will be sent to the client. 
+    This attribute contains a Cookie object (an instance from the SimpleCookie class in the Python standard library) that contains the cookies that will be sent to the client. 
 
 Here is an example of setting the cookie "myCookie"::
 
-	CONNECTION.responseCookie["myCookie"] = "12345"
-	CONNECTION.responseCookie["myCookie"]["path"] = "/"
-	CONNECTION.responseCookie["myCookie"]["domain"] = "www.example.com"
-	CONNECTION.responseCookie["myCookie"]["expires"] = "29-Apr-2003 15:00:00 GMT"	
+    CONNECTION.responseCookie["myCookie"] = "12345"
+    CONNECTION.responseCookie["myCookie"]["path"] = "/"
+    CONNECTION.responseCookie["myCookie"]["domain"] = "www.example.com"
+    CONNECTION.responseCookie["myCookie"]["expires"] = "29-Apr-2003 15:00:00 GMT"   
 
 
 Redirection
 -----------
 
 **CONNECTION.redirect()**
-	This method takes one argument, the URL that the client should be redirected to. 
+    This method takes one argument, the URL that the client should be redirected to. 
 
 If you want to redirect the client to "http://skunkweb.sourceforge.net", you would type this::
 
-	CONNECTION.redirect("http://skunkweb.sourceforge.net")
-	
+    CONNECTION.redirect("http://skunkweb.sourceforge.net")
+    
 
 File Uploads
 ------------
 
 If the HTML form was a form to upload a file::
 
-	 <form enctype="multipart/form-data" method="POST">
- 		<input type="file" NAME="myFile" size="40" /><br />
- 		<input type="submit" />
- 	 </form>
- 	 
+     <form enctype="multipart/form-data" method="POST">
+        <input type="file" NAME="myFile" size="40" /><br />
+        <input type="submit" />
+     </form>
+     
 then the file is stored in an object, which is an instance of the web.protocol._File class. The _File class has two attributes, filename and content::
 
-	print CONNECTION.args["myFile"].filename
-	
-	f = open(IMAGE_PATH + filename, "w")
-	f.write(CONNECTION.args["myFile"].content)
-	f.close()
-	
+    print CONNECTION.args["myFile"].filename
+    
+    f = open(IMAGE_PATH + filename, "w")
+    f.write(CONNECTION.args["myFile"].content)
+    f.close()
+    
 .. Important::
-	
-	If you plan to do file uploads, it is suggested to set the documentTimeout parameter in sw.conf to some liberal value:
-	
-	Scope(Location('upload.html', documentTimeout=120))
-	
+    
+    If you plan to do file uploads, it is suggested to set the documentTimeout parameter in sw.conf to some liberal value:
+    
+    Scope(Location('upload.html', documentTimeout=120))
+    
 Browser Information
 -------------------
 
-[TODO]	
+[TODO]  
 
 
 Session Management
@@ -850,59 +1156,59 @@ With all that above in place, you can start using the session features. You woul
 Here is a rundown of all the session functions.
 
 **CONNECTION.getSession()**
-	You would use this method to retrieve the session information. This method returns a session object with a dictionary-like interface. It requires one argument, 'create' and optional parameters for the cookie to be set. 
+    You would use this method to retrieve the session information. This method returns a session object with a dictionary-like interface. It requires one argument, 'create' and optional parameters for the cookie to be set. 
 
-	To create a session, you would do this::
-	
-		session = CONNECTION.getSession(create=0)
-		
-		if session == None: # the session didn't exist
-			session = CONNECTION.getSession(create=1) 
-			# or session = CONNECTION.getSession(create=1, path="/", domain="example.com", secure=1)
-			
-			session["someArbitraryData"] = "Look, I am data!"
-			
-		
-		print session["someArbitraryData"]
-		
-		
+    To create a session, you would do this::
+    
+        session = CONNECTION.getSession(create=0)
+        
+        if session == None: # the session didn't exist
+            session = CONNECTION.getSession(create=1) 
+            # or session = CONNECTION.getSession(create=1, path="/", domain="example.com", secure=1)
+            
+            session["someArbitraryData"] = "Look, I am data!"
+            
+        
+        print session["someArbitraryData"]
+        
+        
 **CONNECTION.getSessionID()**
-	You can get the session ID of the current session using this method. This one is pretty straightforward - it takes one argument, 'create', just like in CONNECTION.getSession().
+    You can get the session ID of the current session using this method. This one is pretty straightforward - it takes one argument, 'create', just like in CONNECTION.getSession().
 
-	Here is an example if its use::
-	
-		print CONNECTION.getSessionID(create=0)
+    Here is an example if its use::
+    
+        print CONNECTION.getSessionID(create=0)
 
 
 **CONNECTION.removeSession()**
-	This method deletes the user's session and its data. It does not delete the cookie on the user's end, but just resets it to a blank value. [TODO: Or this is what it should do - find out.] 
+    This method deletes the user's session and its data. It does not delete the cookie on the user's end, but just resets it to a blank value. [TODO: Or this is what it should do - find out.] 
 
-	To use::
-	
-		CONNECTION.removeSession()
-	
-	
+    To use::
+    
+        CONNECTION.removeSession()
+    
+    
 
 The below methods are available after using the CONNECTION.getSession() method, like this::
 
-	session = CONNECTION.getSession(create=0)
-	
+    session = CONNECTION.getSession(create=0)
+    
 The methods are part of the sessionHandler.Session.Session class. Most methods in the Session class are the same as the Python dictionary methods. A few are relevant though.
 
 **session.getID()**
-	This returns the session ID, like CONNECTION.getSessionID. 
+    This returns the session ID, like CONNECTION.getSessionID. 
 
 **session.save()**
-	Well, this is not really necessary in most transactions, but if you are going to redirect to another page on the same server that has access to the session data or to another SkunkWeb server that has access to the session data, you have to call this. No choice - unless you don't want to save the data. Here is an example::
-	
-		session = CONNECTION.getSession(create=0)
-		session["someUserData"] = "This is useless user data!"
-		session.save()	
-		CONNECTION.redirect("http://www.example.com/skunkweb/mypage2.py")
+    Well, this is not really necessary in most transactions, but if you are going to redirect to another page on the same server that has access to the session data or to another SkunkWeb server that has access to the session data, you have to call this. No choice - unless you don't want to save the data. Here is an example::
+    
+        session = CONNECTION.getSession(create=0)
+        session["someUserData"] = "This is useless user data!"
+        session.save()  
+        CONNECTION.redirect("http://www.example.com/skunkweb/mypage2.py")
 
 
 [TODO: There are more API elements to look at here.]
-		
+        
 
 
 HTTP Authentication
@@ -919,11 +1225,11 @@ CGI Services
 Database Service Tools
 ======================
 
-	SkunkWeb allows developers to communicate with external DBMSs using standard Python DB-API compatible modules. You can use the database module directly, by creating and closing connections, but for situations where there is a lot of connections to the SkunkWeb server, this will be turn into a bottleneck. Therefore, SkunkWeb has the ability to cache database server connections, so the same connections are used across different requests. (SkunkWeb caches database connections, as opposed to pooling connections, where threaded servers might use. SkunkWeb opens a connection for each process lazily - if a database connection request is made and there is not an open connection in the process handling the request, a database connection is created and the connection remains until the child process commits suicide.)
+    SkunkWeb allows developers to communicate with external DBMSs using standard Python DB-API compatible modules. You can use the database module directly, by creating and closing connections, but for situations where there is a lot of connections to the SkunkWeb server, this will be turn into a bottleneck. Therefore, SkunkWeb has the ability to cache database server connections, so the same connections are used across different requests. (SkunkWeb caches database connections, as opposed to pooling connections, where threaded servers might use. SkunkWeb opens a connection for each process lazily - if a database connection request is made and there is not an open connection in the process handling the request, a database connection is created and the connection remains until the child process commits suicide.)
 
-	At the completion of each request, the current transaction is rollbacked, to make everything all tidy if nothing was explicitly commited - (you don't want uncommitted data to be committed at the next request!) This feature is optional for MySQL, and if you use a transactional table handler with MySQL, then you can set it to rollback.
+    At the completion of each request, the current transaction is rollbacked, to make everything all tidy if nothing was explicitly commited - (you don't want uncommitted data to be committed at the next request!) This feature is optional for MySQL, and if you use a transactional table handler with MySQL, then you can set it to rollback.
 
-	Currently, SkunkWeb can cache connections to the MySQL, PostgreSQL and Oracle DBMSs. Adding new DBMSs is simple - read the last section, "Extending SkunkWeb" for more details.
+    Currently, SkunkWeb can cache connections to the MySQL, PostgreSQL and Oracle DBMSs. Adding new DBMSs is simple - read the last section, "Extending SkunkWeb" for more details.
 
 
 Setup And Configuration
@@ -952,26 +1258,26 @@ Retrieving a database connection is too simple - one line and it outputs the con
 
 The only parameter for getConnection() is the name of the connection parameters specified in sw.conf.
 
-	- For MySQL::
-		
-		import MySQL
-		connection = MySQL.getConnection("myConnection")
-		cursor = connection.cursor()
-		...
-	
-	- For PostgreSQL::
-	
-		import PostgreSql
-		connection = PostgreSql.getConnection("myConnection")
-		cursor = connection.cursor()
-		...
-	
-	- For Oracle::
-		
-		import Oracle
-		connection = Oracle.getConnection("myConnection")
-		cursor = connection.cursor()
-		...
+    - For MySQL::
+        
+        import MySQL
+        connection = MySQL.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+    
+    - For PostgreSQL::
+    
+        import PostgreSql
+        connection = PostgreSql.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
+    
+    - For Oracle::
+        
+        import Oracle
+        connection = Oracle.getConnection("myConnection")
+        cursor = connection.cursor()
+        ...
 
 After retrieving the connection, you would use the connection methods that is compatible with the Python DB-API standard. The DB-API: http://www.python.org/peps/pep-0249.html.
 
