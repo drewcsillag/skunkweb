@@ -1,3 +1,8 @@
+2004-02-23  Drew Csillag  <drew@loki.sai.local>
+
+	* pylibs/AE/Executables.py (PythonExecutable.run): made so raising
+	DTHaltError works within python components
+
 2004-02-16  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/PyDO2.py (_pydobase): setting default value of the
@@ -491,6 +496,7 @@
 
 	* SkunkWeb/swpython.py.in: fixed it so that __name__ == '__main__' 
 	in python scripts
+	(ll): really fixed it this time
 
 2003-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
 
