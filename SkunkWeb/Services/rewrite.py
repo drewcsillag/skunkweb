@@ -1,5 +1,5 @@
-# Time-stamp: <02/05/10 14:02:25 smulloni>
-# $Id: rewrite.py,v 1.3 2002/05/01 21:32:37 smulloni Exp $
+# Time-stamp: <02/05/21 21:30:25 smulloni>
+# $Id: rewrite.py,v 1.4 2002/05/10 18:05:12 smulloni Exp $
 
 ########################################################################
 #  
@@ -80,8 +80,10 @@ class Redirect(DynamicRewriter):
         self.connection.redirect(url)
         raise PreemptiveResponse, self.connection.response()
 
-# use templating's 404 handler if it is already imported
-if sys.modules.has_key('templating'):
+# use templating's 404 handler if it is already imported,
+# or is about to be loaded, to the extent possible to determine
+if sys.modules.has_key('templating') \
+       or 'templating' in Configuration.services:
     import templating
     fourOhFourHandler=templating.Handler.fourOhFourHandler
 
@@ -194,6 +196,9 @@ __initHooks()
 
 ########################################################################
 # $Log: rewrite.py,v $
+# Revision 1.4  2002/05/10 18:05:12  smulloni
+# added a rewriter that returns a 404.
+#
 # Revision 1.3  2002/05/01 21:32:37  smulloni
 # fixing typos and goofs
 #

@@ -1,3 +1,10 @@
+
+2002-05-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/rewrite.py: forgot to add a check for the case
+	when rewrite is loaded before templating in choosing the 404
+	handler.
+
 2002-05-17  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/PyDO.py (PyDO.static_getSQLWhere): fix for 
