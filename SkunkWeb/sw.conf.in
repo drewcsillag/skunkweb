@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.17 2002/04/30 02:16:56 drew_csillag Exp $
-# Time-stamp: <2002-06-07 11:41:51 acsillag>
+# $Id: sw.conf.in,v 1.18 2002/06/07 15:43:08 drew_csillag Exp $
+# Time-stamp: <2002-06-28 17:36:26 acsillag>
 
 ########################################################################
 #
@@ -197,6 +197,7 @@ sys.path.append('@prefix@/sitelibs')
 # scoped e.g.
 # BTW: you really would only uncomment one of the following groups.
 # Scope(Location("/demo",
+#               authActivated=1,  #don't forget this or auth won't engage
 
 #               # the basic auth authorizer 
 #               authAuthorizer='auth.BasicAuth',
@@ -615,6 +616,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.18  2002/06/07 15:43:08  drew_csillag
+# should now work with DCOracle2
+#
 # Revision 1.17  2002/04/30 02:16:56  drew_csillag
 # removed part where you specified the password slot for the PlainSessionAuth authorizer since we do not do that anymore
 #
