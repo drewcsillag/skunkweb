@@ -3,7 +3,7 @@ import rotor
 import pprint
 import ecs
 
-def process(form, argdict, state, ns):
+def process(form, state, argdict, formdict, ns):
     state.state.update(form.getData())
 
 stateVar='_state'
@@ -43,7 +43,7 @@ statemgr=InPageStateManager('google-google GaiPan',
                             rotor.newrotor('my artichoke', 12))
 
 class SillyFlowManager(object):
-    def getStartForm(self):
+    def getStartForm(self, argdict):
         return form1
 
     def next(self, form, state, argdict, ns):
