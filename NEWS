@@ -1,7 +1,7 @@
 Changes in 3.2.1 (not yet released)
 ========================================
-* new cookie auth service
-* PyDO fix
+* new cookieauth service
+* PyDO fixes
 * Caching fix for stale 
 
 Changes in 3.2 beta 3
