@@ -1,0 +1,29 @@
+from formlib import *
+fields=[SelectField('fruit',
+                    ['pomegranate',
+                     'uglifruit',
+                     'tamarind',
+                     'lychee'],
+                    description='Your Preferred Fruits',
+                    multiple=1,
+                    size=4),
+        ButtonGroupField('shipmethod',
+                         ['tossed',
+                          'hurled',
+                          'UPS',
+                          'steam locomotive',
+                          'FedEx',
+                          'pony express'],
+                         description='Shipping Method',
+                         default='UPS'),
+        SubmitField(value="Submit"),
+        ]
+form=ViewableForm(name="test2",
+                  method="POST",
+                  fields=fields)
+
+if CONNECTION.method=='POST':
+    form.setData(CONNECTION.args)
+    form.submitted=1
+print
+print form.getView()

@@ -175,10 +175,11 @@ class SelectField(ViewableDomainField):
         self.options, domain=self._parse_options(options,
                                                  max(0, group_levels))
         ViewableDomainField.__init__(self,
-                                     name,
-                                     domain,
-                                     default,
-                                     multiple,
+                                     name=name,
+                                     domain=domain,
+                                     description=description,
+                                     default=default,
+                                     multiple=multiple,
                                      **view_attrs)
         
     def _parse_options(self, options, permit_group=1):
@@ -252,9 +253,9 @@ class SelectField(ViewableDomainField):
             v=self.value
             if v is not None:
                 if self.multiple:
-                    option.selected=option.value in v
+                    option.selected=option.name in v
                 else:
-                    option.selected=option.value==v
+                    option.selected=option.name==v
         
     def getView(self):
        elem=ecs.Select()
@@ -336,35 +337,40 @@ class ButtonGroupField(ViewableDomainField):
                  default=None,
                  multiple=0,
                  **view_attrs):
-        self.options, domain=self._parse_options(options)
+        self.options, domain=self._parse_options(options, name, multiple)
         ViewableDomainField.__init__(self,
-                                     name,
-                                     domain,
-                                     description,
-                                     default,
-                                     multiple,
+                                     name=name,
+                                     domain=domain,
+                                     description=description,
+                                     default=default,
+                                     multiple=multiple,
                                      **view_attrs)
-
-    def _parse_options(self, options):
+        
+        
+    def _parse_options(self, options, name, multiple):
         d=Set()
         optlist=[]
         if isinstance(options, dict):
             options=options.items()
-        for o in [self._coerce_option(x) for x in options]:
-            d.append(o.name)
+        for o in [self._coerce_option(x, name, multiple) for x in options]:
+            d.append(o.value)
             optlist.append(o)
         return optlist, d
 
-    def _coerce_option(self, option):
+    def _coerce_option(self, option, name, multiple):
         if isinstance(option, ButtonOption):
             return option
-        type=self.multiple and 'checkbox' or 'radio'
+        type=multiple and 'checkbox' or 'radio'
         if isinstance(option, str):
-            return ButtonOption(option,
-                                option,
-                                type)
+            return ButtonOption(name=name,
+                                value=option,
+                                description=option,
+                                inputType=type)
         elif isinstance(option, tuple) and len(option)==2:
-            return ButtonOption(option[0], option[1], type)
+            return ButtonOption(name=name,
+                                value=option[0],
+                                description=option[1],
+                                inputType=type)
         raise ValueError, "could not parse option: %s" % option
 
     def _update_checked_state(self, option):
@@ -381,7 +387,7 @@ class ButtonGroupField(ViewableDomainField):
         for o in self.options:
             self._update_checked_state(o)
             tr=ecs.Tr().addElement(ecs.Td(o.description))
-            tr.addElement(ecs.Td.addElement(o.getView()))
+            tr.addElement(ecs.Td().addElement(o.getView()))
             table.addElement(tr)
         table.attributes.update(self.view_attrs)
         return table

@@ -41,8 +41,7 @@ class Field(object):
         return self.__default
 
     def _set_default(self, default):
-        self.checkValue(default)
-        self.__default=default
+        self.__default=self.checkValue(default)
 
     def clearDefault(self):
         self.__default=None
@@ -56,8 +55,7 @@ class Field(object):
             return self.default
 
     def _set_value(self, value):
-        self.checkValue(value)
-        self.__value=value
+        self.__value=self.checkValue(value)
 
     def clearValue(self):
         self.__value=UNDEF
@@ -72,10 +70,11 @@ class Field(object):
     def checkValue(self, value):
         isseq=isinstance(value, list) or isinstance(value, tuple)
         if self.multiple and not isseq:
-            raise ValueError, "value must be a sequence for this field"
+            return [value]
         elif isseq and not self.multiple:
             raise ValueError, "value cannot be a sequence for this field"
-
+        return value
+        
     def validate(self, form=None):
         pass
 
@@ -123,10 +122,10 @@ class DomainField(Field):
         This is not meant to perform validation of user input,
         but to prevent programmatic errors.
         """
-        Field.checkValue(self, value)
+        value=Field.checkValue(self, value)
         if not self.in_domain(value):
-            raise ValueError, "value not present in domain"
-           
+            raise ValueError, "value not present in domain: %s" % value
+        return value
 
 class Form(object):
     def __init__(self,

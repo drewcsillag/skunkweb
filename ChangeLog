@@ -1,5 +1,17 @@
 2002-11-18    <smulloni@smullbola.smullyan.org>
 
+	* test/formlib/htdocs/test2.html: second simple test created and
+	passed (simple select field and button group).
+
+	* pylibs/formlib/form.py (Field.checkValue, DomainField.checkValue): 
+	among several other changes made in debugging, this changes the interface.
+	checkValue now returns the value and performs some munging to permit
+	'multiple' fields to absorb single values. 
+
+	* pylibs/formlib/views.py: fixed many bugs, mostly out-of-order
+	arguments to constructors (now I know why they are called args --
+	AAARGH!).
+
 	* test/formlib/htdocs/: created first *very* simple test.
 
 	* pylibs/formlib/views.py (ViewableForm.getView): show descriptions.
