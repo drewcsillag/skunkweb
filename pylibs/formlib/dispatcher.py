@@ -1,5 +1,3 @@
-from argextract import extract_args
-
 class Action(object): pass
 
 class Goto(Action):
@@ -14,6 +12,50 @@ class Push(Action):
     action='PUSH'
     def __init__(self, formname):
         self.formname=formname
+
+class Stage(object):
+
+    def __init__(self, name):
+        self.name=name
+
+    def next(self):
+        pass
+
+class Dispatcher(object):
+    def __init__(self, stages, statemgr, start=None, flowmgr=None):
+        self.stages={}
+        for s in stages:
+            if self.stages.has_key(s.name):
+                raise ValueError, "duplicate stage: %s" % s.name
+            self.stages[s.name]=s
+        if not start:
+            start=stages[0].name
+        self.statemgr=statemgr
+        if not self.statemgr.state:
+            self.statemgr.push((start, {}))
+        self.flowmgr=flowmgr
+
+    def dispatch(self, argdict, ns):
+        self.statemgr.set_state(argdict)
+        stage=self.statemgr.peek()
+        
+        
+        
+            
+        
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
 
 class FormSet:
     def __init__(self, forms, initformname, statemgr, formFlow = None):

@@ -1,10 +1,24 @@
+2002-11-21    <smulloni@smullbola.smullyan.org>
+
+	* pylibs/formlib/form.py (_getname): change to make the form
+	pickleable. 
+
+	* pylibs/formlib/state.py: change to make
+	the state pickleable, which is rather crucial.
+
+	* pylibs/containers/fieldcontainer.py (_donothing): made the
+	FieldContainer pickleable by moving the default value of
+	fieldmapper from a lambda to a top-level function, and by adding
+	__getstate__ and __setstate__ methods (since I'm using
+	__slots__). 
+
 2002-11-20    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/formlib/state.py: made stateEncoder => stateEncryptor.
 
-	* pylibs/aesencrypt.py: moved aesencode.py to aesencrypt.py
-	and renamed encode/decode to encrypt/decrypt, so as not to wince
-	every time I see the module.  Also, now rotors objects have the same
+	* pylibs/aesencrypt.py: moved aesencode.py to aesencrypt.py and
+	renamed encode/decode to encrypt/decrypt, so as not to wince every
+	time I see the module.  Also, now rotors objects have the same
 	interface, which is helpful to formlib.state.InPageStateManager.
 
 2002-11-20  Jacob Smullyan  <smulloni@smullyan.org>
@@ -14,7 +28,7 @@
 
 	* pylibs/aesencode.py: adding a simple wrapper around
 	PyCrypto.Cipher.AES that means you don't have to worry about the
-	block-size or the length of what you want to encode. 
+	block-size or the length of what you want to encode.
 	
 2002-11-19    <smulloni@smullbola.smullyan.org>
 
@@ -31,10 +45,11 @@
 	* test/formlib/htdocs/test2.html: second simple test created and
 	passed (simple select field and button group).
 
-	* pylibs/formlib/form.py (Field.checkValue, DomainField.checkValue): 
-	among several other changes made in debugging, this changes the interface.
-	checkValue now returns the value and performs some munging to permit
-	'multiple' fields to absorb single values. 
+	* pylibs/formlib/form.py (Field.checkValue,
+	DomainField.checkValue): among several other changes made in
+	debugging, this changes the interface.  checkValue now returns the
+	value and performs some munging to permit 'multiple' fields to
+	absorb single values.
 
 	* pylibs/formlib/views.py: fixed many bugs, mostly out-of-order
 	arguments to constructors (now I know why they are called args --
@@ -42,22 +57,23 @@
 
 	* test/formlib/htdocs/: created first *very* simple test.
 
-	* pylibs/formlib/views.py (ViewableForm.getView): show descriptions.
+	* pylibs/formlib/views.py (ViewableForm.getView): show
+	descriptions.
 
-	* pylibs/containers/fieldcontainer.py (FieldContainer.__setitem__): fixed
-	typo.
+	* pylibs/containers/fieldcontainer.py
+	(FieldContainer.__setitem__): fixed typo.
 
-	* pylibs/containers/set.py: adding brain-dead set implementation (luckily 
-	sets will be part of Python 2.3).
+	* pylibs/containers/set.py: adding brain-dead set implementation
+	(luckily sets will be part of Python 2.3).
 
-	* pylibs/formlib/views.py, pylibs/formlib/form.py: now reached a point
-	where it is possible to test it with simple forms.  Added description field
-	to all fields.
+	* pylibs/formlib/views.py, pylibs/formlib/form.py: now reached a
+	point where it is possible to test it with simple forms.  Added
+	description field to all fields.
 
 2002-11-14    <smulloni@smullbola.smullyan.org>
 
-	* pylibs/formlib/form.py: the field classes are now somewhat reasonable;
-	Form isn't there yet.
+	* pylibs/formlib/form.py: the field classes are now somewhat
+	reasonable; Form isn't there yet.
 
 2002-11-13    <smulloni@smullbola.smullyan.org>
 
@@ -124,8 +140,8 @@
 2002-11-05  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/vfs/ftpfs.py (FtpFS.walk): Added a separate walk
-	implementation, as the standard one made a multiple ftp requests for 
-	every file, which wasn't a good thing.
+	implementation, as the standard one made a multiple ftp requests
+	for every file, which wasn't a good thing.
 
 2002-11-01    <smulloni@smullbola.smullyan.org>
 

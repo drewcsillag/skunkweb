@@ -1,6 +1,8 @@
 import base64
 import cPickle
 import md5
+from containers.fieldcontainer import FieldContainer
+from form import _getname
 
 class InvalidStateException(Exception): pass
 
@@ -19,7 +21,8 @@ class InPageStateManager:
                  nonce,
                  stateEncryptor=None,
                  stateVariable='_state'):
-        self.state = {'stack' : []}
+        self.state = FieldContainer(fieldmapper=_getname,
+                                    storelists=0)
         self.encryptor=stateEncryptor
         self.stateVariable=stateVariable
 
@@ -41,29 +44,20 @@ class InPageStateManager:
             pick=self.encryptor.decrypt(pick)
         self.state = cPickle.loads(pick)
 
-    def setstate(self, cgiarguments):
+    def set_state(self, cgiarguments):
         try:
             statestr = cgiarguments[self.stateVariable]
         except KeyError:  # no state to get
             return
         self.read(statestr)
         
-    def push(self, formdata):
-        stack = self.state['stack']
-        stack.append(formdata)
+    def push(self, form):
+        self.state.append(form)
 
     def pop(self):
-        stack = self.state['stack']
-        return stack.pop(stack)
+        return self.state.pop()
 
     def peek(self):
-        return self.state['stack'][-1]
+        return self.state[-1]
         
-    def __setitem__(self, k, v):
-        self.state[k] = v
-
-    def __getitem__(self, k):
-        return self.state[k]
-
-    def get(self, k, default=None):
-        return self.state.get(k, default)
+__all__=['InvalidStateException', 'InPageStateManager']

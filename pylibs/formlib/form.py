@@ -140,7 +140,7 @@ class Form(object):
         self.action=action
         self.enctype=enctype
         self.fields=FieldContainer(fields or [],
-                                   fieldmapper=lambda x: x.name,
+                                   fieldmapper=_getname,
                                    storelists=0)
         self.validators=validators or []
         self.submitted=None
@@ -179,8 +179,8 @@ class Form(object):
                     errors.update(e)
         self.errors=errors
 
-
-
+def _getname(x):
+    return x.name
 
 
 

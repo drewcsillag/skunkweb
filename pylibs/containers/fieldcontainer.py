@@ -21,6 +21,9 @@ try:
 except NameError:
     import UserList.UserList as list
 
+def _donothing(x):
+    return x
+
 class FieldContainer(list):
     """
     a list with a read-only dict interface.
@@ -57,20 +60,27 @@ class FieldContainer(list):
     [<__main__.foo instance at 0x817fb5c>]
     >>> [x.name for x in fc]
     ['this', 'is', 'a', 'dormouse', 'is', 'this', 'not']
+
+    N.B.: the above example is not pickleable (with Python 2.2.2, at least),
+    because of the lambda passed in to fieldmapper.  Use a top-level function
+    if you want to pickle the container.
     
     """
 
     __slots__=['_FieldContainer__d', 'fieldmapper', 'storelists']
 
-    def __new__(self, seq=None, fieldmapper=None, storelists=1):
+    def __getstate__(self):
+        return (self.__d, self.fieldmapper, self.storelists)
+
+    def __setstate__(self, state):
+        (self.__d, self.fieldmapper, self.storelists)=state
+
+    def __new__(self, seq=None, fieldmapper=_donothing, storelists=1):
         return list.__new__(self, seq)
 
-    def __init__(self, seq=None, fieldmapper=None, storelists=1):
+    def __init__(self, seq=None, fieldmapper=_donothing, storelists=1):
         list.__init__(self, seq or [])
-        if fieldmapper is None:
-            self.fieldmapper=lambda x: x
-        else:
-            self.fieldmapper=fieldmapper
+        self.fieldmapper=fieldmapper
         self.__d={}
         self.storelists=storelists
         if seq:
