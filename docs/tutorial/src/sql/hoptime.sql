@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
  * Time-stamp: <02/11/12 09:02:04 smulloni> 
- * $Id: hoptime.sql,v 1.5 2002/11/04 00:41:23 smulloni Exp $
+ * $Id: hoptime.sql,v 1.6 2002/11/12 19:53:47 smulloni Exp $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;
@@ -32,7 +32,7 @@ description TEXT,
 owner INTEGER NOT NULL REFERENCES users,
 quorum INTEGER DEFAULT 2,
 capacity INTEGER DEFAULT 6,
-created DATETIME DEFAULT CURRENT_TIMESTAMP,
+created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 status VARCHAR(20) DEFAULT 'joining' 
   CHECK (status in ('joining', 'playing', 'editing', 'published', 'trashed')),
 CONSTRAINT quorum_capacity_sanity_check CHECK (capacity > quorum)
@@ -41,7 +41,7 @@ CONSTRAINT quorum_capacity_sanity_check CHECK (capacity > quorum)
 CREATE TABLE players (
 player INTEGER NOT NULL REFERENCES users,
 game INTEGER NOT NULL REFERENCES games,
-joined DATETIME DEFAULT CURRENT_TIMESTAMP,
+joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 play_number INTEGER,
 PRIMARY KEY(player, game)
 );
@@ -121,7 +121,7 @@ CREATE TABLE moves (
 id SERIAL PRIMARY KEY,
 game INTEGER NOT NULL,
 player INTEGER NOT NULL,
-entered DATETIME DEFAULT CURRENT_TIMESTAMP,
+entered TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 content_append TEXT NOT NULL,
 FOREIGN KEY(player, game) REFERENCES players);
 
@@ -133,7 +133,7 @@ CREATE TABLE stories (
 id SERIAL PRIMARY KEY,
 game INTEGER NOT NULL UNIQUE REFERENCES games,
 story text NOT NULL,
-published DATETIME);
+published TIMESTAMP);
 
 
 /* concatenates text columns */
