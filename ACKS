@@ -7,7 +7,7 @@ Stephen Coursen
 Jeroen van Dongen 
 Dave Swegen
 Ulrich Eck (for PyDO's sapdb adaptor)
-Spruce Weber (rewrite service)
+Spruce Weber (rewrite service, mysql fixes)
 Gordon McMillan (gave permission to use his iu.py)
 Rich Salz (gave permission to use his wizard.py)
 Karl Putland (PyDO bug fix)
@@ -15,4 +15,4 @@ Neal Norwitz for making PyChecker
 James Richards (formlib and tests)
 John Derrick (pypgsql driver for PyDO)
 Hy Ginsberg (sapdb changes)
-Frank Tegtmeyer (patch for non-daemon mode)
+Frank Tegtmeyer (patch for non-daemon mode, bug reports)
