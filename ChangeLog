@@ -1,3 +1,9 @@
+2002-04-09  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/AE/Cache.py (CachedComponent.__init__): stale was
+	being set to precisely the wrong value; thanks to Stephen Coursen
+	for catching this (*immediately* after the release of 3.2!)
+
 2002-04-09  Andrew Csillag  <drew@yahoo.com>
 
 	* SkunkWeb 3.2 cut

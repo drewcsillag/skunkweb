@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Cache.py,v 1.7 2002/02/07 07:18:41 smulloni Exp $
+#$Id: Cache.py,v 1.8 2002/02/13 18:36:19 drew_csillag Exp $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -83,7 +83,7 @@ class CachedComponent:
         self.full_key = full_key
         self.exp_time = exp_time
         self.out = output 
-        self.stale = exp_time >= Configuration.maxDeferStale + time.time()
+        self.stale = exp_time <= Configuration.maxDeferStale + time.time()
         self.ttl = self.exp_time - time.time()
         self.valid = self.ttl >= 0
         if self.valid and defer_time != -1:
@@ -519,6 +519,9 @@ def clearCache( name, arguments, matchExact = None ):
 
 ########################################################################
 # $Log: Cache.py,v $
+# Revision 1.8  2002/02/13 18:36:19  drew_csillag
+# fixed typo error
+#
 # Revision 1.7  2002/02/07 07:18:41  smulloni
 # documentRootFS is now a single instance.
 #
