@@ -18,7 +18,7 @@
 """
 Assortment of HTML tags - description???
 """
-# $Id: HTMLTags.py,v 1.4 2001/07/09 20:38:40 drew Exp $
+# $Id: HTMLTags.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
 
 from AE.CommonStuff import *
 import SkunkExcept
@@ -106,12 +106,12 @@ class RedirectTag(DTTag):
                                   ('url', 'None'),
                                   ('queryargs', {}),
 				  ('noescape', 'None')],
-                                  kwcol = 'kw' )
-        kw=DTCompilerUtil.pyifyKWArgs(tag, args['kw'])
+                                  )#kwcol = 'kw' )
+        #kw=DTCompilerUtil.pyifyKWArgs(tag, args['kw'])
         args=DTCompilerUtil.pyifyArgs(tag, args)
 
 	# here's the real function call
         codeout.write ( indent, '%s ( url = %s, path = %s, queryargs = %s, '
-                                'noescape = %s, kwargs = %s)' % 
+                                'noescape = %s)' % #, kwargs = %s)' % 
                       ( self.func, args['url'], args['path'], 
-                        args['queryargs'], args['noescape'], kw) )
+                        args['queryargs'], args['noescape']))#, kw) )
