@@ -1,5 +1,8 @@
 2004-03-02    <drew@loki.sai.local>
 
+	* SkunkWeb/Services/sessionHandler/FSSessionStore.py: removed one
+	of the two leading underscores from get/setPickle
+
 	* SkunkWeb/Services/auth/__init__.py (SessionAuthBase): now you
 	can pass path, domain and secure to the constructor to set the 
 	appropriate parameters on the session cookie
