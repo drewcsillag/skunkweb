@@ -1,3 +1,7 @@
+2002-01-09  Andrew Csillag  <drew@localhost.localdomain>
+
+	* configure.in: added check for python development files
+
 2002-01-02  Andrew Csillag  <drew@localhost.localdomain>
 	* SkunkWeb/sample_webdocs/demo/geeknews/*many*: fixed so will work
 	with Python 2.2 pickling issue
