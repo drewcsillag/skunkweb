@@ -16,7 +16,7 @@ class Store(SessionStore):
 
     def load(self):
         res=AE.Cache.getCachedComponent(self.componentPath(), {}, -1)
-        if res and res[0]:
+        if res and res[0] and res[0].valid:
             return res[0].out
         return {}
 
@@ -36,10 +36,10 @@ class Store(SessionStore):
     def lastTouched(self):
         cachepath, srv, fk=AE.Cache._genCachedComponentPath(self.componentPath(), {})
         try:
-            return os.path.getmtime(cachepath)
+            return int(os.path.getmtime(cachepath))
         except OSError, e:
             if e.errno==errno.ENOENT:
-                return time.time()
+                return int(time.time())
             else:
                 raise
 

@@ -59,19 +59,22 @@ def getSession(self,
         return None
 
     sess=self.__userSession=Session(id)
+    sesskey=Configuration.SessionIDKey
 
     # test session - is it too old?
-
     if sess.age() >= Configuration.SessionTimeout:
         DEBUG(SESSIONHANDLER, "session is too old")
-        self.removeSession()
+        sess.delete()
+        del self.__userSession
+        if self.requestCookie.has_key(sesskey):
+            self.responseCookie[sesskey]=""
+            self.responseCookie[sesskey]['expires']=Cookie._getdate(-10000000)
         del self.__sessionID
         id=self.getSessionID(create)
         if not id:
             return None
         sess=self.__userSession=Session(id)
     
-    sesskey=Configuration.SessionIDKey
     if (not self.requestCookie.has_key(sesskey)) or \
            [x for x in (path, domain, secure) if x is not None]:
         self.responseCookie[sesskey]=id
@@ -206,7 +209,7 @@ class Session(_dict):
         self._deleted=1
                    
     def age(self):
-        return int(time.time()) - self.store.lastTouched()
+        return self.store.age()
 
     def clear(self):
         _dict.clear(self)
@@ -264,7 +267,7 @@ class SessionStore:
         raise NotImplementedError
 
     def age(self):
-        return int(time.time()) in self.lastTouched()
+        return int(time.time()) - self.lastTouched()
     
     def reap(self):
         raise NotImplementedError
