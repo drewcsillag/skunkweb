@@ -1,3 +1,18 @@
+2002-06-28  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Makefile.in (DEMO_FILES): added components for python
+	website, whose absence was breaking the demo.
+
+	* SkunkWeb/swpython.py.in: minor change to accomodate setattr
+	hook. 
+
+	* pylibs/scopeable/_scope.c: minor changes to avoid running afoul
+	of the setattr hook.
+
+	* pylibs/scopeable/scope.py (Scopeable.__setattr__): Added setattr
+	hook so as to raise an exception when someone tries an attribute
+	assignment.
+
 2002-06-28  Andrew Csillag  <acsillag@unix-101-21.hq.communityconnect.com>
 
 	* pylibs/DT/DTCompilerUtil.py: made so that all exprs get the line

@@ -16,7 +16,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # makefile for Skunkweb
-# $Id: Makefile.in,v 1.13 2002/06/18 20:33:27 drew_csillag Exp $
+# $Id: Makefile.in,v 1.14 2002/06/24 20:08:30 drew_csillag Exp $
 # Time-stamp: <01/04/10 11:43:17 smulloni>
 ########################################################################
 
@@ -56,7 +56,7 @@ WEBDOC 		= @WEBDOC@
 INSTALL		= @INSTALL@ -o $(owner) -g $(group)
 INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
 
-DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/newsvac.comp geeknews/dcomps/newsvac.pydcmp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp index.html gallery/bros1.jpg gallery/comp/list_thumbnails.dcmp gallery/comp/nailsize.pydcmp gallery/comp/pager.pydcmp gallery/comp/thumbnail.pydcmp gallery/comp/listing.pydcmp gallery/bros10.jpg gallery/bros2.jpg gallery/bros3.jpg gallery/bros4.jpg gallery/bros5.jpg gallery/bros6.jpg gallery/bros7.jpg gallery/bros8.jpg gallery/bros9.jpg gallery/index.html gallery/thumbnail.py gallery/index.inc
+DEMO_FILES = geeknews/newsforge.comp geeknews/linuxcom.comp geeknews/ufriendly.html geeknews/linuxtoday.comp geeknews/dilbert.html geeknews/index.html geeknews/slashdot.comp geeknews/newsvac.comp geeknews/dcomps/newsvac.pydcmp geeknews/dcomps/slashhead.pydcmp geeknews/dcomps/dilbert.pydcmp geeknews/dcomps/lwnsi.pydcmp geeknews/dcomps/newsforge.pydcmp geeknews/dcomps/ufriendly.pydcmp geeknews/dcomps/freshhead.pydcmp geeknews/dcomps/lintoday.pydcmp geeknews/dcomps/linuxcom.pydcmp geeknews/dcomps/lwndaily.pydcmp geeknews/freshmeat.comp geeknews/drfun.html geeknews/lwndaily.comp geeknews/dcomps/python.pydcmp geeknews/python.comp index.html gallery/bros1.jpg gallery/comp/list_thumbnails.dcmp gallery/comp/nailsize.pydcmp gallery/comp/pager.pydcmp gallery/comp/thumbnail.pydcmp gallery/comp/listing.pydcmp gallery/bros10.jpg gallery/bros2.jpg gallery/bros3.jpg gallery/bros4.jpg gallery/bros5.jpg gallery/bros6.jpg gallery/bros7.jpg gallery/bros8.jpg gallery/bros9.jpg gallery/index.html gallery/thumbnail.py gallery/index.inc
 
 DEMO_DIRS=geeknews geeknews/dcomps gallery gallery/comp
 
@@ -145,6 +145,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.14  2002/06/24 20:08:30  drew_csillag
+# made it so all makefiles should work with BSD make, not just GNU Make
+#
 # Revision 1.13  2002/06/18 20:33:27  drew_csillag
 # updated for favicon.ico
 #

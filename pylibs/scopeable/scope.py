@@ -1,5 +1,5 @@
-# Time-stamp: <01/10/01 22:17:53 smulloni>
-# $Id: scope.py,v 1.4 2001/09/05 03:42:52 smulloni Exp $
+# Time-stamp: <02/06/28 15:51:26 smulloni>
+# $Id: scope.py,v 1.5 2001/10/02 02:35:34 smulloni Exp $
 ########################################################################
 
 #  
@@ -29,6 +29,16 @@ import re
 import _scope
 
 class Scopeable(_scope.Scopeable):
+
+    def __setattr__(self, k, v):
+        if self.__dict__.get('_EPOXY'):
+            raise AttributeError, "object does not support attribute assignment"
+        else:
+            self.__dict__[k]=v
+
+    def make_immutable(self, bool):
+        self.__dict__['_EPOXY']=bool
+            
     def scope(self, param=None):
         """
         param should be one of the following:
@@ -71,23 +81,6 @@ class Scopeable(_scope.Scopeable):
     def __str__(self):
         return str(self.mash())
                    
-##    def update(self, dict):
-##        self.__dictList[-1].update(dict)
-
-##    def push(self, dict):
-##        self.__dictList.insert(0, dict)
-
-##    def pop(self):
-##        return self.__dictList.pop()
-
-##    def trim(self):
-##        del self.__dictList[:-1]    
-
-##    def mashSelf(self):
-##        self.__dictList=[self.mash()]                   
-    
-
-
 class ScopeMatcher:
     def __init__(self, param, matchObj, overlayDict, children=None):
         self.param=param

@@ -87,7 +87,7 @@ if interactive:
 
 if redirlogs:
     import Logger
-    Logger.config.errorLog=sys.__stderr__
+    Logger.config.push({'errorLog' : sys.__stderr__})
 
 bootloader.load()
 SkunkWeb.Hooks.ChildStart()
