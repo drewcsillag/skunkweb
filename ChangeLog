@@ -1,3 +1,8 @@
+2001-10-10  Drew Csillag  <drew@starmedia.net>
+
+	* SkunkWeb/Services/userdir.py(doUserDirPost): fix to function
+	signature.  Had extra stuff.
+
 2001-10-02  Drew Csillag  <drew@naxos.starmedia.net>
 
 	* 3.1beta3 cut
