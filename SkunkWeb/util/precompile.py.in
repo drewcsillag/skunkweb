@@ -66,7 +66,10 @@ def func(arg, dirname, fnames):
         if exe:
             pathname = '%s/%s' % (rdn, i)
             print "compiling %s" % pathname
-            exe(pathname, Executables.DT_DATA, 0)
+            try:
+                exe(pathname, Executables.DT_DATA, 0)
+            except:
+                print "compilation of %s failed" % pathname
             if ndr:
                 try: os.makedirs('%s/%s' % (ndr, rdn))
                 except OSError: pass
