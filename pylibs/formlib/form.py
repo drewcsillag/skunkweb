@@ -289,15 +289,6 @@ class Form(object):
     def setData(self, data):
         for f in self.fields:
             f._setData(data)
-#            if f.setable:
-#                if isinstance(f, CompositeField):
-#                    #search subfields for key
-#                    for ky in data.keys():
-#                        if f.fields.has_key(ky):
-#                            chgfld = f.fields[ky]
-#                            chgfld.value = data.get(ky)
-#                else:
-#                    f.value=data.get(f.name)
 
     def submit(self, data):
         self.reset()
