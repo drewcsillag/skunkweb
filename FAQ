@@ -58,7 +58,7 @@ directory, that goes into a bit more detail.
  * DTML bites.  It hits on making it easy to do easy things, but is
    too constraining for the expert because you don't have the full
    flexibility of Python in the tags.  I know that they are working on
-   their next templating language (ZTL if I'm correct), but from what
+   another templating language (ZPT if I'm correct), but from what
    I've seen, it too misses the mark.
 
  * ZODB is the filesystem.  Many people have written about how having
