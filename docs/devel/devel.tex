@@ -66,15 +66,14 @@ foo.comp:>} would do, and that you know Python well.
 
 \chapter{Services}
 The crux of most of what SkunkWeb does lies in services, of which
-there are three kinds.
+there are four kinds.
 \begin{description}
-\item[provider] Provides direct functionality, but few, if any API functions.
-\item[linkage] Mainly links in some external (from \texttt{pylibs})
+\item[Provider] Provides direct functionality, but few, if any API functions.
+\item[Linkage] Mainly links in some external (from \texttt{pylibs})
 code, and may provide functionality of it's own.
 \item[API] Provides little, if any functionality on it's own, but
-provides API functions to do various things.  A few services in this
-category (notably \texttt{web} and \texttt{requestHandler}) form the
-foundation that services of other types are built upon.
+provides API functions to do various things.  
+\item[Foundation] Services that form the foundation that services of other types are built upon.
 \end{description}
 
 \section{Provider Services}
@@ -122,26 +121,203 @@ CGI program.
 
 \section{Linkage Services}
        * exist mainly to link other stuff into skunkweb 
+\begin{description}
+\item[mysql] Loads the MySQL pylib library to do connection caching.
+\item[postgresql] Loads the PostgreSql pylib library to do connection
+caching.
+\item[oracle] Loads the Oracle pylib library to do connection caching.
+\item[ae_component] Loads the AE pylib library that is the component
+rendering infrastructure, see the Appendix.
+\item[templating] Hooks up the ae_component service up to the web
+service to make templates web accessible.  
+\item[psptemplate] Hooks up the psp pylib to the AE infrastructure
+\end{description}
 
-       mysql
-       oracle
-       postgresql
-       ae_component -- the AE API
-       templating -- hooks up AE to web and adds tags
-       psptemplate -- hooks up the psp pylib to the AE infrastructure
-	
+
 \section{API Services}
-       * mainly provide API's to do skunkweb specific stuff
-       * some are "foundation services"
-       * some do provide direct functionality too
+       * mainly provide API's to do skunkweb specific stuff some do
+       * provide direct functionality too
 
-       requestHandler
-       web
        auth
        product 
        remote\_client
        sessionHandler
 
+\subsection{The \service{auth} Service}
+\begin{verbatim}
+class authorizer:
+    def __init__(self, ......):
+    """
+    The ...... will be filled with the contents of
+    Configuration.authAuthorizerCtorArgs when this object is instantiated.
+    """
+
+    def checkCredentials(self, conn):
+    """
+    Examine the connection however you see fit to see if the
+    connection has the credentials needed to view the page
+    return true to accept, false to reject
+    """
+
+    def login(self, conn, username, password):
+    """
+    Take the username and password, validate them, and if they are
+    valid, give the connection credentials to validate them in the
+    future (i.e. make it so checkCredentials() returns true).  If your
+    authorizer is doing basicauth-style authentication, this method is
+    not required.
+    """
+
+    def logout(self, conn):
+    """
+    Remove any credentials from the browser.  This method is not required
+    for methods (specifically, basicauth) that do not have the concept of
+    logging out.
+    """
+
+    def authFailed(self, conn):
+    """
+    If the connections credentials are rejected, what to do.  For
+    this, unless you are using a basic-auth means, inheriting from
+    RespAuthBase is probably sufficient (it will bring up a login
+    page), otherwise inheriting from BasicAuthBase and providing an
+    appropriate validate function is sufficient.
+    """
+
+    #this method is required only if using one of the base classes that
+    #require it
+    def validate(self, username, password):
+    """
+    Return true if the username/password combo is valid, false otherwise
+    """
+
+
+\end{verbatim}
+\begin{verbatim}
+class RespAuthBase:
+    """
+    This is a base class for those authorizers that need to use a login page.
+    That's pretty much any of them, with the exception of BasicAuth, as it
+    doesn't need it since the browser "puts up a login page".
+
+    The loginPage ctor arg is the page to show.  It *can* be in the protected
+    area.
+    """
+
+
+class AuthFileBase: #base class for those that auth against a basicauth file
+    """
+    Base class for authorizers that will use a simple basicauth file to
+    validate user/password combinations
+
+    The authFile ctor argument is the file that we will validate against
+    """
+
+
+class BasicAuthBase: #base class that does basicauth
+    """
+    This class does browser based basicauth authentication where it pops up
+    the login box by itself.
+
+    This is a mixin class and is not usable by itself.  You must provide a
+    way to validate (by subclassing BasicAuthBase and defining a validate
+    function) the username and password that is obtained."""
+
+class CookieAuthBase: #class that does basic cookie authentication
+    """
+    This class implements a simple cookie based authentication.  Depending
+    on how you want to do things, you may not (and probably don't) want to
+    have the username and password encoded directly in the cookie, but
+    definitely *do* use the armor module to protect whatever you do decide to
+    put into the cookie as it will make them virtually tamperproof.
+
+    As with BasicAuthBase, thisis a mixin class and is not usable by
+    itself.  You must provide a way to validate (by subclassing CookieAuthBase
+    and defining a function) the username and password that is obtained.
+    """
+
+\end{verbatim}
+\begin{verbatim}
+class SessionAuthBase: #class to do auth using sessions
+    """
+    This class uses the session object (you must have the sessionHandler
+    service loaded) to handle authentication.  This is also probably not 
+    something that you would really want to use in a production setup as:
+    a) you probably don't want to store the password in the session.  Not that
+       it's inherently evil, but it's one less thing you have to worry about
+       leaking in the event that something gets screwed up.
+    b) checking the credentials might just be to check if the username is set
+       since all of the session info (minus the session key) is stored on
+       the server and not the browser, we don't have to worry as much that
+       somebody fooled around with us
+
+    But what is here is usable as a starting point and will run.
+
+    As with BasicAuthBase, thisis a mixin class and is not usable by
+    itself.  You must provide a way to validate (by subclassing SessionAuthBase
+    and defining a function) the username and password that is obtained.
+
+    """
+\end{verbatim}
+
+
+
+\subsection{The \service{product} Service}
+The \service{product} service is a service to support SkunkWeb
+products, which can be installed as archive files (zip, tar, or tgz),
+or as directories in the SkunkWeb product directory.  This service
+requires that the documentRootFS be a MultiFS (at least prior to
+scoping); the assumption is that MultiFS will become the default fs.
+
+The product loader is configured to load by default all product
+archives in the product directory, but can be configured to load any
+arbitrary subset.
+
+The loader opens the MANIFEST file in each archive, looks for
+dependencies stated therein, and loads any products therein listed,
+raising an error for circular or missing dependencies.  For each load,
+it adds mount points to the MultiFS for the docroot and, by means of
+an import hook in the vfs which permits python modules to be imported
+from the vfs, adds the libs (if any) to sys.path.  Services specified
+in the MANIFEST are then imported.
+
+The MANIFEST is essentially an init file for the product which
+integrates it into the SkunkWeb framework.  It must contain the
+product version, and can also contain product dependencies and
+services (python modules that use SkunkWeb hooks, to be imported at
+product load time).  See manifest.py for details.
+
+By default, a product's docroot will be mounted at
+products/<product-name>, relative to the SkunkWeb documentRoot.  This
+can be altered by modifying Configuration.defaultProductPath, which
+will affect all products, or by adding the product-name to the
+Configuration.productPaths mapping.
+
+This service will also contain a utility for creating products, creating
+the MANIFEST file, byte-compiling the python modules, and creating the
+archive file.
+\subsection{The \service{remote\_client} Service}
+adds swrc://host:port/path/to/component.comp 
+syntax to component (and data component) calls
+
+\subsection{The \service{sessionHandler} Service}
+adds 
+
+getSession(create=0, **cookieParams) - if create is true, will create
+new session (in cookie, with extra paraters in cookieParams)
+
+getSessionID(create=1) - get session id from cookie, or create it 
+
+removeSession to CONNECTION, kills the session cookie
+
+
+\section{Foundation Services}
+Services which are used to build other services, but in and of
+themselves, provide no directly useable functionality.
+
+
+       requestHandler
+       web
 \subsection{The \service{requestHandler} Service}
 PreemptiveResponse (responseData) -- respdata will be sent via
 protocol.marshalResponse
@@ -217,44 +393,6 @@ has Redirect exception
 
 Contains the CONNECTION definition
 
-\subsection{The \service{auth} Service}
-
-\subsection{The \service{product} Service}
-The \service{product} service is a service to support SkunkWeb
-products, which can be installed as archive files (zip, tar, or tgz),
-or as directories in the SkunkWeb product directory.  This service
-requires that the documentRootFS be a MultiFS (at least prior to
-scoping); the assumption is that MultiFS will become the default fs.
-
-The product loader is configured to load by default all product
-archives in the product directory, but can be configured to load any
-arbitrary subset.
-
-The loader opens the MANIFEST file in each archive, looks for
-dependencies stated therein, and loads any products therein listed,
-raising an error for circular or missing dependencies.  For each load,
-it adds mount points to the MultiFS for the docroot and, by means of
-an import hook in the vfs which permits python modules to be imported
-from the vfs, adds the libs (if any) to sys.path.  Services specified
-in the MANIFEST are then imported.
-
-The MANIFEST is essentially an init file for the product which
-integrates it into the SkunkWeb framework.  It must contain the
-product version, and can also contain product dependencies and
-services (python modules that use SkunkWeb hooks, to be imported at
-product load time).  See manifest.py for details.
-
-By default, a product's docroot will be mounted at
-products/<product-name>, relative to the SkunkWeb documentRoot.  This
-can be altered by modifying Configuration.defaultProductPath, which
-will affect all products, or by adding the product-name to the
-Configuration.productPaths mapping.
-
-This service will also contain a utility for creating products, creating
-the MANIFEST file, byte-compiling the python modules, and creating the
-archive file.
-\subsection{The \service{remote\_client} Service}
-\subsection{The \service{sessionHandler} Service}
 \chapter{Templating Languages}
 \begin{description}
 \item[STML] SkunkWeb Template Markup Language
@@ -822,8 +960,8 @@ be shared between the machines as it is disk-based.
 %A request recording service
 %
 %
-%\appendix
-%\input ae.tex
+\appendix
+\input ae.tex
 
 
 \cleardoublepage
