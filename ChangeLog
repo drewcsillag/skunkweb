@@ -1,3 +1,13 @@
+2002-12-13  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/ecs/xhtml.py (CONTAINER_ELEMENTS): added 'li', which
+	inexplicably was missing.
+
+	* pylibs/containers/treenode.py (TreeNode.walk): added walk()
+	function.
+
+	* pylibs/formlib (all files): added copyright/license notices.
+
 2002-12-10    <smulloni@smullbola.smullyan.org>
 
 	* pylibs/containers/treenode.py: a simple tree class.
