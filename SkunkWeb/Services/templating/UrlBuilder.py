@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: UrlBuilder.py,v 1.5 2002/10/25 16:51:55 smulloni Exp $
+# $Id: UrlBuilder.py,v 1.6 2003/02/08 03:23:44 smulloni Exp $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -49,7 +49,8 @@ try:
 except:
     _havePIL=0
 
-Config.mergeDefaults(tagsGenerateXHTML=1)
+Config.mergeDefaults(tagsGenerateXHTML=1,
+                     autosizeImages=1)
                      
 
 def _genUrl ( path, query = {}, need_full = 0, noescape=None ):
@@ -125,14 +126,17 @@ def image ( path, queryargs = None, kwargs={}, noescape = None  ):
     """
     Create an image tag
     """
-    if _havePIL and not path.startswith('http://'):
-        lckws=[x.lower() for x in kwargs]
-        if not filter(lambda x: x in ('height', 'width'), lckws):
+    if Config.autosizeImages and _havePIL and not path.startswith('http://'):
+        w=kwargs.get('width')
+        h=kwargs.get('height')
+        DEBUG(TEMPLATING, "width: %s; height: %s" % (w, h))
+        if w is None and h is None:
             try:
                 im=Image.open(Cache._openDocRoot(path))
-                kwargs['width'], kwargs['height']=im.size
             except:
                 DEBUG(TEMPLATING, "failed to read doc root for path %s" % path)
+            else:
+                kwargs['width'], kwargs['height']=im.size
     if Config.tagsGenerateXHTML:
         template='<img src="%s"%s />'
     else:

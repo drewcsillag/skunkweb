@@ -1,3 +1,10 @@
+2003-03-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/UrlBuilder.py (image): found and
+	removed some 2.2 syntax (was using default iterator of
+	dictionary), and made autosizing of images a configurable option.
+	
+
 2003-03-20  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (HTTPConnection._initCookies):
