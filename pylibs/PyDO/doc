@@ -18,7 +18,7 @@ or
 For PostgreSQL, they also take one of two forms (either can optionally
 have ':verbose' appended to them to log the sql executed by the
 connection):
-   pydo:postgresql:user|cache  -- uses the connection caching of the
+   pydo:postgresql:user:cache  -- uses the connection caching of the
                                   PostgreSql pylib that is used by the
                                   postgresql SkunkWeb service
 or
