@@ -8,6 +8,7 @@
 #   
 import sys
 import getopt
+import signal
 
 usage="""\
 Usage: swpython [options] [scriptname]
@@ -101,6 +102,7 @@ if redirlogs:
 bootloader.load()
 SkunkWeb.Hooks.ChildStart()
 
+signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 if interactive or (not args and not command):
     import code
     code.interact('SkunkWeb @SW_VERSION@ -- NO WARRANTY')
