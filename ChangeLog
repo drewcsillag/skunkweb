@@ -1,3 +1,10 @@
+2003-11-24  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* pylibs/PyDO/PyDO2.py (_metapydo.__new__): looping through
+	<dict>.iteritems() and mutating the dict can lead to hash
+	rearrangement, apparently; patch from Jeroen van Dongen (no longer
+	use iteritems, which was pointless anyway).
+
 2003-11-22  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
 
 	* SkunkWeb/Services/httpd/protocol.py

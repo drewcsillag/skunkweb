@@ -29,7 +29,8 @@ class _metapydo(type):
     def __new__(self, cl_name, bases, namespace):
         prefix_descriptor_pairs=(('static_', staticmethod),
                                  ('class_', classmethod))
-        for k, v in namespace.iteritems():
+	ns = namespace.items()
+        for k, v in ns:
             for prefix, descriptor in prefix_descriptor_pairs:
                 lenpre=len(prefix)
                 if k.startswith(prefix):
