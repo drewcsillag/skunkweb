@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/09/04 11:05:42 smulloni>
+# Time-stamp: <02/12/05 12:39:33 smulloni>
 
 ######################################################################## 
 #  Copyright (C) 2001-2002 Jacob Smullyan <smulloni@smullyan.org>
@@ -34,8 +34,9 @@ try:
 
     class ExpatParser:
         """
-        takes an input xml string and produces a corresponding XMLElement (deposited in the 'document' attribute).
-        Currently ignores comments, CDATA, processing instructions, etc.
+        takes an input xml string and produces a corresponding
+        XMLElement (deposited in the 'document' attribute).  Currently
+        ignores comments, CDATA, processing instructions, etc.
         """
         def __init__(self, elementClassRegistry={}):
             self.__parser=expat.ParserCreate()
@@ -247,10 +248,19 @@ class XMLElement:
             return self
         return self.__parent.getPrimogenitor()
 
-    
+    def walk(self, visitfunc, state=None, filter=None):
+        for c in self.getChildren():
+            if filter and filter(c):
+                visitfunc(c, state)
+            if isinstance(c, XMLElement):
+                c.walk(visitfunc, state, filter)
+        
 
 ########################################################################
 # $Log$
+# Revision 1.8  2002/12/05 17:40:46  smulloni
+# added walk() element to XMLElement.
+#
 # Revision 1.7  2002/09/04 19:05:24  smulloni
 # work on flow manager
 #

@@ -1,3 +1,8 @@
+2002-12-05  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/xmlutils.py (XMLElement.walk): added walk() method to
+	XMLElement. 
+
 2002-12-04  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/argextract.py: oops, so was this.
