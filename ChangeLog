@@ -1,3 +1,15 @@
+2002-03-31  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/pars: removing from cvs and distro.
+
+	* SkunkWeb/configure.in, SkunkWeb/configure: remove par script,
+	added productwiz.
+
+	* SkunkWeb/Services/Makefile.in: put productwiz script in bin/.
+
+	* SkunkWeb/Services/product/productwiz.in: added script to start
+	the product wizard, for the truly lazy.
+
 2002-03-30  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/sw.conf.in: fixed typo in documentation of

@@ -199,4 +199,4 @@ dnl Checks for library functions.
 AC_OUTPUT(Makefile sw.conf mod_skunkweb/Makefile mod_skunkweb/httpd_conf.stub
 Services/Makefile skunkweb.py swpython.py swmgr util/cache_reaper.py 
 util/vicache.py SkunkWeb/bootloader.py Services/basicauth/swpasswd.py 
-Services/pars/par.py swcgi.py)
+Services/product/productwiz swcgi.py)
