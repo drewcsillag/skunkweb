@@ -1,10 +1,22 @@
+#  which python binary to use, list the full path or "auto"
+%define config_pythonpath auto
+
+#################################
+#  End of user-modifiable configs
+#################################
+
 %define name skunkweb
 %define version 3.4b3+
 %define release 1
 
-#  get python lib directory
-%define pylibdir %(python2.2 -c "import sys; print '%s/lib/python%s' % (sys.prefix, sys.version[:3])")
+#  locate python executable
+%define pythonpath %(if [ "%{config_pythonpath}" != auto ]; then echo %{config_pythonpath}; else ls /usr/bin/python[23].* | sort | tail -1; fi)
+
+#  location to apxs executable
 %define apxspath /usr/sbin/apxs
+
+#  get python lib directory
+%define pylibdir %(%{pythonpath} -c "import sys; print '%s/lib/python%s' % (sys.prefix, sys.version[:3])")
 
 Summary: An easily extensible web application server written in Python.
 Name: %{name}
@@ -16,9 +28,10 @@ Source0: http://prdownloads.sourceforge.net/skunkweb/%{name}-%{version}.tar.gz
 URL: http://skunkweb.sourceforge.net/
 Packager:  Jacob Smullyan <smulloni@smullyan.org>
 BuildRoot: /var/tmp/%{name}-%{version}-root
-Requires: /usr/bin/python2.2
+Requires: %{pythonpath}
 Requires: %{pylibdir}/site-packages/mx
 BuildRequires: %{apxspath}
+BuildRequires: python >= 2.1
 
 %description
 SkunkWeb is a scalable, extensible and easy to use web application server
@@ -34,9 +47,10 @@ Requires: httpd
 A module for including the Skunkweb environment in the Apache web server.
 
 %changelog
-* Sat May 24  2003 Jacob Smullyan <smulloni@smullyan.org>
-- fixed cron job entry; added additional install tweak ("REAL_INSTALL" variable)
-- incorporated SR's latest patch into source.
+* Sat May 24 2003 Sean Reifschneider <jafo-rpms@tummy.com> [3.4b3+-1]
+- Changing the cache directory and ownership.
+- Changing the sw.conf to reflect the new cache location.
+- Changing how the python executable version is found.
 
 * Fri May 23 2003 Sean Reifschneider <jafo-rpms@tummy.com> [3.4b3+-1]
 - Setting INSTALL for build.
@@ -72,9 +86,9 @@ A module for including the Skunkweb environment in the Apache web server.
            --libdir=/usr/lib/skunkweb \
            --sysconfdir=/etc/skunkweb \
            --prefix=/usr/share/skunkweb \
-           --with-cache=/var/cache/skunkweb \
+           --with-cache=/var/lib/skunkweb/cache \
            --with-docdir=/usr/share/doc/skunkweb-%{version} \
-           --with-python=/usr/bin/python2.2 \
+           --with-python=%{pythonpath} \
            --with-apxs=%{apxspath}
 
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
@@ -84,14 +98,15 @@ make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 mkdir -p $RPM_BUILD_ROOT%{_prefix}
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 %makeinstall DESTDIR="%{buildroot}" APXSFLAGS="-c" \
-           INSTALL=install INSTALL_DATA=install REAL_INSTALL=install
+           INSTALL=install INSTALL_DATA=install
 
 #  set up cache reaper
-echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/cache/skunkweb' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb_cache_reaper.cron
+echo '0 0 * * * nobody /usr/share/skunkweb/util/cache_reaper.py -c /var/lib/skunkweb/cache' >"$RPM_BUILD_ROOT"/etc/cron.daily/skunkweb
 
 #  build file list
 find "${RPM_BUILD_ROOT}" -type f | sed 's|^'"${RPM_BUILD_ROOT}"'||' |
    grep -v -e '^/etc/skunkweb/' >skunkweb.files
+echo '%attr(750,nobody,nobody) %dir /var/lib/skunkweb/cache' >>skunkweb.files
 
 #  install skunkweb
 MODFILELIST=`pwd`/mod_skunkweb.files

@@ -30,7 +30,8 @@ owner		= @OWNER@
 group		= @GROUP@
 
 # added for rpm's sake
-REAL_INSTALL	= @INSTALL@ -o $(owner) -g $(group)
+INSTALL_FLAGS  = -o $(owner) -g $(group)
+INSTALL		= @INSTALL@ $(INSTALL_FLAGS)
 
 default:	build
 
@@ -75,7 +76,7 @@ install: make-tree
 make-tree:
 	@# Build the core tree
 	for dee in $(prefix) $(skunk_config_dir) $(skunk_bin_dir) $(skunk_log_dir) $(skunk_data_dir) $(skunk_var_dir); do \
-	    $(REAL_INSTALL) -d $$DESTDIR$$dee; \
+	    $(INSTALL) -d $$DESTDIR$$dee; \
 	done
 
 #

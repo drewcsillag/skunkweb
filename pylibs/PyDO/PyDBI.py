@@ -17,7 +17,8 @@ _driverConfig = {
     'mysql':       ('mysqlconn',   'PyDOMySQL'),
     'oracle':      ('oracleconn',  'PyDOOracle'),
     'postgresql':  ('postconn',    'PyDOPostgreSQL'),
-    'pypgsql':	   ('pypgsqlconn', 'PyDOPostgreSQL'),
+    'pypgsql':	    ('pypgsqlconn', 'PyDOPostgreSQL'),
+    'psycopg':	    ('psycopgconn', 'PyDOPostgreSQL'),
     'sapdb':       ('sapdbconn',   'PyDOsapdb'),
     'sqlite':      ('sqliteconn',  'PyDOSqlite'),
     }

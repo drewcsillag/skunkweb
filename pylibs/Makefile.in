@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Makefile.in,v 1.10 2003/04/22 03:50:16 smulloni Exp $
+# $Id: Makefile.in,v 1.11 2003/05/01 20:45:57 drew_csillag Exp $
 # Time-stamp: <01/04/10 13:54:42 smulloni>
 # Makefile for pylibs 
 ########################################################################
@@ -33,8 +33,9 @@ confmode	= 0640
 execmode	= 0755
 
 # Commands used
-INSTALL		= @INSTALL@ -o $(owner) -g $(group)
-INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+INSTALL_FLAGS  = -o $(owner) -g $(group)
+INSTALL		= @INSTALL@ $(INSTALL_FLAGS)
+INSTALL_DATA	= @INSTALL_DATA@ $(INSTALL_FLAGS)
 
 default:	build
 

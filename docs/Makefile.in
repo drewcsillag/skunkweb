@@ -23,8 +23,9 @@ confmode	= 0640
 execmode	= 0755
 
 # Commands used
-INSTALL		= @INSTALL@ -o $(owner) -g $(group)
-INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+INSTALL_FLAGS  = -o $(owner) -g $(group)
+INSTALL		= @INSTALL@ $(INSTALL_FLAGS)
+INSTALL_DATA	= @INSTALL_DATA@ $(INSTALL_FLAGS)
 
 all:
 

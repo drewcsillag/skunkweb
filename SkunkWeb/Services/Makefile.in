@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Makefile.in,v 1.7 2003/04/16 14:40:41 drew_csillag Exp $
+# $Id: Makefile.in,v 1.8 2003/05/01 20:45:53 drew_csillag Exp $
 # Time-stamp: <01/05/07 13:48:20 smulloni>
 ########################################################################
 
@@ -30,8 +30,9 @@ confmode	= 0640
 execmode	= 0755
 
 # Install commands 
-INSTALL		= @INSTALL@ -o $(owner) -g $(group)
-INSTALL_DATA	= @INSTALL_DATA@ -o $(owner) -g $(group)
+INSTALL_FLAGS  = -o $(owner) -g $(group)
+INSTALL		= @INSTALL@ $(INSTALL_FLAGS)
+INSTALL_DATA	= @INSTALL_DATA@ $(INSTALL_FLAGS)
 
 default:	build
 
@@ -67,6 +68,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.8  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.7  2003/04/16 14:40:41  drew_csillag
 # portability things for hpux
 #

@@ -1,5 +1,15 @@
 2003-05-24  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/PyDO/psycopgconn.py, pylibs/PyDO/PyDBI.py
+	(_driverConfig): S. Reifschneider's contributed driver for the
+	psycopg postgresql driver.
+
+	*:Makefile.in, skunkWeb/Makefile.in,
+	SkunkWeb/Services/Makefile.in, SkunkWeb/mod_skunkweb/Makefile.in,
+	docs/Makefile.in, pylibs/Makefile.in: another build patch for RPM
+	from SR, this time for INSTALL_FLAGS. skunkweb.spec: now builds
+	with Python 2.1 or 2.2.
+
 	* SkunkWeb/configure.in, SkunkWeb/configure, configure.in,
 	configure: CACHE, DOCROOT, DOCSDIR and LOGDIR were not getting set
 	properly, The configure options for them now all begin with
