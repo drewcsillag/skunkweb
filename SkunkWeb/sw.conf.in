@@ -1,7 +1,7 @@
 # -*-python-*-
 
-# $Id: sw.conf.in,v 1.14 2002/03/30 20:05:26 smulloni Exp $
-# Time-stamp: <2002-04-17 15:24:02 drew>
+# $Id: sw.conf.in,v 1.15 2002/04/17 19:27:13 drew_csillag Exp $
+# Time-stamp: <2002-04-29 16:36:47 drew>
 
 ########################################################################
 #
@@ -68,9 +68,9 @@
 #                            locations configured to use it.  Requires
 #                            web.
 #
-# cookieauth              -- service that provides cookie authentication to
-#                            locations configured to use it.  Requires
-#                            web.  
+# auth                    -- service that provides various ways to do web
+#                            based authentication.  Requires web, and may
+#                            require sessionHandler.
 #
 # oracle                  -- preloads the Oracle pylib and allows for
 #                            connection and stored procedure signature
@@ -184,22 +184,65 @@ sys.path.append('@prefix@/sitelibs')
 #                basicAuthFile='/usr/local/skunk/var/AUTHDB'))
 
 ########################################################################
-# cookie auth variables -- can be done globally but most likely will be
+# The auth service
+#
+# This service allows you to do web based authentication in a myriad of
+# ways and provides 3 builtin means of doing so.  If your authentication
+# requirements aren't satisfied by the three provided classes, there are
+# a number of base classes in the auth service module that you can use
+# to your advantage when building an authentication scheme (e.g. rendering
+# of login pages, authing against a basicauth file, etc).
+
+# auth variables -- can be done globally but most likely will be
 # scoped e.g.
 # Scope(Location("/demo",
-#                #auth file is same as would be with basicauth (same fmt)
-#                cookieAuthFile='/usr/local/skunk/var/AUTHDB',
-#                #the cookie name
-#                cookieAuthName='auth',
-#                #a nonce value -- override this! to some semi-random string
-#                cookieNonce="cookieNonceValuehahahah",
-#                #the path to the login page -- a copy of a working one in
-#                #SkunkWeb/Services/cookieauth, there is a logout.html there
-#                #also
-#                cookieLoginPage="/demo/login.html",
-#                #extra cookie parameters, 
-#                #e.g. path, expires, comment, domain, max-age, secure, version
-#                cookieExtras={'path':'/'}))
+
+#               # the basic auth authorizer 
+#               authAuthorizer='auth.BasicAuth',
+
+#               authAuthorizerCtorArgs=(
+#                   #the authentication name or realm that will show up
+#                   #in the browser's login box
+#                   'test',
+#                   #the file (administered with swpasswd) where the username
+#                   #password info is stored
+#                   '/usr/local/skunk/var/AUTHDB'),
+
+#               # a simple cookie authorizer
+#               authAuthorizer='auth.PlainCookieAuth',
+#               authAuthorizerCtorArgs=(
+#                   #the file (administered with swpasswd) where the username
+#                   #password info is stored
+#                   '/usr/local/skunk/var/AUTHDB',
+#                   #the login page (it can be in the protected area)
+#                   "/demo/login.html",
+#                   #the cookie name
+#                   'auth',
+#                   #a nonce value -- change this to something else -- that
+#                   #will be used to tamperproof the cookie value.  Make sure
+#                   #it is the same on all machines that need to read this
+#                   #cookie
+#                   "cookieNonceValue",
+#                   #a dictionary of cookie attributes (attributes are:
+#                   #path, max-age, comment, secure, domain, version and
+#                   #expires) to use when setting the cookie on login
+#                   {'path':'/'}),
+
+#               # a simple session authorizer
+#               # if you use this, the sessionHandler service *must* be loaded
+#               authAuthorizer='auth.PlainSessionAuth',
+#               authAuthorizerCtorArgs=(
+#                   #the key in the session where the username will be stored
+#                   'username',
+#                   #the key in the session where the password will be stored
+#                   'password',
+#                   #the file (administered with swpasswd) where the username
+#                   #password info is stored
+#                   '/usr/local/skunk/var/AUTHDB',
+#                   #the login page (it can be in the protected area)
+#                   "/demo/login.html"),
+
+#               ))
 
 
 ########################################################################
@@ -573,6 +616,9 @@ sys.path.append('@prefix@/sitelibs')
 
 ########################################################################
 # $Log: sw.conf.in,v $
+# Revision 1.15  2002/04/17 19:27:13  drew_csillag
+# updated for cookieauth
+#
 # Revision 1.14  2002/03/30 20:05:26  smulloni
 # added Include directive for sw.conf; fixed IP bug (was being clobbered in sw.conf)
 #
