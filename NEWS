@@ -1,3 +1,16 @@
+Changes in 3.4
+========================================
+* an ftp filesystem for the vfs (vfs.ftpfs).
+* a very simple xhtml generation library (ecs, named
+  after Apache's similarly named Java library).
+* a library for processing and managing html forms (formlib).
+* an xmlrpc support module (xmlrpchandler).
+* support for scoping on server port (SERVER_PORT).
+* fixes for PyDO and swcgi.
+* <:url:> now has an "abs" option which will generate
+  absolute urls.
+* rewrite hook changed by default (revisit this!!).
+
 Changes in 3.3 
 ======================================== 
 * Developer's manual updated

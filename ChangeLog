@@ -1,18 +1,35 @@
+2002-12-04  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/views.py, pylibs/formlib/form.py: fixed several
+	instances of the "default function value gotcha"; some reformatting.
+
 2002-12-04  James Richards  <jrichards@satie.wnyc.org>
 
-	* test/formlib/htdocs/testNestedList.pyinc (form): Added NestedListLayout() to ViewableForm construction to test new nested list layout support
+	* test/formlib/htdocs/testNestedList.pyinc (form): Added
+	NestedListLayout() to ViewableForm construction to test new nested
+	list layout support
 
-	* pylibs/formlib/views.py (Layout.handleError): Base class with standard semantics for error handling during layout
-	(FlowLayout.layoutFields): flow layout for simple flow based form layout 
-	(StackLayout.layoutFields): stack layout for default stack based form layout 
-	(NestedListLayout.layoutFields): nested layout for more complex form layouts
-	(ViewableForm.__init__): added layout construction parameter to viewable form using StackLayout as default form layout
-	(ViewableForm._get_fieldLayout): added ViewableForm.fieldLayout as property to separate layout concerns from form fields property
-	(ViewableForm._flattenFields): utility method to separate form fields from form field layout concerns
-	(ViewableForm.getView): moving bulk of view generation to layout instance  
-	(ViewableCompositeField.__init__): Adding abstraction to allow composite fields to be directly viewable within a ViewableForm rather than always deferring to FieldProxies 
+	* pylibs/formlib/views.py (Layout.handleError): Base class with
+	standard semantics for error handling during layout
+	(FlowLayout.layoutFields): flow layout for simple flow based form
+	layout
+	(StackLayout.layoutFields): stack layout for default stack based
+	form layout
+	(NestedListLayout.layoutFields): nested layout for more complex
+	form layouts
+	(ViewableForm.__init__): added layout construction parameter to
+	viewable form using StackLayout as default form layout
+	(ViewableForm._get_fieldLayout): added ViewableForm.fieldLayout as
+	property to separate layout concerns from form fields property
+	(ViewableForm._flattenFields): utility method to separate form
+	fields from form field layout concerns
+	(ViewableForm.getView): moving bulk of view generation to layout
+	instance
+	(ViewableCompositeField.__init__): Adding abstraction to allow
+	composite fields to be directly viewable within a ViewableForm
+	rather than always deferring to FieldProxies
 
-2002-12-03    <smulloni@smullbola.smullyan.org>
+2002-12-03  Jacob Smullyan <smulloni@smullyan.org>
 
 	* test/sitelibs/formlibtest/testDispatch3.py
 	(PushyFlowManager.next): added state.clear() when returning to the
@@ -35,16 +52,16 @@
 	test/formlib/htdocs/testDispatch3.pyinc: modified to work with
 	refactoring of formlib.
 
-2002-12-02    <smulloni@smullbola.smullyan.org>
+2002-12-02  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/state.py (InPageStateManager.__init__): stack
 	is now just an ordinary list.
 
-	* test/formlib/htdocs/testDispatch3.pyinc: popping and pushing now work,
-	albeit awkwardly.
+	* test/formlib/htdocs/testDispatch3.pyinc: popping and pushing now
+	work, albeit awkwardly.
 
-	* test/sitelibs/formlibtest/testDispatch3.py: sitelib for dispatcher 
-	test.
+	* test/sitelibs/formlibtest/testDispatch3.py: sitelib for
+	dispatcher test.
 
 2002-12-02  Jacob Smullyan  <smulloni@smullyan.org>
 

@@ -133,7 +133,7 @@ class CompositeField(Field):
                  default=None,
                  multiple=1,
                  setable=1,
-                 componentFields=[],
+                 componentFields=None,
                  componentFieldDelimiter='_',
                  valueComposer=_defaultValueComposer):
         Field.__init__(self,
@@ -143,6 +143,8 @@ class CompositeField(Field):
                        multiple=multiple,
                        setable=setable)
         self.delimiter = componentFieldDelimiter
+        if componentFields is None:
+            componentFields=[]
 
         tmpComponents = []
         for fld in componentFields:
@@ -238,14 +240,14 @@ class Form(object):
                  enctype=None,
                  fields=None,
                  validators=None,
-                 processors=[]):
+                 processors=None):
         self.name=name
         self.method=method
         self.action=action
         self.enctype=enctype
         self._set_fields(fields)
         self.validators=validators or []
-        self.processHook=Hook(processors)
+        self.processHook=Hook(processors or [])
         self.submitted=None
         self.errors=FieldContainer(fieldmapper=_getfield,
                                    storelists=1)

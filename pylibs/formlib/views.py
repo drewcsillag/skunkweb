@@ -16,7 +16,8 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 ########################################################################
 from containers import FieldContainer
-from form import Field, DomainField, Form, FormError, _getname, CompositeField, _defaultValueComposer
+from form import Field, DomainField, Form, FormError, \
+     _getname, CompositeField, _defaultValueComposer
 from containers import Set
 import ecs
 
@@ -317,7 +318,8 @@ class SelectField(ViewableDomainField):
                 # we should have some sort of container
                 # involving an option group.
                 if not permit_group:
-                    raise ValueError, "option group not permitted: %s" % str(oval)
+                    raise ValueError, \
+                          "option group not permitted: %s" % str(oval)
                 # decrement permit_group 
                 subopts, subdom=self._parse_options(oval, permit_group-1)
                 return SelectOptionGroup(otext, subopts)
@@ -533,23 +535,32 @@ class Layout(object):
 
 class FlowLayout(Layout):
     "A simple layout which arranges its items in a columnar, single row view"
-    def layoutFields(self, form, table=ecs.Table()):
+    def layoutFields(self, form, table=None):
         """\
-        Arranges the given form's ViewableField list into a flow layout, disregarding
-        any nesting within the field list...
-        all items are arranged in a single row following the order of the field list
-        from the first index of the list [and the first index of any nested list] to the last index:
+        Arranges the given form's ViewableField list into a flow layout,
+        disregarding any nesting within the field list...
+        all items are arranged in a single row following the order of the field
+        list from the first index of the list [and the first index of any
+        nested list] to the last index:
+        
         [1, [2,3], 4, [5,6,7]]
 
         produces
 
         <table>
-        <tr><td>1.description</td><td>1.getView()</td><td>2.description</td><td>2.getView()</td>
-        <td>3.description</td><td>3.getView()</td><td>4.description</td><td>4.getView()</td>
-        <td>5.description</td><td>5.getView()</td><td>6.description</td><td>6.getView()</td>
-        <td>7.description</td><td>7.getView()</td></tr>
+         <tr>
+          <td>1.description</td><td>1.getView()</td>
+          <td>2.description</td><td>2.getView()</td>
+          <td>3.description</td><td>3.getView()</td>
+          <td>4.description</td><td>4.getView()</td>
+          <td>5.description</td><td>5.getView()</td>
+          <td>6.description</td><td>6.getView()</td>
+          <td>7.description</td><td>7.getView()</td>
+         </tr>
         </table>
         """
+        if table is None:
+            table=ecs.Table()
         errTr = ecs.Tr()
         numErr = 0
         for fld in form.fields:
@@ -584,26 +595,30 @@ class FlowLayout(Layout):
 
 class StackLayout(Layout):
     "A simple layout which arranges its items in a single column of many rows"
-    def layoutFields(self, form, table=ecs.Table() ):
+    def layoutFields(self, form, table=None):
         """\
-        Arranges the given form's ViewableField list into a stack layout, disregarding any
-        nesting within the field list...all items are arranged in a single column following
-        the order of the field list from the first index of the list [and
-        the first index of any nested list] to the last index:
+        Arranges the given form's ViewableField list into a stack layout,
+        disregarding any nesting within the field list...all items are
+        arranged in a single column following the order of the field list
+        from the first index of the list [and the first index of any nested
+        list] to the last index:
+        
         [1, [2,3], 4, [5,6,7]]
 
         produces
 
         <table>
-        <tr><td>1.description</td><td>1.getView()</td></tr>
-        <tr><td>2.description</td><td>2.getView()</td></tr>        
-        <tr><td>3.description</td><td>3.getView()</td></tr>
-        <tr><td>4.description</td><td>4.getView()</td></tr>
-        <tr><td>5.description</td><td>5.getView()</td></tr>
-        <tr><td>6.description</td><td>6.getView()</td></tr>
-        <tr><td>7.description</td><td>7.getView()</td></tr>
+         <tr><td>1.description</td><td>1.getView()</td></tr>
+         <tr><td>2.description</td><td>2.getView()</td></tr>        
+         <tr><td>3.description</td><td>3.getView()</td></tr>
+         <tr><td>4.description</td><td>4.getView()</td></tr>
+         <tr><td>5.description</td><td>5.getView()</td></tr>
+         <tr><td>6.description</td><td>6.getView()</td></tr>
+         <tr><td>7.description</td><td>7.getView()</td></tr>
         </table>
         """
+        if table is None:
+            table=ecs.Table()
         for fld in form.fields:
             if not isinstance(fld, Viewable):
                 # non-viewable fields are not directly displayed
@@ -636,28 +651,44 @@ class StackLayout(Layout):
 
 class NestedListLayout(Layout):
     "A layout which mimics the structure of a given nested list as a tabular display"
-    def layoutFields(self, form, table=ecs.Table()):
+    def layoutFields(self, form, table=None):
         """\
         Arranges the given form's ViewableField list into a tabular display based
         upon the nesting of the given field list...
         column spanning is based upon the maximum depth of the largest nested list:
+
         [1, [2,3], 4, [5,6,7]]
 
         produces
 
         <table>
-        <tr><td>1.description</td><td colspan="5">1.getView()</td></tr>
-        <tr><td>2.description</td><td>2.getView()</td><td>3.description</td><td colspan="3">3.getView()</td></tr>
-        <tr><td>4.description</td><td colspan="5">4.getViews()</td></tr>
-        <tr><td>5.description</td><td>5.getView()</td><td>6.description</td><td>6.getView()</td>
-        <td>7.description</td><td>7.getView()</td></tr>
+         <tr>
+          <td>1.description</td><td colspan="5">1.getView()</td>
+         </tr>
+         <tr>
+          <td>2.description</td><td>2.getView()</td>
+          <td>3.description</td><td colspan="3">3.getView()</td>
+         </tr>
+         <tr>
+          <td>4.description</td><td colspan="5">4.getViews()</td>
+         </tr>
+         <tr>
+          <td>5.description</td><td>5.getView()</td>
+          <td>6.description</td><td>6.getView()</td>
+          <td>7.description</td><td>7.getView()</td>
+         </tr>
         </table>
 
         where ecs.Table is returned by the method:
         
-        1) if a table was passed to the method, the same table is returned with the fields laid out inside it
-        2) if a table was not passed, the default table is generated and returned with the fields laid out 
+        1) if a table was passed to the method, the same table is returned with
+           the fields laid out inside it
+        2) if a table was not passed, the default table is generated and returned
+           with the fields laid out 
         """
+        if table is None:
+            table=ecs.Table()
+            
         for tstFnm in form.fieldLayout:
             tr=ecs.Tr() 
             if isinstance(tstFnm, list) or isinstance(tstFnm, tuple):
@@ -666,9 +697,7 @@ class NestedListLayout(Layout):
                 self.handleField(form, form.fields[tstFnm], tr, table)
             table.addElement(tr)
             table.addElement('\n')
-
         return table    
-
 
     def handleList(self, form, list, tr, table):
         errTr = ecs.Tr()
@@ -762,7 +791,7 @@ class ViewableForm(Viewable, Form):
                  enctype=None,
                  fields=None,
                  validators=None,
-                 processors=[],
+                 processors=None,
                  layout=StackLayout(),
                  **view_attrs):
         
@@ -791,8 +820,10 @@ class ViewableForm(Viewable, Form):
 
     def _set_fieldLayout(self, newLayout):
         """\
-        Means for manipulating the layout of the fields of a form without reinitializing the set of fields.
-        Expects a possibly nested list of field name against which the current layout object will construct a view.
+        Means for manipulating the layout of the fields of a form
+        without reinitializing the set of fields.  Expects a possibly
+        nested list of field name against which the current layout
+        object will construct a view.
         """
         self._fieldLayout=newLayout
 
@@ -801,8 +832,10 @@ class ViewableForm(Viewable, Form):
 
     def _flattenFields(self, fields):
         """\
-        Ensures that the given list of fields is flattened into a one-dimensional list as required by Form superclass
-        also flattens the fields used for generating a layout into a listing of field names which mimics any nesting in the
+        Ensures that the given list of fields is flattened into a
+        one-dimensional list as required by Form superclass also
+        flattens the fields used for generating a layout into a
+        listing of field names which mimics any nesting in the
         original, unflattened field list
 
         returns
@@ -868,13 +901,21 @@ class ViewableCompositeField(Viewable, CompositeField):
                  default=None,
                  multiple=1,
                  setable=1,
-                 componentFields=[],
+                 componentFields=None,
                  componentFieldDelimiter='_',
                  valueComposer=_defaultValueComposer,
-                 layout=StackLayout()):
-        CompositeField.__init__(self, name, description, default, multiple, setable, componentFields, componentFieldDelimiter,\
+                 layout=None):
+        CompositeField.__init__(self,
+                                name,
+                                description,
+                                default,
+                                multiple,
+                                setable,
+                                componentFields,
+                                componentFieldDelimiter,
                                 valueComposer)
-        self.layout = layout
+
+        self.layout=layout or StackLayout()
 
     def getView(self):
         return self.layout.layoutFields(self.components)
