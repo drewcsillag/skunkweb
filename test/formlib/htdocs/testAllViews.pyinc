@@ -40,26 +40,42 @@ selFld = SelectField('select',
                       ('Sublist of tuples', [('One','1'),('Two','2'),('Three','3')])
                      ],
                      'Required SelectField',
-                     default='Required SelectField',
+                     default=['3', 'default'],
                      required=1,
                      multiple=1)
 
 checkboxGrpFld = ButtonGroupField('checkboxgroup', 
-                                  ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
-                                  'Required ButtonGroupField as Checkbox', 'default', required=1, multiple=1)  
+                                  ['singlestring',
+                                   ('default', 'Default'),
+                                   ('1', '1'), ('2', '2'),
+                                   'singlestring2'], 
+                                  'Required ButtonGroupField as Checkbox',
+                                  'default',
+                                  required=1,
+                                  multiple=1)  
 
 radioGrpFld = ButtonGroupField('radiogroup', 
-                               ['singlestring', ('default', 'Default'), ('1', '1'), ('2', '2'), 'singlestring2'], 
-                               'ButtonGroupField as Radio', 'default', multiple=0)
+                               ['singlestring',
+                                ('default', 'Default'),
+                                ('1', '1'), ('2', '2'),
+                                'singlestring2'], 
+                               'ButtonGroupField as Radio',
+                               'default',
+                               multiple=0)
 
 sbmtFld = SubmitField("submit", description="SubmitField")
  
-fields = [psswdFld, txtFld, btnIptFld, fileFld, hdnFld, imgFld, btnFld, txtAreaFld, selFld, checkboxGrpFld, radioGrpFld, sbmtFld]
+fields = [psswdFld, txtFld, btnIptFld, fileFld, hdnFld,
+          imgFld, btnFld, txtAreaFld, selFld, checkboxGrpFld,
+          radioGrpFld, sbmtFld]
 
 def validate(form):
     pass
 
-form = ViewableForm(name="testAllViews", method="POST", fields=fields, validators=[validate])
+form = ViewableForm(name="testAllViews",
+                    method="POST",
+                    fields=fields,
+                    validators=[validate])
 
 import ecs
 if CONNECTION.method == "POST":

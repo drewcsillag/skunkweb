@@ -1,8 +1,19 @@
+2002-11-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* test/formlib/htdocs/testDispatch1.html: first dispatcher test.
+
+	* test/formlib/htdocs/testAllViews.pyinc: cosmetic changes.
+	
+	* pylibs/formlib/dispatcher.py, pylibs/formlib/state.py: various
+	bugfixes.
+	
+	* pylibs/formlib/__init__.py: import all from everything.
+
 2002-11-25  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/formlib/views.py: wrapped some long lines.
 
-2002-11-25    <smulloni@smullbola.smullyan.org>
+2002-11-25  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/views.py (ViewableForm.handleError): made it
 	work with FormError lists.
@@ -56,12 +67,12 @@
 	* testAllViews.pyinc (fields): Removing setting of value in view
 	attributes
 
-2002-11-23    <smulloni@smullbola.smullyan.org>
+2002-11-23  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/form.py (FormDispatcher.dispatch): first stab at a
 	dispatcher, based on Drew's code but fitting in with the new model.
 
-2002-11-22    <smulloni@smullbola.smullyan.org>
+2002-11-22  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/form.py (Form.submit): added a process hook; now
 	the form can actually do something besides validate itself!
@@ -88,7 +99,7 @@
 	* test/formlib/htdocs/testAllViews.html added test for all viewable components
 	* test/formlib/htdocs/testAllViews.pyinc added test for all viewable components
 
-2002-11-21    <smulloni@smullbola.smullyan.org>
+2002-11-21  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/form.py (_getname): change to make the form
 	pickleable. 
@@ -102,7 +113,7 @@
 	__getstate__ and __setstate__ methods (since I'm using
 	__slots__). 
 
-2002-11-20    <smulloni@smullbola.smullyan.org>
+2002-11-20  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/state.py: made stateEncoder => stateEncryptor.
 
@@ -120,7 +131,7 @@
 	PyCrypto.Cipher.AES that means you don't have to worry about the
 	block-size or the length of what you want to encode.
 	
-2002-11-19    <smulloni@smullbola.smullyan.org>
+2002-11-19  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/state.py: some cleanup; not ready yet.
 
@@ -130,7 +141,7 @@
 	part of the form's state.  (Form.submit): to submit a form, you
 	now call "submit(data)"; it resets and validates for you.
 
-2002-11-18    <smulloni@smullbola.smullyan.org>
+2002-11-18  Jacob Smullyan <smulloni@smullyan.org>
 
 	* test/formlib/htdocs/test2.html: second simple test created and
 	passed (simple select field and button group).
@@ -160,12 +171,12 @@
 	point where it is possible to test it with simple forms.  Added
 	description field to all fields.
 
-2002-11-14    <smulloni@smullbola.smullyan.org>
+2002-11-14  Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/formlib/form.py: the field classes are now somewhat
 	reasonable; Form isn't there yet.
 
-2002-11-13    <smulloni@smullbola.smullyan.org>
+2002-11-13  Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (HTTPConnection.extract_args):
 	now use argextract.
@@ -182,7 +193,7 @@
 	* pylibs/containers/fieldcontainer.py: adding a hybrid list/dict
 	container that I needed for formlib.
 
-2002-11-12    <smulloni@smullbola.smullyan.org>
+2002-11-12  Jacob Smullyan <smulloni@smullyan.org>
 
 	* docs/tutorial/src: (many files) various changes, still very rough
 	and incomplete.
@@ -190,7 +201,7 @@
 	* pylibs/argextract.py: Since this code looks like it might get used
 	outside of CONNECTION, I'm moving it to its own module.
 
-2002-11-10    <smulloni@smullbola.smullyan.org>
+2002-11-10  Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/rewrite.py: Moved rewrite hook by default to
 	HaveConnection, which occurs before scoping takes place. Added
@@ -214,7 +225,7 @@
 	* pylibs/ecs/xhtml.py (EMPTY_ELEMENTS): For some reason, I had "i"
 	here where I clearly had begun to type "input".  Oops.
 
-2002-11-07    <smulloni@smullbola.smullyan.org>
+2002-11-07  Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.logout): fix
 	to prevent two cookies from being created with the same name and
@@ -222,7 +233,7 @@
 
 	* docs/tutoria/src/htdocs/: (various files) more files added.
 
-2002-11-05  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-11-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* docs/tutorial/src/htdocs/: (various files) user registration for
 	hoptime now works.
@@ -233,7 +244,7 @@
 	implementation, as the standard one made a multiple ftp requests
 	for every file, which wasn't a good thing.
 
-2002-11-01    <smulloni@smullbola.smullyan.org>
+2002-11-01  Jacob Smullyan <smulloni@smullyan.org>
 
 	* docs/tutorial/src/: (various files) some progress on 'hoptime'
 	demo application.
@@ -262,7 +273,7 @@
 
 	* pylibs/static.py: made to work with Python 2.2.2.
 
-2002-10-22  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-10-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: fixes to metaclass.  Doesn't work well
 	anyway, on my installation; for me, ftplib segfaults, which is
@@ -279,7 +290,7 @@
 	(FtpFS.__init__): changed default port to ftplib.FTP_PORT rather
 	than 0.
 	
-2002-10-08 Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-10-08 Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/auth/__init__.py (CookieAuthBase.login): added
 	REMOTE_USER and REMOTE_PASSWORD to CONNECTION.env more consistently.
@@ -300,7 +311,7 @@
 	reading all there was to be read off the aecgi socket; use of the
 	SocketScience module fixed that.
 
-2002-10-04  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-10-04  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/ftpfs.py: a vfs.FS implementation for FTP.
 	For Python 2.2, provides some error recovery in case of timeouts.
@@ -325,13 +336,13 @@
 	SkunkWeb/SkunkWeb/ConfigAdditives.py (ServerPort): support for
 	scoping based on the SERVER_PORT environmental variable.
 
-2002-09-30  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-09-30  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): module was broken,
 	at least with postgresql 7.2.2, when the timestamp returned contained
 	milliseconds but no timezone.
 	
-2002-09-29  Jacob Smullyan  <smulloni@smullbola.smullyan.org>
+2002-09-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/xmlrpchandler.py: helper module for writing XMLRPC servers. 
 

@@ -1,0 +1,34 @@
+from formlib import *
+import rotor
+
+stateVar='_state'
+form1=ViewableForm('form1',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('username', 'Username'),
+                           PasswordField('password', 'Password'),
+                           IntegerField('age', 'Age'),
+                           SubmitField('submit', default="submit")])
+form2=ViewableForm('form2',
+                   method='POST',
+                   fields=[HiddenField(stateVar),
+                           TextField('yomama', 'Yo Mama'),
+                           SelectField('fruit',
+                                       description='Fruit',
+                                       options=['orange',
+                                                'kunquat',
+                                                'banana'])])
+statemgr=InPageStateManager('google-google GaiPan',
+                            rotor.newrotor('my artichoke', 12))
+dispatcher=FormDispatcher(statemgr,
+                          [form1, form2],
+                          stateVariable=stateVar)
+
+curform=dispatcher.dispatch(CONNECTION.args, globals())
+if curform:
+    print
+    print curform.getView()
+    print
+else:
+    print '<h2>congratulations, you are done.</h2>'
+    # print out the submitted data here TBD

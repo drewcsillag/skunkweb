@@ -19,14 +19,13 @@ class InPageStateManager:
     """
     def __init__(self,
                  nonce,
-                 stateEncryptor=None,
-                 stateVariable='_state'):
+                 stateEncryptor=None):
         self.stack = FieldContainer(fieldmapper=_getname,
                                     storelists=0)
         self.state = {}
+        self.nonce=nonce
         self.formname=None
         self.encryptor = stateEncryptor
-        self.stateVariable = stateVariable
 
     def write(self):
         s = cPickle.dumps((self.formname, self.stack, self.state), 1)
@@ -46,13 +45,6 @@ class InPageStateManager:
             pick = self.encryptor.decrypt(pick)
         (self.formname, self.stack, self.state) = cPickle.loads(pick)
 
-    def set_state(self, cgiarguments):
-        try:
-            statestr = cgiarguments[self.stateVariable]
-        except KeyError:  # no state to get
-            return
-        self.read(statestr)
-        
     def push_form(self, form):
         self.stack.append(form)
 

@@ -1,6 +1,8 @@
-# Time-stamp: <02/11/25 12:59:11 smulloni>
-# $Id: dispatcher.py,v 1.4 2002/11/25 18:13:49 smulloni Exp $
+# Time-stamp: <02/11/25 19:10:19 smulloni>
+# $Id: dispatcher.py,v 1.5 2002/11/25 18:18:48 smulloni Exp $
 
+from containers.fieldcontainer import FieldContainer
+from form import _getname
 
 class Goto:
     def __init__(self, formname):
@@ -45,8 +47,8 @@ class Push:
                  ns):
         if self.valid:
             form.submit(argdict)
-                if form.errors:
-                    return form
+            if form.errors:
+                return form
         state.push_form(form)
         return formdict[self.formname]
 
@@ -68,25 +70,25 @@ class FormDispatcher:
 
     def dispatch(self, argdict, ns):
         # extract the state
-        self.statemgr.set_state(argdict)
+        statestr=argdict.get(self.stateVariable)
+        if statestr:
+            self.statemgr.read(statestr)
         # identify the form being submitted.
         if self.statemgr.formname:
             form=self.forms[self.statemgr.formname]
+            # get the next action.
+            action=self.flowmgr.next(form, argdict, ns)
+            # get the next form, if any
+            form=action.dispatch(form,
+                                 self.statemgr,
+                                 argdict,
+                                 self.forms,
+                                 ns)
             
         # if there isn't one, return the start form.
         else:
             form=self.flowmgr.getStartForm()
             form.reset()
-            return form
-        # get the next action.
-        action=self.flowmgr.next(form, argdict, ns)
-
-        # get the next form, if any
-        form=action.dispatch(form,
-                             self.statemgr,
-                             argdict,
-                             self.forms,
-                             ns)
         if form:
             # update the state with the new form name
             self.statemgr.formname=form.name
@@ -104,5 +106,5 @@ class LinearFlowManager(object):
     def next(self, form, argdict, ns):
         ind=self.formlist.index(form) + 1
         if ind < len(self.formlist):
-            return Goto(self.formlist[ind])
+            return Goto(self.formlist[ind].name)
         return Goto(None) # end
