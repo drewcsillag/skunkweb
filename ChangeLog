@@ -1,0 +1,6 @@
+2001-08-08  Drew Csillag  <drew@naxos.starmedia.net>
+
+	* configure, configure.in: no longer "require" GNU make since we
+	don't actually use any GNU specific features (afaik).
+
+
