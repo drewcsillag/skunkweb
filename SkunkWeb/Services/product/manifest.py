@@ -1,5 +1,5 @@
-# $Id$
-# Time-stamp: <02/02/19 23:01:56 smulloni>
+# $Id: manifest.py,v 1.1 2002/02/20 04:54:14 smulloni Exp $
+# Time-stamp: <02/02/23 02:05:51 smulloni>
 
 ########################################################################
 #  
@@ -47,13 +47,15 @@ def _checkData(manifestData):
     _assert(manifestData.has_key('version'), "no version specified")
     # more checks here ?? TBD
 
-def write_manifest(file, overwrite=0, **kwargs):
-    _checkData(kwargs)
+def write_manifest(file, data, overwrite=0, comments=()):
+    _checkData(data)
     if os.path.exists(file) and not overwrite:
         raise ManifestException, "will not overwrite existing manifest at %s" % file
     f=open(file, 'w')
-    f.write('# this is an automatically generated file\n\n')
-    for k, v in kwargs.items():
+    if comments:
+        for c in comments:
+            f.write('# %s\n' % c)
+    for k, v in data.items():
         f.write('%s = %s\n' % (k, repr(v)))
     f.write("# this SkunkWeb product manifest generated on %s\n" % time.asctime())
     f.close()
@@ -77,7 +79,7 @@ def generate_manifest(productdir,
         d['services']=services
     if dependencies!=None:
         d['dependencies']=dependencies
-    write_manifest(manifestpath, **d)
+    write_manifest(manifestpath, d)
     
     
 __all__=['read_manifest',

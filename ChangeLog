@@ -1,3 +1,11 @@
+2002-02-23  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/product/manifest.py (write_manifest): some api 
+	modifications for productmaker.py.
+
+	* SkunkWeb/Services/product/productmaker.py: so far, just a function that 
+	builds a product archive; script and wizard still incomplete.
+
 2002-02-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/loader.py (ProductMountPoint): 

@@ -1,5 +1,5 @@
-#   Time-stamp: <02/02/22 15:51:06 smulloni> 
-#   $Id: TODO,v 1.35 2002/02/14 06:13:14 smulloni Exp $
+#   Time-stamp: <02/02/22 20:33:22 smulloni> 
+#   $Id: TODO,v 1.36 2002/02/22 20:56:07 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -62,11 +62,12 @@ X vfs: make mounts show up in directory listings for MultiFS;
   make archive fses in which archives contain only a fragment of 
   a filesystem still work
 X fix so everything (including PyDO) works with Python 2.2
-
+X product service and product packaging utility
+X import hook so we can import modules from the VFS (necessary for products).
 
 SkunkWeb 3.3
 ------------------------------
-* product service and product packaging utility
+
 * testing framework built using product service (so client scripts 
   can know the location of server-side components they call)
 * DAV support built on httpd
@@ -85,7 +86,6 @@ SkunkWeb 3.3
   works with scoping (perhaps a Rewrite directive for sw.conf?)
 * ZODB FS implementation.
 * sessionHandler's FSSessionStore rewritten to use VFS.
-* import hook so we can import modules from the VFS (necessary for products).
 * an authorization service that supports cookie, basic, digest,
   and pluggable authorization stores.
 ? image handling service, built on basis of mime-type-specific handlers
