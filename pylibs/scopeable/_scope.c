@@ -1,6 +1,6 @@
 /* 
- * $Id$ 
- * Time-stamp: <01/09/03 19:04:42 smulloni>
+ * $Id: _scope.c,v 1.1 2001/09/03 23:08:32 smulloni Exp $ 
+ * Time-stamp: <01/09/04 00:04:00 smulloni>
  */
 
 /***********************************************************************
@@ -264,7 +264,6 @@ static PyObject *Scopeable__getattr__(PyObject *self, PyObject *args) {
       PyTuple_SetItem(newargs, 0, realSelf);
       PyObject *mashed=Scopeable_mash(self, newargs);
       PyObject *keys=PyMapping_Keys(mashed);
-      Py_DECREF(newargs);
       Py_DECREF(mashed);
       val=keys;
     } else {
@@ -547,5 +546,9 @@ void init_scope() {
 }
 
 /************************************************************************
- * $Log$
+ * $Log: _scope.c,v $
+ * Revision 1.1  2001/09/03 23:08:32  smulloni
+ * first draft of c version of scopeable object; raw, leaks like hog, if hogs
+ * leak.
+ *
  ************************************************************************/
