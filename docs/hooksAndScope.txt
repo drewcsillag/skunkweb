@@ -1,4 +1,4 @@
-# Time-stamp: <01/10/05 04:18:33 smulloni>
+# Time-stamp: <01/10/05 04:38:12 smulloni>
 # notes about hooks, to be added somewhere in devel docs -- js 
 
 SkunkWeb's requestHandler architecture is hook-based; a simple hook 
@@ -26,18 +26,19 @@ a job name, available globally as SkunkWeb.Configuration.job, and some hooks
 functions on the basis of that variable's value.  (Some hooks appropriately 
 do not use this feature; they are instances of SkunkWeb.Hooks.Hook.) 
 Functions added to keyed hooks are associated with a string which the hook, 
-when called,  glob-matches against the job passing through to test whether 
-the function is applicable and should be executed.  The functions are still 
-listed and executed in one linear order, but any functions whose glob does 
-not match the job name are skipped, thereby achieving a dynamic and 
-unformalized polymorphism.  The job string, by potentially matching many
+when called, glob-matches against the job passing through to test whether 
+the function is applicable and should be executed, thereby achieving a 
+dynamic and unformalized polymorphism.  The functions are still 
+stored in a list, and the subset of functions which pass the glob test are 
+executed in list order. The job string, by potentially matching many
 function globs, behaves rather like a list of superclasses in an OO framework,
 but with no restrictions on their combination other than those implicit in
 the way the globs have been devised. 
 
-This takes care of the problem of how to coordinate different behaviors for
-different kinds of jobs, but doesn't address how and when the job name value 
-is set....
+Unlike most SkunkWeb.Configuration variables, no default value is set for 
+Configuration.job by the service (requestHandler) that introduces it, but
+requestHandler will fail to process a request if it finds that it is not 
+set.
 
 # continue with discussion about scoping, with reference to how
 # it affects job processing and other configuration issues, and its 
