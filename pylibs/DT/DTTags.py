@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTTags.py,v 1.5 2001/09/21 20:16:31 drew_csillag Exp $
+# $Id: DTTags.py,v 1.6 2001/09/21 21:07:14 drew_csillag Exp $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 
@@ -96,7 +96,16 @@ class DTTag:
 
     def genCode(self, indent, codeout, tagreg, thing):
         """
-        I need to know what these parameters are!
+        indent is indentation level to be passed to codeout.write
+        codeout is where we send the source code to
+        tagreg is the tag registry
+        thing is one of a string, a DTParser.Node, or a tag instance
+
+        ****************************************
+        NOTE! if this is a block tag (i.e. isempty = 0), genCode gets
+        one more argument named meta which is the meta info about the
+        document (currently only used for AE's <:compargs:> tag
+        ****************************************
         """
         raise NotImplementedError
 
@@ -122,7 +131,7 @@ class ForTag(DTTag):
         """
         DTTag.__init__(self, name, isempty = 0)
         
-    def genCode(self, indent, codeout, tagreg, node):
+    def genCode(self, indent, codeout, tagreg, node, meta):
         tag=node.children[0]
         DTCompilerUtil.tagDebug(indent, codeout, tag)
         pargs=args=DTUtil.tagCall(tag, ['expr', ('name','"sequence_item"')])
@@ -142,7 +151,7 @@ class ForTag(DTTag):
                 and i.tagname == 'else'):
                 break
             else:
-                DTCompilerUtil.genCodeChild(indent+8, codeout, tagreg, i)
+                DTCompilerUtil.genCodeChild(indent+8, codeout, tagreg, i, meta)
         codeout.write(indent, 'else:')
         codeout.write(indent+4, 'pass')
         #do else clause
@@ -153,7 +162,7 @@ class ForTag(DTTag):
                 and i.tagname == 'else'):
                 on=1
             elif on:
-                DTCompilerUtil.genCodeChild(indent+4, codeout, tagreg, i)
+                DTCompilerUtil.genCodeChild(indent+4, codeout, tagreg, i, meta)
         codeout.write(indent, 'del %s' % exprval)
         
 class ValTag(DTTag):
@@ -276,7 +285,7 @@ class IfTag(DTTag):
     def __init__(self):
         DTTag.__init__(self, 'if', isempty = 0)
 
-    def genCode(self, indent, codeout, tagreg, node):
+    def genCode(self, indent, codeout, tagreg, node, meta):
         iftag = node.children[0]
         DTCompilerUtil.tagDebug(indent, codeout, iftag)
         args = DTUtil.tagCall(iftag, ['expr'])
@@ -287,7 +296,8 @@ class IfTag(DTTag):
             #if not an else or elif tag and on is true, render the child
             if (type(i) != InstanceType or i.__class__ != DTLexer.DTToken
                 or i.tagname not in ('else', 'elif')):
-                DTCompilerUtil.genCodeChild ( indent + 4, codeout, tagreg, i)
+                DTCompilerUtil.genCodeChild ( indent + 4, codeout, tagreg, i,
+                                              meta )
             else:
                 if i.tagname == 'elif':
                     #
@@ -360,7 +370,7 @@ class WhileTag(DTTag):
     def __init__(self):
         DTTag.__init__(self, 'while', isempty = 0)
 
-    def genCode(self, indent, codeout, tagreg, node):
+    def genCode(self, indent, codeout, tagreg, node, meta):
         whiletag = node.children[0]
         DTCompilerUtil.tagDebug(indent, codeout, whiletag)
         args = DTUtil.tagCall(whiletag, ['expr'])
@@ -369,7 +379,7 @@ class WhileTag(DTTag):
         codeout.write ( indent, 'while (%s):' % args['expr'])
         for i in node.children[1:-1]:
             # Just generate the code
-            DTCompilerUtil.genCodeChild ( indent + 4, codeout, tagreg, i)
+            DTCompilerUtil.genCodeChild ( indent + 4, codeout, tagreg, i, meta)
 
         # That's it
         
@@ -467,7 +477,7 @@ class TryTag(DTTag):
     def __init__(self):
         DTTag.__init__ ( self, 'try', isempty = 0 )
 
-    def genCode(self, indent, codeout, tagreg, node):
+    def genCode(self, indent, codeout, tagreg, node, meta):
         tag=node.children[0]
 
         # Do the debug
@@ -507,7 +517,8 @@ class TryTag(DTTag):
                                         '__d.FLINENO=__d.CURRENT_LINENO')
                         DTCompilerUtil.tagDebug ( indent + 4, codeout, i)
                 else:
-                    DTCompilerUtil.genCodeChild(indent + 4, codeout, tagreg, i)
+                    DTCompilerUtil.genCodeChild(indent + 4, codeout, tagreg, i,
+                                                meta)
             codeout.write( indent+4, '__d.CURRENT_TAG=__d.FTAG')
             codeout.write( indent+4, '__d.CURRENT_LINENO=__d.FLINENO')
             codeout.write( indent+4, 'del __d.FTAG, __d.FLINENO')
@@ -562,7 +573,8 @@ class TryTag(DTTag):
 
                     waselse = 1
             else:
-                DTCompilerUtil.genCodeChild(indent + 4, codeout, tagreg, i)
+                DTCompilerUtil.genCodeChild(indent + 4, codeout, tagreg, i,
+                                            meta)
 
         if not wasexcept:
             raise DTExcept.DTCompileError ( tag, '<:try:> without <:except:>' )
@@ -607,7 +619,7 @@ class SpoolTag(DTTag):
     def __init__(self):
         DTTag.__init__(self, 'spool', isempty = 0)
 
-    def genCode ( self, indent, codeout, tagreg, node ):
+    def genCode ( self, indent, codeout, tagreg, node, meta):
         tag = node.children[0]
         DTCompilerUtil.tagDebug(indent, codeout, tag)
         pargs = args = DTUtil.tagCall(tag, ['name'])
@@ -619,7 +631,7 @@ class SpoolTag(DTTag):
         codeout.write(indent, '%s = __h.OUTPUT' % oldout)
         codeout.write(indent, '__h.OUTPUT=__h.NEWOUTPUT()')
         for i in node.children[1:-1]:
-            DTCompilerUtil.genCodeChild(indent, codeout, tagreg, i)
+            DTCompilerUtil.genCodeChild(indent, codeout, tagreg, i, meta)
         codeout.write(indent, '%s = __h.OUTPUT.getvalue()' % name)
         codeout.write(indent, '__h.OUTPUT = %s' % oldout)
         codeout.write(indent, 'del %s' % oldout)
@@ -680,6 +692,11 @@ class DocTag ( GenericCommentTag ):
 
 ########################################################################
 # $Log: DTTags.py,v $
+# Revision 1.6  2001/09/21 21:07:14  drew_csillag
+# now made
+# it so that if you have a multi-line <:call:> tag, you don't have
+# to have the ':> on it's own line for it to work.
+#
 # Revision 1.5  2001/09/21 20:16:31  drew_csillag
 # added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
 #
