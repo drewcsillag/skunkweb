@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.1 2002/04/29 21:09:48 drew_csillag Exp $
-# Time-stamp: <2002-04-29 22:12:24 drew>
+# $Id: __init__.py,v 1.2 2002/04/30 02:59:16 drew_csillag Exp $
+# Time-stamp: <02/05/14 13:24:21 smulloni>
 ########################################################################
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -309,8 +309,8 @@ class PlainCookieAuth(CookieAuthBase, AuthFileBase, RespAuthBase):
         RespAuthBase.__init__(self, loginPage)
 
 class PlainSessionAuth(SessionAuthBase, AuthFileBase, RespAuthBase):
-    def __init__(self, usernameSlot, passwordSlot, authFile, loginPage):
-        SessionAuthBase.__init__(self, usernameSlot, passwordSlot)
+    def __init__(self, usernameSlot, authFile, loginPage):
+        SessionAuthBase.__init__(self, usernameSlot)
         AuthFileBase.__init__(self, authFile)
         RespAuthBase.__init__(self, loginPage)
         
@@ -345,7 +345,7 @@ def _getClass(fqcn): # fully qualified class name: package.module.fooClass
             module=__import__(modName, globals(), locals(), [className])
             return vars(module)[className]
         except (ImportError, AttributeError):
-            ERROR("sessionHandler cannot load: unable to import %s!!!!" % fqcn)
+            ERROR("auth cannot load: unable to import %s!!!!" % fqcn)
             raise
     else:
         raise ValueError, "impossible to import: %s" % fqcn
@@ -359,6 +359,15 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2002/04/30 02:59:16  drew_csillag
+# added more documentation in
+# 	the comment describing authorizer objects as well as did a few
+# 	grammar/spelling/capitalization fixes.
+#
+# 	The SessionAuthBase also no longer stores the password in the
+# 	session.  That was pretty stupid.  If somebody actually wants that,
+# 	they can do it themselves.
+#
 # Revision 1.1  2002/04/29 21:09:48  drew_csillag
 # added
 #

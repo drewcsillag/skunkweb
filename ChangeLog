@@ -1,3 +1,8 @@
+2002-05-14  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* SkunkWeb/Services/auth/__init__.py (PlainSessionAuth.__init__):
+	removed reference to passwordSlot, which is outdated.
+
 2002-05-10  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* SkunkWeb/Services/rewrite.py (Status404): added a
