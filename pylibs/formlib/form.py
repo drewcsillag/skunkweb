@@ -19,9 +19,10 @@
 from containers import FieldContainer
 from hooks import Hook
 
-__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError']
+__all__=['UNDEF', 'Field', 'DomainField', 'Form', 'FormError', 'CompositeField']
 
 UNDEF=object()
+
 
 class Field(object):
     def __init__(self,
@@ -39,7 +40,7 @@ class Field(object):
         else:
             self._set_default(default)
         self.clearValue()
-
+ 
     def _get_default(self):
         return self._default
 
@@ -83,6 +84,43 @@ class Field(object):
         Override to return a list of FormErrors
         """
         pass
+
+
+class CompositeField(Field):
+    "Represents a composite group of fields which are logically grouped beneath a single name"
+    def __init__(self, 
+                 name,
+                 description,
+                 default=None,
+                 multiple=1,
+                 setable=1,
+                 componentFields=[]):
+        Field.__init__(self, name, description, default, multiple, setable)
+        self._components = FieldContainer(componentFields, self._getComponentName, storelists=0)
+        
+
+    def _get_components(self):
+        return self._components
+
+    components=property(_get_components)
+
+    def _getComponentName(self, x):
+        """
+        Method for generating the keys by which fields are indexed within the composite field
+        """
+        return "%s_%s" % (self.name, x.name)
+
+    def _get_value(self):
+        """
+        The value of a composite field is the ordered concatenation of its field values
+        """
+        retVal = ''
+        for fld in self.components:
+            retVal = retVal + fld.value
+        return retVal
+
+    value=property(_get_value)
+    
 
 
 class DomainField(Field):
@@ -137,6 +175,8 @@ class DomainField(Field):
         if not self.in_domain(value):
             raise ValueError, "value not present in domain: %s" % value
         return value
+
+    
 
 class Form(object):
     def __init__(self,
@@ -224,4 +264,5 @@ class FormError(object):
 
 def _getfield(x):
     return x.field
+
 

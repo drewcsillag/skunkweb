@@ -633,6 +633,11 @@ class ViewableForm(Viewable, Form):
         for idx in range(0, lstLen):
             fnm = list[idx]
             fld = self.fields[fnm]
+
+            if not isinstance(fld, Viewable):
+                # non-viewable fields are not directly displayed
+                return
+            
             if idx == lstLen - 1:
                 # if we are on the last column, add the colspan, else add no colspan
                 self.handleField(fld, tr, table, colspan, fromList=1)
@@ -648,6 +653,10 @@ class ViewableForm(Viewable, Form):
             numErr = self.handleError(errTr, f)
             if numErr:
                 table.addElement(errTr)
+
+        if not isinstance(f, Viewable):
+            # non-viewable fields are not directly displayed
+            return 
             
         if f.description:
             desTd = ecs.Td().addElement(f.description)
@@ -667,6 +676,7 @@ class ViewableForm(Viewable, Form):
                 td.setAttribute('colspan', '2')
             tr.addElement(td)
         tr.addElement('\n')
+        return 
 
 
     def handleError(self, tr, fld):
