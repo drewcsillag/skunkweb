@@ -1,5 +1,5 @@
-# Time-stamp: <02/06/28 15:51:26 smulloni>
-# $Id: scope.py,v 1.5 2001/10/02 02:35:34 smulloni Exp $
+# Time-stamp: <02/07/01 13:09:04 smulloni>
+# $Id: scope.py,v 1.6 2002/06/28 21:09:00 smulloni Exp $
 ########################################################################
 
 #  
@@ -80,6 +80,9 @@ class Scopeable(_scope.Scopeable):
 
     def __str__(self):
         return str(self.mash())
+
+    def pop(self, index):
+        return self.__dictList.pop(index)
                    
 class ScopeMatcher:
     def __init__(self, param, matchObj, overlayDict, children=None):

@@ -1,3 +1,9 @@
+2002-07-01  Jacob Smullyan  <jsmullyan@wnyc.org>
+
+	* pylibs/scopeable/scope.py (Scopeable.pop): added index argument
+	to pop, which is otherwise entirely useless (I can't think why
+	you'd want it remove the last element of the dictlist).
+
 2002-06-30  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/Services/auth/__init__.py (getAuthorizer): made it so
