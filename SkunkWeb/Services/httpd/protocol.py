@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: protocol.py,v 1.6 2002/07/19 16:21:02 smulloni Exp $
+# $Id: protocol.py,v 1.7 2003/02/18 02:57:40 smulloni Exp $
 # Time-stamp: <01/05/04 13:27:08 smulloni>
 ########################################################################
 
@@ -32,6 +32,7 @@ import socket
 ##NEW
 import rfc822
 import cStringIO
+import string
 # the below takes a url and looks for the following nice goodies:
 # path (anything before the following)
 # params (anything after a semicolon and before a question or hash mark)
@@ -219,14 +220,13 @@ class HTTPMethodRequestParser:
             
         # put in conventional values that duplicate info in headers
         for k1, k2 in (('Content-Type', 'CONTENT_TYPE'),
-                       ('Content-Length', 'CONTENT_LENGTH'),
-                       ('Accept', 'HTTP_ACCEPT'),
-                       ('Accept-Encoding', 'HTTP_ACCEPT_ENCODING'),
-                       ('Accept-Language', 'HTTP_ACCEPT_LANGUAGE'),
-                       ('User-Agent', 'HTTP_USER_AGENT'),
-                       ('Cookie', 'HTTP_COOKIE')):
+                       ('Content-Length', 'CONTENT_LENGTH')):
             if headers.has_key(k1):
                 env[k2]=headers[k1]
+
+        for h,v in headers.items():
+            envkey='HTTP_'+string.upper(string.replace(h,'-','_'))
+            env[envkey] = v
         return env
 
 
