@@ -1,5 +1,8 @@
 2002-02-16  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* docs/stmlrefer/stmlrefer.tex (section{\texttt{<:args:>}}): added
+	documentation for CONNECTION.extract_args.
+
 	* pylibs/vfs/importer.py: still very primitive import hook for vfs.
 
 2002-02-15  Jacob Smullyan  <smulloni@smullyan.org>

@@ -539,7 +539,21 @@ that does a lot of work:
 :>
 \end{verbatim}
 
+As of SkunkWeb 3.2, the \texttt{CONNECTION} object has a method,
+\texttt{extract_args}, which can be used for the same purpose whenever
+the texttt{CONNECTION} object is present (e.g., in python top-level
+documents).  \texttt{CONNECTION.extract_args} returns a dictionary of
+extracted values; to achieve the same result as above in pure Python,
+you would do the following:
 
+\begin{verbatim}
+import Date
+d=CONNECTION.extract_args(foo, 
+                          bar=0, 
+                          baz=(int, 5),
+                          dib=(float, 0.0),
+                          gad=(Date.LocalDate, Date.LocalDate()))
+locals().update(d)
 
 \section{\texttt{<:compargs:>}}
 \label{tagcompargs}
