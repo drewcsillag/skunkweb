@@ -166,7 +166,9 @@ def _isDateKind(t):
         'TIMESTAMP', 'INTERVAL', 'DATE', 'TIME', 'ABSTIME', 'RELTIME',
         'TINTERVAL')
 
-def _dateConvertFromDB(d):    
+def _dateConvertFromDB(d):
+    if d==None:
+        return None
     try: return DateTime.strptime(d, '%Y-%m-%d') #just Y/M/D
     except: pass
     
