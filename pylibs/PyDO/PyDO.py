@@ -21,27 +21,6 @@ import types
 from static import *
 import operators
 
-##_oldField=operators.FIELD
-##class FIELD(_oldField):
-##    def __init__(self, fieldname):
-##        _oldField.__init__(self, fieldname)
-##        # look into PyDO object calling this one, if any
-##        frame=sys._getframe(1)
-##        print frame.f_locals
-##        callingSelf=frame.f_locals.get('self')
-##        self.dbtype=None
-##        self.dbi=None
-##        if callingSelf:
-##            print "found calling self: %s" % callingSelf
-##            if hasattr(callingSelf, '__class__'):
-##                callingClass=callingSelf.__class__
-##                print "calling class: %s" % callingClass
-##                self.dbtype=callingClass.fieldDict.get(self.fieldname)
-##                self.dbi=callingClass.getDBI()
-
-##operators.FIELD=FIELD
-##del FIELD
-
 PyDOError = "PyDO.Error"
 
 from PyDBI import *

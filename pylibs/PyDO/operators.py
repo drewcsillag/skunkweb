@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <01/09/11 00:12:05 smulloni>
+# Time-stamp: <02/01/14 01:47:14 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -77,6 +77,9 @@ class FIELD:
     def __str__(self):
         return self.fieldname
 
+    def __repr__(self):
+        return "FIELD(%s)" % self.fieldname
+
 """
 mapping of symbols to operator classes
 """
@@ -93,7 +96,7 @@ def tupleToSQL(optuple):
     if lent<2:
         raise ValueError, "malformed input"
     if lent==2: # monadic
-        return "%s %s" % (optuple[0], _assql(optuple[1:]))
+        return "%s %s" % (optuple[0], _assql(optuple[1]))
     elif lent>2: #dyadic or better
         return (" %s " % optuple[0]).join(map(_assql, optuple[1:]))
 

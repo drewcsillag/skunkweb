@@ -1,3 +1,11 @@
+2002-01-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/operators.py (tupleToSQL): Fixed nasty bug caused by
+	stray colon.
+
+	* pylibs/PyDO/PyDO.py: cleaned up by deleting old useless
+	commented-out code.
+
 2002-01-13  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.__unpackConnectArgs): bug
