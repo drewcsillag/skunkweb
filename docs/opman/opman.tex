@@ -650,7 +650,49 @@ when utilizing this service.  Default is \texttt{'public_html'}.
 
 \section{Remote Components}
 \label{remotecomponents}
-%%%FIXME
+%%%js Tue Nov  6 02:12:38 2001
+It is possible to call SkunkWeb components on other servers, thanks to 
+the \texttt{remote} and \texttt{remote_client} services.  
+
+When the 
+\texttt{remote} service is loaded, the Configuration variable 
+\texttt{RemoteListenPorts} is defined is \texttt{sw.conf}, and 
+Configuration.job is scoped as REMOTE_JOB for the appropriate requests, 
+the server's components are available for remote access over the specified
+port(s).  (By default, \texttt{sw.conf} uses port 9887 and scopes 
+Configuration.job accordingly.)  
+
+The \texttt{remote_client} service makes it possible to access
+remote components on other servers.  When loaded, it installs an alternate
+component handler, which will be invoked if the component location argument 
+to the component call is a ``swrc'' (SkunkWeb Remote Component) url, 
+of the form:
+
+\begin{verbatim}
+swrc://hostname[:port]/path/to/component
+\end{verbatim}
+
+Assuming that localhost is running the remote service on the default port 
+(9887) and that the remote_client service is also loaded, the following 
+two component calls should produce equivalent output:
+
+\begin{verbatim}
+<:datacomp /foo/bar/spam.comp a=`3` b=`4` cache=yes:>
+
+<:datacomp "swrc://localhost/foo/bar/spam.comp" a=`3` b=`4` cache=yes:>
+\end{verbatim}
+
+The remote component handler works with all components whose output is 
+pickleable: regular components, data components, and includes.
+
+These two services have no dependencies on one another in a given installation;
+a database server, for instance, might run a SkunkWeb instance dedicated to 
+serving remote components to a number of SkunkWeb instances that themselves
+serve web pages and do not need to run the remote service.  
+
+The remote protocol is unencrypted and relatively transparent, although not 
+designed for legibility; it is not suited for the transport of privileged data 
+across the internet.  A secure remote protocol is planned for a future release.
 
 
 \section{\texttt{pars}}

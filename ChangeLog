@@ -1,3 +1,8 @@
+2001-11-06  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* docs/opman/opman.tex (section{Remote Components}): some
+	documentation about remote components.
+
 2001-11-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/userdir.py (__initHooks): changed hooks used,
