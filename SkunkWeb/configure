@@ -693,7 +693,7 @@ if test "${with_user+set}" = set; then
 	OWNER=$withval
 else
   
-	OWNER=`python -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"`;
+	OWNER=`$PYTHON -c "import pwd,os; print pwd.getpwuid(os.getuid())[0]"`;
 fi
 
 
@@ -705,7 +705,7 @@ if test "${with_group+set}" = set; then
 	GROUP=$withval
 else
   
-	GROUP=`python -c "import grp,os; print grp.getgrgid(os.getgid())[0]"`;
+	GROUP=`$PYTHON -c "import grp,os; print grp.getgrgid(os.getgid())[0]"`;
 fi
 
 
