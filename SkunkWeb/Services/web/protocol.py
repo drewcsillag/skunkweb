@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py,v 1.20 2003/05/01 20:45:55 drew_csillag Exp $
-# Time-stamp: <2003-05-02 12:13:13 drew>
+# $Id: protocol.py,v 1.21 2003/05/02 17:21:31 drew_csillag Exp $
+# Time-stamp: <2003-05-02 15:06:21 drew>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -33,6 +33,8 @@ try:
     import gzip
 except:
     pass
+import re
+rangere = re.compile(r'bytes=([0-9]*)-([0-9]*)$')
 
 Configuration.mergeDefaults(
     textCompression=0,
@@ -179,6 +181,27 @@ class HTTPConnection:
         if Configuration.generateEtagHeader:
             etagval = base64.encodestring(md5.new(rawOutput).digest())[:-1]
             self.responseHeaders['etag'] = etagval
+
+        rnghdr = self.requestHeaders.get('range')
+        if rnghdr:
+            match = rangere.search(rnghdr)
+            if match:
+                st, en = match.groups()
+                lro = len(rawOutput)
+                if st and en:
+                    rawOutput = rawOutput[int(st):int(en)+1]
+                    rst = int(st)
+                    ren = int(en)
+                elif st:
+                    rawOutput = rawOutput[int(st):]
+                    rst = int(st)
+                    ren = lro - 1
+                else:
+                    rawOutput = rawOutput[-int(en):]
+                    rst = lro - int(en)
+                    ren = lro - 1
+                self.responseHeaders['Content-Range']='bytes %d-%d/%d' % (
+                    rst, ren, lro)
         if not self.responseHeaders.has_key('Content-Length'):
             self.responseHeaders['Content-Length'] = len(rawOutput)
         if self.responseCookie.keys():

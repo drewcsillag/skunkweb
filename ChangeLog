@@ -4,6 +4,9 @@
 
 2003-05-02    <drew@loki.sai-office>
 
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.response): now 
+	supports byte range requests.
+
 	* SkunkWeb/sw.conf.in: added the long unmentioned 
 	mergeQueryStringWithPostData option as well as textCompression
 	and generateEtagHeader.

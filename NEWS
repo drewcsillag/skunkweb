@@ -56,6 +56,7 @@ Changes in 3.4 final
 * generates and checks Last-Modified headers for static content
 * generates ETag headers (generateEtagHeader option)
 * optionally compress text/* mime bodies (textCompression option)
+* now supports HTTP byte range requests
 
 Changes in 3.4b2
 ========================================
