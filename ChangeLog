@@ -8,7 +8,8 @@
 
 	* pylibs/vfs/ftpfs.py: a vfs.FS implementation for FTP.
 	For Python 2.2, provides some error recovery in case of timeouts.
-	
+	(FTPFile.robuster): robuster now even robuster.
+
 2002-10-02  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/postconn.py (_dateConvertFromDB): my earlier fix

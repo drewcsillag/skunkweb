@@ -1,5 +1,5 @@
-# $Id: ftpfs.py,v 1.2 2002/10/03 21:10:52 smulloni Exp $
-# Time-stamp: <02/10/04 14:33:05 smulloni>
+# $Id: ftpfs.py,v 1.3 2002/10/04 19:08:42 smulloni Exp $
+# Time-stamp: <02/10/04 23:29:18 smulloni>
 
 ########################################################################
 #  
@@ -175,6 +175,12 @@ if _have22:
         timeout
         """
         __metaclass__=_robustmeta
+
+        def connect(self, host='', port=0):
+            self.host=host
+            self.port=port
+            ftplib.FTP.connect(host, port)
+        
         def login(self, user='', passwd='', acct=''):
             self.user=user
             self.passwd=passwd
@@ -192,7 +198,10 @@ if _have22:
                                    self.passwd,
                                    self.acct)
                     except (socket.error, IOError):
-                        raise
+                        self.connect(self.host, self.port)
+                        self.login(self.user,
+                                   self.passwd,
+                                   self.acct)
                 return func(*args, **kwargs)
             return robuster
 
@@ -231,15 +240,10 @@ class FtpFS(vfs.FS):
         self._initconn()
 
     def _initconn(self):
-        try:
-            self._conn.login(self._username,
-                             self._password,
-                             self._acct)
-        except:
-            self._conn.connect(self._host, self._port)
-            self._conn.login(self._username,
-                             self._password,
-                             self._acct)
+        self._conn.connect(self._host, self._port)
+        self._conn.login(self._username,
+                         self._password,
+                         self._acct)
         self._conn.set_pasv(self._passive)
 
     def _get_parsed_record(self, path, all=0):
