@@ -138,23 +138,93 @@ CGI program.
        requestHandler
        web
        auth
-       remote_client
+       product 
+       remote\_client
        sessionHandler
 
 \subsection{The \service{requestHandler} Service}
+PreemptiveResponse (responseData) -- respdata will be sent via
+protocol.marshalResponse
+
+from requestHandler/requestHandler.py
+Hook sequences
+
+BeginSession  Just after connection is gotten, scoped for IP,PORT or UNIXPATH (job, sock, sessionDict)
+
+while 1:
+    InitRequest     after the request data has been received (job, reqdata, sessiondict)
+    HandleRequest   called to actually handle the request (job, reqdata, sessiondict)
+    PostRequest     called after response sent (job, reqdata, sessionDict)
+    CleanupRequest  right after PostRequest (job, reqdata, sessionDict)
+
+EndSession called when session ends.
+
+
+
+has DocumentTimeout stuff
+
+requestHandler.requestHandler.addRequestHandler(handler -- should be
+    subclass (or provide the same interface as)
+    requestHandler.protocol.Protocol, ports)
+
+
+requestHandler.protocol.Protocol
+
+\begin{verbatim}
+class Protocol:
+    """
+    abstract class for protocols used in handling request and response
+    """
+
+    def marshalRequest(self, socket, sessionDict):
+        '''
+        should return the marshalled request data
+        '''
+        raise NotImplementedError
+
+    def marshalResponse(self, response, sessionDict):
+        '''
+        should return response data
+        '''
+        raise NotImplementedError
+
+    def marshalException(self, exc_text, sessionDict):
+        '''
+        should return response data appropriate for the current exception.
+        '''
+        raise NotImplementedError
+
+    def keepAliveTimeout(self, sessionDict):
+        '''
+        how long to keep alive a session.  A negative number will terminate the
+        session.
+        '''
+        return -1
+\end{verbatim}
+
+
 \subsection{The \service{web} Service}
+
+from web/protocol.py
+
+--CONNECTION object is constructed from reqHandler.reqdata
+HaveConnection (job, conn, sessionDict)
+--Configuration is scoped
+PreHandleConnection (job, conn, sessionDict)
+HandleConnection (job, conn, session)
+
+has Redirect exception
+
+Contains the CONNECTION definition
+
+\subsection{The \service{auth} Service}
+
 \subsection{The \service{product} Service}
-The \service{product} service allows you to package up a subsection of
-a document root, in addition to python modules, into an archive format
-(e.g. \texttt{.tar.gz}, \texttt{.zip}) and be able to serve it out of
-the archive.
-
-
-a service to support SkunkWeb products, which can be installed as
-archive files (zip, tar, or tgz), or as directories in the SkunkWeb
-product directory.  This service requires that the documentRootFS be a
-MultiFS (at least prior to scoping); the assumption is that MultiFS
-will become the default fs.
+The \service{product} service is a service to support SkunkWeb
+products, which can be installed as archive files (zip, tar, or tgz),
+or as directories in the SkunkWeb product directory.  This service
+requires that the documentRootFS be a MultiFS (at least prior to
+scoping); the assumption is that MultiFS will become the default fs.
 
 The product loader is configured to load by default all product
 archives in the product directory, but can be configured to load any
@@ -183,8 +253,49 @@ Configuration.productPaths mapping.
 This service will also contain a utility for creating products, creating
 the MANIFEST file, byte-compiling the python modules, and creating the
 archive file.
+\subsection{The \service{remote\_client} Service}
+\subsection{The \service{sessionHandler} Service}
+\chapter{Templating Languages}
+\begin{description}
+\item[STML] SkunkWeb Template Markup Language
+\item[PSP] Python Server Pages
+\item[Cheetah] The Cheetah templating system (http://www.cheetahtemplate.org)
+\item[Python] Not really a templating language, but included for
+completeness
+\end{description}
 
+\section{Common to All}
+\texttt{CONNECTION} exists in all of them (in toplevel) in the global
+namespace.  URL (GET and POST) arguments show up in
+\texttt{CONNECTION.args}.  Can import SkunkWeb API modules (might be
+services).  Can be components (regular and data), cacheable, etc.
+Component args show up in global namespace.
 
+\section{PSP Specifics}
+
+Only $<$\% and \%$>$ for now, no $<$\%= \%$>$ pairs ... yet?  No other
+PSP-style tags either.
+
+\section{Cheetah Specifics}
+
+Precompiled Cheetah templates are executed via the normal Python code
+execution path.  Direct support for Cheetah templates without
+compilation (i.e. being able to go to
+http://foo.bar/a_cheetah_doc.tmpl) is nonpresent in SkunkWeb right
+now, but if there is demand, it could, of course, be added.
+
+For Cheetah templates, \texttt{\$var} won't fetch item from global
+namespace by default, so put this at the top of your Cheetah templates
+and you'll be good to go.
+\begin{verbatim}
+#silent self._searchList.append(globals())
+\end{verbatim}
+Caching in Cheetah templates probably doesn't work in SkunkWeb, or if
+it does, is not as effective as SkunkWeb caching because SkunkWeb does
+not use threads.  If SkunkWeb did use threads, then they would be
+equally effective in a single-machine environment.  In a multi-machine
+environment, SkunkWeb caching is more effective because the cache can
+be shared between the machines as it is disk-based.
 
 \chapter{Writing a Service}
    Hooks
@@ -197,15 +308,16 @@ archive file.
    metadata
 
 \chapter{Adding a Templating Type}
-templating compiler (preferably) or interpreter
 
-cached compiled vsn fetcher, or interpreted instantiator
+\begin{enumerate}
+\item templating compiler (preferably) or interpreter
+\item cached compiled vsn fetcher, or interpretable form instantiator
+\item AE Executable
+\item mime.types entries
+\item adding applicable mime types to AE.Executables.executableByTypes, perhaps overriding those for text/html and text/plain
+\item add to interpretMimeTypes somehow
+\end{enumerate}
 
-AE Executable
-mime.types entries
-adding applicable mime types to AE.Executables.executableByTypes, perhaps overriding those for text/html and text/plain
-
-add to interpretMimeTypes somehow
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\chapter{Core Services}
