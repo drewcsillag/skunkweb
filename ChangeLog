@@ -1,3 +1,8 @@
+2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/SendmailTag.py (SendmailTag.genCode): attempting to use
+	the sendmail tag previously produced a NameError, as MailServices was not being accessed
+	through __h in the generated code.
 
 2001-08-14  Jacob Smullyan  <smulloni@smullyan.org>
 
@@ -11,7 +16,7 @@
 
 	* configure.in, configure, docs/opman/opman.tex: no longer require
 	bash since nothing appears to use it.  Also, don't care whose
-	xargs we use -- removed GNU dependancy.  Cleaned up configure.in a
+	xargs we use -- removed GNU dependency.  Cleaned up configure.in a
 	bit (mostly removed a bunch of commented out things).
 
 	* 3.0 Beta 2 recut.

@@ -18,7 +18,7 @@
 """
 For now, just contain the sendmail tag
 """
-# $Id: SendmailTag.py,v 1.3 2001/07/09 20:38:40 drew Exp $
+# $Id: SendmailTag.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
 
 from AE.CommonStuff import *
 import MailServices
@@ -38,12 +38,12 @@ class SendmailTag(DTTag):
 
         # Ok, call the mail function
         codeout.write ( indent, 'if %s:' % args['from_addr'] )
-        codeout.write ( indent+4, 'MailServices.sendmail ( %s, %s, %s, '
+        codeout.write ( indent+4, '__h.MailServices.sendmail ( %s, %s, %s, '
                                   'from_addr = %s )' % ( args['to_addrs'], 
                                   args['subject'], args['msg'], 
                                   args['from_addr'] ) )
         codeout.write ( indent, 'else:' )
-        codeout.write ( indent+4, 'MailServices.sendmail ( %s, %s, %s )' % 
+        codeout.write ( indent+4, '__h.MailServices.sendmail ( %s, %s, %s )' % 
                                 ( args['to_addrs'], args['subject'],
                                   args['msg'], ) )
 
