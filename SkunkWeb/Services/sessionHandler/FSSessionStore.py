@@ -1,5 +1,5 @@
-# Time-stamp: <02/02/05 13:52:42 smulloni>
-# $Id: FSSessionStore.py,v 1.1 2001/08/06 17:16:04 smulloni Exp $
+# Time-stamp: <03/02/08 19:49:54 smulloni>
+# $Id: FSSessionStore.py,v 1.2 2002/02/05 18:58:19 smulloni Exp $
 
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -18,7 +18,7 @@
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
 # $Author: smulloni $
-# $Revision: 1.1 $
+# $Revision: 1.2 $
 ########################################################################
 
 
@@ -28,7 +28,7 @@ import os
 import time
 from SkunkExcept import SkunkStandardError
 from SkunkWeb import Configuration
-from SkunkWeb.LogObj import DEBUG
+from SkunkWeb.LogObj import DEBUG, logException
 from SkunkWeb.ServiceRegistry import SESSIONHANDLER
 from sessionHandler.Session import SessionStore
 
@@ -67,7 +67,11 @@ class FSSessionStoreImpl(SessionStore):
             fd=f.fileno()
             # let reads coexist
             fcntl.flock(fd, fcntl.LOCK_SH)
-            data=cPickle.load(f)
+            try:
+                data=cPickle.load(f)
+            except:
+                logException()
+                data={}
             fcntl.flock(fd, fcntl.LOCK_UN)
             f.close()
             return data
@@ -77,11 +81,13 @@ class FSSessionStoreImpl(SessionStore):
         self._checkReap()
 
     def __setPickle(self, data):
-        # lock and unlock, TBD
         f=open(self.__picklepath, 'w')
         fd=f.fileno()
         fcntl.flock(fd, fcntl.LOCK_EX)
-        cPickle.dump(data, f, 1)
+        try:
+            cPickle.dump(data, f, 1)
+        except:
+            logException()
         fcntl.flock(fd, fcntl.LOCK_UN)
         f.close()
         
@@ -121,6 +127,9 @@ class FSSessionStoreImpl(SessionStore):
 
 ########################################################################
 # $Log: FSSessionStore.py,v $
+# Revision 1.2  2002/02/05 18:58:19  smulloni
+# fixed bug (thanks to Spruce Weber): was referring to "os.join" (ugh)
+#
 # Revision 1.1  2001/08/06 17:16:04  smulloni
 # adding session store that uses pickle files in the local filesystem.
 #

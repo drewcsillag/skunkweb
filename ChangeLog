@@ -1,4 +1,11 @@
-2003-02-08    <smulloni@smullbola.smullyan.org>
+2003-02-08  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/FSSessionStore.py
+	(FSSessionStoreImpl.__setPickle): wrapping calls to the pickler in
+	try/except so the pickle files will be unlocked even in the case
+	of error.
+
+2003-02-08 Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/loader.py (get_product_path): added
 	useful little function.
@@ -10,7 +17,7 @@
 	returned the *call* signature of the underlying Python method, 
 	is retained as system.methodPydoc.
 
-2003-02-07    <smulloni@smullbola.smullyan.org>
+2003-02-07 Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/vfs/rosio.py (RO_StringIO.__iter__): removed xreadlines, since
 	it produces a DeprecationWarning with Python 2.3a1.
@@ -32,13 +39,13 @@
 	* Makefile.in: SW_VERSION is now defined here.
 
 
-2003-02-06  Jacob Smullyan  <smulloni@smullyan.org>
+2003-02-06 Jacob Smullyan <smulloni@smullyan.org>
 
 	* pylibs/PyDO/mysqlconn.py (PyDOMySQL.__unpackConnectArgs): 
 	allow verbosity to be specified in a connectstring.
 	(PyDOMySQL.getAutoIncrement): fix for autoincrement.
 
-2003-02-05  Jacob Smullyan <smulloni@smullyan.org>
+2003-02-05 Jacob Smullyan <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/rewrite.py: made it possible to pass
 	a callable to RewriteCond for string keyword arguments (this was
