@@ -1,3 +1,14 @@
+2002-08-13  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/Services/extcgi.py: now logs the signal number of the
+	signal that caused the CGI program to die, when it dies by signal
+
+	* pylibs/AE/Component.py: added rectifyRelativeName, which is just
+	an alias of _rectifyRelativeName.
+
+	* docs/devel/ae.tex, docs/devel/devel.tex: updates
+	
+
 2002-08-12  Jacob Smullyan  <jsmullyan@wnyc.org>
 
 	* pylibs/PyDO/sqliteconn.py (PyDOSqlite.getAutoIncrement): I
