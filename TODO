@@ -1,5 +1,5 @@
-#   Time-stamp: <02/06/19 10:03:11 smulloni> 
-#   $Id: TODO,v 1.41 2002/06/18 21:02:25 drew_csillag Exp $
+#   Time-stamp: <2002-06-19 10:43:40 acsillag> 
+#   $Id: TODO,v 1.42 2002/06/19 14:03:47 smulloni Exp $
 
 * - TODO
 - - low priority
@@ -98,6 +98,7 @@ Unknowns
 
 Nopes
 ------------------------------
+N precompiled .par files
 N real static doc -- Python in a short-future will have static stuff
 N CookieEncoding stuff
     * Get the _Nonce for CookieEncoding into config, error if not in config
