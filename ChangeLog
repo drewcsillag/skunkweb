@@ -1,3 +1,10 @@
+2002-02-06  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/vfs/vfs.py (PathPropertyStore.acquireWithAncestor): 
+	snazzed up acquisition facility by delegating to this method, which
+	permits one to search just a segment of a treepath, and specify a default
+	or not.
+
 2002-02-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/vfs/pickleProps.py: path property store that uses pickle 
