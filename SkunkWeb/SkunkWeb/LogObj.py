@@ -16,7 +16,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: LogObj.py,v 1.1.1.1 2001/08/05 14:59:37 drew_csillag Exp $
+#$Id: LogObj.py,v 1.2 2002/07/11 22:57:00 smulloni Exp $
 ########################################################################
 
 """
@@ -31,7 +31,6 @@ import traceback
 import cStringIO
 import Logger
 import confvars
-#import mmlib.mmint
 
 class Redirector:
     def __init__(self, func):
@@ -64,18 +63,16 @@ Configuration.mergeDefaults(
     regularLog = confvars.DEFAULT_REGULAR_LOG,
     debugLog =   confvars.DEFAULT_DEBUG_LOG,
     stampEveryLine = 1,
-    initialDebugServices=[]
+    logDateFormat = '%a, %d %b %Y %H:%M:%S GMT',
+    initialDebugServices=[],
+    debugFlags=0
     )
 
 Logger._logStamp = "[%d]initializing... %%s -- " % os.getpid()
 
-# initialize the debugFlags with a memory mapped int
-Logger.debugFlags=0 #mmlib.mmint.MMInt(0)
-
 # enable the logger to print the service name from the debug flag passed
 # to debug statements.
 Logger.getSourceFromKind=ServiceRegistry.getSourceFromKind
-Logger._stampEveryLine=Configuration.stampEveryLine
 Logger.config=Configuration        
 
 Hooks.ServerStart.append(Logger.initLogStamp)
@@ -95,40 +92,5 @@ Hooks.ChildStart.append(Logger.initLogStamp)
                 Logger.ERROR,
                 Logger.ACCESS,
                 Logger.logException)
-
-
-########################################################################
-# $Log: LogObj.py,v $
-# Revision 1.1.1.1  2001/08/05 14:59:37  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.20  2001/08/01 01:43:53  smulloni
-# modified Logger.py so Configuration.debugLog, accessLog, errorLog, and
-# regularLog can be scoped.
-#
-# Revision 1.19  2001/07/28 15:45:16  drew
-# no longer uses shared memory for debug flags
-#
-# Revision 1.18  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.17  2001/04/23 20:17:16  smullyan
-# removed SKUNKWEB_SERVER_VERSION, which I found was redundant; fixed typo in
-# httpd/protocol; renamed "debugServices" configuration variable to
-# "initialDebugServices".
-#
-# Revision 1.16  2001/04/16 17:53:01  smullyan
-# some long lines split; bug in Server.py fixed (reference to deleted
-# Configuration module on reload); logging of multiline messages can now
-# configurably have or not have a log stamp on every line.
-#
-# Revision 1.15  2001/04/10 22:48:30  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#
-########################################################################
-
 
 

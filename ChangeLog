@@ -1,5 +1,11 @@
 2003-04-22  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* SkunkWeb/SkunkWeb/LogObj.py, pylibs/Logger.py: used the config
+	object more, now that accessing it is more affordable.
+
+	* SkunkWeb/Services/mysql/__init__.py (rollback): fixing typo 
+	in the name of this method.
+
 	* SkunkWeb/SkunkWeb/ConfigAdditives.py: remove import of scopeable. 
 
 	* pylibs/setup-pylibs.in: removed scopeable stuff.

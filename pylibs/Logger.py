@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: Logger.py,v 1.3 2002/06/27 21:20:47 drew_csillag Exp $
+# $Id: Logger.py,v 1.4 2002/07/25 17:25:48 drew_csillag Exp $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 
@@ -28,19 +28,15 @@ class _configStub:
         self.errorLog=None
         self.regularLog=None
         self.accessLog=None
+        self._stampEveryLine=1
+        self.logDateFormat='%a, %d %b %Y %H:%M:%S GMT'
+        self.debugFlags=0
 
 # replace this if you want with any other object
-# that has the fields 'debugFile', 'errorFile', 'logFile', and 'accessFile'.
+# that has the fields above
 config=_configStub()
 
-# reset this if you want to log debug statements.
-debugFlags=0
-
 _logStamp="%s"
-
-# whether to append a log stamp to every line of a multiline string, or
-# just to the first line.
-_stampEveryLine=1
 
 # a map of logfile paths and their open file objects
 _logFiles={}
@@ -58,13 +54,14 @@ def getSourceFromKind(kind):
     return None
 
 def _fmtDate():
-    return time.strftime ('%a, %d %b %Y %H:%M:%S GMT' , time.gmtime ( time.time() ))
+    return time.strftime(config.logDateFormat,
+                         time.gmtime(time.time()))
 
 def _stamp(logStamp, msg):
     if _stampEveryLine:
-        return "\n".join([logStamp+x for x in msg.split("\n")]) + "\n"
+        return ["%s%s\n" % (logStamp, x) for x in msg.split("\n")]
     else:
-        return logStamp + msg + "\n"
+        return ('%s%s\n' % (logStamp, msg))
 
 
 def _doMsg(filename, msg, kind=0, prefix=''):
@@ -87,15 +84,16 @@ def _doMsg(filename, msg, kind=0, prefix=''):
                 stamp2= "%s %s " % (stamp, prefix)
             else:
                 stamp2="%s " % stamp
-            file.write(_stamp(stamp2, msg.strip()))
+            for line in _stamp(stamp2, msg.strip()):
+                file.write(line)
             file.flush()
 
 def DEBUGIT(kind):
     #import sys
-    return not not (config.debugLog and (debugFlags & kind))
+    return not not (config.debugLog and (config.debugFlags & kind))
     
 def DEBUG(kind, msg):
-    if debugFlags & kind:
+    if config.debugFlags & kind:
         _doMsg(config.debugLog,
                msg,
                kind,
@@ -143,39 +141,3 @@ def logException():
     else:
         return ''
 
-########################################################################
-# $Log: Logger.py,v $
-# Revision 1.3  2002/06/27 21:20:47  drew_csillag
-# the logger now handles some really bizarre cases that shouldn't ever
-#   happen in reality (but of course have).
-#
-# Revision 1.2  2001/08/27 18:16:30  drew_csillag
-# removed spurious import
-#
-# Revision 1.1.1.1  2001/08/05 15:00:33  drew_csillag
-# take 2 of import
-#
-#
-# Revision 1.5  2001/08/01 01:43:53  smulloni
-# modified Logger.py so Configuration.debugLog, accessLog, errorLog, and
-# regularLog can be scoped.
-#
-# Revision 1.4  2001/07/09 20:38:40  drew
-# added licence comments
-#
-# Revision 1.3  2001/04/16 17:53:02  smullyan
-# some long lines split; bug in Server.py fixed (reference to deleted
-# Configuration module on reload); logging of multiline messages can now
-# configurably have or not have a log stamp on every line.
-#
-# Revision 1.2  2001/04/11 20:47:12  smullyan
-# more modifications to the debugging system to facilitate runtime change of
-# debug settings.  Segfault in mmint.c fixed (due to not incrementing a
-# reference count in the coercion method).
-#
-# Revision 1.1  2001/04/10 22:48:32  smullyan
-# some reorganization of the installation, affecting various
-# makefiles/configure targets; modifications to debug system.
-# There were numerous changes, and this is still quite unstable!
-#
-########################################################################

@@ -1,5 +1,5 @@
-# Time-stamp: <02/01/13 14:54:13 smulloni>
-# $Id: __init__.py,v 1.2 2001/12/03 02:45:05 smulloni Exp $
+# Time-stamp: <03/04/22 22:18:20 smulloni>
+# $Id: __init__.py,v 1.3 2002/01/13 20:12:20 smulloni Exp $
 
 ########################################################################  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
@@ -39,7 +39,7 @@ for u, p in Configuration.MySQLConnectParams.items():
     MySQL.initUser(u, p)
 
 # optional rollback
-def rollbadk(*args):
+def rollback(*args):
     for v in MySQL._connections.values():
         try:
             v.rollback()
@@ -49,11 +49,3 @@ def rollbadk(*args):
 if Configuration.MySQLRollback:
     CleanupRequest.addFunction(rollback)
 
-########################################################################
-# $Log: __init__.py,v $
-# Revision 1.2  2001/12/03 02:45:05  smulloni
-# modified mysql service to use MySQLdb, and merged in
-# connection caching code from the MySQL pylib.  Adjusted
-# sw.conf.in accordingly.
-#
-########################################################################
