@@ -19,7 +19,7 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.4 2002/07/28 01:59:26 drew_csillag Exp $
+#$Id: make_pydo_distr.py,v 1.1 2002/08/09 16:15:15 drew_csillag Exp $
 
 import commands
 import re
@@ -28,7 +28,7 @@ import os
 
 sys.path.append ( '../pylibs' )
 from prompt import *
-
+CVSROOT=open('CVS/Root').read().strip()
 # Ask the questions
 
 vers_q = StringQuestion ( 'Please enter the version for this release' )
@@ -102,7 +102,7 @@ d_file = os.path.join ( _dir, 'PyDO-%s.tgz' % vers)
 #    doc_cmds.append('cd skunkweb-%s/docs/html; make %s/%s.html' % (vers, i, i))
 #    doc_cmds.append('cd skunkweb-%s/docs/paper-letter; make %s.ps %s.pdf %s.dvi' % (vers, i,i,i))
 #
-cmds = (('cvs export -r %s -d PyDO-%s skunkweb/pylibs/PyDO' % (tag, vers)),
+cmds = (('cvs -d %s export -r %s -d PyDO-%s skunkweb/pylibs/PyDO' % (CVSROOT, tag, vers)),
         ('cvs co -p -r %s skunkweb/pylibs/static.py > PyDO-%s/static.py' % (tag, vers)),
         #+ tuple(doc_cmds) +
         'tar czf %s PyDO-%s' % (d_file, vers),
