@@ -33,7 +33,7 @@ def htmlquote(s):
         if i=='&': l.append('&amp;')
         elif i=='<': l.append('&lt;')
         elif i=='>': l.append('&gt;')
-        elif i=='\n': l.append('<BR>')
+        # elif i=='\n': l.append('<BR>')
         elif i=='"': l.append('&quot;')
         else: l.append(i)
     return string.join(l, '')

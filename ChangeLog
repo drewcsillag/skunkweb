@@ -1,5 +1,9 @@
 2003-04-23  Jacob Smullyan  <smulloni@smullyan.org>
 
+	* pylibs/DT/DTUtil.py (htmlquote): removing adding
+	html breaks to replace line breaks; if users (or Drew) cry foul, 
+	will revert this.
+
 	* FAQ: typo fix.
 
 	* pylibs/AE/cfg.py (Config.mergeDefaults): fixed typo
