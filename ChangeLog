@@ -1,3 +1,10 @@
+2001-11-08  Jacob Smullyan  <smulloni@skunk.org>
+
+	* SkunkWeb/mod_skunkweb/modskunkweb_error.html: Removed references 
+	to AED.
+
+	* SkunkWeb/.cvsignore: now even more ignorant.
+
 2001-11-06  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* test/index.html: added some rudimentary tests.
