@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: InitTags.py,v 1.4 2001/07/09 20:38:41 drew Exp $
+#$Id: InitTags.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
 
 import Cache
 import Executables
@@ -26,7 +26,7 @@ import DateTag
 import MsgCatalogTags
 import ComponentTag
 import TypeTag
-
+from SkunkExcept import *
 #init funcs == initTags()  initHiddenNamespace()
 
 def initTags():
