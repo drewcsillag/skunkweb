@@ -17,7 +17,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.6 2002/05/30 14:20:48 drew_csillag Exp $
+ *  $Id: mod_skunkweb.c,v 1.7 2002/06/03 13:51:39 drew_csillag Exp $
  *
  *
  * Configuration:
@@ -566,20 +566,28 @@ static binbuffer *get_stdin(request_rec* r)
     }
 
     length = r->remaining;
-    SK_AP_RERROR2 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+    /* 
+       this was at level APLOG_NOTICE, but it was getting
+       logged even when the LogLevel was warn or error,
+       at least in my installations (both Apache1 and Apache2).
+       Therefore, I'm changing them to APLOG_DEBUG until
+       the problem is understood.  The same applies to the next
+       two log calls.  -- js Fri Jun 21 10:41:51 2002
+    */
+    SK_AP_RERROR2 ( APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		    "SkunkWeb: number remaining %d", length);
     buf = (char *)ap_palloc(r->pool, r->remaining );
 
     /* Tell the client we're ready to receive */
     if ( !ap_should_client_block ( r ) )
     {
-	SK_AP_RERROR1 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+	SK_AP_RERROR1 ( APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 			"SkunkWeb: no client data");
         /* Client doesn't want to send anything */
         return buffer_new ( r, "", 0 );
     }
  
-    SK_AP_RERROR1 ( APLOG_MARK, APLOG_NOTICE|APLOG_NOERRNO, r,
+    SK_AP_RERROR1 ( APLOG_MARK, APLOG_DEBUG|APLOG_NOERRNO, r,
 		    "SkunkWeb: reading client data");
     /* setup the hard timeout */
 #ifdef APACHEV1
