@@ -1,5 +1,5 @@
 # $Id$
-# Time-stamp: <02/06/10 11:44:02 smulloni>
+# Time-stamp: <02/06/10 11:44:57 smulloni>
 
 ########################################################################  
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
@@ -101,7 +101,7 @@ class SET:
         intended, whether you need a data or a time, etc.)
         """
         if type(thing) in (types.StringType, types.UnicodeType):
-            return "'%s'" % string.replace(s, "'", "\\'")
+            return "'%s'" % string.replace(thing, "'", "\\'")
         return str(thing)
     
     def __repr__(self):
