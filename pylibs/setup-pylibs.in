@@ -1,0 +1,34 @@
+# this script uses distutils to build the
+# the extension modules in pylibs.  It is invoked
+# by the Makefile rather than being directly invoked
+# by the user.
+from distutils.core import setup, Extension
+
+setup(name="skunkweb pylibs",
+      version="@SW_VERSION@",
+      description="SkunkWeb Python Libraries",
+      author="Drew Csillag",
+      author_email="drew_csillag@yahoo.com",
+      maintainer="Jacob Smullyan",
+      maintainer_email="smulloni@smullyan.org",
+      url="http://skunkweb.sourceforge.net/",
+      ext_modules=[Extension('AE.cacheKey.cachekey',
+                             ['AE/cacheKey/cachekey.c']),
+                   Extension('signal_plus.signal_plus',
+                             ['signal_plus/signal_plus.c']),
+                   Extension('scopeable._scope',
+                             ['scopeable/_scope.c']),
+                   Extension('skunklib._urllib',
+                             ['skunklib/_urllib.c']),
+                   Extension('skunklib._translate',
+                             ['skunklib/_translate.c']),
+                   Extension('skunklib._normheader',
+                             ['skunklib/_normheader.c']),
+                   Extension('skunklib._normpath',
+                             ['skunklib/_normpath.c']),
+                   Extension('uuid._uuid',
+                             ['uuid/_uuidmodule.c',
+                              'uuid/dav_opaquelock.c',
+                              'uuid/md5c.c'])])
+  
+
