@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Executables.py,v 1.11 2001/08/01 16:53:59 drew Exp $
+#$Id: Executables.py,v 1.1.1.1 2001/08/05 15:00:37 drew_csillag Exp $
 import sys
 import cStringIO
 
@@ -130,8 +130,14 @@ class STMLExecutable:
             return namespace
             
     def run( self ):
-        return self.dt(self.namespace, self.namespace,
-                       _hidden_namespace, self.compType)
+        hns = dummy()
+        hns.OUTPUT = cStringIO.StringIO()
+        sys.stdout = hns.OUTPUT
+        try:
+            return self.dt(self.namespace, self.namespace,
+                           hns, self.compType)
+        finally:
+            sys.stdout = sys.__stdout__
         
 executableByTypes = {
     ("text/x-stml-component",             DT_INCLUDE) : STMLExecutable,

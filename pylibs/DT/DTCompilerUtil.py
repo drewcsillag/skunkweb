@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTCompilerUtil.py,v 1.1.1.1 2001/08/05 15:00:49 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.2 2001/09/21 20:16:31 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 
@@ -162,7 +162,8 @@ def setup_h ( cur_h ):
     Add some variables to our hidden namespace
     """
     cur_h.NEWOUTPUT = StringIO.StringIO
-    cur_h.OUTPUT = cur_h.NEWOUTPUT()
+    if not hasattr(cur_h, 'OUTPUT'):
+        cur_h.OUTPUT = cur_h.NEWOUTPUT()
 
     if not hasattr ( cur_h, 'VALFMTRGY' ):
         cur_h.VALFMTRGY = DTCommon.ValFmtRgy
@@ -194,6 +195,9 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.2  2001/09/21 20:16:31  drew_csillag
+# added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
+#
 # Revision 1.1.1.1  2001/08/05 15:00:49  drew_csillag
 # take 2 of import
 #
