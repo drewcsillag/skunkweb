@@ -1,17 +1,7 @@
-===================
-The SkunkWeb Manual
-===================
-
 -----------------------------------------
 Chapter 1: Setting Up And Using SkunkWeb
 -----------------------------------------
 
-:Author: Brian Olsen, et al.
-:Version: 0.1
-:Status: Draft
-
-.. contents:: Table Of Contents
-.. section-numbering::
 
 
 Introduction
@@ -1203,10 +1193,3 @@ other directories in the cache into the newly created directory. Then
 remove the new directory (which may take a bit of time depending on
 the size of the cache).
 
-..
-   Local Variables:
-   mode: indented-text
-   indent-tabs-mode: nil
-   sentence-end-double-space: t
-   fill-column: 80
-   End:

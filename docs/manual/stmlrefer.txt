@@ -1,19 +1,6 @@
-===================
-The SkunkWeb Manual
-===================
-
 -----------------------------------------
 Chapter : STML Reference
 -----------------------------------------
-
-:Author: Drew Csillag
-:Version: 0.1
-:Status: Draft
-
-.. contents:: Table Of Contents
-.. section-numbering::
-
-
 
 Introduction
 ============

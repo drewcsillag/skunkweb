@@ -1,18 +1,6 @@
-===================
-The SkunkWeb Manual
-===================
-
 -------------------------
 Chapter : Database Access
 -------------------------
-
-:Author: Brian Olsen
-:Version: 0.1
-:Status: Draft
-
-.. contents:: Table Of Contents
-.. section-numbering::
-
 
 
 Introduction

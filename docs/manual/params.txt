@@ -1,17 +1,6 @@
-===================
-The SkunkWeb Manual
-===================
-
 ---------------
 Parameter Index
 ---------------
-
-:Author: Brian Olsen, et al
-:Version: 0.1
-:Status: Draft
-
-.. contents:: Table Of Contents
-.. section-numbering::
 
 
 Introduction
