@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-#$Id: Error.py,v 1.3 2001/07/09 20:38:41 drew Exp $
+#$Id: Error.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
 import cStringIO
 
 import ErrorHandler
@@ -29,7 +29,7 @@ def logException():
     ErrorHandler.logError(out)
     
     errorTags = [frame.executable.dt._error_tag
-                 for frame in Component.componentStack
+                 for frame in Component.componentStack[:Component.topOfComponentStack]
                  if isinstance(frame.executable, Executables.STMLExecutable)
                  if hasattr(frame.executable.dt, '_error_tag')]
     if errorTags:
