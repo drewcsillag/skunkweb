@@ -64,7 +64,7 @@ class PyDOPostgreSQL:
         self.connectArgs = connectArgs
         if self.useCacheMod:
             import PostgreSql
-            PostgreSql.getConnection(connectArgs)
+            self.conn = PostgreSql.getConnection(connectArgs)
         else:
             if host is not None:
                 self.conn = pgdb.connect(connectArgs, host = host)
