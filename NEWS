@@ -11,6 +11,7 @@ Changes in 3.4b4
 * firebird connection cache added.
 * "oneshot" hook functions.
 * overhaul of sessionHandler service.
+* cache reaper now clears all scoped caches by default.
 
 Changes in 3.4b3
 ========================================
