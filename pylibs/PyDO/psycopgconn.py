@@ -49,7 +49,7 @@ class PyDOPostgreSQL:
             hostList = connectArgs[0].split('|')
             host = hostList[0]
             newConnStr = newConnStr + ' host=%s' % host
-            if hostList > 1:
+            if len(hostList) > 1:
                 newConnStr = newConnStr + ' port=%s' % hostList[1]
                 
         #  handle trailing verbose and cache options
@@ -65,25 +65,26 @@ class PyDOPostgreSQL:
             self.useCacheMod =0
         
         #  database name
-        if connectArgs and len(connectArgs > 1 and connectArgs[1]:
+        if connectArgs and len(connectArgs) > 1 and connectArgs[1]:
             newConnStr = newConnStr + ' dbname=%s' % connectArgs[1]
 
         #  user name
-        if connectArgs and len(connectArgs > 2 and connectArgs[2]:
+        if connectArgs and len(connectArgs) > 2 and connectArgs[2]:
             newConnStr = newConnStr + ' user=%s' % connectArgs[2]
 
         #  password
-        if connectArgs and len(connectArgs > 3 and connectArgs[3]:
+        if connectArgs and len(connectArgs) > 3 and connectArgs[3]:
             newConnStr = newConnStr + ' password=%s' % connectArgs[3]
 
         #  remove leading space if any
         if newConnStr[0] == ' ': newConnStr = newConnStr[1:]
         self.connectArgs = newConnStr
 
-        if host is not None:
-            self.conn = PgSQL.connect(connectArgs, host = host)
+        if self.useCacheMod:
+            from PsycopgCache import getConnection
+            self.conn = getConnection(connectArgs)
         else:
-            self.conn = PgSQL.connect(connectArgs)
+            self.conn=psycopg.connect(newConnStr)
         self.bindVariables = 0
         self.autocommit = 0
 
