@@ -1,5 +1,7 @@
 Changes in 3.2.4
 ========================================
+* The userdir service will now function properly when operating with a
+  scoped docroot
 * Now converts non-native line-endings in exprs to the native line
   ending so that when editing templates on non-unix machines,
   expressions will work properly
