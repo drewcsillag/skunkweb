@@ -1,5 +1,5 @@
-# Time-stamp: <01/08/06 13:10:07 smulloni>
-# $Id$
+# Time-stamp: <02/02/05 13:52:42 smulloni>
+# $Id: FSSessionStore.py,v 1.1 2001/08/06 17:16:04 smulloni Exp $
 
 #  Copyright (C) 2001 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -17,8 +17,8 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Author$
-# $Revision$
+# $Author: smulloni $
+# $Revision: 1.1 $
 ########################################################################
 
 
@@ -99,10 +99,10 @@ class FSSessionStoreImpl(SessionStore):
     def reapOldRecords(self):
         # walk through contents of session directory and delete any
         # lapsed files
+        now=time.time()
         for f in os.listdir(_sesspath):
-            p=os.join(_sesspath, f)
+            p=os.path.join(_sesspath, f)
             lastAccess=os.path.getatime(p)
-            now=time.time()
             if now-lastAccess>Configuration.SessionTimeout:
                 os.remove(p)
 
@@ -120,5 +120,8 @@ class FSSessionStoreImpl(SessionStore):
         os.utime(self.__picklepath, (curtime, curtime))
 
 ########################################################################
-# $Log$
+# $Log: FSSessionStore.py,v $
+# Revision 1.1  2001/08/06 17:16:04  smulloni
+# adding session store that uses pickle files in the local filesystem.
+#
 ########################################################################
