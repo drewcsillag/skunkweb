@@ -66,11 +66,12 @@ Additional options if building SkunkWeb:
 Once ``configure'' has completed, simply type ``make; make install''.
 
 
-Building the Documentation
-------------------------------
-In most cases you probably want to grab the docs from the SkunkWeb
-website (http://skunkweb.sourceforge.net/docs.html), but if you want
-to build them yourself, here's how:
+Building the Documentation 
+------------------------------ 
+Now that the documentation is included in the SkunkWeb releases, the
+need to build the documentation really only applies to people who want
+it in A4 dimensions, or are editing the documentation themseleves, but
+if you want to build them yourself, here's how:
 
 If you've ever built the Python documentation from source, SkunkWeb's
 is built pretty much the same way.
@@ -102,5 +103,5 @@ paper you're shooting for.  Then type:
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL,v 1.9 2002/06/07 15:14:31 drew_csillag Exp $
+$Id: INSTALL,v 1.10 2002/07/10 18:51:07 drew_csillag Exp $
 

@@ -1,3 +1,8 @@
+2002-07-27  Andrew Csillag  <drew@localhost.localdomain>
+
+	* util/make_distr.py (doc_cmds): made it so that it builds the
+	documentation before tarring everything up
+
 2002-07-25  Andrew Csillag  <drew@localhost.localdomain>
 
 	* SkunkWeb/sample_webdocs/demo/geeknews/index.html: commented out

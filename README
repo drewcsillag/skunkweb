@@ -23,7 +23,7 @@ README for SkunkWeb
 The installation instructions are in ``INSTALL''.  STML (Skunk
 Template Markup Language) operations and developer (the developer
 manual is currently old and incorrect, don't rely on it just yet)
-manuals are under docs/.
+manuals are under docs/html and docs/paper-letter.
 
 ***Note for those 
 If you have upgraded python from 2.1 to 2.2 you will notice that pickle is
