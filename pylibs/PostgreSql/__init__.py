@@ -17,7 +17,7 @@
 #   
 import string
 import pgdb
-
+from SkunkExcept import SkunkStandardError
 # The connect string dictionary 
 _users = {}
 
