@@ -15,7 +15,7 @@
 #      along with this program; if not, write to the Free Software
 #      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
 #   
-# $Id: DTCompilerUtil.py,v 1.2 2001/09/21 20:16:31 drew_csillag Exp $
+# $Id: DTCompilerUtil.py,v 1.3 2001/09/21 20:36:08 drew_csillag Exp $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 
@@ -67,7 +67,7 @@ def pyifyArgs(tag, args, parenthesize_exprs = 0):
 
         if type(nd[k]) == types.StringType:
             try:
-                compile(nd[k], nd[k], 'exec')
+                compile(nd[k]+'\n', nd[k], 'exec')
             except SyntaxError, val:
                 raise DTExcept.DTCompileError ( tag, 
                             'syntax error in argument: %s' % val)
@@ -195,6 +195,9 @@ def checkName(tag, argname, val, ppval = None):
 
 ########################################################################
 # $Log: DTCompilerUtil.py,v $
+# Revision 1.3  2001/09/21 20:36:08  drew_csillag
+# fixed so print statements in templates now work
+#
 # Revision 1.2  2001/09/21 20:16:31  drew_csillag
 # added userdir service (and subsidiary changes to other services) and multi-line ability for <:call:> tag
 #
