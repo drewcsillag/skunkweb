@@ -1,20 +1,11 @@
 #  
-#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  Copyright (C) 2001, 2003 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
-#      This program is free software; you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation; either version 2 of the License, or
-#      (at your option) any later version.
-#  
-#      This program is distributed in the hope that it will be useful,
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#      GNU General Public License for more details.
-#  
-#      You should have received a copy of the GNU General Public License
-#      along with this program; if not, write to the Free Software
-#      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.
-#   
+#      You may distribute under the terms of either the GNU General
+#      Public License or the SkunkWeb License, as specified in the
+#      README file.
+#
+
 """**
 <p>This module provides services for sending electronic mail
 from SkunkWeb applications, especially from the <:sendmail:> STML
@@ -56,7 +47,7 @@ to <tt>'localhost'</tt>.</li>
 </ul>
 
 """
-# $Id: MailServices.py,v 1.3 2003/04/19 14:18:53 smulloni Exp $
+# $Id: MailServices.py,v 1.5 2003/05/05 15:50:43 drew_csillag Exp $
 
 import rfc822, mimetools, mimify
 import string
