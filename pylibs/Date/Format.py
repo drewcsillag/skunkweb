@@ -300,7 +300,10 @@ class _DateFormatter:
         """
 	# strftime shortcut, if locale is English
 	if locale == Locales.English and hasattr(self, 'strftime'):
-	    return time.strftime(self.strftime, date.tuple())
+            return date.strftime(self.strftime)
+            # this was silly to begin with, and at the moment
+            # it triggers a DeprecationWarning with Python 2.3 and egenix 2.0.5.
+	    #return time.strftime(self.strftime, date.tuple())
 	result = []
 	for elt in self.format_list:
 	    if type(elt) == types.StringType: result.append(elt)
