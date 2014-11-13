@@ -35,9 +35,9 @@ normpath(PyObject* self, PyObject* arg)
 	return NULL;
 
 #undef DEBUG
-    parts = (struct str*)malloc( sizeof(struct str) * len );
-    newparts = (struct str*)malloc( sizeof(struct str) * len );
-    newpath = (char*)malloc( sizeof(char) * len + 1);
+    parts = (struct str*)alloca( sizeof(struct str) * len );
+    newparts = (struct str*)alloca( sizeof(struct str) * len );
+    newpath = (char*)alloca( sizeof(char) * len + 1);
     
     /* do the string.split */
     for (i = 0; i < len; i++)
@@ -136,9 +136,9 @@ normpath(PyObject* self, PyObject* arg)
     printf("newpathlen = %d len = %d\n", newpathlen, len);
 #endif 
     ret = PyString_FromStringAndSize(newpath, newpathlen);
-    free(newpath);
-    free(parts);
-    free(newparts);
+//    free(newpath);
+//    free(parts);
+//    free(newparts);
     return ret;
 }
 

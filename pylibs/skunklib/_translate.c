@@ -9,7 +9,7 @@
  * This is the C implementation of pathtranslate function - we use it rather
  * often in our code
  *
- * $Id: _translate.c,v 1.1.1.1 2001/08/05 15:01:57 drew_csillag Exp $
+ * $Id: _translate.c 1722 2006-03-11 20:55:32Z smulloni $
  */
 
 #include "Python.h"

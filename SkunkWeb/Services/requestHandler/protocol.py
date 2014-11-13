@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py,v 1.2 2002/07/19 16:21:02 smulloni Exp $
+# $Id: protocol.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/03 16:59:54 smulloni>
 ########################################################################
 
@@ -56,6 +56,9 @@ class PreemptiveResponse(Exception):
 
 ########################################################################
 # $Log: protocol.py,v $
+# Revision 1.3  2003/05/01 20:45:54  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2002/07/19 16:21:02  smulloni
 # removed spurious dependencies on aecgi from httpd and templating by
 # moving the RequestFailed hook into requestHandler.

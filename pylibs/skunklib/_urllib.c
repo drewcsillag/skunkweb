@@ -8,7 +8,7 @@
 /*
  * Move the urlencode() out of urllib - we use it too much
  *
- * $Id: _urllib.c,v 1.1.1.1 2001/08/05 15:01:56 drew_csillag Exp $
+ * $Id: _urllib.c 1722 2006-03-11 20:55:32Z smulloni $
  */
 
 #include "Python.h"

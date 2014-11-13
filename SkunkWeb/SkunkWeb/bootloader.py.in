@@ -1,5 +1,5 @@
 # -*-python-*-
-# $Id: bootloader.py.in,v 1.8 2003/04/18 16:54:21 smulloni Exp $
+# $Id: bootloader.py.in 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <03/04/18 12:52:53 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>

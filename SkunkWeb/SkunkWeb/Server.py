@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Server.py,v 1.12 2003/05/08 14:14:13 drew_csillag Exp $
+# $Id: Server.py 1432 2005-04-08 03:57:23Z smulloni $
 ########################################################################
 
 ########################################################################
@@ -83,15 +83,28 @@ class SkunkWebServer(SocketMan):
         import Hooks
 
         #now make sure that the kids can't setuid back to root
-        if hasattr(Configuration, 'groupToRunAs'):
-            gid = grp.getgrnam(Configuration.groupToRunAs)[2]
-            os.setgid(gid)
+        groupToRunAs=getattr(Configuration, 'groupToRunAs', None)
+        userToRunAs=getattr(Configuration, 'userToRunAs', None)
+        if groupToRunAs is not None or userToRunAs is not None:
+            # in case we are seteuid something else, which would
+            # cause setuid or getuid to fail, undo any existing
+            # seteuid. (The only reason to do this is for the case
+            # os.getuid()==0, AFAIK).
+            try:
+                seteuid=os.seteuid
+            except AttributeError:
+                # the OS may not support seteuid, in which
+                # case everything is hotsy-totsy.
+                pass
+            else:
+                seteuid(os.getuid())
+            if groupToRunAs is not None:
+                gid = grp.getgrnam(groupToRunAs)[2]
+                os.setgid(gid)
 
-        if hasattr(Configuration, 'userToRunAs'):
-            uid = pwd.getpwnam(Configuration.userToRunAs)[2]
-            if hasattr(os, 'seteuid'):
-                os.seteuid(os.getuid())
-            os.setuid(uid)
+            if userToRunAs is not None:
+                uid = pwd.getpwnam(userToRunAs)[2]
+                os.setuid(uid)
             
         Hooks.ChildStart()
         SocketMan.run(self)

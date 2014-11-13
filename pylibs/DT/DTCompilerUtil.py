@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: DTCompilerUtil.py,v 1.8 2003/07/16 18:12:37 smulloni Exp $
+# $Id: DTCompilerUtil.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/12 13:13:08 smulloni>
 ########################################################################
 import os

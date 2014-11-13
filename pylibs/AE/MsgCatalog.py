@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: MsgCatalog.py,v 1.3 2003/04/19 14:19:35 smulloni Exp $
+# $Id: MsgCatalog.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/26 14:56:47 smulloni>
 ########################################################################
 
@@ -137,6 +137,9 @@ class MultiLingualCatalog(MessageCatalog):
 
 ########################################################################
 # $Log: MsgCatalog.py,v $
+# Revision 1.4  2003/05/01 20:45:58  drew_csillag
+# Changed license text
+#
 # Revision 1.3  2003/04/19 14:19:35  smulloni
 # changes for scopeable
 #

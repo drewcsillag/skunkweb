@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: ArgsTag.py,v 1.2 2002/02/14 06:02:11 smulloni Exp $
+#$Id: ArgsTag.py 1722 2006-03-11 20:55:32Z smulloni $
 """
 args tag - suck stuff from CONNECTION.args
 """

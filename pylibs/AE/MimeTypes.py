@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: MimeTypes.py,v 1.2 2003/04/19 14:19:35 smulloni Exp $
+#$Id: MimeTypes.py 1722 2006-03-11 20:55:32Z smulloni $
 import os
 import sys
 

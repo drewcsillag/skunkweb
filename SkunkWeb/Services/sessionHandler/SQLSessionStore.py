@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: SQLSessionStore.py,v 1.6 2003/11/29 20:05:28 smulloni Exp $
+# $Id: SQLSessionStore.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/01 20:52:07 smulloni>
 ########################################################################
 

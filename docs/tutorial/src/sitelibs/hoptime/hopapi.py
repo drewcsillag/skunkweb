@@ -1,5 +1,5 @@
 # Time-stamp: <02/11/12 09:08:19 smulloni> 
-# $Id: hopapi.py,v 1.5 2002/11/07 19:34:17 smulloni Exp $
+# $Id: hopapi.py 1722 2006-03-11 20:55:32Z smulloni $
 
 import PyDO
 import sys

@@ -135,7 +135,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
             # Make sure the socket will be closed on exec
             fcntl.fcntl (s.fileno(), FCNTL.F_SETFD, 1)
             self.retrying_bind(s, addrspec[1:], 5)
-            s.listen(5)
+            s.listen(socket.SOMAXCONN)
         elif addrspec[0] == 'UNIX':
             try:
                 pathstat=os.stat(addrspec[1])
@@ -162,7 +162,7 @@ class SocketMan(ProcessMgr.ProcessMgr.ProcessMgr):
                     
             if len(addrspec) == 3:
                 os.chmod(addrspec[1], addrspec[2])
-            s.listen(5)
+            s.listen(socket.SOMAXCONN)
         else:
             raise ValueError, "unknown bind address type"
         self.socketMap[s] = handler_func, addrspec

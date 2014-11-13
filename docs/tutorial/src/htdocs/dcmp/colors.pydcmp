@@ -1,5 +1,5 @@
 # Time-stamp: <02/10/07 23:17:20 smulloni>
-# $Id$
+# $Id: colors.pydcmp 1722 2006-03-11 20:55:32Z smulloni $
 
 sectionMap={'home': '8ba4d1'}
 

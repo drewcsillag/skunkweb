@@ -6,7 +6,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: LogObj.py,v 1.6 2003/09/08 00:24:18 smulloni Exp $
+#$Id: LogObj.py 1722 2006-03-11 20:55:32Z smulloni $
 ########################################################################
 
 """

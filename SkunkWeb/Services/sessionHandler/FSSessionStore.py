@@ -1,5 +1,5 @@
-# Time-stamp: <2004-03-02 15:40:36 drew>
-# $Id: FSSessionStore.py,v 1.8 2003/07/22 14:29:17 smulloni Exp $
+# Time-stamp: <2005-04-01 22:46:16 drew>
+# $Id: FSSessionStore.py 1423 2005-04-02 03:47:18Z drewcsillag $
 #  Copyright (C) 2001, 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General
@@ -60,32 +60,23 @@ class Store(SessionStore):
 
     def _getPickle(self):
         if os.path.exists(self._picklepath):
-            f=open(self._picklepath)
-            fd=f.fileno()
-            # let reads coexist
-            fcntl.flock(fd, fcntl.LOCK_SH)
             try:
-                data=cPickle.load(f)
+                data=cPickle.load(open(self._picklepath))
             except:
                 logException()
                 data={}
-            fcntl.flock(fd, fcntl.LOCK_UN)
-            f.close()
             return data
     
     def save(self, data):
         self._setPickle(data)
 
     def _setPickle(self, data):
-        f=open(self._picklepath, 'w')
-        fd=f.fileno()
-        fcntl.flock(fd, fcntl.LOCK_EX)
+        tmppath = self._picklepath + '.tmp'
         try:
-            cPickle.dump(data, f, 1)
+            cPickle.dump(data, open(tmppath, 'w'), 1)
+            os.rename(tmppath, self._picklepath)
         except:
             logException()
-        fcntl.flock(fd, fcntl.LOCK_UN)
-        f.close()
         
     def delete(self):
         os.remove(self._picklepath)

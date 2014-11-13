@@ -8,7 +8,7 @@
 """
 type tag - do run-time type checking
 """
-# $Id: TypeTag.py,v 1.2 2002/06/18 15:10:41 drew_csillag Exp $
+# $Id: TypeTag.py 1722 2006-03-11 20:55:32Z smulloni $
 from CommonStuff import *
 from DT import DTExcept
 import types

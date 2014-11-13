@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: UrlBuilder.py,v 1.7 2003/03/21 22:32:12 smulloni Exp $
+# $Id: UrlBuilder.py 1645 2005-09-14 17:52:57Z smulloni $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """
@@ -29,6 +29,7 @@ from web.protocol import Redirect
 from SkunkWeb.LogObj import DEBUG
 from SkunkWeb.ServiceRegistry import TEMPLATING
 import SkunkWeb.Configuration as Config
+from DT.DTUtil import htmlquote
 
 # for img tag, try to import PIL (to get default image width and height)
 try:
@@ -53,7 +54,7 @@ def _genUrl ( path, query = {}, need_full = 0, noescape=None ):
 	path = urllib.quote(path)
 
     if query:
-        path = path + skunklib.urlencode ( query )
+        path = path + htmlquote(skunklib.urlencode(query))
 
     if need_full:
         if path[0] != '/':

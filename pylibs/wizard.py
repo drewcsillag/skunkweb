@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # Copyright 2001, Zolera Systems, Inc.  See below.
-# $Header: /us/jack/pylib/zolera/wizard.py,v 1.39 2001/12/07 17:04:02 rsalz Exp $
+# $Header: /home/users/smulloni/skunkweb/skunkweb/pylibs/wizard.py,v 1.1 2002/02/22 20:56:07 smulloni Exp $
 # Uses Python 2.0.
 
 import Tkinter as Tk

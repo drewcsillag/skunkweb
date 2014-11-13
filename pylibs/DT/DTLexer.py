@@ -151,6 +151,8 @@ def findTags(text):
                 #put in text token
                 ret.append( (textoffset, offset - 1, 0, 
                              text[textoffset:offset - 1]) )
+            elif c == '<':
+                tagoffset = offset
             else:
                 state = INIT
         elif state == BEGINCOMMENTCHECK:

@@ -1,5 +1,5 @@
 # Time-stamp: <02/11/10 14:01:32 smulloni>
-# $Id: hopauth.py,v 1.3 2002/11/04 00:41:23 smulloni Exp $
+# $Id: hopauth.py 1722 2006-03-11 20:55:32Z smulloni $
 
 """
 support for authenticating hoptime users

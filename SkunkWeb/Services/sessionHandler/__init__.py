@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.9 2003/07/18 19:56:18 smulloni Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 13:25:03 smulloni>
 ########################################################################
 # session handling package

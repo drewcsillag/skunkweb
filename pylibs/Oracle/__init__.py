@@ -19,7 +19,7 @@ know the ordering of the columns in the result set -- they are exposed as a
 dictionary where the keys are the column names and the values are the result
 values.
 """
-# $Id: __init__.py,v 1.3 2002/06/07 15:43:08 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 
 import sys
 import string

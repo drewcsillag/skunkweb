@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: DTTags.py,v 1.10 2003/07/07 21:10:26 smulloni Exp $
+# $Id: DTTags.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <2001-04-24 17:11:43 drew>
 ########################################################################
 

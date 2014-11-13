@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 15:00:05 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 17:39:07 smulloni>
 # support for remote calls from other SkunkWeb servers using a
 # python-specific protocol.
@@ -40,6 +40,9 @@ __initConnections()
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.1.1.1  2001/08/05 15:00:05  drew_csillag
 # take 2 of import
 #

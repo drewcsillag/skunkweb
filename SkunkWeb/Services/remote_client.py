@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: remote_client.py,v 1.4 2002/02/03 05:31:33 smulloni Exp $
+# $Id: remote_client.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/09 14:36:02 smulloni>
 ########################################################################
 
@@ -129,6 +129,9 @@ AE.Component.componentHandlers[SWRC_PROTOCOL]=SkunkWebRemoteComponentHandler()
 
 ########################################################################
 # $Log: remote_client.py,v $
+# Revision 1.5  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.4  2002/02/03 05:31:33  smulloni
 # fix to remote_client handling of string exceptions.
 #

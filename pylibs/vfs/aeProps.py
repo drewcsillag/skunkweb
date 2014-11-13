@@ -1,4 +1,4 @@
-# $Id: aeProps.py,v 1.1 2002/02/05 19:22:24 smulloni Exp $
+# $Id: aeProps.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <02/02/05 02:48:44 smulloni>
 
 ######################################################################## 
@@ -70,6 +70,9 @@ class AEPathPropertyStore(PathPropertyStore):
             
 ########################################################################
 # $Log: aeProps.py,v $
+# Revision 1.2  2003/05/01 20:46:02  drew_csillag
+# Changed license text
+#
 # Revision 1.1  2002/02/05 19:22:24  smulloni
 # bug fix to AE/Executables.py;
 # alternate normpath function in skunklib;

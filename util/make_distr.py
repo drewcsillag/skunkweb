@@ -9,7 +9,7 @@
 #
 # This is a script which facilitates creation of versioned releases
 #
-#$Id: make_distr.py,v 1.7 2003/02/07 19:55:07 smulloni Exp $
+#$Id: make_distr.py 1722 2006-03-11 20:55:32Z smulloni $
 
 import commands
 import re

@@ -1,5 +1,5 @@
 # Time-stamp: <03/01/21 13:49:37 smulloni>
-# $Id: dispatcher.py,v 1.15 2003/01/21 21:19:22 smulloni Exp $
+# $Id: dispatcher.py 1722 2006-03-11 20:55:32Z smulloni $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,

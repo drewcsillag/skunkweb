@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: constants.py,v 1.5 2002/09/30 20:02:27 smulloni Exp $
+# $Id: constants.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 13:31:34 smulloni>
 ########################################################################
 
@@ -38,6 +38,9 @@ CGI_JOB = WEB_JOB + '/cgi/'
 PYCGI_JOB = WEB_JOB + '/pycgi/'
 ########################################################################
 # $Log: constants.py,v $
+# Revision 1.6  2003/05/01 20:45:56  drew_csillag
+# Changed license text
+#
 # Revision 1.5  2002/09/30 20:02:27  smulloni
 # support for scoping based on SERVER_PORT.
 #

@@ -260,7 +260,7 @@ STATE_LIST = [
 COUNTRY_CODES = [
             ('Albania', 'AL'),
             ('Algeria', 'DZ'),
-            ('Amerian Samoa', 'AS'),
+            ('American Samoa', 'AS'),
             ('Andorra', 'AD'),
             ('Angola', 'AO'),
             ('Anguilla', 'AI'),

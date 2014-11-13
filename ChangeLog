@@ -1,4 +1,92 @@
-2004-09-10  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2006-03-11 Jacob Smullyan <smulloni@smullyan.org>
+	
+	* pylibs/{string8859.py,skunkdoc,pargen}: moving out to "misc"
+	directory out of this project, as these haven't been distributed
+	for some time.
+
+	* configure.in, configure, SkunkWeb/configure.in,
+	SkunkWeb/configure: upping version to 3.4.1.
+
+2006-03-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/skunklib/_normpath.c: patch from Drew to use alloca
+	rather than malloc (possible fix for weird free() bug).
+
+2006-02-15  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/form.py (DomainField.checkValue): better error
+	message (patch from Dave Cash)
+
+2005-12-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/mvc/__init__.py: adding misnamed mvc service
+	(m and v are missing).
+
+2005-09-20  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/skunk/computils.py: convenience functions for dealing
+	with AE.
+
+2005-09-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/templating/UrlBuilder.py: url function now htmlquotes.
+
+2005-08-16  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/Cache.py (_fixPath): fix for docroot escaping.
+
+2005-05-10  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+
+	* SkunkWeb/Services/sessionHandler/PsycopgSessionStore.py:
+	adding (contributed by Nick Murtagh).
+
+2005-04-18  Jacob Smullyan  <smulloni@smullyan.org>
+	
+	* pylibs/formlib/validates.py (COUNTRY_CODES): typo fix for
+	American Samoa.
+
+2005-04-17  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/SocketMan/SocketMan.py: now, rather than hard-coding `5'
+	as the argument to listen(), use socket.SOMAXCONN, which is
+	much more than 5 on many platforms.
+
+	* SkunkWeb/Services/requestHandler/requestHandler.py
+	(_processRequest): typo in error handling (backport from skunk4).
+
+2005-04-07  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/SkunkWeb/Server.py (SkunkWebServer.run): fix for
+	seteuid and setgid.  There was previously a guard in place to undo
+	any seteuid before calling setuid, but not before calling
+	setgid. (Backport from skunk4.)
+
+2005-04-13  Andrew Csillag  <drew@localhost.localdomain>
+
+	* SkunkWeb/util/precompile.py.in: now sets runOutOfCache to 0.
+	Obviously, if you are precompiling, running out of the cache makes
+	absolutely zero sense.
+
+2005-03-08  Andrew Csillag  <drew@localhost.localdomain>
+
+	* pylibs/DT/DTLexer.py: fix so that when encountering <<:, the
+	lexer would still find the begin tag.
+	
+2005-01-31  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/mime.types: adding mime type for XUL documents.
+
+2005-01-11  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/jsutils.py (_dict_to_js): for some reason, was improperly
+	marshalling dictionaries.
+
+2004-10-01  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/PyDO/PyDO.py (PyDOBase.get): get() for some reason had
+	crazy semantics; now is equivalent to obj.dict().get().
+
+2004-09-10  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/configure, SkunkWeb/configure.in: added psycopgcache
 	module to list of services.
@@ -10,7 +98,7 @@
 	* pylibs/PyDO/psycopgconn.py (PyDOPostgreSQL.__init__): fixed
 	various fatal bugs.
 
-2004-09-02  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2004-09-02  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py (_fixPath): this has gone through various
 	incarnations, and the last one appears to be broken again. I think
@@ -19,13 +107,13 @@
 	* pylibs/DT/DT.py (DT.__call__): don't use locals() mutably for
 	store/unstore, use a dict.
 
-2004-07-28  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2004-07-28  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Component.py (ComponentStackFrame.__del__):
 	removing the __del__ method, as Python now can take care of circular
 	references without help.
 
-2004-07-25  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2004-07-25  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/DT/DTLexer.py: pcre has finally been removed from Python
 	in 2.4a1; I rewrote this to use the re module.  
@@ -137,7 +225,7 @@
 	* pylibs/AE/CacheTag.py (CacheTag.genCode): remove incorrect
 	generated code that referred to __h.TimeUtil.
 
-2004-02-05  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2004-02-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/SkunkWeb/Server.py (_aPrefixIn): typo fix that caused 
 	errors every request for people using userModuleCleanup
@@ -150,18 +238,18 @@
 
 	* pylibs/PyDO/PyDO2.py Same feature addition as in PyDO.py.
 
-2004-01-15  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2004-01-15  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/Cache.py (_mcCompileFunc): fix for Windows line
 	returns and message catalogs (as is already done for templates and
 	python code).
 
-2004-01-12  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2004-01-12  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/skunk/date/format.py (HTTPDate): adding (replacing
 	equivalent function in Date module).
 
-2004-01-10  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2004-01-10  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/templating/Handler.py: bug fix: now hide .inc
 	and .pyinc files from requests! 
@@ -171,12 +259,12 @@
 	but it needs testing.
 	
 
-2004-01-05  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2004-01-05  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/formlib/validates.py (STATELIST): added Arkansas, which
 	was missing for some reason, and fixed the state code for Arizona.
 
-2003-12-31  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2003-12-31  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* configure, configure.in: no longer test for egenix-mx.
 
@@ -192,18 +280,18 @@
 	conditional on the presence of mx (and will remain that way as
 	long as DateTag depends on it).
 	
-2003-12-29  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2003-12-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/AE/CacheTag.py: now use skunk.date.timeutil rather than
 	Date.Timeutil
 
-2003-12-27  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2003-12-27  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/ecs/xhtml.py (parse): now use HTMLParser rather than
 	expat, so html entity references are now tolerated (although
 	treated as strings).
 
-2003-12-24  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2003-12-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/skunk/__init__.py, pylibs/skunk/date/__init__.py,
 	pylibs/skunk/date/timeutil.py: new timeutil module, still rough, 
@@ -212,7 +300,7 @@
 	into it, to better avoid name collisions and make installation of
 	pylibs into python's normal site-packages more workable.
 
-2003-12-18  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2003-12-18  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/web/protocol.py (_processRequest): added
 	ProcessResponse hook for response filtering, as prompted by patch
@@ -223,14 +311,14 @@
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c (critical_error): apache2
 	bugfix: wrong test for return value of apr_file_open().
 
-2003-11-30  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2003-11-30  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/sessionHandler/SQLSessionStore.py
 	(AbstractSQLSessionStore.getConnection): bug fix for the
 	postgresql implementation -- attempting to call fetchall on a
 	cursor when there are no rows is not tolerated by pypgsql.
 
-2003-11-29  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2003-11-29  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/mod_skunkweb/mod_skunkweb.c: replace references to AE
 	and AED with SkunkWeb.
@@ -242,21 +330,21 @@
 	(AbstractSQLSessionStore._getPickle): fix for bytea using
 	pypgsql. 
 
-2003-11-24  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2003-11-24  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* pylibs/PyDO/PyDO2.py (_metapydo.__new__): looping through
 	<dict>.iteritems() and mutating the dict can lead to hash
 	rearrangement, apparently; patch from Jeroen van Dongen (no longer
 	use iteritems, which was pointless anyway).
 
-2003-11-22  Jacob Smullyan  <smulloni@bracknell.smullyan.org>
+2003-11-22  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/httpd/protocol.py
 	(HTTPProtocol.marshalResponse): bug fix that permits httpd to send
 	multiple headers with the same name (as in Set-Cookie).  Thanks to
 	Dan Chow for reporting this.
 
-2003-11-17  Jacob Smullyan  <smulloni@bunbury.smullyan.org>
+2003-11-17  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* SkunkWeb/Services/product/loader.py (Product.__reallyload): when
 	using Python 2.3 or better, using zipimport if the product is a 

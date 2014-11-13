@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: KickStart.py,v 1.3 2002/03/30 20:05:27 smulloni Exp $
+# $Id: KickStart.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/03 18:32:41 smulloni>
 ########################################################################
 
@@ -26,6 +26,9 @@ ConfigLoader.loadConfigString(CONFIG_STRING,
 
 ########################################################################
 # $Log: KickStart.py,v $
+# Revision 1.4  2003/05/01 20:45:55  drew_csillag
+# Changed license text
+#
 # Revision 1.3  2002/03/30 20:05:27  smulloni
 # added Include directive for sw.conf; fixed IP bug (was being clobbered in sw.conf)
 #

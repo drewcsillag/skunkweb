@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <2004-03-02 14:57:41 drew>
 ########################################################################
 #  
@@ -381,6 +381,11 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 1)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.12  2004/03/02 19:48:34  drew_csillag
+# now you
+# 	can pass path, domain and secure to the constructor to set the
+# 	appropriate parameters on the session cookie
+#
 # Revision 1.11  2003/05/01 20:45:53  drew_csillag
 # Changed license text
 #

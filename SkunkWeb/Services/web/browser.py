@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: browser.py,v 1.1.1.1 2001/08/05 14:59:55 drew_csillag Exp $
+# $Id: browser.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/25 16:01:40 smulloni>
 
 import string
@@ -49,6 +49,9 @@ class Browser:
 
 ########################################################################
 # $Log: browser.py,v $
+# Revision 1.2  2003/05/01 20:45:55  drew_csillag
+# Changed license text
+#
 # Revision 1.1.1.1  2001/08/05 14:59:55  drew_csillag
 # take 2 of import
 #

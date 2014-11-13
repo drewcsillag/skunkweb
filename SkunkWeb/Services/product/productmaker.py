@@ -1,4 +1,4 @@
-# $Id: productmaker.py,v 1.2 2002/02/24 15:50:21 smulloni Exp $
+# $Id: productmaker.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <02/02/24 10:29:06 smulloni>
 
 ########################################################################

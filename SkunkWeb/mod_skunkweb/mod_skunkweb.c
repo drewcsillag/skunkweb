@@ -7,7 +7,7 @@
 */
 
 /* 
- *  $Id: mod_skunkweb.c,v 1.12 2003/12/11 20:30:19 smulloni Exp $
+ *  $Id: mod_skunkweb.c 1722 2006-03-11 20:55:32Z smulloni $
  *
  *
  * Configuration:

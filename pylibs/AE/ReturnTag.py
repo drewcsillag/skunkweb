@@ -13,7 +13,7 @@ Usage:
 <:return <value>:> - returns the value, which is cached if necessary. Raises
 an exception if encountered not inside a data component
 """
-# $Id: ReturnTag.py,v 1.1.1.1 2001/08/05 15:00:41 drew_csillag Exp $
+# $Id: ReturnTag.py 1722 2006-03-11 20:55:32Z smulloni $
 
 from CommonStuff import *
 import SkunkExcept

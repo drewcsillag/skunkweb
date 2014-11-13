@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py,v 1.26 2004/04/05 21:11:08 smulloni Exp $
+#$Id: Cache.py 1631 2005-08-16 17:50:08Z smulloni $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -285,18 +285,17 @@ def _getCompileCache(name, srcModTime, version):
 
 def _fixPath(root, path):
     ## some insurance that we don't escape a given root
-    concat='%s/%s' % (root, path)
-    norm=_normpath(concat)
-    if norm < root:
-        # trying to escape root, return un-normpathed thing
-        return concat
-    return norm
-
+    if not path:
+        return root
+    if not path.startswith('/'):
+        path='/%s' % path
+    path=_normpath(path)
+    return _normpath('%s%s' % (root, path))
 
 ### The real disk access routines
 #set so we have a tempfile prefix specific to the pid, host, etc.
 def initTempStuff():
-    global _tempPrefix
+    global _tempPrefix 
     _tempPrefix = '%s_%d' % (socket.gethostname(), os.getpid())
     
 def _writeDisk(path, data):

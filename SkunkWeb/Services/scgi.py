@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: scgi.py,v 1.2 2002/06/18 20:09:38 drew_csillag Exp $
+# $Id: scgi.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 17:32:39 smulloni>
 ########################################################################
 #http://www.mems-exchange.org/software/scgi/
@@ -113,6 +113,9 @@ if Configuration.SCGIListenPorts:
 
 ########################################################################
 # $Log: scgi.py,v $
+# Revision 1.3  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2002/06/18 20:09:38  drew_csillag
 # fixed typo that caused problems on POSTs
 #

@@ -1,4 +1,4 @@
-# $Id: zodbProps.py,v 1.2 2002/02/05 19:22:24 smulloni Exp $
+# $Id: zodbProps.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <02/02/05 02:45:40 smulloni>
 
 ######################################################################## 
@@ -84,6 +84,9 @@ class ZODBPathPropertyStore(PathPropertyStore):
     
 ########################################################################
 # $Log: zodbProps.py,v $
+# Revision 1.3  2003/05/01 20:46:03  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2002/02/05 19:22:24  smulloni
 # bug fix to AE/Executables.py;
 # alternate normpath function in skunklib;

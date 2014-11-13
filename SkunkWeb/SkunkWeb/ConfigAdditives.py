@@ -1,4 +1,4 @@
-# $Id: ConfigAdditives.py,v 1.7 2003/04/23 02:14:31 smulloni Exp $
+# $Id: ConfigAdditives.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <03/04/22 18:07:34 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>,
@@ -100,6 +100,9 @@ ServerStart.append(importConfiguration)
 
 ########################################################################
 # $Log: ConfigAdditives.py,v $
+# Revision 1.8  2003/05/01 20:45:55  drew_csillag
+# Changed license text
+#
 # Revision 1.7  2003/04/23 02:14:31  smulloni
 # removing import of scopeable
 #

@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Cycler.py,v 1.1.1.1 2001/08/05 15:00:23 drew_csillag Exp $
+# $Id: Cycler.py 1722 2006-03-11 20:55:32Z smulloni $
 """
 This module provides a class which will "cycle"
 over a list or tuple of items, looping back to the

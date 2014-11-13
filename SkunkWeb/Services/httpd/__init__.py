@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: __init__.py,v 1.4 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 13:27:45 smulloni>
 ########################################################################
 
@@ -44,6 +44,10 @@ if Configuration.HTTPListenPorts:
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.5  2004/03/01 16:27:04  smulloni
+# changing default value of HTTPKeepaliveTimeout to zero, as the previous default
+# was very irritating if you tried to use siege or apache bench against httpd
+#
 # Revision 1.4  2003/05/01 20:45:53  drew_csillag
 # Changed license text
 #

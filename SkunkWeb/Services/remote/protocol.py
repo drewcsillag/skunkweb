@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py,v 1.2 2001/10/30 15:41:17 drew_csillag Exp $
+# $Id: protocol.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/05/04 14:28:18 smulloni>
 
 from requestHandler.protocol import Protocol
@@ -45,6 +45,9 @@ class SkunkWebRemoteProtocol(Protocol):
 
 ##############################################################
 # $Log: protocol.py,v $
+# Revision 1.3  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2001/10/30 15:41:17  drew_csillag
 # now returns the rendered and expired flags properly
 #

@@ -138,6 +138,7 @@ def func(arg, dirname, fnames):
     for i in fnames:
         compile_thing(rdn + "/" + i)
 
+Configuration.runOutOfCache = 0
 if args:
     for i in args:
         compile_thing(i)

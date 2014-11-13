@@ -82,7 +82,7 @@ class PyDOPostgreSQL:
 
         if self.useCacheMod:
             from PsycopgCache import getConnection
-            self.conn = getConnection(connectArgs)
+            self.conn = getConnection(connectArgs[0])
         else:
             self.conn=psycopg.connect(newConnStr)
         self.bindVariables = 0

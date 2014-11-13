@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: ServiceRegistry.py,v 1.2 2002/02/21 07:20:16 smulloni Exp $
+# $Id: ServiceRegistry.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/16 14:07:47 smulloni>
 ########################################################################
 import Logger
@@ -84,6 +84,9 @@ __initFlags()
 
 ########################################################################    
 # $Log: ServiceRegistry.py,v $
+# Revision 1.3  2003/05/01 20:45:55  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2002/02/21 07:20:16  smulloni
 # numerous changes for product service and vfs, to support importing from the
 # latter.

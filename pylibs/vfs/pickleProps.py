@@ -1,4 +1,4 @@
-# $Id: pickleProps.py,v 1.2 2002/11/25 03:59:34 smulloni Exp $
+# $Id: pickleProps.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <02/11/24 22:34:53 smulloni>
 
 ######################################################################## 
@@ -78,6 +78,9 @@ class PicklePathPropertyStore(PathPropertyStore):
 
 ########################################################################
 # $Log: pickleProps.py,v $
+# Revision 1.3  2003/05/01 20:46:02  drew_csillag
+# Changed license text
+#
 # Revision 1.2  2002/11/25 03:59:34  smulloni
 # fixed some typos.
 #

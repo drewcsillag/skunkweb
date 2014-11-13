@@ -8,7 +8,7 @@
 """
 Tag date - description???
 """
-# $Id: DateTag.py,v 1.2 2001/12/20 17:35:34 drew_csillag Exp $
+# $Id: DateTag.py 1722 2006-03-11 20:55:32Z smulloni $
 
 from CommonStuff import *
 try: 

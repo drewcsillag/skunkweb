@@ -3,7 +3,7 @@
 ########################################################################
 # script that finds long lines in source code files and prints the offending
 # lines to stdout.  Defaults to searching for python files.
-# $Id: longlines.sh,v 1.2 2001/04/24 21:43:02 smullyan Exp $
+# $Id: longlines.sh 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/24 13:08:24 smulloni>
 ########################################################################
 
@@ -40,6 +40,9 @@ exit 0
 
 ########################################################################
 # $Log: longlines.sh,v $
+# Revision 1.1  2001/08/05 14:59:20  drew_csillag
+# Initial revision
+#
 # Revision 1.2  2001/04/24 21:43:02  smullyan
 # fixed bug in httpd.protocol (was accidentally removing line return after
 # HTTP response line, producing weirdness).  Removed call of deprecated

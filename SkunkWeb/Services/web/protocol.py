@@ -1,5 +1,5 @@
 ########################################################################
-# $Id: protocol.py,v 1.27 2003/12/18 16:58:14 smulloni Exp $
+# $Id: protocol.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <2003-12-29 22:50:30 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>

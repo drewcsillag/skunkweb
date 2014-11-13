@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Logger.py,v 1.9 2003/05/02 17:37:48 smulloni Exp $
+# $Id: Logger.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/16 12:58:38 smulloni>
 ########################################################################
 

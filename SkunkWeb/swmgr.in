@@ -11,7 +11,7 @@
 # This is the manager script for SkunkWeb, used for stopping,
 # starting, and restarting the daemon.
 #
-# $Id: swmgr.in,v 1.8 2003/08/22 20:34:16 smulloni Exp $
+# $Id: swmgr.in 1722 2006-03-11 20:55:32Z smulloni $
 
 umask 002
 

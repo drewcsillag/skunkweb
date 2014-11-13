@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1.1.1 2001/08/05 14:59:58 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <2001-07-10 16:18:08 drew>
 ########################################################################
 #  
@@ -91,6 +91,9 @@ web.protocol.PreHandleConnection.addFunction(checkAuthorization, jobGlob, 0)
 
 ########################################################################
 # $Log: __init__.py,v $
+# Revision 1.2  2003/05/01 20:45:53  drew_csillag
+# Changed license text
+#
 # Revision 1.1.1.1  2001/08/05 14:59:58  drew_csillag
 # take 2 of import
 #

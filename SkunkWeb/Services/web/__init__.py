@@ -6,7 +6,7 @@
 #      README file.
 
 # Time-stamp: <03/09/07 19:56:22 smulloni>   
-# $Id: __init__.py,v 1.3 2003/05/01 20:45:54 drew_csillag Exp $
+# $Id: __init__.py 1722 2006-03-11 20:55:32Z smulloni $
 
 
 def __initFlag():

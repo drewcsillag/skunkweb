@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Timezone.py,v 1.2 2001/12/20 17:35:34 drew_csillag Exp $
+# $Id: Timezone.py 1722 2006-03-11 20:55:32Z smulloni $
 """
 This module provides "timezone" objects 
 which the Date module can use

@@ -177,7 +177,7 @@ class PyDOBase(static):
     def get(self, item, default = None):
         """returns self[item] if it exists and is not None,
         otherwise returns default"""
-        return self._dict.get(item, default) or default
+        return self._dict.get(item, default)
 
     
     def update(self, dict):

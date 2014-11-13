@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: userdir.py,v 1.6 2002/06/28 12:59:30 smulloni Exp $
+# $Id: userdir.py 1722 2006-03-11 20:55:32Z smulloni $
 ########################################################################
 
 import pwd

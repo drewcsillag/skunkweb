@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: LogTags.py,v 1.1.1.1 2001/08/05 15:00:07 drew_csillag Exp $
+# $Id: LogTags.py 1722 2006-03-11 20:55:32Z smulloni $
 # Time-stamp: <01/04/12 12:52:32 smulloni>
 ########################################################################
 
@@ -55,6 +55,9 @@ LoggingTags = [ GenericLogTag ( 'log', 'LOG' ),
 
 ########################################################################
 # $Log: LogTags.py,v $
+# Revision 1.2  2003/05/01 20:45:54  drew_csillag
+# Changed license text
+#
 # Revision 1.1.1.1  2001/08/05 15:00:07  drew_csillag
 # take 2 of import
 #

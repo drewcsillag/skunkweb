@@ -237,7 +237,7 @@ class DomainField(Field):
         """
         value=Field.checkValue(self, value)
         if not self.in_domain(value):
-            raise ValueError, "value not present in domain: %s" % value
+            raise ValueError, "value for '%s' not present in domain: %s" % (self, name, value)
         return value
 
 class Form(object):

@@ -1,5 +1,5 @@
 # Time-stamp: <2004-01-10 23:04:49 smulloni>
-# $Id: Handler.py,v 1.13 2004/01/11 03:57:58 smulloni Exp $
+# $Id: Handler.py 1722 2006-03-11 20:55:32Z smulloni $
 
 ########################################################################
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>

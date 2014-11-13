@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: Makefile.in,v 1.8 2003/05/01 20:45:53 drew_csillag Exp $
+# $Id: Makefile.in 1700 2005-12-29 19:32:49Z smulloni $
 # Time-stamp: <01/05/07 13:48:20 smulloni>
 ########################################################################
 
@@ -42,6 +42,9 @@ install:
 		$(INSTALL) -m 0644 $$i.py $$DESTDIR$(services_dir)/$$i.py; \
 		else \
 		$(INSTALL) -d $$DESTDIR$(services_dir)/$$i; \
+		for d in `find $$i -type d`; do \
+		$(INSTALL) -d $$DESTDIR$(services_dir)/$$d; \
+		done; \
 		for j in `find $$i -name "*.py"`; do \
 		$(INSTALL_DATA) $$j $$DESTDIR$(services_dir)/$$j; \
 		done \
@@ -68,6 +71,9 @@ clean:
 
 ########################################################################
 # $Log: Makefile.in,v $
+# Revision 1.9  2003/05/25 00:03:16  smulloni
+# numerous contributions from Sean Reifschneider
+#
 # Revision 1.8  2003/05/01 20:45:53  drew_csillag
 # Changed license text
 #
