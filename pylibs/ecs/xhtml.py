@@ -1,5 +1,5 @@
 # Time-stamp: <2003-12-27 23:18:32 smulloni>
-# $Id: xhtml.py 1722 2006-03-11 20:55:32Z smulloni $
+# $Id: xhtml.py 1752 2006-05-09 19:15:02Z smulloni $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>

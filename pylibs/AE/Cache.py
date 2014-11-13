@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py 1631 2005-08-16 17:50:08Z smulloni $
+#$Id: Cache.py 1733 2006-04-23 03:09:03Z smulloni $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it
@@ -51,7 +51,7 @@ Configuration.mergeDefaults(
     maxDeferStale = 3600, # 1 hour
     deferAdvance = 30, # how long to extend the life of a deferred component cache
     failoverRetry = 30, # how long should we use failover before checking NFS again
-    useCompileMemoryCache = 0,
+    useCompileMemoryCache = 1,
     findCommand = '/usr/bin/find',
     sedCommand = '/bin/sed',
     xargsCommand = '/usr/bin/xargs',

@@ -1,12 +1,8 @@
-# -*-python-*-
-#
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      You may distribute under the terms of either the GNU General
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
-#   
-# $Id: Server.py 1432 2005-04-08 03:57:23Z smulloni $
 ########################################################################
 
 ########################################################################

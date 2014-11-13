@@ -1,6 +1,6 @@
 # -*-python-*-
-# $Id: bootloader.py.in 1722 2006-03-11 20:55:32Z smulloni $
-# Time-stamp: <03/04/18 12:52:53 smulloni>
+# $Id: bootloader.py.in 1732 2006-04-22 14:06:17Z smulloni $
+# Time-stamp: <2006-04-22 10:04:00 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -59,6 +59,6 @@ def load():
     for serviceName in Configuration.services:
 	LogObj.LOG("Loading service %s" % serviceName)
 	__import__(serviceName)
-    ServiceRegistry.debugRegisteredServices(Configuration.initialDebugServices)
+    ServiceRegistry.debugRegisteredServices(Configuration.debugServices)
     Hooks.ServerStart()
 

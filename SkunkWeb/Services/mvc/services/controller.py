@@ -4,11 +4,13 @@ from web.protocol import PreemptiveResponse, HandleConnection
 from templating.Handler import _handleException
 from SkunkWeb.constants import WEB_JOB
 from SkunkWeb.LogObj import logException
-from logging import debug, info
+from mvc.log import debug, info
 from mvc.utils import is_exposed, _import_a_class
+from mvc.base import Response
 import types
 
-Cfg.mergeDefaults(controllers={})
+Cfg.mergeDefaults(controllers={},
+                  defaultErrorMimetype='text/html')
 
 def _resolve_string(controllerName):
     try:
@@ -22,7 +24,6 @@ def _resolve_string(controllerName):
         return c
 
 def controllerHandler(connection, sessionDict):
-    debug("in controller handler")
     if not Cfg.MvcOn:
         return
     cname=sessionDict.get('CONTROLLER')
@@ -62,6 +63,9 @@ def controllerHandler(connection, sessionDict):
                 except PreemptiveResponse:
                     # not a problem, raise it
                     raise
+                except Response:
+                    res(connection)
+                    return connection.response()
                 except:
                     # OK, something bad.  This should be a server error.
                     return _handleException(connection)

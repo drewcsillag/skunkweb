@@ -1,3 +1,55 @@
+2006-05-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* configure.in (SW_VERSION), configure, SkunkWeb/configure.in,
+	SkunkWeb/configure: upped version to 3.4.2.
+
+2006-05-01  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/mvc/base.py (HTTPError): adding Response
+	class, so that controllers can return (or raise) an object besides
+	a string.
+
+2006-04-24  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/wsgihandler.py: adding preliminary wsgi integration.
+
+2006-04-22  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/sw.conf.in: some cleanup.
+
+	* SkunkWeb/SkunkWeb/LogObj.py: rename initialDebugServices to
+	debugServices.
+
+	* SkunkWeb/Services/layout/__init__.py: adding layout service.
+
+2006-04-21  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/mvc/__init__.py: making BaseController
+	available in mvc namespace.
+
+	* SkunkWeb/Services/web/protocol.py (HTTPConnection.redirect):
+	permit 302 redirects also with new optional parameter, "status". 
+
+	* SkunkWeb/Services/mvc/base.py: adding base controller class.
+
+2006-04-19  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/swpython.c.in: adding #include for alloca.h (thanks
+	James Phillips).
+
+2006-04-14  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/computils.py: syncing with wnyc version, and moving out
+	of skunk package (as skunk4 would override it anyway).
+
+2006-04-12  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/web/protocol.py (_processRequest): new
+	RouteConnection hook, for mvc service.
+
+	* SkunkWeb/Services/mvc/services/routing.py: use new
+	RouteConnection hook, so routing occurs after vhost scoping.
+
 2006-03-11 Jacob Smullyan <smulloni@smullyan.org>
 	
 	* pylibs/{string8859.py,skunkdoc,pargen}: moving out to "misc"

@@ -1,6 +1,6 @@
 ########################################################################
-# $Id: protocol.py 1722 2006-03-11 20:55:32Z smulloni $
-# Time-stamp: <2003-12-29 22:50:30 smulloni>
+# $Id: protocol.py 1727 2006-04-21 21:10:28Z smulloni $
+# Time-stamp: <2006-04-21 16:51:39 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
@@ -45,6 +45,7 @@ headersOnlyStatuses=[100, 101, 102, 204, 304]
 
 HaveConnection=KeyedHook()
 PreHandleConnection=KeyedHook()
+RouteConnection=KeyedHook()
 HandleConnection=KeyedHook()
 ProcessResponse=Hook()
 
@@ -223,9 +224,11 @@ class HTTPConnection:
             raise SkunkCriticalError, 'invalid status: %s' % status
         self._status = status
         
-    def redirect(self, url):
+    def redirect(self, url, status=301):
+        if status not in (301, 302):
+            raise ValueError, "invalid status for redirect: %s" % status
         self.responseHeaders['Location'] = url
-        self.setStatus(301)
+        self.setStatus(status)
         self._output=NullOutput()
         DEBUG(WEB, "Redirecting to %s" % url)
         
@@ -384,6 +387,7 @@ def _processRequest(requestData, sessionDict):
     except:
         logException()
     else:
+        RouteConnection(Configuration.job, connection, sessionDict)
         # DEBUG(WEB, 'handling connection')
         response=HandleConnection(Configuration.job, connection, sessionDict)
 

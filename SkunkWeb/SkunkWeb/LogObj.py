@@ -1,12 +1,10 @@
-# -*-python-*-
-# 
+#
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      You may distribute under the terms of either the GNU General
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: LogObj.py 1722 2006-03-11 20:55:32Z smulloni $
 ########################################################################
 
 """
@@ -55,7 +53,7 @@ Configuration.mergeDefaults(
     httpAccessLog = confvars.DEFAULT_HTTP_ACCESS_LOG,
     stampEveryLine = 1,
     logDateFormat = '%a, %d %b %Y %H:%M:%S GMT',
-    initialDebugServices=[]
+    debugServices=[]
     )
 
 Logger._logStamp = "[%d]initializing... %%s -- " % os.getpid()

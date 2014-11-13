@@ -1,19 +1,12 @@
 # -*-python-*-
-
-# $Id: sw.conf.in 1722 2006-03-11 20:55:32Z smulloni $
-# Time-stamp: <04/03/01 11:31:30 smulloni>
-
-########################################################################
 #
-#  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>
+#  Copyright (C) 2001-2006 Andrew T. Csillag <drew_csillag@geocities.com>
 #  
 #      You may distribute under the terms of either the GNU General
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #
-########################################################################
 
-########################################################################
 # If you want to be able to start skunkweb as root (so it can bind to
 # port 80) but want it to run as a different user/group, set these to
 # appropriate values.
@@ -26,8 +19,6 @@ if "@RUNASROOT@" == "root":
     userToRunAs = "@OWNER@"
     groupToRunAs = "@GROUP@"
     
-########################################################################
-# services you want to load.
 # standard services are:
 #
 # requestHandler          -- abstract basic service for handling requests;
@@ -46,6 +37,40 @@ if "@RUNASROOT@" == "root":
 #                            AE components.  Requires requestHandler,
 #                            web, and ae_component.
 #
+# mvc.service             -- controller framework.
+#
+# layout                  -- layout template support; adds <:slot:> and
+#                            <:calltemplate:> tags to STML
+#
+# sessionHandler          -- adds a session-scoped object to web's
+#                            HTTPConnection class which provides a simple form
+#                            of data persistence between requests, using cookies
+#                            and a pluggable data store (currently only MySQL,
+#                            PostgreSQL, and shelve files).
+#                            Requires web.
+#
+# rewrite                 -- supports common url rewriting tasks and supplies a
+#                            more complex tasks to be performed by other services
+#                            by means of a hook framework.
+#
+# auth                    -- service that provides various ways to do web
+#                            based authentication.  Requires web, and may
+#                            require sessionHandler.
+#
+# httpd                   -- service which handles http requests directly, as
+#                            opposed to via the mod_skunkweb Apache module.
+#                            Requires requestHandler.
+#
+# fcgiprot                -- FastCGI support.
+#
+# scgi                    -- SCGI support.
+#
+# userdir                 -- user directories
+#
+# usertracking            -- adds a usertracking cookie
+
+# Other services:
+#
 # remote                  -- server-side implementation of a remote call facility
 #                            for AE components.  Requires requestHandler and
 #                            ae_component.
@@ -55,83 +80,53 @@ if "@RUNASROOT@" == "root":
 #                            templating and its prerequisites;
 #                            does not require the remote service.
 #
-# sessionHandler          -- adds a session-scoped object to web's
-#                            HTTPConnection class which provides a simple form
-#                            of data persistence between requests, using cookies
-#                            and a pluggable data store (currently only MySQL,
-#                            PostgreSQL, and shelve files).
-#                            Requires web.
-#
-# httpd                   -- service which handles http requests directly, as
-#                            opposed to via the mod_skunkweb Apache module.
-#                            Requires requestHandler.
-#
-# basicauth               -- service that provides basic authentication to
-#                            locations configured to use it.  Requires
-#                            web.
-#
-# auth                    -- service that provides various ways to do web
-#                            based authentication.  Requires web, and may
-#                            require sessionHandler.
-#
-# oracle                  -- preloads the Oracle pylib and allows for
-#                            connection and stored procedure signature
-#                            caching
-#
-# postgresql              -- preloads the PostgreSql pylib and allows for
-#                            connection caching (using pgdb).
-#
-# pypgsqlcache            -- preloads the PyPgSQLcache pylib and allows for
-#                            connection caching (using the pyPgSQL db module)
-#
-# mysql                   -- preloads the MySQL pylib and allows for
-#                            connection caching
-#
-# rewrite                 -- supports common url rewriting tasks and supplies a
-#                            more complex tasks to be performed by other services
-#                            by means of a hook framework.
-#
 # extcgi                  -- supports external CGI's, i.e. regular ones,
 #                            as opposed to python CGI's which we will some
 #                            day be able to execute in place
+#
+# Deprecated services:
+#
+# basicauth        
+# oracle
+# postgresql
+# pypgsqlcache
+# psycopgcache
+# mysql
+# firebird
+# product
+# pycgi
 
-services = ['requestHandler',
-            'aecgi',
-            'ae_component',
-            'web',
-            'templating',
-            'remote',
-            'remote_client',
+# Here are the services we load.  Services load their dependencies
+# automatically (simply by loading them).  By default we load httpd,
+# but don't use that for production -- use aecgi (with mod_skunkweb),
+# scgi or fcgiprot.
+
+services = ['templating',
+            'layout',
             'httpd']
 
-########################################################################
 # If you want to control skunkweb through D.J. Bernsteins daemontools
 # or a similar setup, skunkweb doesn't have to go to background.
 # Setting runInForeground to 1 provides this. The default value is 0,
 # so that the "traditional" Unix way of daemonizing is used.
 #
 # runInForeground = 0
-########################################################################
 
 
-########################################################################
 # For extra performance, we can store the compiled forms of things in memory
 # in addition to the disk.  This does increase the memory footprint a bit
 # but not too much, and reduces the disk IO a bit.
-useCompileMemoryCache = 1
+# useCompileMemoryCache = 1
 
-########################################################################
 # if you don't want every line of a multiline log entry to be prefixed
 # with a logstamp (the default behavior), set this to a false value.
 #
 # stampEveryLine=0
 
-# services that are INITIALLY set to be debugged.
-# To determine what services are being debugged at runtime, use
-# SkunkWeb.ServiceRegistry.getDebugServices().
-initialDebugServices=[]
+# services set to be debugged.
 
-########################################################################
+debugServices=[]
+
 # For the web service
 # if request method is POST, but has a GET-like query string,
 # CONNECTION.args will contain both sets of arguments
@@ -145,7 +140,6 @@ initialDebugServices=[]
 # it serves up
 # generateEtagHeader=1
 
-########################################################################
 # For httpd service ONLY: 
 # if you set this to a true value, the CGI environmental variable
 # HTTP_REMOTE_HOST will always be set, involving a potentially costly DNS
@@ -156,44 +150,39 @@ initialDebugServices=[]
 # variables SkunkWeb receives from Apache or elsewhere.
 #
 # lookupHTTPRemoteHost = 1
-
-########################################################################
+#
 # port(s) for the httpd service to listen on
-HTTPListenPorts=['TCP::8080']
+# HTTPListenPorts=['TCP::8080']
 
-########################################################################
 # port(s) for the aecgi service to listen on
-AecgiListenPorts=['TCP:localhost:9888']
+# AecgiListenPorts=['TCP:localhost:9888']
 
-########################################################################
 # port(s) for the remote service to listen on
-RemoteListenPorts=['TCP:localhost:9887']
+# RemoteListenPorts=['TCP:localhost:9887']
 
-########################################################################
 # server name (for httpd) -- defaults to value returned by socket.getfqdn(),
 # may be scoped 
 # ServerName = 'www.skunk.org'
 
-########################################################################
-# make the remote listen port do remote jobs; otherwise define default
-# job of templating
-Scope(Port(9887, job=REMOTE_JOB))
-job=TEMPLATING_JOB
+# to make the remote listen port do remote jobs, uncomment this and
+# edit to match RemoteListenPorts
+# Scope(Port(9887, job=REMOTE_JOB))
 
-########################################################################
+# the default job 
+# job=TEMPLATING_JOB
+
 # if your sitelibs directory is somewhere else, modify the following
 import sys
 sys.path.append('@prefix@/sitelibs')
 
-########################################################################
-# for development, this will cause changes to sitelibs to be reflected
-# on the next request, without a bounce of the server.  Turn it off
-# for production environments.  If you get weird errors with it on,
-# see the option below.
-# 
-# userModuleCleanup = 1
 
-########################################################################
+# for development, setting this to a true value will cause changes to
+# sitelibs to be reflected on the next request, without a bounce of
+# the server.  Turn it off for production environments.  If you get
+# weird errors with it on, see the option below.
+# 
+# userModuleCleanup = 0
+
 # When using the userModuleCleanup option, sometimes there are modules
 # that the module cleaner will whack that you don't want it to,
 # usually resulting in an odd exception where a global variable or
@@ -205,31 +194,15 @@ sys.path.append('@prefix@/sitelibs')
 #
 # userModuleCleanupIgnore = []
 
-########################################################################
 # list of document names that will be recognized as index documents;
-# default is ['index.html']
-# indexDocuments=['index.html', 'index.htm', 'index.py']
+# indexDocuments=['index.html']
 
-########################################################################
 # If you are going to a directory, and none of indexDocuments exist,
 # use this as the index.html for that directory.  
 #
 # defaultIndexHtml = None
 
-########################################################################
-# basicauth service variables can be declared globally,
-# affecting the entire site:
-#
-# basicAuthName="Forsake All Hope"
-# basicAuthFile="/usr/local/skunk/var/HELL_AUTH_DB"
-#
-# or, as is more likely, they can be declared inside a location, e.g.:
-#
-# Scope(Location("/private",
-#                basicAuthName="privileged zone",
-#                basicAuthFile='/usr/local/skunk/var/AUTHDB'))
 
-########################################################################
 # The extcgi service
 #
 # Usually this will be a scoped thing, where you tell skunkweb where
@@ -247,7 +220,6 @@ sys.path.append('@prefix@/sitelibs')
 #       #same as Location
 #       CGIProgramBase='/moin/'))
 
-########################################################################
 # The auth service
 #
 # This service allows you to do web based authentication in a myriad of
@@ -308,7 +280,6 @@ sys.path.append('@prefix@/sitelibs')
 #               ))
 
 
-########################################################################
 # level of commenting to be inserted in html documents when components
 # are entered/exited
 # 0 = no commenting (default)
@@ -318,20 +289,17 @@ sys.path.append('@prefix@/sitelibs')
 #
 # componentCommentLevel = 0
 
-########################################################################
 # The directory that is used to hold templates, images, msgcats, comps,
 # etc.
 #
 documentRoot = '@DOCROOT@'
 
-########################################################################
+
 # What filesystem implementations to use to search for resources.
-# If you want to use archive files or other esoterica, use a MultiFS;
-# this may become the default in future
+# If you want to use archive files or other esoterica, use a MultiFS.
 #
 # documentRootFS = vfs.LocalFS()
 
-########################################################################
 # for the sendmail tag, how to actually send it.
 # If MailMethod == 'sendmail', it will call the sendmail program to do
 # it (this is the default).  If you set it to 'relay', it will send the
@@ -354,7 +322,6 @@ documentRoot = '@DOCROOT@'
 # AddressCheckLevel = 1
 
 
-########################################################################
 # If using NFS (or other shared filesystem) for the component cache,
 # set numServers to the number of shared filesystems that the component
 # cache will be on, failoverRetry to the number of seconds to wait before
@@ -368,9 +335,8 @@ documentRoot = '@DOCROOT@'
 # failoverComponentCacheRoot = '@prefix@/failoverCache'
 
 
-########################################################################
 # Locations of logfiles.  The regularLog logs significant, but normal
-# events, the debugLog logs debug info according to initialDebugServices
+# events, the debugLog logs debug info according to debugServices,
 # the accessLog logs access information, and the errorLog logs erroneous
 # conditions (mostly tracebacks)
 #
@@ -381,39 +347,32 @@ documentRoot = '@DOCROOT@'
 # errorLog = '@LOGDIR@/error.log'
 
 # To turn on http access logging, set HttpLoggingOn to a true value.
-
+#
 # HttpLoggingOn=0
 
-########################################################################
 # Location of where to put the pidFile that tells swmgr how to find the
 # running SkunkWeb server process
 #
 # pidFile = '@localstatedir@/run/sw.pid
 
-
-
-########################################################################
 # The number of child processes to be started.  This is the max number
 # of concurrent page views (although if Apache sits in front, it may
 # look like quite a few more).
 #
 # numProcs = 15
 
-########################################################################
 # The number of seconds that the parent will wait after having sent
 # SIGTERM to the children before killing the children off with SIGKILL
 # during a shutdown or restart
 #
 # maxKillTime = 5
 
-########################################################################
 # You probably don't need to change this, but it's the interval at which
 # the parent looks for corpses that need to be buried and replaced with
 # new, living kids.
 #
 # pollPeriod = 5
 
-########################################################################
 # The number of requests that a child server process will handle before
 # committing suicide and having the parent respawn.  This is mainly to
 # make sure we aren't leaking memory, but you can probably set it to
@@ -421,45 +380,37 @@ documentRoot = '@DOCROOT@'
 #
 # maxRequests = 256
 
-########################################################################
 # If you want to fallback to the cached version if an exception occurs
 # when rendering a (to be) cached component, set this to a true value
 #
 # fallbackToCache = None
 
-########################################################################
 # The time (in seconds) for a component to be cached if cache is
 # specified in the component call and there was no <:cache:> tag (or
 # __expiration wasn't set)
 #
 # defaultExpiryDuration = 30
 
-
-########################################################################
 # The location on disk of where the compile cache should reside.  This
 # should be a local filesystem
 #
 # compileCacheRoot = '@prefix@/cache'
 
-########################################################################
 # How stale the cached version is when we render it anyway when called
 # with cache=defer (in seconds)
 #
 # maxDeferStale = 3600  # 1 hour
 
-########################################################################
 # The location of the component cache on disk.  Can be the same as the
 # compileCacheRoot.
 #
 # componentCacheRoot = '@prefix@/cache
 
-########################################################################
 # how long to extend the life of a deferred component cache when we go
 # to render it (in seconds)
 #
 # deferAdvance = 30
 
-########################################################################
 ## clearCache Related Items
 ## N.B.  clearCache should be avoided whenever possible unless matchExact
 ## is true, or the number of cached versions for a component are small
@@ -471,7 +422,6 @@ documentRoot = '@DOCROOT@'
 # sedCommand = '/bin/sed' 
 # xargsCommand = '/usr/bin/xargs' #must be Solaris or GNU find
 
-########################################################################
 # If it should run using the files in the compile cache, ignoring
 # the timestamps of the document root files.  This way you can ship
 # the server with a "shadow" document root (it will have all the files,
@@ -479,14 +429,12 @@ documentRoot = '@DOCROOT@'
 #
 # runOutOfCache = 0
 
-########################################################################
 # Normally, the python code generated for STML templates is stored 
 # in the cache file (for tracebacks, etc.).  Setting this to 1 disables
 # this.
 #
 # dontCacheSource = 0
 
-########################################################################
 # Normally, the python code generated by the STML compiler will have
 # line number instructions so that we can sync up the file/line numbers
 # from the template to the generated code for traceback purposes.  Setting
@@ -494,30 +442,25 @@ documentRoot = '@DOCROOT@'
 #
 # noTagDebug = 0
 
-########################################################################
 # A list of mime types that are considered templates
 #
 # templateMimeTypes = ['text/html', 'text/plain']
 
 
-########################################################################
 # The location of your mimetypes file
 #
 # mimeTypesFile = '@sysconfdir@/mime.types'
 
-########################################################################
 # If we cannot determine the mime type by examining the extension of the
 # file, what mime type we should return
 #
 # defaultMimeType = 'application/octet-stream'
 
-########################################################################
 # if using a multi-lingual message catalog and you don't specify the
 # language, what language we should assume
 #
 # DefaultLanguage = 'eng'
 
-########################################################################
 # If you want to have SkunkWeb return a message saying it's not there
 # as the message, instead of raising an exception if a message you ask
 # for isn't in the catalog, which is the default, set this to a false
@@ -525,25 +468,21 @@ documentRoot = '@DOCROOT@'
 #
 # strictMessageCatalogs = 1
 
-########################################################################
 # The time (in seconds) allowed for a request to complete before timing
 # it out (by raising an exception).
 #
 # DocumentTimeout = 30
 
-########################################################################
 # The amount of time (in seconds) allowed for the PostRequest hooks to
 # execute before timing them out.
 #
 # PostResponseTimeout = 20
 
-########################################################################
 # How long (in seconds) the http keepalive timeout should be between
 # HTTP requests.  0 (the default) effectively turns off keepalive.
 #
 # HTTPKeepAliveTimeout = 0
 
-########################################################################
 # A list of mime types that should not be accessible via web request
 #
 # hideMimeTypes = [
@@ -553,7 +492,6 @@ documentRoot = '@DOCROOT@'
 #        "text/x-stml-python-data-component",
 #        ]
 
-########################################################################
 # Mime types of things that should be rendered as templates when called
 # via web request.
 #
@@ -562,7 +500,6 @@ documentRoot = '@DOCROOT@'
 #        "application/x-python"
 #        ]
 
-########################################################################
 # Dictionary of mime-type-specific request handlers for mime types
 # that are neither hidden nor interpreted by the templating engine,
 # but that you wish to give some special handling.  The keys should be
@@ -572,12 +509,10 @@ documentRoot = '@DOCROOT@'
 #
 # mimeHandlers = {}
 
-########################################################################
 # whether or not templating's HTML helper tags should generate XHTML-
 # compliant markup or not (defaults to True).
 # tagsGenerateXHTML = 1 
 
-########################################################################
 # path to a template in the docroot, dependent on scope,
 # that should be shown if the we send back an error (500) page
 # The exception text will show up in an additional template variable
@@ -585,12 +520,11 @@ documentRoot = '@DOCROOT@'
 #
 # errorTemplate = None
 
-########################################################################
 # path to a template in the docroot, dependent on scope,
 # that should be shown if the we send back a 404 Not Found response
 #
 # notFoundTemplate = None
-########################################################################
+
 # For the psp service (if enabled):
 #
 # If you want .html files to be handled by the PSP interpreter (instead of
@@ -607,7 +541,6 @@ documentRoot = '@DOCROOT@'
 #
 # pspTopLevelInterpret = 1
 
-########################################################################
 # For the rewrite service: each rule specifies a replacement template
 # to be used in modifying a portion of connection.uri that is matched
 # by the regular expression. Any named groups in the matched regular
@@ -739,6 +672,22 @@ documentRoot = '@DOCROOT@'
 # # you want a persistent cookie
 #
 # usertrackingCookieExpires=None # for a two year cookie, 2*365*24*60*60
+
+########################################################################
+# For the layout service
+#
+# skinDir='/comp/skins'
+# defaultSkin='default'
+# slotConfigFilename='slotconf.pydcmp'
+# defaultTemplateFilename='template.comp'
+
+########################################################################
+# For the mvc service
+#
+# MvcOn = False    # must be true to use mvc in a scope
+# controllers={}   # add controllers here
+# routes=[]        # add routes here
+# defaultErrorMimetype='text/html'
 
 
 ########################################################################

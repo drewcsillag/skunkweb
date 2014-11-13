@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: browser.py 1722 2006-03-11 20:55:32Z smulloni $
+# $Id: browser.py 1752 2006-05-09 19:15:02Z smulloni $
 # Time-stamp: <01/04/25 16:01:40 smulloni>
 
 import string

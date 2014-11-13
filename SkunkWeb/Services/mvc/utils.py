@@ -21,3 +21,6 @@ def _import_a_class(fqcn):
             raise ValueError, "impossible to import: %s" % fqcn
     else:
         raise ValueError, "impossible to import: %s" % fqcn
+
+
+__all__=['expose', 'is_exposed']

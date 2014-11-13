@@ -20,7 +20,7 @@ from routes.util import url_for, redirect_to
 from routes import request_config
 import SkunkWeb.Configuration as Cfg
 from SkunkWeb import Context
-from web.protocol import HaveConnection
+from web.protocol import RouteConnection
 from SkunkWeb.constants import WEB_JOB
 
 # the controller service is required
@@ -29,7 +29,7 @@ import controller
 # make sure that the context object is installed
 import context
 
-from logging import debug
+from mvc.log import debug
 
 __all__=['url_for', 'redirect_to']
 
@@ -84,4 +84,4 @@ def routing_hook(connection, sessionDict):
         
                 
 glob='%s*' % WEB_JOB
-HaveConnection[glob]=routing_hook
+RouteConnection[glob]=routing_hook
