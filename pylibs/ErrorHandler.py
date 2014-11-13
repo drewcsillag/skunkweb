@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: ErrorHandler.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: ErrorHandler.py 1755 2006-05-22 19:23:01Z smulloni $
 # 
 """
 This module implements some pretty error handling 

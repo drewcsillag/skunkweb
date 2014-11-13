@@ -1,5 +1,5 @@
 # Time-stamp: <03/02/08 09:37:03 smulloni>
-# $Id: xmlrpchandler.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: xmlrpchandler.py 1755 2006-05-22 19:23:01Z smulloni $
 
 """
 a module for serving XMLRPC from SkunkWeb.

@@ -1,5 +1,5 @@
 # Time-stamp: <02/08/29 11:35:23 smulloni>
-# $Id: __init__.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: __init__.py 1755 2006-05-22 19:23:01Z smulloni $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>

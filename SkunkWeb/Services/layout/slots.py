@@ -29,9 +29,9 @@ class Slot(object):
 class ComponentSlot(Slot):
     def __init__(self, name, compname, comptype=None, cache=computils.NO, **kw):
         Slot.__init__(self, name)
-        self.compname=relpath(compname)
+        self.compname=computils.relpath(compname)
         if comptype is None:
-            self.comptype=guess_comptype(compname)
+            self.comptype=computils.guess_comptype(compname)
         self.cache=cache
         self.extra=kw
 
@@ -42,12 +42,12 @@ class ComponentSlot(Slot):
         try:
             push_slot(self.name)
             if self.comptype==DT_INCLUDE:
-                res=include(self.compname)
+                res=computils.include(self.compname)
             else:
-                res=component(self.compname,
-                              comptype=self.comptype,
-                              cache=cache,
-                              **kwargs)
+                res=computils.component(self.compname,
+                                        comptype=self.comptype,
+                                        cache=cache,
+                                        **kwargs)
 
         finally:
             pop_slot()

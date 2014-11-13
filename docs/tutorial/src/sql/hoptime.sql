@@ -1,7 +1,7 @@
 /*
  * Database for hoptime project.
  * Time-stamp: <02/11/12 09:02:04 smulloni> 
- * $Id: hoptime.sql 1752 2006-05-09 19:15:02Z smulloni $
+ * $Id: hoptime.sql 1755 2006-05-22 19:23:01Z smulloni $
  */
 DROP AGGREGATE cat TEXT;
 DROP TABLE moves;

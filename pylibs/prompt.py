@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: prompt.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: prompt.py 1755 2006-05-22 19:23:01Z smulloni $
 """
 A prompt module, useful for asking interactive questions.
 It's fairly simple, and generally for use in command-line

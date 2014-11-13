@@ -9,7 +9,7 @@
 Class implementing DT exceptions. All exceptions raised inside templates 
 SHOULD inherit from these exceptions
 """
-# $Id: DTExcept.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: DTExcept.py 1755 2006-05-22 19:23:01Z smulloni $
 
 import string
 

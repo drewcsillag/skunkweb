@@ -6,7 +6,7 @@
 #      README file.
 #   
 """miscellaneous time routines"""
-#$Id: TimeUtil.py 1752 2006-05-09 19:15:02Z smulloni $
+#$Id: TimeUtil.py 1755 2006-05-22 19:23:01Z smulloni $
 
 try:
     from mx import DateTime

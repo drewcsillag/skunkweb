@@ -8,7 +8,7 @@
 """
 Here the message catalog tags are implemented
 """
-# $Id: MsgCatalogTags.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: MsgCatalogTags.py 1755 2006-05-22 19:23:01Z smulloni $
 
 import string
 

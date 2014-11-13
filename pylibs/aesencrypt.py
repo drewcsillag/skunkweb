@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # Time-stamp: <02/11/29 21:42:30 smulloni>
-# $Id: aesencrypt.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: aesencrypt.py 1755 2006-05-22 19:23:01Z smulloni $
 """
 a convenience class for encrypting strings or
 arbitrary length using AES.  Requires PyCrypto,

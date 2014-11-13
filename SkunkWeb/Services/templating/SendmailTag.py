@@ -8,7 +8,7 @@
 """
 contains the sendmail tag.
 """
-# $Id: SendmailTag.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: SendmailTag.py 1755 2006-05-22 19:23:01Z smulloni $
 
 from AE.CommonStuff import *
 import MailServices

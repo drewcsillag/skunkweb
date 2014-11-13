@@ -8,7 +8,7 @@
 """
 Assortment of HTML tags - description???
 """
-# $Id: HTMLTags.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: HTMLTags.py 1755 2006-05-22 19:23:01Z smulloni $
 
 from AE.CommonStuff import *
 import SkunkExcept

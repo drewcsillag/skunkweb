@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: InitTags.py 1752 2006-05-09 19:15:02Z smulloni $
+#$Id: InitTags.py 1755 2006-05-22 19:23:01Z smulloni $
 
 import Cache
 import Executables

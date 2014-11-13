@@ -5,7 +5,7 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: ConfigLoader.py 1752 2006-05-09 19:15:02Z smulloni $
+# $Id: ConfigLoader.py 1755 2006-05-22 19:23:01Z smulloni $
 # Time-stamp: <01/05/02 15:31:50 smulloni>
 ########################################################################
 
