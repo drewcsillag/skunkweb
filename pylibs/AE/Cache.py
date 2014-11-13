@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Cache.py 1733 2006-04-23 03:09:03Z smulloni $
 
 #### REMINDER; defer time is the stampeding herd preventer that says
 #### Gimme a bit of time to render this thing before you go ahead and do it

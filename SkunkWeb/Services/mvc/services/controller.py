@@ -63,7 +63,7 @@ def controllerHandler(connection, sessionDict):
                 except PreemptiveResponse:
                     # not a problem, raise it
                     raise
-                except Response:
+                except Response, res:
                     res(connection)
                     return connection.response()
                 except:

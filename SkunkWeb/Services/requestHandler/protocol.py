@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py 1747 2006-05-01 20:02:49Z smulloni $
 # Time-stamp: <01/05/03 16:59:54 smulloni>
 ########################################################################
 

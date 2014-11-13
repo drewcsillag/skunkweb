@@ -1,5 +1,4 @@
 # Time-stamp: <2005-04-01 22:46:16 drew>
-# $Id: FSSessionStore.py 1423 2005-04-02 03:47:18Z drewcsillag $
 #  Copyright (C) 2001, 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
 #      You may distribute under the terms of either the GNU General

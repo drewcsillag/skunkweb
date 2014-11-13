@@ -8,7 +8,6 @@
 """
 Here the message catalog tags are implemented
 """
-# $Id: MsgCatalogTags.py 1755 2006-05-22 19:23:01Z smulloni $
 
 import string
 
@@ -93,7 +92,7 @@ class MessageTag ( DTTag ):
               '__h.string.join ( __h.VALFMTRGY.keys(), "," )' % pargs['fmt'] )
 
         codeout.write ( indent, '%s = __h.MsgCatalog.getMessage ( %s, %s, '
-                        'lang = %s, fmt = %s, bindvars = %s) ' % 
+                        'default="", lang = %s, fmt = %s, bindvars = %s) ' % 
                         ( text, catname, pargs['msgname'], 
                           pargs['lang'], fmt, kw ) )
                                             

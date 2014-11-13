@@ -3,7 +3,7 @@
 ########################################################################
 # script that finds long lines in source code files and prints the offending
 # lines to stdout.  Defaults to searching for python files.
-# $Id: longlines.sh 1722 2006-03-11 20:55:32Z smulloni $
+# $Id: longlines.sh 1795 2007-08-27 21:04:08Z smulloni $
 # Time-stamp: <01/04/24 13:08:24 smulloni>
 ########################################################################
 

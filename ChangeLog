@@ -1,3 +1,49 @@
+2007-08-27  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* [many files]: removed CVS keywords that were making patches
+	difficult.
+	
+	* configure.in, configure, SkunkWeb/configure.in,
+	SkunkWeb/configure: version bump to 3.4.4.
+	
+	* pylibs/AE/Exceptions.py: ReturnValue is now a class.
+	
+	* pylibs/AE/Executables.py: handle ReturnValue differently now
+	that it is a class.
+
+2007-08-26  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/usertracking.py: fix for Python 2.5 (old uuid module won't load)
+
+2007-07-30  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/AE/MsgCatalogTags.py (MessageTag.genCode): make default
+	message be "" for messages that aren't in the catalog, so using
+	the tag for non-existent messages does not blow up.
+
+2007-06-29  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/formlib/form.py (DomainField.checkValue): typo fix for NameError
+
+2007-03-19  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/aememcache.py: first cut at memcached support
+	for the component cache.
+
+2006-09-25  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/mvc/base.py (BaseController.do401): fix for
+	cut-and-pasto.  
+
+2006-08-09  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* pylibs/scope.py: some cleanup; possible fix for mysterious scoping error.
+
+2006-06-02  Jacob Smullyan  <smulloni@smullyan.org>
+
+	* SkunkWeb/Services/mvc/base.py: removed "object" from
+	Response base classes.
+
 2006-05-19  Jacob Smullyan  <smulloni@smullyan.org>
 
 	* configure.in (SW_VERSION), configure, SkunkWeb/configure.in,

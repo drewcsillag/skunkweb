@@ -6,7 +6,6 @@
 #      README file.
 #   
 # Time-stamp: <03/06/09 18:06:53 smulloni>
-# $Id: ccvalidate.py 1755 2006-05-22 19:23:01Z smulloni $
 
 """
 contains a function for validating credit card numbers.

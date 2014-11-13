@@ -193,7 +193,7 @@ class PyDOPostgreSQL:
             raise TypeError, 'trying to assign %s to %s and is not a string'% (
                 val, aname)
         elif _isBinary(attr):
-            return PgSQL.PgQuoteBytea(val, 0)
+            return psycopg.Binary(val)
         elif attr.upper() == 'BOOL':
             if val:
                 return 'TRUE'

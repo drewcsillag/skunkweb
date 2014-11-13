@@ -1,5 +1,4 @@
 ########################################################################
-# $Id: protocol.py 1727 2006-04-21 21:10:28Z smulloni $
 # Time-stamp: <2006-04-21 16:51:39 smulloni>
 #  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>

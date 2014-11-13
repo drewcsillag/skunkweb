@@ -1,4 +1,4 @@
-# $Id: story_links.pydcmp 1755 2006-05-22 19:23:01Z smulloni $
+# $Id: story_links.pydcmp 1795 2007-08-27 21:04:08Z smulloni $
 # returns a list of story titles and ids.
 import hoptime.hopapi as HAPI
 

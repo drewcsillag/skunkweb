@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: UrlBuilder.py 1645 2005-09-14 17:52:57Z smulloni $
 # Time-stamp: <01/04/25 16:10:18 smulloni>
 ########################################################################
 """

@@ -1,5 +1,4 @@
 # Time-stamp: <03/04/22 22:18:20 smulloni>
-# $Id: __init__.py 1755 2006-05-22 19:23:01Z smulloni $
 
 ########################################################################  
 #  Copyright (C) 2001 Andrew T. Csillag <drew_csillag@geocities.com>

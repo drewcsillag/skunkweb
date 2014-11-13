@@ -1,5 +1,4 @@
 # Time-stamp: <03/01/21 13:49:37 smulloni>
-# $Id: dispatcher.py 1755 2006-05-22 19:23:01Z smulloni $
 
 ######################################################################## 
 #  Copyright (C) 2002 Jacob Smullyan <smulloni@smullyan.org>,

@@ -60,7 +60,7 @@ class Scopeable:
             tmp=d
         kw.update(tmp)
         fridge['defaults']=kw
-        self.__dict__.update(kw)
+        self.__dict__=self.mash()
 
     def _lookup(self, attr):
         # not really intended to be used,
@@ -99,12 +99,13 @@ class Scopeable:
     def mash(self):
         fridge=self._get_fridge()
         nd=fridge['defaults'].copy()
-        map(nd.update, fridge['dictlist'])
+        for d in fridge['dictlist']:
+            nd.update(d)
         return nd
 
     def push(self, d):
         self._get_fridge()['dictlist'].append(d)
-        self.__dict__.update(d)
+        self.__dict__=self.mash()
 
     def pop(self):
         fridge=self._get_fridge()
@@ -145,13 +146,13 @@ class Scopeable:
         
     def scope(self, d):
         # store the current scope
-        current=self.currentScopes()
+        current=self._get_fridge()['currentScopes']
         current.update(d)
         scopedDict={}
         for m in self.scopeMatchers():
-            self.__processMatcher(m, scopedDict, d)                
-            if scopedDict:
-                self.push(scopedDict)
+            self.__processMatcher(m, scopedDict, d)
+        if scopedDict:
+            self.push(scopedDict)
 
     def __processMatcher(self, matcher, scopedDict, scopeValDict):
         """

@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: requestHandler.py 1451 2005-04-17 04:25:02Z smulloni $
 # Time-stamp: <01/05/09 17:48:12 smulloni>
 ########################################################################
 

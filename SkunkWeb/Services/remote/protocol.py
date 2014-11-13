@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-# $Id: protocol.py 1755 2006-05-22 19:23:01Z smulloni $
 # Time-stamp: <01/05/04 14:28:18 smulloni>
 
 from requestHandler.protocol import Protocol

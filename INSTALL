@@ -97,5 +97,5 @@ paper you're shooting for.  Then type:
 Where <docname> is as in HTML way, and <ext> is one of ps, pdf or dvi,
 depending, of course on what format you want it in.
 
-$Id: INSTALL 1755 2006-05-22 19:23:01Z smulloni $
+$Id: INSTALL 1795 2007-08-27 21:04:08Z smulloni $
 

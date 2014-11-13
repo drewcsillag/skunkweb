@@ -12,7 +12,7 @@
 #      README file.
 #   
 # This script starts the product wizard (requires Tkinter).
-# $Id: productwiz.in 1755 2006-05-22 19:23:01Z smulloni $
+# $Id: productwiz.in 1795 2007-08-27 21:04:08Z smulloni $
 ########################################################################
 
 import product.productwiz as P

@@ -1,5 +1,5 @@
 ########################################################################
-# Time-stamp: <03/04/18 16:40:09 smulloni>
+# Time-stamp: <2007-08-26 15:33:54 smulloni>
 #
 # Copyright (C) 2003 Jacob Smullyan <smulloni@smullyan.org>
 #  
@@ -40,7 +40,12 @@ logs, which is apparently a problem with apache's mod_usertrack.
 
 from SkunkWeb import Configuration, ServiceRegistry
 from SkunkWeb.LogObj import DEBUG
-from uuid import uuid
+try:
+    from uuid import uuid
+except ImportError:
+    from uuid import uuid4
+    def uuid():
+        return str(uuid4())
 import time
 import Cookie
 

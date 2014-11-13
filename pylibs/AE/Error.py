@@ -5,7 +5,6 @@
 #      Public License or the SkunkWeb License, as specified in the
 #      README file.
 #   
-#$Id: Error.py 1755 2006-05-22 19:23:01Z smulloni $
 import cStringIO
 
 import ErrorHandler
