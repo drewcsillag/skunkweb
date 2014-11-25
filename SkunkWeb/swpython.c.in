@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <alloca.h>
+#include <string.h>
 int main(int argc, char **argv)
 {
     char** buf;

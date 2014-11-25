@@ -103,7 +103,9 @@ AC_MSG_CHECKING([Python development environment])
 if $PYTHON <<\EOF
 import sys
 import string
-mf = sys.prefix + '/lib/python%s/config/Makefile' % sys.version[[:3]]
+import os
+libpath = sys.prefix + '/lib/python%s' % sys.version[[:3]]
+mf = os.popen('find %s -name Makefile' % libpath).read().strip()
 try:
     open(mf, 'r')
 except:
@@ -195,16 +197,16 @@ eval datadir=$datadir
 
 AC_CONFIG_SUBDIRS(SkunkWeb)
 
-AC_ADD_HELP([
-Additional options:
-  --with-webdoc           Install some sample content
-  --with-sudo=PATH        Specify path to sudo
-  --without-mod_skunkweb  Don't build mod_skunkweb
-  --with-apxs=PATH        Specify path to the apxs program
-  --with-runasroot        If you want to have SkunkWeb bind to low ports, add
-                          this switch.  (see the userToRunAs and groupToRunAs
-                          configuration variables)
-])
+dnl AC_ADD_HELP([
+dnl Additional options:
+dnl   --with-webdoc           Install some sample content
+dnl   --with-sudo=PATH        Specify path to sudo
+dnl   --without-mod_skunkweb  Don't build mod_skunkweb
+dnl   --with-apxs=PATH        Specify path to the apxs program
+dnl   --with-runasroot        If you want to have SkunkWeb bind to low ports, add
+dnl                           this switch.  (see the userToRunAs and groupToRunAs
+dnl                           configuration variables)
+dnl ])
 
 AC_OUTPUT(Makefile pylibs/Makefile pylibs/setup-pylibs docs/Makefile)
 
